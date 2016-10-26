@@ -56,7 +56,7 @@ Exact_Backward_GMmatLS_R <- function(t, L, N, H, Pi, mu, rho) {
 
   g <- -log(rowSums(Pi*rho[l-1]*theta))
 
-  while(l>t) { cat("B ", l, "\n")
+  while(l>t) {
     l <- l-1
 
     beta.new <- log(1.0 + (1-rho[l])*theta*exp(beta.old+g)) - g
@@ -88,11 +88,11 @@ Exact_Forward_GMmatLS_R <- function(t, L, N, H, Pi, mu, rho) {
   indH <- 1-indH; diag(indH) <- 0
   theta <- theta + indH * mu[l]
 
-  alpha.old <- log(Pi*theta)
+  alpha <- log(Pi*theta)
 
-  f <- -log(rowSums(exp(alpha.old)*rho[l]))
+  f <- -log(rowSums(exp(alpha)*rho[l]))
 
-  while(l<t) { cat("F ", l, "\n")
+  while(l<t) {
     l <- l+1
 
     indH <- outer(H[,l], H[,l], "==") * 1; diag(indH) <- 0
@@ -100,12 +100,10 @@ Exact_Forward_GMmatLS_R <- function(t, L, N, H, Pi, mu, rho) {
     indH <- 1-indH; diag(indH) <- 0
     theta <- theta + indH * mu[l]
 
-    alpha.new <- log(theta*Pi + theta*(1-rho[l-1])*exp(alpha.old+f)) - f
+    alpha <- log(theta*Pi + theta*(1-rho[l-1])*exp(alpha+f)) - f
 
-    f <- -( log(rowSums(exp(alpha.new+f)*rho[l])) - f )
-
-    alpha.old <- alpha.new
+    f <- -( log(rowSums(exp(alpha+f)*rho[l])) - f )
   }
 
-  return(list(alpha=alpha.old, alphasum=f))
+  return(list(alpha=alpha, alphasum=f))
 }
