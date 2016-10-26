@@ -1,0 +1,16 @@
+Package: StatGen
+Type: Package
+Title: Ryan's stats algorithm
+Version: 0.1.0
+Author: Louis Aslett
+Maintainer: Louis Aslett <aslett@stats.ox.ac.uk>
+Description: Ryan's stats algorithm
+License: GPL (>= 2)
+LazyData: TRUE
+Imports:
+    Rcpp (>= 0.12.7)
+LinkingTo:
+    Rcpp
+SystemRequirements:
+    GNU make,
+    C++11
