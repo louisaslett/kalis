@@ -13,3 +13,23 @@ ClearSequenceCache2 <- function() {
     invisible(.Call('StatGen_ClearSequenceCache2', PACKAGE = 'StatGen'))
 }
 
+Exact_ComputeTable_naive_cpp <- function(l, Pi, mu, rho) {
+    .Call('StatGen_Exact_ComputeTable_naive_cpp', PACKAGE = 'StatGen', l, Pi, mu, rho)
+}
+
+ExactBackwardNaiveC_cpp <- function(t, L, N, Pi, mu, rho) {
+    .Call('StatGen_ExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
+}
+
+ExactForwardNaiveC_cpp <- function(t, L, N, Pi, mu, rho) {
+    .Call('StatGen_ExactForwardNaiveC_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
+}
+
+dExactForward_ISPC_st_cpp <- function(t, L, N, Pi, mu, rho) {
+    .Call('StatGen_dExactForward_ISPC_st_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
+}
+
+ExactForwardYepppExpC_cpp <- function(t, L, N, Pi, mu, rho) {
+    .Call('StatGen_ExactForwardYepppExpC_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
+}
+

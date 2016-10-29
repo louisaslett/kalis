@@ -37,3 +37,81 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// Exact_ComputeTable_naive_cpp
+NumericMatrix Exact_ComputeTable_naive_cpp(int l, NumericMatrix Pi, NumericVector mu, NumericVector rho);
+RcppExport SEXP StatGen_Exact_ComputeTable_naive_cpp(SEXP lSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type l(lSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    rcpp_result_gen = Rcpp::wrap(Exact_ComputeTable_naive_cpp(l, Pi, mu, rho));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ExactBackwardNaiveC_cpp
+NumericMatrix ExactBackwardNaiveC_cpp(int t, int L, int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
+RcppExport SEXP StatGen_ExactBackwardNaiveC_cpp(SEXP tSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    rcpp_result_gen = Rcpp::wrap(ExactBackwardNaiveC_cpp(t, L, N, Pi, mu, rho));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ExactForwardNaiveC_cpp
+NumericMatrix ExactForwardNaiveC_cpp(int t, int L, int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
+RcppExport SEXP StatGen_ExactForwardNaiveC_cpp(SEXP tSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    rcpp_result_gen = Rcpp::wrap(ExactForwardNaiveC_cpp(t, L, N, Pi, mu, rho));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dExactForward_ISPC_st_cpp
+NumericMatrix dExactForward_ISPC_st_cpp(int t, int L, int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
+RcppExport SEXP StatGen_dExactForward_ISPC_st_cpp(SEXP tSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    rcpp_result_gen = Rcpp::wrap(dExactForward_ISPC_st_cpp(t, L, N, Pi, mu, rho));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ExactForwardYepppExpC_cpp
+NumericMatrix ExactForwardYepppExpC_cpp(int t, int L, int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
+RcppExport SEXP StatGen_ExactForwardYepppExpC_cpp(SEXP tSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    rcpp_result_gen = Rcpp::wrap(ExactForwardYepppExpC_cpp(t, L, N, Pi, mu, rho));
+    return rcpp_result_gen;
+END_RCPP
+}
