@@ -2,8 +2,8 @@
 #define CACHE_H
 
 extern char *seq_data;
-extern char **seq_ind;
-extern int num_seqs;
+extern char **seq_locus;
+extern int num_inds;
 extern int seq_size;
 
 #endif

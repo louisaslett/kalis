@@ -1,5 +1,5 @@
 extern uniform int8 *uniform seq_data;
-extern uniform int8 **uniform seq_ind;
+extern uniform int8 **uniform seq_locus;
 extern uniform int num_seqs;
 extern uniform int seq_size;
 
@@ -18,11 +18,11 @@ export void dExactForward_ISPC_st(uniform int t, uniform int L, uniform int N,
 
   // Locus zero setup
   foreach(recipient = 0 ... N) {
-    recipient_hap = seq_ind[recipient][0];
+    recipient_hap = (seq_locus[0][recipient/8] >> recipient%8) & 1;
     fold[recipient] = 0.0;
 
     for(int donor=0; donor<N; ++donor) {
-      donor_hap = seq_ind[donor][0];
+      donor_hap = (seq_locus[0][donor/8] >> donor%8) & 1;
       H = (recipient_hap ^ donor_hap) & 1;
       theta = (H * mu[0]
                  + (1-H) * (1.0 - mu[0]));
@@ -38,12 +38,12 @@ export void dExactForward_ISPC_st(uniform int t, uniform int L, uniform int N,
   while(l<t) {
     ++l;
     foreach(recipient = 0 ... N) {
-      recipient_hap = seq_ind[recipient][l/8];
+      recipient_hap = (seq_locus[l][recipient/8] >> recipient%8) & 1;
       f[recipient] = 0.0;
 
       for(int donor=0; donor<N; ++donor) {
-        donor_hap = seq_ind[donor][l/8];
-        H = ((recipient_hap ^ donor_hap) >> (l%8)) & 1;
+        donor_hap = (seq_locus[l][donor/8] >> donor%8) & 1;
+        H = (recipient_hap ^ donor_hap) & 1;
         theta = (H * mu[l]
                    + (1-H) * (1.0 - mu[l]));
 

@@ -21,11 +21,11 @@ NumericMatrix ExactForwardNaiveC_cpp(int t, int L, int N, NumericMatrix Pi, Nume
 
   // Locus zero setup
   for(int_fast32_t recipient=0; recipient<N; ++recipient) {
-    recipient_hap = seq_ind[recipient][0];
+    recipient_hap = (seq_locus[0][recipient/8] >> recipient%8) & 1;
     fold[recipient] = 0.0;
 
     for(int_fast32_t donor=0; donor<N; ++donor) {
-      donor_hap = seq_ind[donor][0];
+      donor_hap = (seq_locus[0][donor/8] >> donor%8) & 1;
       H = (recipient_hap ^ donor_hap) & 1;
       theta = (H * mu[0]
                  + (1-H) * (1.0 - mu[0]));
@@ -41,12 +41,12 @@ NumericMatrix ExactForwardNaiveC_cpp(int t, int L, int N, NumericMatrix Pi, Nume
   while(l<t) {
     ++l;
     for(int_fast32_t recipient=0; recipient<N; ++recipient) {
-      recipient_hap = seq_ind[recipient][l/8];
+      recipient_hap = (seq_locus[l][recipient/8] >> recipient%8) & 1;
       f[recipient] = 0.0;
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
-        donor_hap = seq_ind[donor][l/8];
-        H = ((recipient_hap ^ donor_hap) >> (l%8)) & 1;
+        donor_hap = (seq_locus[l][donor/8] >> donor%8) & 1;
+        H = (recipient_hap ^ donor_hap) & 1;
         theta = (H * mu[l]
                    + (1-H) * (1.0 - mu[l]));
 
@@ -110,11 +110,11 @@ NumericMatrix ExactForwardYepppExpC_cpp(int t, int L, int N, NumericMatrix Pi, N
 
   // Locus zero setup
   for(int_fast32_t recipient=0; recipient<N; ++recipient) {
-    recipient_hap = seq_ind[recipient][0];
+    recipient_hap = (seq_locus[0][recipient/8] >> recipient%8) & 1;
     fold[recipient] = 0.0;
 
     for(int_fast32_t donor=0; donor<N; ++donor) {
-      donor_hap = seq_ind[donor][0];
+      donor_hap = (seq_locus[0][donor/8] >> donor%8) & 1;
       H = (recipient_hap ^ donor_hap) & 1;
       theta = (H * mu[0]
                  + (1-H) * (1.0 - mu[0]));
@@ -130,7 +130,7 @@ NumericMatrix ExactForwardYepppExpC_cpp(int t, int L, int N, NumericMatrix Pi, N
   while(l<t) {
     ++l;
     for(int_fast32_t recipient=0; recipient<N; ++recipient) {
-      recipient_hap = seq_ind[recipient][l/8];
+      recipient_hap = (seq_locus[l][recipient/8] >> recipient%8) & 1;
       f[recipient] = 0.0;
 
       double *alphaRow = &(alpha[N*recipient]);
@@ -142,8 +142,8 @@ NumericMatrix ExactForwardYepppExpC_cpp(int t, int L, int N, NumericMatrix Pi, N
       double muTmp = mu[l];
       double *rhoTmp = &(rho[l-1]);
       for(int_fast32_t donor=0; donor<N; ++donor) {
-        donor_hap = seq_ind[donor][l/8];
-        H = ((recipient_hap ^ donor_hap) >> (l%8)) & 1;
+        donor_hap = (seq_locus[l][donor/8] >> donor%8) & 1;
+        H = (recipient_hap ^ donor_hap) & 1;
         theta = (H * muTmp
                    + (1-H) * (1.0 - muTmp));
 
