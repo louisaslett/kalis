@@ -130,30 +130,53 @@ NumericMatrix ExactForwardYepppExpC_cpp(int t, int L, int N, NumericMatrix Pi, N
   while(l<t) {
     ++l;
     for(int_fast32_t recipient=0; recipient<N; ++recipient) {
-      recipient_hap = (seq_locus[l][recipient/8] >> recipient%8) & 1;
+      recipient_hap = 0;
+      recipient_hap -= (seq_locus[l][recipient/8] >> recipient%8) & 1;
       f[recipient] = 0.0;
 
+      // TODO: for larger problems break this down into L1 cachable chunks of
+      //       donors at a time
       double *alphaRow = &(alpha[N*recipient]);
       double YepppTmp[N];
-      yepCore_Add_V64fS64f_V64f(&(alpha(0, recipient)), fold[recipient], YepppTmp, N);
+      yepCore_Add_V64fS64f_V64f(alphaRow, fold[recipient], YepppTmp, N);
       yepMath_Exp_V64f_V64f(YepppTmp, alphaRow, N);
 
-      double *PiRow = &(Pi(0, recipient));
+      // theta[donor] * (1-rho) * alphaRow[donor]
+      yepCore_Multiply_IV64fS64f_IV64f(alphaRow, (1.0-rho[l-1]), N);
       double muTmp = mu[l];
-      double *rhoTmp = &(rho[l-1]);
-      for(int_fast32_t donor=0; donor<N; ++donor) {
-        donor_hap = (seq_locus[l][donor/8] >> donor%8) & 1;
-        H = (recipient_hap ^ donor_hap) & 1;
-        theta = (H * muTmp
-                   + (1-H) * (1.0 - muTmp));
-
-        f[recipient] += alphaRow[donor] = (theta * PiRow[donor]
-                                                     + theta * (1.0-rhoTmp[0]) * alphaRow[donor]);
+      for(int_fast32_t donoroff=0; donoroff<N/8; ++donoroff) {
+        H = (recipient_hap ^ seq_locus[l][donoroff]);
+        for(char donor=0; donor<8; ++donor) {
+          // donor_hap = (seq_locus[l][donoroff] >> donor) & 1;
+          // H = (recipient_hap ^ donor_hap) & 1;
+          // YepppTmp[donoroff*8+donor] = (H * muTmp
+          //                      + (1-H) * (1.0 - muTmp));
+          YepppTmp[donoroff*8+donor] = (H&1) * (2 * muTmp - 1.0) - muTmp + 1.0;
+          H >>= 1;
+        }
       }
+      for(char donor=0; donor<N%8; ++donor) {
+        donor_hap = (seq_locus[l][N/8] >> donor) & 1;
+        H = (recipient_hap ^ donor_hap) & 1;
+        YepppTmp[(N/8)*8+donor] = (H * muTmp
+                             + (1-H) * (1.0 - muTmp));
+      }
+      yepCore_Multiply_IV64fV64f_IV64f(alphaRow, YepppTmp, N);
+
+      // TODO: benchmark against a fused multiply and add for these two together
+      // theta[donor] * Pi(donor, recipient)
+      yepCore_Multiply_IV64fV64f_IV64f(YepppTmp, &(Pi(0, recipient)), N);
+      // Tot up alphaRow
+      yepCore_Add_IV64fV64f_IV64f(alphaRow, YepppTmp, N);
+
+      yepCore_Sum_V64f_S64f(alphaRow, f+recipient, N);
+      // f[recipient] += alphaRow[donor] = (theta * PiRow[donor]
+      //                                      + theta * (1.0-rhoTmp[0]) * alphaRow[donor]);
+
       yepMath_Log_V64f_V64f(alphaRow, YepppTmp, N);
       yepCore_Subtract_V64fS64f_V64f(YepppTmp, fold[recipient], alphaRow, N);
 
-      fold[recipient] = -(log(f[recipient] * rhoTmp[1]) - fold[recipient]);
+      fold[recipient] = -(log(f[recipient] * rho[l]) - fold[recipient]);
     }
   }
 
