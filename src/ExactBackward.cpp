@@ -9,7 +9,7 @@ using namespace Rcpp;
 NumericMatrix ExactBackwardNaiveC_cpp(int t, int L, int N, NumericMatrix Pi, NumericVector mu, NumericVector rho) {
   NumericMatrix beta(N, N);
   double theta;
-  char donor_hap, recipient_hap, recipient_hap_prev, H;
+  int32_t donor_hap, recipient_hap, recipient_hap_prev, H;
   int_fast32_t l=L-1;
 
   double *g, *gold;
@@ -18,11 +18,11 @@ NumericMatrix ExactBackwardNaiveC_cpp(int t, int L, int N, NumericMatrix Pi, Num
 
   // Locus L setup
   for(int_fast32_t recipient=0; recipient<N; ++recipient) {
-    recipient_hap = (seq_locus[l][recipient/8] >> recipient%8) & 1;
+    recipient_hap = (seq_locus[l][recipient/32] >> recipient%32) & 1;
     gold[recipient] = 0.0;
 
     for(int_fast32_t donor=0; donor<N; ++donor) {
-      donor_hap = (seq_locus[l][donor/8] >> donor%8) & 1;
+      donor_hap = (seq_locus[l][donor/32] >> donor%32) & 1;
       H = (recipient_hap ^ donor_hap) & 1;
       theta = (H * mu[l]
                  + (1-H) * (1.0 - mu[l]));
@@ -39,19 +39,19 @@ NumericMatrix ExactBackwardNaiveC_cpp(int t, int L, int N, NumericMatrix Pi, Num
   while(l>t) {
     --l;
     for(int_fast32_t recipient=0; recipient<N; ++recipient) {
-      recipient_hap_prev = (seq_locus[l+1][recipient/8] >> recipient%8) & 1;
-      recipient_hap = (seq_locus[l][recipient/8] >> recipient%8) & 1;
+      recipient_hap_prev = (seq_locus[l+1][recipient/32] >> recipient%32) & 1;
+      recipient_hap = (seq_locus[l][recipient/32] >> recipient%32) & 1;
       g[recipient] = 0.0;
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
-        donor_hap = (seq_locus[l+1][donor/8] >> donor%8) & 1;
+        donor_hap = (seq_locus[l+1][donor/32] >> donor%32) & 1;
         H = (recipient_hap_prev ^ donor_hap) & 1;
         theta = (H * mu[l+1]
                    + (1-H) * (1.0 - mu[l+1]));
 
         beta(donor, recipient) = (donor!=recipient) * (1.0 + (1.0 - rho[l]) * theta * exp(beta(donor, recipient) + gold[recipient]));
 
-        donor_hap = (seq_locus[l][donor/8] >> donor%8) & 1;
+        donor_hap = (seq_locus[l][donor/32] >> donor%32) & 1;
         H = (recipient_hap ^ donor_hap) & 1;
         theta = (H * mu[l]
                    + (1-H) * (1.0 - mu[l]));

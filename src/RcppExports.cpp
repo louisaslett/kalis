@@ -18,7 +18,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // QueryCache2
-RawVector QueryCache2(int idx);
+IntegerVector QueryCache2(int idx);
 RcppExport SEXP StatGen_QueryCache2(SEXP idxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

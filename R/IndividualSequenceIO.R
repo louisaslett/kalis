@@ -22,12 +22,12 @@ WriteIndividualSequence <- function(ind.sequence, id = NA) {
   writeBin(as.integer(length(ind.sequence)), fd, endian = "little")
 
   # Correct length of sequence to be byte sized
-  if(length(ind.sequence) %% 8 != 0) {
-    ind.sequence <- c(ind.sequence, rep(0, 8 - length(ind.sequence) %% 8))
+  if(length(ind.sequence) %% 32 != 0) {
+    ind.sequence <- c(ind.sequence, rep(0, 32 - length(ind.sequence) %% 32))
   }
 
   # Write out to disk
-  writeBin(packBits(as.logical(ind.sequence)), fd, endian = "little")
+  writeBin(packBits(as.logical(ind.sequence), type = "integer"), fd, endian = "little")
 
   close(fd)
 }
@@ -45,7 +45,7 @@ ReadIndividualSequence <- function(id) {
   n <- readBin(fd, integer(), 1, endian = "little")
 
   # Extract sequence
-  ind.sequence <- as.integer(rawToBits(readBin(fd, raw(), ceiling(n/8), endian = "little")))[1:n]
+  ind.sequence <- as.integer(intToBits(readBin(fd, "int", ceiling(n/32), endian = "little")))[1:n]
 
   close(fd)
 

@@ -1,9 +1,9 @@
 #ifndef CACHE_H
 #define CACHE_H
 
-extern char *seq_data;
-extern char **seq_locus;
-extern int num_inds;
-extern int seq_size;
+extern uint32_t *seq_data;
+extern uint32_t **seq_locus;
+extern int32_t num_inds;
+extern int32_t seq_size;
 
 #endif

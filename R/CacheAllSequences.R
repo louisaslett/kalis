@@ -42,7 +42,7 @@ QueryCache <- function(id, start = 1, length = NA) {
     }
   }
 
-  seq <- as.integer(rawToBits(QueryCache2(idx-1)))
+  seq <- as.integer(intToBits(QueryCache2(idx-1)))
   if(is.na(length)) {
     length <- get("seq_size", envir = pkgCache)
   }
