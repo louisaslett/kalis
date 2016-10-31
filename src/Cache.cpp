@@ -5,6 +5,7 @@ using namespace Rcpp;
 #include <fstream>
 #include <algorithm>
 // #include <bitset>
+#include <stdlib.h>
 
 #include "Cache.h"
 uint32_t *seq_data = NULL;
@@ -21,10 +22,14 @@ int CacheAllSequences2(CharacterVector seqs, int bufsize) {
   input.read((char*)&seq_size, sizeof(seq_size));
 
   // Setup cache storage
-  seq_data = new uint32_t[seq_size*int(ceil(num_inds/32.0))];
+  //seq_data = new uint32_t[seq_size*int(ceil(num_inds/32.0))];
+  // NB need 32-byte aligned for AVX.  Note also that *each* new locus must be on a 32-byte boundary!
+  //   int(ceil(num_inds/32.0)) ints are required per locus to store all individuals
+  //   int(ceil((num_inds/32.0)/8.0)) __m256i's are required per locus to store all individuals
+  posix_memalign((void**) &seq_data, 32, seq_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t));
   seq_locus = new uint32_t*[seq_size];
   for(int l=0; l<seq_size; l++) {
-    seq_locus[l] = seq_data + l*int(ceil(num_inds/32.0));
+    seq_locus[l] = seq_data + l*int(ceil((num_inds/32.0)/8.0))*8;
   }
   uint32_t seq_tmp[int(ceil(seq_size/32.0))];
 
@@ -51,7 +56,7 @@ int CacheAllSequences2(CharacterVector seqs, int bufsize) {
     input.close();
   }
 
-  Rcout << "Cache loaded: " << num_inds << " sequences of length " << seq_size << " (consuming " << (seq_size*int(ceil(num_inds/32.0))*sizeof(uint32_t))/1073741824.0 << " GB RAM)" << std::endl;
+  Rcout << "Cache loaded: " << num_inds << " sequences of length " << seq_size << " (consuming " << (seq_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0 << " GB RAM)" << std::endl;
   // std::bitset<8> x(seq_ind[3][4]);
   // Rcout << seqs[3];
   // Rcout << x;
@@ -82,7 +87,7 @@ IntegerVector QueryCache2(int idx) {
 // [[Rcpp::export]]
 void ClearSequenceCache2() {
   if(seq_data != NULL) {
-    delete[] seq_data;
+    free(seq_data);
     seq_data = NULL;
   }
   if(seq_locus != NULL) {
