@@ -33,3 +33,10 @@ ExactForwardYepppExpC_cpp <- function(t, L, N, Pi, mu, rho) {
     .Call('StatGen_ExactForwardYepppExpC_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
 }
 
+ExactForwardYepppExpAVX_cpp <- function(t, L, N, Pi, mu, rho) {
+    .Call('StatGen_ExactForwardYepppExpAVX_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
+}
+
+ExactForwardYepppExpAVX2_cpp <- function(t, L, N, Pi, mu, rho) {
+    .Call('StatGen_ExactForwardYepppExpAVX2_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
+}

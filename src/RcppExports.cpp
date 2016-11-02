@@ -115,3 +115,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ExactForwardYepppExpAVX_cpp
+NumericMatrix ExactForwardYepppExpAVX_cpp(int t, int L, int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
+RcppExport SEXP StatGen_ExactForwardYepppExpAVX_cpp(SEXP tSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    rcpp_result_gen = Rcpp::wrap(ExactForwardYepppExpAVX_cpp(t, L, N, Pi, mu, rho));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ExactForwardYepppExpAVX2_cpp
+NumericMatrix ExactForwardYepppExpAVX2_cpp(int t, int L, int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
+RcppExport SEXP StatGen_ExactForwardYepppExpAVX2_cpp(SEXP tSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    rcpp_result_gen = Rcpp::wrap(ExactForwardYepppExpAVX2_cpp(t, L, N, Pi, mu, rho));
+    return rcpp_result_gen;
+END_RCPP
