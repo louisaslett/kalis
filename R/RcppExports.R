@@ -25,8 +25,6 @@ ExactForwardNaiveC_cpp <- function(t, L, N, Pi, mu, rho) {
     .Call('StatGen_ExactForwardNaiveC_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
 }
 
-dExactForward_ISPC_st_cpp <- function(t, L, N, Pi, mu, rho) {
-    .Call('StatGen_dExactForward_ISPC_st_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
 }
 
 ExactForwardYepppExpC_cpp <- function(t, L, N, Pi, mu, rho) {

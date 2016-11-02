@@ -68,35 +68,6 @@ NumericMatrix ExactForwardNaiveC_cpp(int t, int L, int N, NumericMatrix Pi, Nume
   return(alpha);
 }
 
-#include "ExactForwardISPC.h"
-// [[Rcpp::export]]
-NumericMatrix dExactForward_ISPC_st_cpp(int t, int L, int N, NumericMatrix Pi, NumericVector mu, NumericVector rho) {
-  NumericMatrix alpha(N, N);
-  // float *alphaf = (float*) malloc(sizeof(float)*N*N),
-  //   *Pif = (float*) malloc(sizeof(float)*N*N),
-  //   *muf = (float*) malloc(sizeof(float)*N),
-  //   *rhof = (float*) malloc(sizeof(float)*N);
-  //
-  // for(int i=0; i<N; i++) {
-  //   muf[i] = (float) mu(i);
-  //   rhof[i] = (float) rho(i);
-  //   for(int j=0; j<N; j++) {
-  //     Pif[i*N+j] = (float) Pi(j,i);
-  //   }
-  // }
-
-  // ispc::dExactForward_ISPC_st(t, L, N, Pif, muf, rhof, alphaf);
-  ispc::dExactForward_ISPC_st(t, L, N, &(Pi(0,0)), &(mu(0)), &(rho(0)), &(alpha(0,0)));
-
-  // for(int j=0; j<N; j++) {
-  //   for(int i=0; i<N; i++) {
-  //     alpha(i,j) = (double) alphaf[i+j*N];
-  //   }
-  // }
-
-  return(alpha);
-}
-
 // [[Rcpp::export]]
 NumericMatrix ExactForwardYepppExpC_cpp(int t, int L, int N, NumericMatrix Pi, NumericVector mu, NumericVector rho) {
   NumericMatrix alpha(N, N);
