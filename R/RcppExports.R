@@ -21,20 +21,39 @@ ExactBackwardNaiveC_cpp <- function(t, L, N, Pi, mu, rho) {
     .Call('StatGen_ExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
 }
 
-ExactForwardNaiveC_cpp <- function(t, L, N, Pi, mu, rho) {
-    .Call('StatGen_ExactForwardNaiveC_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
+ExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
+ParExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
+    invisible(.Call('StatGen_ParExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
-ExactForwardYepppExpC_cpp <- function(t, L, N, Pi, mu, rho) {
-    .Call('StatGen_ExactForwardYepppExpC_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
+ExactForwardNoExpAVX3_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactForwardNoExpAVX3_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
-ExactForwardYepppExpAVX_cpp <- function(t, L, N, Pi, mu, rho) {
-    .Call('StatGen_ExactForwardYepppExpAVX_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
+ParExactForwardNoExpAVX3_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
+    invisible(.Call('StatGen_ParExactForwardNoExpAVX3_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
-ExactForwardYepppExpAVX2_cpp <- function(t, L, N, Pi, mu, rho) {
-    .Call('StatGen_ExactForwardYepppExpAVX2_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
+ExactForwardYepppExpC_cpp <- function(alpha, alpha_f, alpha_t, t, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactForwardYepppExpC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_t, t, L, N, Pi, mu, rho))
 }
+
+ExactForwardYepppExpAVX_cpp <- function(alpha, alpha_f, alpha_t, t, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactForwardYepppExpAVX_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_t, t, L, N, Pi, mu, rho))
+}
+
+ExactForwardYepppExpAVX2_cpp <- function(alpha, alpha_f, alpha_t, t, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactForwardYepppExpAVX2_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_t, t, L, N, Pi, mu, rho))
+}
+
+ExactForwardNoExpAVX_cpp <- function(alpha, alpha_f, alpha_f2, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactForwardNoExpAVX_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+}
+
+ExactForwardNoExpAVX2_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactForwardNoExpAVX2_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+}
+

@@ -1,6 +1,6 @@
 #PKG_LIBS += -L/usr/local/cuda/lib -lcudart -rpath /usr/local/cuda/lib
 PKG_LIBS += -g -L/usr/local/lib -lyeppp
-PKG_CXXFLAGS += -march=native -mtune=native -msse4.2 -mavx -std=c++11 -g
+PKG_CXXFLAGS += -mavx -mavx2 -mbmi -mbmi2 -mfma -std=c++11 -g -Wall -fno-strict-aliasing
 
 #cu_sources = $(wildcard *.cu)
 #cu_sharedlibs = $(patsubst %.cu, %.o,$(cu_sources))
@@ -8,7 +8,7 @@ PKG_CXXFLAGS += -march=native -mtune=native -msse4.2 -mavx -std=c++11 -g
 #cpp_sharedlibs = $(patsubst %.cpp, %.o, $(cpp_sources))
 #OBJECTS = $(cpp_sharedlibs) $(cu_sharedlibs)
 
-.PHONY: all ExactForwardISPC.o
+#.PHONY: all ExactForwardISPC.o
 
 all: $(SHLIB)
 
