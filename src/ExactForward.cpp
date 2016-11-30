@@ -201,7 +201,7 @@ void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
 
         const uint32_t mask = 16843009;
         for(int_fast32_t donor=0; donor<((32*8)/4)/4; ++donor) {
-          IACA_START
+          // IACA_START
           double *alphaNow1 = alphaRow + donoroff*32*8 + donor*4*4;
           double *alphaNow2 = alphaRow + donoroff*32*8 + donor*4*4 + 4;
           double *alphaNow3 = alphaRow + donoroff*32*8 + donor*4*4 + 8;
@@ -247,7 +247,7 @@ void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
           _mm256_storeu_pd(alphaNow3, _alpha3);
           _mm256_storeu_pd(alphaNow4, _alpha4);
         }
-        IACA_END
+        // IACA_END
       }
       // Tidy up any ragged end past a multiple of 256 ...
       for(int32_t donor=0; donor<N%(32*8); ++donor) {
