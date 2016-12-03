@@ -17,8 +17,20 @@ Exact_ComputeTable_naive_cpp <- function(l, Pi, mu, rho) {
     .Call('StatGen_Exact_ComputeTable_naive_cpp', PACKAGE = 'StatGen', l, Pi, mu, rho)
 }
 
-ExactBackwardNaiveC_cpp <- function(t, L, N, Pi, mu, rho) {
-    .Call('StatGen_ExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', t, L, N, Pi, mu, rho)
+ExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+}
+
+ParExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
+    invisible(.Call('StatGen_ParExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+}
+
+ExactBackwardNoExpAVX3_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactBackwardNoExpAVX3_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+}
+
+ParExactBackwardNoExpAVX3_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
+    invisible(.Call('StatGen_ParExactBackwardNoExpAVX3_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {

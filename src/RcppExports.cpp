@@ -52,19 +52,93 @@ BEGIN_RCPP
 END_RCPP
 }
 // ExactBackwardNaiveC_cpp
-NumericMatrix ExactBackwardNaiveC_cpp(int t, int L, int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
-RcppExport SEXP StatGen_ExactBackwardNaiveC_cpp(SEXP tSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+void ExactBackwardNaiveC_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
+RcppExport SEXP StatGen_ExactBackwardNaiveC_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type t(tSEXP);
-    Rcpp::traits::input_parameter< int >::type L(LSEXP);
-    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type beta_g(beta_gSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type beta_g2(beta_g2SEXP);
+    Rcpp::traits::input_parameter< const int >::type beta_from_rec(beta_from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type beta_t(beta_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< const int >::type from_rec(from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type to_rec(to_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
-    rcpp_result_gen = Rcpp::wrap(ExactBackwardNaiveC_cpp(t, L, N, Pi, mu, rho));
-    return rcpp_result_gen;
+    ExactBackwardNaiveC_cpp(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho);
+    return R_NilValue;
+END_RCPP
+}
+// ParExactBackwardNaiveC_cpp
+void ParExactBackwardNaiveC_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
+RcppExport SEXP StatGen_ParExactBackwardNaiveC_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type beta_g(beta_gSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type beta_g2(beta_g2SEXP);
+    Rcpp::traits::input_parameter< const int >::type beta_from_rec(beta_from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type beta_t(beta_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< const int >::type from_rec(from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type to_rec(to_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    ParExactBackwardNaiveC_cpp(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads);
+    return R_NilValue;
+END_RCPP
+}
+// ExactBackwardNoExpAVX3_cpp
+void ExactBackwardNoExpAVX3_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
+RcppExport SEXP StatGen_ExactBackwardNoExpAVX3_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type beta_g(beta_gSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type beta_g2(beta_g2SEXP);
+    Rcpp::traits::input_parameter< const int >::type beta_from_rec(beta_from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type beta_t(beta_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< const int >::type from_rec(from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type to_rec(to_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    ExactBackwardNoExpAVX3_cpp(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho);
+    return R_NilValue;
+END_RCPP
+}
+// ParExactBackwardNoExpAVX3_cpp
+void ParExactBackwardNoExpAVX3_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
+RcppExport SEXP StatGen_ParExactBackwardNoExpAVX3_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type beta_g(beta_gSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type beta_g2(beta_g2SEXP);
+    Rcpp::traits::input_parameter< const int >::type beta_from_rec(beta_from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type beta_t(beta_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< const int >::type from_rec(from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type to_rec(to_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    ParExactBackwardNoExpAVX3_cpp(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads);
+    return R_NilValue;
 END_RCPP
 }
 // ExactForwardNaiveC_cpp
