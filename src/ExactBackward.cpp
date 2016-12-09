@@ -136,6 +136,9 @@ void ExactBackwardNoExpAVX3_cpp(NumericMatrix beta,
                                 NumericMatrix Pi,
                                 NumericVector mu,
                                 NumericVector rho) {
+
+#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
+
   int_fast32_t l=beta_t;
 
   double *__restrict__ g, *__restrict__ gold, *__restrict__ goldold;
@@ -300,6 +303,9 @@ void ExactBackwardNoExpAVX3_cpp(NumericMatrix beta,
   }
 
   free(g);
+
+#endif
+
 }
 
 // [[Rcpp::export]]
@@ -350,6 +356,9 @@ void ExactBackwardNoExpAVX3single_cpp(NumericMatrix beta,
                                       NumericMatrix Pi,
                                       NumericVector mu,
                                       NumericVector rho) {
+
+#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
+
   int_fast32_t l=beta_t;
 
   double *__restrict__ g, *__restrict__ gold, *__restrict__ goldold;
@@ -390,7 +399,6 @@ void ExactBackwardNoExpAVX3single_cpp(NumericMatrix beta,
     }
   }
 
-  const int_fast32_t reset_l = l;
   __m256d _one = _mm256_set1_pd(1.0);
 
   const uint32_t mask = 16843009;
@@ -548,4 +556,7 @@ void ExactBackwardNoExpAVX3single_cpp(NumericMatrix beta,
   free(g);
   free(Hcache_pointer_l);
   free(Hcache_pointer_lp1);
+
+#endif
+
 }

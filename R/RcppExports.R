@@ -17,6 +17,10 @@ ClearSequenceCache2 <- function() {
     invisible(.Call('StatGen_ClearSequenceCache2', PACKAGE = 'StatGen'))
 }
 
+ComputeStatus <- function() {
+    invisible(.Call('StatGen_ComputeStatus', PACKAGE = 'StatGen'))
+}
+
 Exact_ComputeTable_naive_cpp <- function(l, Pi, mu, rho) {
     .Call('StatGen_Exact_ComputeTable_naive_cpp', PACKAGE = 'StatGen', l, Pi, mu, rho)
 }

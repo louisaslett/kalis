@@ -27,6 +27,7 @@ void Forward(List fwd,
   if(l==t) {
     return;
   }
+#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
   if(nthreads>1) {
     ParExactForwardNoExpAVX3_cpp(alpha,
                                  alpha_f,
@@ -57,5 +58,38 @@ void Forward(List fwd,
                               mu,
                               rho);
   }
+#else
+  if(nthreads>1) {
+    ParExactForwardNaiveC_cpp(alpha,
+                                 alpha_f,
+                                 alpha_f2,
+                                 from_rec-1,
+                                 l-1,
+                                 t-1,
+                                 from_rec-1,
+                                 to_rec,
+                                 L,
+                                 N,
+                                 Pi,
+                                 mu,
+                                 rho,
+                                 nthreads);
+  } else {
+    ExactForwardNaiveC_cpp(alpha,
+                              alpha_f,
+                              alpha_f2,
+                              from_rec-1,
+                              l-1,
+                              t-1,
+                              from_rec-1,
+                              to_rec,
+                              L,
+                              N,
+                              Pi,
+                              mu,
+                              rho);
+  }
+#endif
+
   as<NumericVector>(fwd["l"])[0] = t;
 }

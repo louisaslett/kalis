@@ -12,5 +12,4 @@ Imports:
 LinkingTo:
     Rcpp
 SystemRequirements:
-    GNU make,
     C++11

@@ -1,12 +1,6 @@
-#PKG_LIBS += -L/usr/local/cuda/lib -lcudart -rpath /usr/local/cuda/lib
-PKG_LIBS += -g -L/usr/local/lib -lyeppp
-PKG_CXXFLAGS += -mavx -mavx2 -mbmi -mbmi2 -mfma -std=c++11 -g -Wall -fno-strict-aliasing
-
-#cu_sources = $(wildcard *.cu)
-#cu_sharedlibs = $(patsubst %.cu, %.o,$(cu_sources))
-#cpp_sources = $(wildcard *.cpp)
-#cpp_sharedlibs = $(patsubst %.cpp, %.o, $(cpp_sources))
-#OBJECTS = $(cpp_sharedlibs) $(cu_sharedlibs)
+#PKG_LIBS += -L/usr/local/cuda/lib -lcudart -rpath /usr/local/cuda/lib -g -L/usr/local/lib -lyeppp
+#PKG_CXXFLAGS += -mavx -mavx2 -mbmi -mbmi2 -mfma -std=c++11 -Wall -fno-strict-aliasing
+PKG_CXXFLAGS += -std=c++11 -Wall -fno-strict-aliasing
 
 #.PHONY: all ExactForwardISPC.o
 

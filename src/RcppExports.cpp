@@ -52,6 +52,15 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// ComputeStatus
+void ComputeStatus();
+RcppExport SEXP StatGen_ComputeStatus() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    ComputeStatus();
+    return R_NilValue;
+END_RCPP
+}
 // Exact_ComputeTable_naive_cpp
 NumericMatrix Exact_ComputeTable_naive_cpp(int l, NumericMatrix Pi, NumericVector mu, NumericVector rho);
 RcppExport SEXP StatGen_Exact_ComputeTable_naive_cpp(SEXP lSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {

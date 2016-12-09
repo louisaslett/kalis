@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 #include "Cache.h"
 
-#include <iacaMarks.h>
+// #include <iacaMarks.h>
 
 
 // alpha: input (at locus alpha_t) and output (at locus t) forward matrix
@@ -136,6 +136,9 @@ void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
                                NumericMatrix Pi,
                                NumericVector mu,
                                NumericVector rho) {
+
+#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
+
   int_fast32_t l=alpha_t;
 
   double *__restrict__ f, *__restrict__ fold, *__restrict__ foldold;
@@ -266,6 +269,9 @@ void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
   }
 
   free(f);
+
+#endif
+
 }
 
 // [[Rcpp::export]]
