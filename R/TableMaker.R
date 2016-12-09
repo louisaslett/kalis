@@ -1,4 +1,11 @@
-MakeForwardTable <- function(from_recipient, to_recipient, num_donors) {
+MakeForwardTable <- function(from_recipient = 1, to_recipient = Inf) {
+  seqs <- get("seqs", envir = pkgCache)
+  if(anyNA(seqs)) {
+    stop("No sequences cached ... cannot determine table size until cache is loaded with CacheAllSequences().")
+  }
+  N <- length(seqs)
+  L <- get("seq_size", envir = pkgCache)
+
   if(from_recipient>to_recipient) {
     stop("from_recipient must be smaller than to_recipient.")
   }
@@ -10,7 +17,7 @@ MakeForwardTable <- function(from_recipient, to_recipient, num_donors) {
   }
   delN <- to_recipient-from_recipient+1
 
-  list(alpha          = matrix(0, num_donors, delN),
+  list(alpha          = matrix(0, N, delN),
        alpha.f        = rep(0, delN),
        alpha.f2       = rep(0, delN),
        l              = c(0),
@@ -18,7 +25,14 @@ MakeForwardTable <- function(from_recipient, to_recipient, num_donors) {
        to_recipient   = to_recipient)
 }
 
-MakeBackwardTable <- function(from_recipient, to_recipient, num_donors) {
+MakeBackwardTable <- function(from_recipient = 1, to_recipient = Inf) {
+  seqs <- get("seqs", envir = pkgCache)
+  if(anyNA(seqs)) {
+    stop("No sequences cached ... cannot determine table size until cache is loaded with CacheAllSequences().")
+  }
+  N <- length(seqs)
+  L <- get("seq_size", envir = pkgCache)
+
   if(from_recipient>to_recipient) {
     stop("from_recipient must be smaller than to_recipient.")
   }
@@ -30,7 +44,7 @@ MakeBackwardTable <- function(from_recipient, to_recipient, num_donors) {
   }
   delN <- to_recipient-from_recipient+1
 
-  list(beta           = matrix(0, num_donors, delN),
+  list(beta           = matrix(0, N, delN),
        beta.g         = rep(0, delN),
        beta.g2        = rep(0, delN),
        l              = c(2147483647),

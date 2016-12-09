@@ -27,7 +27,7 @@ CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient =
   cache <- list()
   i <- 1
   while((length(cache) == 0 || ((object.size(cache)*(length(cache)+1))/length(cache))/1e9 < size) && length(cache)<floor(log2(L))) {
-    cache[[i]] <- MakeForwardTable(from_recipient, to_recipient, N)
+    cache[[i]] <- MakeForwardTable(from_recipient, to_recipient)
     i <- i+1
   }
   cat("Cache constructed, can hold ", length(cache), " tables for recipients ", from_recipient, " ... ", to_recipient, ".  Actual size ≈ ", ceiling(((object.size(cache)*(length(cache)+1))/length(cache))/1e6)/1e3, "GB.\n", sep = "")
