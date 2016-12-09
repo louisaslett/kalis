@@ -114,7 +114,7 @@ void ParExactForwardNaiveC_cpp(NumericMatrix alpha,
 
   for(int_fast32_t i=0; i<nthreads; ++i) {
     threads.push_back(std::thread(ExactForwardNaiveC_cpp, alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, round(from_rec + i*spacing), round(from_rec + (i+1)*spacing), L, N, Pi, mu, rho));
-    Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
+    // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
   }
 
   for(auto& th : threads) {
@@ -294,7 +294,7 @@ void ParExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
 
   for(int_fast32_t i=0; i<nthreads; ++i) {
     threads.push_back(std::thread(ExactForwardNoExpAVX3_cpp, alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, round(from_rec + i*spacing), round(from_rec + (i+1)*spacing), L, N, Pi, mu, rho));
-    Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
+    // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
   }
 
   for(auto& th : threads) {
