@@ -1,3 +1,4 @@
+/*
 #include <Rcpp.h>
 using namespace Rcpp;
 
@@ -618,3 +619,4 @@ void ExactForwardNoExpAVX2_cpp(NumericMatrix alpha,
 
   yepLibrary_Release();
 }
+*/
