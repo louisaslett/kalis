@@ -30,8 +30,9 @@ CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient =
     cache[[i]] <- MakeForwardTable(from_recipient, to_recipient)
     i <- i+1
   }
-  cat("Cache constructed, can hold ", length(cache), " tables for recipients ", from_recipient, " ... ", to_recipient, ".  Actual size ≈ ", ceiling(((object.size(cache)*(length(cache)+1))/length(cache))/1e6)/1e3, "GB.\n", sep = "")
+  cat("Cache constructed, can hold ", length(cache), " tables for recipients ", from_recipient, " ... ", to_recipient, ".  Actual size ≈ ", ceiling(object.size(cache)/1e6)/1e3, "GB.\n", sep = "")
 
+  class(cache) <- "StatGenCheckpointTable"
   cache
 }
 
@@ -81,4 +82,14 @@ ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads) {
     CopyForwardTable(fwd, cache[[from.idx]])
     Forward(fwd, t, Pi, mu, rho, nthreads)
   }
+}
+
+print.StatGenCheckpointTable <- function(x, ...) {
+  if(class(x)!="StatGenCheckpointTable")
+    stop("Not a StatGenCheckpointTable object")
+
+  cat("Checkpoint Table object containing", length(x), "checkpoints.\n")
+  cat("  Loci of checkpoints:\n")
+  cat("   ", sapply(x, function(x) { x$l }), "\n")
+  cat("  Memory consumed ≈", ceiling(object.size(x)/1e6)/1e3, "GB.\n")
 }
