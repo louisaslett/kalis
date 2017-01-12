@@ -39,12 +39,20 @@ ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads) {
   l <- sapply(cache, function(x) { x$l })
   if(any(l==t)) {
     CopyForwardTable(fwd, cache[[which(l==t)]])
-    return();
+    return()
   }
   todo <- which(l>t)
   l[todo] <- -1
   from <- max(l)
   from.idx <- which.max(l)
+
+  # First, check if there are any spare slots -- we might just be accessing after
+  # the last checkpoint already.  If so, run forward and return right away
+  if(length(todo)==0) {
+    CopyForwardTable(fwd, cache[[from.idx]])
+    Forward(fwd, t, Pi, mu, rho, nthreads)
+    return()
+  }
 
   # Now figure out how to fill in
   if(t-from-1 < length(todo)) {
