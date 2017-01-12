@@ -1,7 +1,7 @@
 Package: StatGen
 Type: Package
 Title: Ryan's stats algorithm
-Version: 0.1.0
+Version: 0.1.1
 Author: Louis Aslett
 Maintainer: Louis Aslett <aslett@stats.ox.ac.uk>
 Description: Ryan's stats algorithm
