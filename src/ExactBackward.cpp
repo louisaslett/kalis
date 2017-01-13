@@ -5,6 +5,7 @@ using namespace Rcpp;
 #include <thread>
 #include <vector>
 #include <utility>
+#include <functional>
 
 #include "Cache.h"
 
@@ -333,7 +334,7 @@ void ParExactBackwardNoExpAVX3_cpp(NumericMatrix beta,
   double spacing = double(to_rec-from_rec) / double(nthreads);
 
   for(int_fast32_t i=0; i<nthreads; ++i) {
-    threads.push_back(std::thread(ExactBackwardNoExpAVX3_cpp, beta, beta_g, beta_g2, beta_from_rec, beta_t, t, round(from_rec + i*spacing), round(from_rec + (i+1)*spacing), L, N, Pi, mu, rho));
+    threads.push_back(std::thread(ExactBackwardNoExpAVX3_cpp, std::ref(beta), std::ref(beta_g), std::ref(beta_g2), beta_from_rec, beta_t, t, round(from_rec + i*spacing), round(from_rec + (i+1)*spacing), L, N, std::ref(Pi), std::ref(mu), std::ref(rho)));
     // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
   }
 
