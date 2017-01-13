@@ -55,11 +55,20 @@ ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads) {
     return()
   }
 
+  # If we want just one step after the jumping off checkpoint, then we just wind
+  # forward to it right away though I have spare checkpoint slots
+  if(t == from+1) {
+    CopyForwardTable(fwd, cache[[from.idx]])
+    Forward(fwd, t, Pi, mu, rho, nthreads)
+    return()
+  }
+
   # Now figure out how to fill in
-  if(t-from-1 < length(todo)) {
+  if(t-from <= length(todo)) {
     # In here, we have more spare slots than there are steps to reach t,
     # so do one step at a time and store into a cache element
 
+    # NB t-from >= 2 due to if statement above
     for(i in 1:(t-from-1)) {
       CopyForwardTable(cache[[todo[i]]], cache[[from.idx]])
       Forward(cache[[todo[i]]], from+i, Pi, mu, rho, nthreads)
@@ -71,8 +80,17 @@ ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads) {
     # We have more steps than spare slots, so we need a schedule to fill in the
     # gaps
 
-    b <- exp(log(t-from-1)/length(todo))
-    fillin <- unique(floor((1-1/b^{1:length(todo)})*(t-from-1)+from))
+    # NB t-from-1 >= 1 due to if statement above
+    geom.spacing <- ceiling( (1-0.5^{1:length(todo)})*(t-from-1)+from )
+    fillin <- rep(NA, length(geom.spacing))
+
+    fillin[length(geom.spacing)] <- geom.spacing[length(geom.spacing)]
+    if(length(geom.spacing)>1) {
+      for(i in (length(geom.spacing)-1):1) {
+        fillin[i] <- min(geom.spacing[i], fillin[i+1]-1)
+      }
+    }
+    fillin <- unique(fillin[fillin>from & fillin<t])
 
     for(i in 1:length(fillin)) {
       CopyForwardTable(cache[[todo[i]]], cache[[from.idx]])
