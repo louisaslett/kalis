@@ -29,8 +29,12 @@ void FillTableCache(List cache,
     Rcout << "Computing cache entry " << i+1 << " up to locus " << t+1
           << " for recipients " << as<int>(as<List>(cache[i])["from_recipient"])
           << " to " << as<int>(as<List>(cache[i])["to_recipient"])
-          << " from locus " << as<int>(as<List>(cache[i])["l"])
-          << "\n";
+          << " from ";
+    if(as<int>(as<List>(cache[i])["l"]) < 1) {
+      Rcout << "start\n";
+    } else {
+      Rcout << "locus " << as<int>(as<List>(cache[i])["l"]) << "\n";
+    }
 
     if(nthreads>1) {
       ParExactForwardNoExpAVX3_cpp(as<NumericMatrix>(as<List>(cache[i])["alpha"]),
