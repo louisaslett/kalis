@@ -44,6 +44,14 @@ ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads) {
   }
   todo <- which(l>t)
   l[todo] <- -1
+  # Is the max -1?  Then we've passed the half way mark.  Fill up the first slot
+  # and march on
+  if(max(l) == -1) {
+    ResetForwardTable(cache[[1]]) # Have to do this in C++ as must in place modify
+    Forward(cache[[1]], 1, Pi, mu, rho, nthreads)
+    l[1] <- 1
+    todo <- which(l==-1)
+  }
   from <- max(l)
   from.idx <- which.max(l)
 

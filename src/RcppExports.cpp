@@ -277,6 +277,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// ResetForwardTable
+void ResetForwardTable(List fwd);
+RcppExport SEXP StatGen_ResetForwardTable(SEXP fwdSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
+    ResetForwardTable(fwd);
+    return R_NilValue;
+END_RCPP
+}
 // Forward
 void Forward(List fwd, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
 RcppExport SEXP StatGen_Forward(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {

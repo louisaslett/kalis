@@ -5,6 +5,11 @@ using namespace Rcpp;
 #include "ExactForward.h"
 
 // [[Rcpp::export]]
+void ResetForwardTable(List fwd) {
+  as<NumericVector>(fwd["l"])[0] = 0;
+}
+
+// [[Rcpp::export]]
 void Forward(List fwd,
              const int t,
              NumericMatrix Pi,

@@ -123,20 +123,19 @@ void ParExactForwardNaiveC_cpp(NumericMatrix alpha,
   }
 }
 
-// [[Rcpp::export]]
-void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
-                               NumericVector alpha_f,
-                               NumericVector alpha_f2,
-                               const int alpha_from_rec,
-                               const int alpha_t,
-                               const int t,
-                               const int from_rec,
-                               const int to_rec,
-                               const int L,
-                               const int N,
-                               NumericMatrix Pi,
-                               NumericVector mu,
-                               NumericVector rho) {
+void ExactForwardNoExpAVX3_cpp_raw(double *const __restrict__ alpha,
+                                   double *const __restrict__ alpha_f,
+                                   double *const __restrict__ alpha_f2,
+                                   const int alpha_from_rec,
+                                   const int alpha_t,
+                                   const int t,
+                                   const int from_rec,
+                                   const int to_rec,
+                                   const int L,
+                                   const int N,
+                                   const double *const __restrict__ Pi,
+                                   const double *const __restrict__ mu,
+                                   const double *const __restrict__ rho) {
 
 #if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
 
@@ -163,7 +162,7 @@ void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
         double theta = (H * mu[0]
                           + (1-H) * (1.0 - mu[0]));
 
-        fold[recipient_alpha] += alpha(donor, recipient_alpha) = theta*Pi(donor, recipient);
+        fold[recipient_alpha] += alpha[donor + N*recipient_alpha] = theta*Pi[donor + N*recipient];
       }
 
       fold[recipient_alpha] = -log(fold[recipient_alpha]*rho[0]);
@@ -193,11 +192,11 @@ void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
       // TODO: for larger problems break this down into L1 cachable chunks of
       //       donors at a time
       double *__restrict__ alphaRow = &(alpha[N*recipient_alpha]);
-      double *__restrict__ PiRow = &(Pi[N*recipient]);
+      const double *__restrict__ PiRow = &(Pi[N*recipient]);
 
       // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
-      double muTmp1 = 2.0 * mu[l] - 1.0, muTmp2 = - mu[l] + 1.0;
-      __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
+      const double muTmp1 = 2.0 * mu[l] - 1.0, muTmp2 = - mu[l] + 1.0;
+      const __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
       for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
         // Load next 256 donors and XOR with recipients
         __m256i _HA = _mm256_xor_si256(_recipient_hap, _mm256_load_si256((__m256i*) &(seq_locus[l][donoroff*8])));
@@ -276,6 +275,35 @@ void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
 }
 
 // [[Rcpp::export]]
+void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
+                                   NumericVector alpha_f,
+                                   NumericVector alpha_f2,
+                                   const int alpha_from_rec,
+                                   const int alpha_t,
+                                   const int t,
+                                   const int from_rec,
+                                   const int to_rec,
+                                   const int L,
+                                   const int N,
+                                   NumericMatrix Pi,
+                                   NumericVector mu,
+                                   NumericVector rho) {
+  ExactForwardNoExpAVX3_cpp_raw(&(alpha[0]),
+                                &(alpha_f[0]),
+                                &(alpha_f2[0]),
+                                alpha_from_rec,
+                                alpha_t,
+                                t,
+                                from_rec,
+                                to_rec,
+                                L,
+                                N,
+                                &(Pi[0]),
+                                &(mu[0]),
+                                &(rho[0]));
+}
+
+// [[Rcpp::export]]
 void ParExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
                                   NumericVector alpha_f,
                                   NumericVector alpha_f2,
@@ -300,7 +328,20 @@ void ParExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
   double spacing = double(to_rec-from_rec) / double(nthreads);
 
   for(int_fast32_t i=0; i<nthreads; ++i) {
-    threads.push_back(std::thread(ExactForwardNoExpAVX3_cpp, std::ref(alpha), std::ref(alpha_f), std::ref(alpha_f2), alpha_from_rec, alpha_t, t, round(from_rec + i*spacing), round(from_rec + (i+1)*spacing), L, N, std::ref(Pi), std::ref(mu), std::ref(rho)));
+    threads.push_back(std::thread(ExactForwardNoExpAVX3_cpp_raw,
+                                  &(alpha[0]),
+                                  &(alpha_f[0]),
+                                  &(alpha_f2[0]),
+                                  alpha_from_rec,
+                                  alpha_t,
+                                  t,
+                                  round(from_rec + i*spacing),
+                                  round(from_rec + (i+1)*spacing),
+                                  L,
+                                  N,
+                                  &(Pi[0]),
+                                  &(mu[0]),
+                                  &(rho[0])));
     // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
   }
 

@@ -61,6 +61,10 @@ ParExactForwardNoExpAVX3_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_re
     invisible(.Call('StatGen_ParExactForwardNoExpAVX3_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
+ResetForwardTable <- function(fwd) {
+    invisible(.Call('StatGen_ResetForwardTable', PACKAGE = 'StatGen', fwd))
+}
+
 Forward <- function(fwd, t, Pi, mu, rho, nthreads) {
     invisible(.Call('StatGen_Forward', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
 }
