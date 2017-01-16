@@ -303,8 +303,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // FillTableCache
-void FillTableCache(List cache, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_FillTableCache(SEXP cacheSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+void FillTableCache(List cache, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads, int from, int to);
+RcppExport SEXP StatGen_FillTableCache(SEXP cacheSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP, SEXP fromSEXP, SEXP toSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type cache(cacheSEXP);
@@ -312,7 +312,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
-    FillTableCache(cache, Pi, mu, rho, nthreads);
+    Rcpp::traits::input_parameter< int >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< int >::type to(toSEXP);
+    FillTableCache(cache, Pi, mu, rho, nthreads, from, to);
     return R_NilValue;
 END_RCPP
 }

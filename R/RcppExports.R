@@ -69,8 +69,8 @@ Forward <- function(fwd, t, Pi, mu, rho, nthreads) {
     invisible(.Call('StatGen_Forward', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
 }
 
-FillTableCache <- function(cache, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_FillTableCache', PACKAGE = 'StatGen', cache, Pi, mu, rho, nthreads))
+FillTableCache <- function(cache, Pi, mu, rho, nthreads, from = 0L, to = 0L) {
+    invisible(.Call('StatGen_FillTableCache', PACKAGE = 'StatGen', cache, Pi, mu, rho, nthreads, from, to))
 }
 
 CopyForwardTable <- function(to, from) {

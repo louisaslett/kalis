@@ -11,9 +11,18 @@ void FillTableCache(List cache,
                     NumericMatrix Pi,
                     NumericVector mu,
                     NumericVector rho,
-                    const int nthreads) {
+                    const int nthreads,
+                    int from = 0,
+                    int to = 0) {
 
   const int_fast32_t L = seq_size;
+  if(from <= 0) {
+    from = 1;
+  }
+  if(to <= 0 || to <= from || to >= L+1) {
+    to = L;
+  }
+  const int_fast32_t chkpt_len = to-from;
   const int_fast32_t N = num_inds;
   const int_fast32_t cache_size = cache.length();
   const int_fast32_t alpha_size = as<NumericMatrix>(as<List>(cache[0])["alpha"]).length() * sizeof(double);
@@ -21,9 +30,12 @@ void FillTableCache(List cache,
   const int_fast32_t alpha_f2_size = as<NumericVector>(as<List>(cache[0])["alpha.f2"]).length() * sizeof(double);
 
   double pos = 0.5;
+  if(from > 1) {
+    pos = 1.0;
+  }
   as<NumericVector>(as<List>(cache[0])["l"])[0] = -1;
   for(int_fast32_t i = 0; i < cache_size; i++) {
-    int_fast32_t t = floor((1.0-pos)*L)-1;
+    int_fast32_t t = floor((1.0-pos)*chkpt_len)+from-1;
     pos *= 0.5;
 
     Rcout << "Computing cache entry " << i+1 << " up to locus " << t+1
