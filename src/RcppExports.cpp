@@ -111,6 +111,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Dedip_dom
+NumericVector Dedip_dom(NumericMatrix fwd, NumericMatrix bck);
+RcppExport SEXP StatGen_Dedip_dom(SEXP fwdSEXP, SEXP bckSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
+    rcpp_result_gen = Rcpp::wrap(Dedip_dom(fwd, bck));
+    return rcpp_result_gen;
+END_RCPP
+}
 // Dedip_mean
 NumericVector Dedip_mean(NumericMatrix fwd, NumericMatrix bck);
 RcppExport SEXP StatGen_Dedip_mean(SEXP fwdSEXP, SEXP bckSEXP) {

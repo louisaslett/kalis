@@ -37,6 +37,10 @@ Dedip_max <- function(fwd, bck) {
     .Call('StatGen_Dedip_max', PACKAGE = 'StatGen', fwd, bck)
 }
 
+Dedip_dom <- function(fwd, bck) {
+    .Call('StatGen_Dedip_dom', PACKAGE = 'StatGen', fwd, bck)
+}
+
 Dedip_mean <- function(fwd, bck) {
     .Call('StatGen_Dedip_mean', PACKAGE = 'StatGen', fwd, bck)
 }
