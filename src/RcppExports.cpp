@@ -75,6 +75,66 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Dedip_min
+NumericVector Dedip_min(NumericMatrix fwd, NumericMatrix bck);
+RcppExport SEXP StatGen_Dedip_min(SEXP fwdSEXP, SEXP bckSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
+    rcpp_result_gen = Rcpp::wrap(Dedip_min(fwd, bck));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Dedip_2nd_min
+NumericVector Dedip_2nd_min(NumericMatrix fwd, NumericMatrix bck);
+RcppExport SEXP StatGen_Dedip_2nd_min(SEXP fwdSEXP, SEXP bckSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
+    rcpp_result_gen = Rcpp::wrap(Dedip_2nd_min(fwd, bck));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Dedip_max
+NumericVector Dedip_max(NumericMatrix fwd, NumericMatrix bck);
+RcppExport SEXP StatGen_Dedip_max(SEXP fwdSEXP, SEXP bckSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
+    rcpp_result_gen = Rcpp::wrap(Dedip_max(fwd, bck));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Dedip_mean
+NumericVector Dedip_mean(NumericMatrix fwd, NumericMatrix bck);
+RcppExport SEXP StatGen_Dedip_mean(SEXP fwdSEXP, SEXP bckSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
+    rcpp_result_gen = Rcpp::wrap(Dedip_mean(fwd, bck));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Dedip_all
+List Dedip_all(NumericMatrix fwd, NumericMatrix bck);
+RcppExport SEXP StatGen_Dedip_all(SEXP fwdSEXP, SEXP bckSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
+    rcpp_result_gen = Rcpp::wrap(Dedip_all(fwd, bck));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ExactBackwardNaiveC_cpp
 void ExactBackwardNaiveC_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
 RcppExport SEXP StatGen_ExactBackwardNaiveC_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {

@@ -25,6 +25,26 @@ Exact_ComputeTable_naive_cpp <- function(l, Pi, mu, rho) {
     .Call('StatGen_Exact_ComputeTable_naive_cpp', PACKAGE = 'StatGen', l, Pi, mu, rho)
 }
 
+Dedip_min <- function(fwd, bck) {
+    .Call('StatGen_Dedip_min', PACKAGE = 'StatGen', fwd, bck)
+}
+
+Dedip_2nd_min <- function(fwd, bck) {
+    .Call('StatGen_Dedip_2nd_min', PACKAGE = 'StatGen', fwd, bck)
+}
+
+Dedip_max <- function(fwd, bck) {
+    .Call('StatGen_Dedip_max', PACKAGE = 'StatGen', fwd, bck)
+}
+
+Dedip_mean <- function(fwd, bck) {
+    .Call('StatGen_Dedip_mean', PACKAGE = 'StatGen', fwd, bck)
+}
+
+Dedip_all <- function(fwd, bck) {
+    .Call('StatGen_Dedip_all', PACKAGE = 'StatGen', fwd, bck)
+}
+
 ExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
     invisible(.Call('StatGen_ExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
