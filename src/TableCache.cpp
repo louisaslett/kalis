@@ -36,6 +36,10 @@ void FillTableCache(List cache,
   as<NumericVector>(as<List>(cache[0])["l"])[0] = -1;
   for(int_fast32_t i = 0; i < cache_size; i++) {
     int_fast32_t t = floor((1.0-pos)*chkpt_len)+from-1;
+    if(t == as<int>(as<List>(cache[i])["l"])-1) {
+      as<NumericVector>(as<List>(cache[i])["l"])[0] = 0;
+      break;
+    }
     pos *= 0.5;
 
     Rcout << "Computing cache entry " << i+1 << " up to locus " << t+1
