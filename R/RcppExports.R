@@ -9,8 +9,12 @@ CacheAllSequences2 <- function(seqs, bufsize) {
     .Call('StatGen_CacheAllSequences2', PACKAGE = 'StatGen', seqs, bufsize)
 }
 
-QueryCache2 <- function(idx) {
-    .Call('StatGen_QueryCache2', PACKAGE = 'StatGen', idx)
+QueryCache2_ind <- function(idx) {
+    .Call('StatGen_QueryCache2_ind', PACKAGE = 'StatGen', idx)
+}
+
+QueryCache2_loc <- function(idx) {
+    .Call('StatGen_QueryCache2_loc', PACKAGE = 'StatGen', idx)
 }
 
 ClearSequenceCache2 <- function() {

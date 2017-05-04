@@ -27,27 +27,42 @@ CacheAllSequences <- function() {
   assign("seq_size", CacheAllSequences2(seqs, buf.size), envir = pkgCache)
 }
 
-QueryCache <- function(id, start = 1, length = NA) {
+QueryCache <- function(ids = NA, start = 1, length = NA) {
   seqs <- get("seqs", envir = pkgCache)
 
-  if(is.numeric(id) && abs(id - round(id)) < .Machine$double.eps^0.5) {
-    if(id<1 || id>length(seqs)) {
-      stop("sequence id ", id, " is out of range.")
-    }
-    idx <- id
-  } else {
-    idx <- which(seqs == id)
-    if(length(idx)==0) {
-      stop("sequence id ", id, " is not in the cache.")
-    }
-  }
-
-  seq <- as.integer(intToBits(QueryCache2(idx-1)))
   if(is.na(length)) {
     length <- get("seq_size", envir = pkgCache)
   }
+  if((length(ids)==1 && is.na(ids)) || all(ids==1:length(seqs))) {
+    ids <- 1:length(seqs)
 
-  seq[start:(start+length-1)]
+    res <- matrix(nrow = length(ids), ncol = length)
+    for(l in start:(start+length-1)) {
+      res[,l-start+1] <- as.integer(intToBits(QueryCache2_loc(l-1)))[1:length(ids)]
+    }
+  } else {
+    res <- matrix(nrow = length(ids), ncol = length)
+    for(i in 1:length(ids)) {
+      id <- ids[i]
+      if(is.numeric(id) && abs(id - round(id)) < .Machine$double.eps^0.5) {
+        if(id<1 || id>length(seqs)) {
+          stop("sequence id ", id, " is out of range.")
+        }
+        idx <- id
+      } else {
+        idx <- which(seqs == id)
+        if(length(idx)==0) {
+          stop("sequence id ", id, " is not in the cache.")
+        }
+      }
+
+      seq <- as.integer(intToBits(QueryCache2_ind(idx-1)))
+
+      res[i,] <- seq[start:(start+length-1)]
+    }
+  }
+
+  res
 }
 
 ClearSequenceCache <- function() {

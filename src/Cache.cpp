@@ -65,7 +65,7 @@ int CacheAllSequences2(CharacterVector seqs, int bufsize) {
 }
 
 // [[Rcpp::export]]
-IntegerVector QueryCache2(int idx) {
+IntegerVector QueryCache2_ind(int idx) {
   IntegerVector res(int(ceil(seq_size/32.0)));
 
   if(idx > num_inds) {
@@ -80,6 +80,26 @@ IntegerVector QueryCache2(int idx) {
 
   // Copy and return
   std::copy_n(seq_tmp, int(ceil(seq_size/32.0)), res.begin());
+
+  return(res);
+}
+
+// [[Rcpp::export]]
+IntegerVector QueryCache2_loc(int idx) {
+  IntegerVector res(int(ceil(num_inds/32.0)));
+
+  if(idx > seq_size) {
+    return(res);
+  }
+
+  // Extract locus from locus oriented layout
+  uint32_t seq_tmp[int(ceil(num_inds/32.0))];
+  for(int_fast32_t i=0; i<ceil(num_inds/32.0); i++) {
+    seq_tmp[i] = seq_locus[idx][i];
+  }
+
+  // Copy and return
+  std::copy_n(seq_tmp, int(ceil(num_inds/32.0)), res.begin());
 
   return(res);
 }

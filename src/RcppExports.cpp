@@ -32,14 +32,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// QueryCache2
-IntegerVector QueryCache2(int idx);
-RcppExport SEXP StatGen_QueryCache2(SEXP idxSEXP) {
+// QueryCache2_ind
+IntegerVector QueryCache2_ind(int idx);
+RcppExport SEXP StatGen_QueryCache2_ind(SEXP idxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type idx(idxSEXP);
-    rcpp_result_gen = Rcpp::wrap(QueryCache2(idx));
+    rcpp_result_gen = Rcpp::wrap(QueryCache2_ind(idx));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryCache2_loc
+IntegerVector QueryCache2_loc(int idx);
+RcppExport SEXP StatGen_QueryCache2_loc(SEXP idxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type idx(idxSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryCache2_loc(idx));
     return rcpp_result_gen;
 END_RCPP
 }
