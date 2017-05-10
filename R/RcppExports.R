@@ -57,14 +57,6 @@ Dedip_all <- function(fwd, bck) {
     .Call('StatGen_Dedip_all', PACKAGE = 'StatGen', fwd, bck)
 }
 
-ExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('StatGen_ExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
-}
-
-ParExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_ParExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
-}
-
 ExactBackwardNoExpAVX3_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
     invisible(.Call('StatGen_ExactBackwardNoExpAVX3_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
@@ -73,16 +65,12 @@ ParExactBackwardNoExpAVX3_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, 
     invisible(.Call('StatGen_ParExactBackwardNoExpAVX3_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
-ExactBackwardNoExpAVX3single_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('StatGen_ExactBackwardNoExpAVX3single_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+ExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
-ExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('StatGen_ExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
-}
-
-ParExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_ParExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+ParExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
+    invisible(.Call('StatGen_ParExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactForwardNoExpAVX3_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
@@ -91,6 +79,14 @@ ExactForwardNoExpAVX3_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, 
 
 ParExactForwardNoExpAVX3_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
     invisible(.Call('StatGen_ParExactForwardNoExpAVX3_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+}
+
+ExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+}
+
+ParExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
+    invisible(.Call('StatGen_ParExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ResetForwardTable <- function(fwd) {
