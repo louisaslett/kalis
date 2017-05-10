@@ -10,12 +10,12 @@ void ResetForwardTable(List fwd) {
 }
 
 // [[Rcpp::export]]
-void Forward(List fwd,
-             const int t,
-             NumericMatrix Pi,
-             NumericVector mu,
-             NumericVector rho,
-             const int nthreads) {
+void Forward_densePi_cpp(List fwd,
+                         const int t,
+                         NumericMatrix Pi,
+                         NumericVector mu,
+                         NumericVector rho,
+                         const int nthreads) {
   const int L = seq_size;
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);

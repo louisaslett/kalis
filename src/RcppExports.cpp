@@ -5,9 +5,9 @@
 
 using namespace Rcpp;
 
-// Backward
-void Backward(List bck, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_Backward(SEXP bckSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+// Backward_densePi_cpp
+void Backward_densePi_cpp(List bck, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
+RcppExport SEXP StatGen_Backward_densePi_cpp(SEXP bckSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
@@ -16,7 +16,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
-    Backward(bck, t, Pi, mu, rho, nthreads);
+    Backward_densePi_cpp(bck, t, Pi, mu, rho, nthreads);
     return R_NilValue;
 END_RCPP
 }
@@ -382,9 +382,9 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// Forward
-void Forward(List fwd, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_Forward(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+// Forward_densePi_cpp
+void Forward_densePi_cpp(List fwd, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
+RcppExport SEXP StatGen_Forward_densePi_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
@@ -393,7 +393,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
-    Forward(fwd, t, Pi, mu, rho, nthreads);
+    Forward_densePi_cpp(fwd, t, Pi, mu, rho, nthreads);
     return R_NilValue;
 END_RCPP
 }

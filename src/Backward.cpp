@@ -5,12 +5,12 @@ using namespace Rcpp;
 #include "ExactBackward.h"
 
 // [[Rcpp::export]]
-void Backward(List bck,
-              const int t,
-              NumericMatrix Pi,
-              NumericVector mu,
-              NumericVector rho,
-              const int nthreads) {
+void Backward_densePi_cpp(List bck,
+                          const int t,
+                          NumericMatrix Pi,
+                          NumericVector mu,
+                          NumericVector rho,
+                          const int nthreads) {
   const int L = seq_size;
   const int N = num_inds;
   NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
