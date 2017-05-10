@@ -148,7 +148,8 @@ void Backward_scalarPi_cpp(List bck,
                                     rho);
   }
 #else
-  NumericMatrix Pimat(N, N, Pi);
+  NumericMatrix Pimat(N, N);
+  Pimat.fill(Pi);
   Pimat.fill_diag(0.0);
 
   if(nthreads>1) {
