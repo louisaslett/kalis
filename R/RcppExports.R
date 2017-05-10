@@ -5,6 +5,10 @@ Backward_densePi_cpp <- function(bck, t, Pi, mu, rho, nthreads) {
     invisible(.Call('StatGen_Backward_densePi_cpp', PACKAGE = 'StatGen', bck, t, Pi, mu, rho, nthreads))
 }
 
+Backward_scalarPi_cpp <- function(bck, t, Pi, mu, rho, nthreads) {
+    invisible(.Call('StatGen_Backward_scalarPi_cpp', PACKAGE = 'StatGen', bck, t, Pi, mu, rho, nthreads))
+}
+
 CacheAllSequences2 <- function(seqs, bufsize) {
     .Call('StatGen_CacheAllSequences2', PACKAGE = 'StatGen', seqs, bufsize)
 }
@@ -73,6 +77,14 @@ ParExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, bet
     invisible(.Call('StatGen_ParExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
+ExactBackwardNoExpAVX3_scPi_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactBackwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+}
+
+ParExactBackwardNoExpAVX3_scPi_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
+    invisible(.Call('StatGen_ParExactBackwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+}
+
 ExactForwardNoExpAVX3_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
     invisible(.Call('StatGen_ExactForwardNoExpAVX3_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
@@ -89,12 +101,24 @@ ParExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, 
     invisible(.Call('StatGen_ParExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
+ExactForwardNoExpAVX3_scPi_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
+    invisible(.Call('StatGen_ExactForwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+}
+
+ParExactForwardNoExpAVX3_scPi_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
+    invisible(.Call('StatGen_ParExactForwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+}
+
 ResetForwardTable <- function(fwd) {
     invisible(.Call('StatGen_ResetForwardTable', PACKAGE = 'StatGen', fwd))
 }
 
 Forward_densePi_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
     invisible(.Call('StatGen_Forward_densePi_cpp', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
+}
+
+Forward_scalarPi_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
+    invisible(.Call('StatGen_Forward_scalarPi_cpp', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
 }
 
 FillTableCache <- function(cache, Pi, mu, rho, nthreads, from = 0L, to = 0L) {
