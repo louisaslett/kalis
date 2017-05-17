@@ -1,3 +1,19 @@
+#' Title
+#'
+#' Short description
+#'
+#' Detailed description
+#'
+#' @param from_recipient ...
+#' @param to_recipient ...
+#'
+#' @return Return value
+#'
+#' @seealso \code{\link{Forward}} to propagate the newly created table forward
+#'   through the genome.
+#'
+#' @examples
+#' # Examples
 MakeForwardTable <- function(from_recipient = 1, to_recipient = Inf) {
   seqs <- get("seqs", envir = pkgCache)
   if(anyNA(seqs)) {
@@ -25,6 +41,22 @@ MakeForwardTable <- function(from_recipient = 1, to_recipient = Inf) {
        to_recipient   = to_recipient)
 }
 
+#' Title
+#'
+#' Short description
+#'
+#' Detailed description
+#'
+#' @param from_recipient ...
+#' @param to_recipient ...
+#'
+#' @return Return value
+#'
+#' @seealso \code{\link{Backward}} to propagate the newly created table forward
+#'   through the genome.
+#'
+#' @examples
+#' # Examples
 MakeBackwardTable <- function(from_recipient = 1, to_recipient = Inf) {
   seqs <- get("seqs", envir = pkgCache)
   if(anyNA(seqs)) {
