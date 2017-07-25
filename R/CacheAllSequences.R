@@ -27,6 +27,51 @@ CacheAllSequences <- function() {
   assign("seq_size", CacheAllSequences2(seqs, buf.size), envir = pkgCache)
 }
 
+CacheAllSequencesH5 <- function(hdf5.file) {
+  # Make sure we don't double up cache content if there is already stuff cached
+  if(!is.na(get("seqs", envir = pkgCache)[1])) {
+    warning("sequences already cached ... overwriting existing cache.")
+    ClearSequenceCache()
+  }
+
+  # Check for file
+  if(!file.exists(hdf5.file)) {
+    stop("Cannot find HDF5 file.")
+  }
+
+  # Get dimensions of sequence data
+  if(nrow(h5ls(hdf5.file) %>% filter(name == "seqs")) != 1) {
+    stop("HDF5 file already exists but does not contain sequence data.")
+  }
+  hdf5.dim <- h5ls(hdf5.file) %>% filter(name == "seqs") %>% select(dim) %>% str_split_fixed("x", n = Inf) %>% as.integer()
+  N <- hdf5.dim[2]
+  L <- hdf5.dim[1]
+
+  # Seq IDs are only numeric for HDF5
+  assign("seqs", 1:N, envir = pkgCache)
+
+  # Create a closure for easy access of HDF5 file
+  # We'll read in 10MB (raw size) chunks
+  make.hdf5.access <- function(hdf5.file, N, L) {
+    step.size <- round(10000000/(L/8))
+    current.step <- 1
+    function() {
+      if(current.step > N) {
+        return(matrix(nrow = 0, ncol = 0))
+      }
+      upto <- min(current.step + step.size - 1, N)
+      res <- h5read(hdf5.file, "seqs", index = list(NULL, current.step:upto))
+      current.step <<- upto + 1
+      res
+    }
+  }
+
+  # Cache it!
+  assign("seq_size", CacheAllSequencesH52(make.hdf5.access(hdf5.file, N, L), N, L), envir = pkgCache)
+
+  H5close()
+}
+
 QueryCache <- function(ids = NA, start = 1, length = NA) {
   seqs <- get("seqs", envir = pkgCache)
 

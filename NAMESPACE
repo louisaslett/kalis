@@ -1,3 +1,7 @@
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
+import(dplyr)
+import(rhdf5)
+importFrom(stringr, str_split_fixed)
+importFrom(glue, glue)
 useDynLib(StatGen)

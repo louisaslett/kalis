@@ -65,6 +65,43 @@ int CacheAllSequences2(CharacterVector seqs, int bufsize) {
 }
 
 // [[Rcpp::export]]
+int CacheAllSequencesH52(Function nextseqs, int N, int L) {
+  num_inds = N;
+  seq_size = L;
+
+  // Setup cache storage
+  // NB need 32-byte aligned for AVX.  Note also that *each* new locus must be on a 32-byte boundary!
+  //   int(ceil(num_inds/32.0)) ints are required per locus to store all individuals
+  //   int(ceil((num_inds/32.0)/8.0)) __m256i's are required per locus to store all individuals
+  posix_memalign((void**) &seq_data, 32, seq_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t));
+  seq_locus = new uint32_t*[seq_size];
+  for(int l=0; l<seq_size; l++) {
+    seq_locus[l] = seq_data + l*int(ceil((num_inds/32.0)/8.0))*8;
+  }
+
+  // Process sequences in chunks from input function
+  IntegerMatrix nextseqmat;
+  nextseqmat = nextseqs();
+  while(nextseqmat.nrow() > 0) {
+    int_fast32_t ind = 0;
+    for(int_fast32_t i=0; i<nextseqmat.ncol(); i++) {
+      for(int_fast32_t l=0; l<seq_size; l++) {
+        seq_locus[l][ind/32] ^= (-(nextseqmat(l,ind)) ^ seq_locus[l][ind/32]) & (1 << ind%32);
+      }
+      ind++;
+    }
+    nextseqmat = nextseqs();
+  }
+
+  Rcout << "Cache loaded: " << num_inds << " sequences of length " << seq_size << " (consuming " << (seq_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0 << " GB RAM)" << std::endl;
+  // std::bitset<8> x(seq_ind[3][4]);
+  // Rcout << seqs[3];
+  // Rcout << x;
+
+  return(seq_size);
+}
+
+// [[Rcpp::export]]
 IntegerVector QueryCache2_ind(int idx) {
   IntegerVector res(int(ceil(seq_size/32.0)));
 

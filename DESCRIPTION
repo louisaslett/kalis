@@ -8,7 +8,11 @@ Description: Ryan's stats algorithm
 License: GPL (>= 2)
 LazyData: TRUE
 Imports:
-    Rcpp (>= 0.12.10)
+    Rcpp (>= 0.12.10),
+    rhdf5,
+    dplyr,
+    stringr,
+    glue
 LinkingTo:
     Rcpp
 SystemRequirements:

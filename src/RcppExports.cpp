@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // Backward_densePi_cpp
 void Backward_densePi_cpp(List bck, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_Backward_densePi_cpp(SEXP bckSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+RcppExport SEXP _StatGen_Backward_densePi_cpp(SEXP bckSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
@@ -22,7 +22,7 @@ END_RCPP
 }
 // Backward_scalarPi_cpp
 void Backward_scalarPi_cpp(List bck, const int t, const double Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_Backward_scalarPi_cpp(SEXP bckSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+RcppExport SEXP _StatGen_Backward_scalarPi_cpp(SEXP bckSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
@@ -37,7 +37,7 @@ END_RCPP
 }
 // CacheAllSequences2
 int CacheAllSequences2(CharacterVector seqs, int bufsize);
-RcppExport SEXP StatGen_CacheAllSequences2(SEXP seqsSEXP, SEXP bufsizeSEXP) {
+RcppExport SEXP _StatGen_CacheAllSequences2(SEXP seqsSEXP, SEXP bufsizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -47,9 +47,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// CacheAllSequencesH52
+int CacheAllSequencesH52(Function nextseqs, int N, int L);
+RcppExport SEXP _StatGen_CacheAllSequencesH52(SEXP nextseqsSEXP, SEXP NSEXP, SEXP LSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Function >::type nextseqs(nextseqsSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< int >::type L(LSEXP);
+    rcpp_result_gen = Rcpp::wrap(CacheAllSequencesH52(nextseqs, N, L));
+    return rcpp_result_gen;
+END_RCPP
+}
 // QueryCache2_ind
 IntegerVector QueryCache2_ind(int idx);
-RcppExport SEXP StatGen_QueryCache2_ind(SEXP idxSEXP) {
+RcppExport SEXP _StatGen_QueryCache2_ind(SEXP idxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -60,7 +73,7 @@ END_RCPP
 }
 // QueryCache2_loc
 IntegerVector QueryCache2_loc(int idx);
-RcppExport SEXP StatGen_QueryCache2_loc(SEXP idxSEXP) {
+RcppExport SEXP _StatGen_QueryCache2_loc(SEXP idxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -71,7 +84,7 @@ END_RCPP
 }
 // ClearSequenceCache2
 void ClearSequenceCache2();
-RcppExport SEXP StatGen_ClearSequenceCache2() {
+RcppExport SEXP _StatGen_ClearSequenceCache2() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     ClearSequenceCache2();
@@ -80,7 +93,7 @@ END_RCPP
 }
 // ComputeStatus
 void ComputeStatus();
-RcppExport SEXP StatGen_ComputeStatus() {
+RcppExport SEXP _StatGen_ComputeStatus() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     ComputeStatus();
@@ -89,7 +102,7 @@ END_RCPP
 }
 // Exact_ComputeTable_naive_cpp
 NumericMatrix Exact_ComputeTable_naive_cpp(int l, NumericMatrix Pi, NumericVector mu, NumericVector rho);
-RcppExport SEXP StatGen_Exact_ComputeTable_naive_cpp(SEXP lSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+RcppExport SEXP _StatGen_Exact_ComputeTable_naive_cpp(SEXP lSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -103,7 +116,7 @@ END_RCPP
 }
 // Dedip_min
 NumericVector Dedip_min(NumericMatrix fwd, NumericMatrix bck);
-RcppExport SEXP StatGen_Dedip_min(SEXP fwdSEXP, SEXP bckSEXP) {
+RcppExport SEXP _StatGen_Dedip_min(SEXP fwdSEXP, SEXP bckSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -115,7 +128,7 @@ END_RCPP
 }
 // Dedip_2nd_min
 NumericVector Dedip_2nd_min(NumericMatrix fwd, NumericMatrix bck);
-RcppExport SEXP StatGen_Dedip_2nd_min(SEXP fwdSEXP, SEXP bckSEXP) {
+RcppExport SEXP _StatGen_Dedip_2nd_min(SEXP fwdSEXP, SEXP bckSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -127,7 +140,7 @@ END_RCPP
 }
 // Dedip_max
 NumericVector Dedip_max(NumericMatrix fwd, NumericMatrix bck);
-RcppExport SEXP StatGen_Dedip_max(SEXP fwdSEXP, SEXP bckSEXP) {
+RcppExport SEXP _StatGen_Dedip_max(SEXP fwdSEXP, SEXP bckSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -139,7 +152,7 @@ END_RCPP
 }
 // Dedip_dom
 NumericVector Dedip_dom(NumericMatrix fwd, NumericMatrix bck);
-RcppExport SEXP StatGen_Dedip_dom(SEXP fwdSEXP, SEXP bckSEXP) {
+RcppExport SEXP _StatGen_Dedip_dom(SEXP fwdSEXP, SEXP bckSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -151,7 +164,7 @@ END_RCPP
 }
 // Dedip_add
 NumericVector Dedip_add(NumericMatrix fwd, NumericMatrix bck);
-RcppExport SEXP StatGen_Dedip_add(SEXP fwdSEXP, SEXP bckSEXP) {
+RcppExport SEXP _StatGen_Dedip_add(SEXP fwdSEXP, SEXP bckSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -163,7 +176,7 @@ END_RCPP
 }
 // Dedip_mean
 NumericVector Dedip_mean(NumericMatrix fwd, NumericMatrix bck);
-RcppExport SEXP StatGen_Dedip_mean(SEXP fwdSEXP, SEXP bckSEXP) {
+RcppExport SEXP _StatGen_Dedip_mean(SEXP fwdSEXP, SEXP bckSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -175,7 +188,7 @@ END_RCPP
 }
 // Dedip_all
 List Dedip_all(NumericMatrix fwd, NumericMatrix bck);
-RcppExport SEXP StatGen_Dedip_all(SEXP fwdSEXP, SEXP bckSEXP) {
+RcppExport SEXP _StatGen_Dedip_all(SEXP fwdSEXP, SEXP bckSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -187,7 +200,7 @@ END_RCPP
 }
 // ExactBackwardNoExpAVX3_cpp
 void ExactBackwardNoExpAVX3_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
-RcppExport SEXP StatGen_ExactBackwardNoExpAVX3_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+RcppExport SEXP _StatGen_ExactBackwardNoExpAVX3_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
@@ -209,7 +222,7 @@ END_RCPP
 }
 // ParExactBackwardNoExpAVX3_cpp
 void ParExactBackwardNoExpAVX3_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_ParExactBackwardNoExpAVX3_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+RcppExport SEXP _StatGen_ParExactBackwardNoExpAVX3_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
@@ -232,7 +245,7 @@ END_RCPP
 }
 // ExactBackwardNaiveC_cpp
 void ExactBackwardNaiveC_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
-RcppExport SEXP StatGen_ExactBackwardNaiveC_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+RcppExport SEXP _StatGen_ExactBackwardNaiveC_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
@@ -254,7 +267,7 @@ END_RCPP
 }
 // ParExactBackwardNaiveC_cpp
 void ParExactBackwardNaiveC_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_ParExactBackwardNaiveC_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+RcppExport SEXP _StatGen_ParExactBackwardNaiveC_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
@@ -277,7 +290,7 @@ END_RCPP
 }
 // ExactBackwardNoExpAVX3_scPi_cpp
 void ExactBackwardNoExpAVX3_scPi_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, const double Pi, NumericVector mu, NumericVector rho);
-RcppExport SEXP StatGen_ExactBackwardNoExpAVX3_scPi_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+RcppExport SEXP _StatGen_ExactBackwardNoExpAVX3_scPi_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
@@ -299,7 +312,7 @@ END_RCPP
 }
 // ParExactBackwardNoExpAVX3_scPi_cpp
 void ParExactBackwardNoExpAVX3_scPi_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, const double Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_ParExactBackwardNoExpAVX3_scPi_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+RcppExport SEXP _StatGen_ParExactBackwardNoExpAVX3_scPi_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
@@ -322,7 +335,7 @@ END_RCPP
 }
 // ExactForwardNoExpAVX3_cpp
 void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha, NumericVector alpha_f, NumericVector alpha_f2, const int alpha_from_rec, const int alpha_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
-RcppExport SEXP StatGen_ExactForwardNoExpAVX3_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+RcppExport SEXP _StatGen_ExactForwardNoExpAVX3_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
@@ -344,7 +357,7 @@ END_RCPP
 }
 // ParExactForwardNoExpAVX3_cpp
 void ParExactForwardNoExpAVX3_cpp(NumericMatrix alpha, NumericVector alpha_f, NumericVector alpha_f2, const int alpha_from_rec, const int alpha_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_ParExactForwardNoExpAVX3_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+RcppExport SEXP _StatGen_ParExactForwardNoExpAVX3_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
@@ -367,7 +380,7 @@ END_RCPP
 }
 // ExactForwardNaiveC_cpp
 void ExactForwardNaiveC_cpp(NumericMatrix alpha, NumericVector alpha_f, NumericVector alpha_f2, const int alpha_from_rec, const int alpha_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
-RcppExport SEXP StatGen_ExactForwardNaiveC_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+RcppExport SEXP _StatGen_ExactForwardNaiveC_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
@@ -389,7 +402,7 @@ END_RCPP
 }
 // ParExactForwardNaiveC_cpp
 void ParExactForwardNaiveC_cpp(NumericMatrix alpha, NumericVector alpha_f, NumericVector alpha_f2, const int alpha_from_rec, const int alpha_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_ParExactForwardNaiveC_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+RcppExport SEXP _StatGen_ParExactForwardNaiveC_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
@@ -412,7 +425,7 @@ END_RCPP
 }
 // ExactForwardNoExpAVX3_scPi_cpp
 void ExactForwardNoExpAVX3_scPi_cpp(NumericMatrix alpha, NumericVector alpha_f, NumericVector alpha_f2, const int alpha_from_rec, const int alpha_t, const int t, const int from_rec, const int to_rec, const int L, const int N, const double Pi, NumericVector mu, NumericVector rho);
-RcppExport SEXP StatGen_ExactForwardNoExpAVX3_scPi_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+RcppExport SEXP _StatGen_ExactForwardNoExpAVX3_scPi_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
@@ -434,7 +447,7 @@ END_RCPP
 }
 // ParExactForwardNoExpAVX3_scPi_cpp
 void ParExactForwardNoExpAVX3_scPi_cpp(NumericMatrix alpha, NumericVector alpha_f, NumericVector alpha_f2, const int alpha_from_rec, const int alpha_t, const int t, const int from_rec, const int to_rec, const int L, const int N, const double Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_ParExactForwardNoExpAVX3_scPi_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+RcppExport SEXP _StatGen_ParExactForwardNoExpAVX3_scPi_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
@@ -457,7 +470,7 @@ END_RCPP
 }
 // ResetForwardTable
 void ResetForwardTable(List fwd);
-RcppExport SEXP StatGen_ResetForwardTable(SEXP fwdSEXP) {
+RcppExport SEXP _StatGen_ResetForwardTable(SEXP fwdSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
@@ -467,7 +480,7 @@ END_RCPP
 }
 // Forward_densePi_cpp
 void Forward_densePi_cpp(List fwd, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_Forward_densePi_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+RcppExport SEXP _StatGen_Forward_densePi_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
@@ -482,7 +495,7 @@ END_RCPP
 }
 // Forward_scalarPi_cpp
 void Forward_scalarPi_cpp(List fwd, const int t, const double Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP StatGen_Forward_scalarPi_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+RcppExport SEXP _StatGen_Forward_scalarPi_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
@@ -497,7 +510,7 @@ END_RCPP
 }
 // FillTableCache
 void FillTableCache(List cache, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads, int from, int to);
-RcppExport SEXP StatGen_FillTableCache(SEXP cacheSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP, SEXP fromSEXP, SEXP toSEXP) {
+RcppExport SEXP _StatGen_FillTableCache(SEXP cacheSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP, SEXP fromSEXP, SEXP toSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type cache(cacheSEXP);
@@ -513,7 +526,7 @@ END_RCPP
 }
 // CopyForwardTable
 void CopyForwardTable(List to, List from);
-RcppExport SEXP StatGen_CopyForwardTable(SEXP toSEXP, SEXP fromSEXP) {
+RcppExport SEXP _StatGen_CopyForwardTable(SEXP toSEXP, SEXP fromSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type to(toSEXP);
@@ -521,4 +534,46 @@ BEGIN_RCPP
     CopyForwardTable(to, from);
     return R_NilValue;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_StatGen_Backward_densePi_cpp", (DL_FUNC) &_StatGen_Backward_densePi_cpp, 6},
+    {"_StatGen_Backward_scalarPi_cpp", (DL_FUNC) &_StatGen_Backward_scalarPi_cpp, 6},
+    {"_StatGen_CacheAllSequences2", (DL_FUNC) &_StatGen_CacheAllSequences2, 2},
+    {"_StatGen_CacheAllSequencesH52", (DL_FUNC) &_StatGen_CacheAllSequencesH52, 3},
+    {"_StatGen_QueryCache2_ind", (DL_FUNC) &_StatGen_QueryCache2_ind, 1},
+    {"_StatGen_QueryCache2_loc", (DL_FUNC) &_StatGen_QueryCache2_loc, 1},
+    {"_StatGen_ClearSequenceCache2", (DL_FUNC) &_StatGen_ClearSequenceCache2, 0},
+    {"_StatGen_ComputeStatus", (DL_FUNC) &_StatGen_ComputeStatus, 0},
+    {"_StatGen_Exact_ComputeTable_naive_cpp", (DL_FUNC) &_StatGen_Exact_ComputeTable_naive_cpp, 4},
+    {"_StatGen_Dedip_min", (DL_FUNC) &_StatGen_Dedip_min, 2},
+    {"_StatGen_Dedip_2nd_min", (DL_FUNC) &_StatGen_Dedip_2nd_min, 2},
+    {"_StatGen_Dedip_max", (DL_FUNC) &_StatGen_Dedip_max, 2},
+    {"_StatGen_Dedip_dom", (DL_FUNC) &_StatGen_Dedip_dom, 2},
+    {"_StatGen_Dedip_add", (DL_FUNC) &_StatGen_Dedip_add, 2},
+    {"_StatGen_Dedip_mean", (DL_FUNC) &_StatGen_Dedip_mean, 2},
+    {"_StatGen_Dedip_all", (DL_FUNC) &_StatGen_Dedip_all, 2},
+    {"_StatGen_ExactBackwardNoExpAVX3_cpp", (DL_FUNC) &_StatGen_ExactBackwardNoExpAVX3_cpp, 13},
+    {"_StatGen_ParExactBackwardNoExpAVX3_cpp", (DL_FUNC) &_StatGen_ParExactBackwardNoExpAVX3_cpp, 14},
+    {"_StatGen_ExactBackwardNaiveC_cpp", (DL_FUNC) &_StatGen_ExactBackwardNaiveC_cpp, 13},
+    {"_StatGen_ParExactBackwardNaiveC_cpp", (DL_FUNC) &_StatGen_ParExactBackwardNaiveC_cpp, 14},
+    {"_StatGen_ExactBackwardNoExpAVX3_scPi_cpp", (DL_FUNC) &_StatGen_ExactBackwardNoExpAVX3_scPi_cpp, 13},
+    {"_StatGen_ParExactBackwardNoExpAVX3_scPi_cpp", (DL_FUNC) &_StatGen_ParExactBackwardNoExpAVX3_scPi_cpp, 14},
+    {"_StatGen_ExactForwardNoExpAVX3_cpp", (DL_FUNC) &_StatGen_ExactForwardNoExpAVX3_cpp, 13},
+    {"_StatGen_ParExactForwardNoExpAVX3_cpp", (DL_FUNC) &_StatGen_ParExactForwardNoExpAVX3_cpp, 14},
+    {"_StatGen_ExactForwardNaiveC_cpp", (DL_FUNC) &_StatGen_ExactForwardNaiveC_cpp, 13},
+    {"_StatGen_ParExactForwardNaiveC_cpp", (DL_FUNC) &_StatGen_ParExactForwardNaiveC_cpp, 14},
+    {"_StatGen_ExactForwardNoExpAVX3_scPi_cpp", (DL_FUNC) &_StatGen_ExactForwardNoExpAVX3_scPi_cpp, 13},
+    {"_StatGen_ParExactForwardNoExpAVX3_scPi_cpp", (DL_FUNC) &_StatGen_ParExactForwardNoExpAVX3_scPi_cpp, 14},
+    {"_StatGen_ResetForwardTable", (DL_FUNC) &_StatGen_ResetForwardTable, 1},
+    {"_StatGen_Forward_densePi_cpp", (DL_FUNC) &_StatGen_Forward_densePi_cpp, 6},
+    {"_StatGen_Forward_scalarPi_cpp", (DL_FUNC) &_StatGen_Forward_scalarPi_cpp, 6},
+    {"_StatGen_FillTableCache", (DL_FUNC) &_StatGen_FillTableCache, 7},
+    {"_StatGen_CopyForwardTable", (DL_FUNC) &_StatGen_CopyForwardTable, 2},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_StatGen(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

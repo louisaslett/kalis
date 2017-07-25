@@ -2,130 +2,134 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 Backward_densePi_cpp <- function(bck, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_Backward_densePi_cpp', PACKAGE = 'StatGen', bck, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_StatGen_Backward_densePi_cpp', PACKAGE = 'StatGen', bck, t, Pi, mu, rho, nthreads))
 }
 
 Backward_scalarPi_cpp <- function(bck, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_Backward_scalarPi_cpp', PACKAGE = 'StatGen', bck, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_StatGen_Backward_scalarPi_cpp', PACKAGE = 'StatGen', bck, t, Pi, mu, rho, nthreads))
 }
 
 CacheAllSequences2 <- function(seqs, bufsize) {
-    .Call('StatGen_CacheAllSequences2', PACKAGE = 'StatGen', seqs, bufsize)
+    .Call('_StatGen_CacheAllSequences2', PACKAGE = 'StatGen', seqs, bufsize)
+}
+
+CacheAllSequencesH52 <- function(nextseqs, N, L) {
+    .Call('_StatGen_CacheAllSequencesH52', PACKAGE = 'StatGen', nextseqs, N, L)
 }
 
 QueryCache2_ind <- function(idx) {
-    .Call('StatGen_QueryCache2_ind', PACKAGE = 'StatGen', idx)
+    .Call('_StatGen_QueryCache2_ind', PACKAGE = 'StatGen', idx)
 }
 
 QueryCache2_loc <- function(idx) {
-    .Call('StatGen_QueryCache2_loc', PACKAGE = 'StatGen', idx)
+    .Call('_StatGen_QueryCache2_loc', PACKAGE = 'StatGen', idx)
 }
 
 ClearSequenceCache2 <- function() {
-    invisible(.Call('StatGen_ClearSequenceCache2', PACKAGE = 'StatGen'))
+    invisible(.Call('_StatGen_ClearSequenceCache2', PACKAGE = 'StatGen'))
 }
 
 ComputeStatus <- function() {
-    invisible(.Call('StatGen_ComputeStatus', PACKAGE = 'StatGen'))
+    invisible(.Call('_StatGen_ComputeStatus', PACKAGE = 'StatGen'))
 }
 
 Exact_ComputeTable_naive_cpp <- function(l, Pi, mu, rho) {
-    .Call('StatGen_Exact_ComputeTable_naive_cpp', PACKAGE = 'StatGen', l, Pi, mu, rho)
+    .Call('_StatGen_Exact_ComputeTable_naive_cpp', PACKAGE = 'StatGen', l, Pi, mu, rho)
 }
 
 Dedip_min <- function(fwd, bck) {
-    .Call('StatGen_Dedip_min', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_StatGen_Dedip_min', PACKAGE = 'StatGen', fwd, bck)
 }
 
 Dedip_2nd_min <- function(fwd, bck) {
-    .Call('StatGen_Dedip_2nd_min', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_StatGen_Dedip_2nd_min', PACKAGE = 'StatGen', fwd, bck)
 }
 
 Dedip_max <- function(fwd, bck) {
-    .Call('StatGen_Dedip_max', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_StatGen_Dedip_max', PACKAGE = 'StatGen', fwd, bck)
 }
 
 Dedip_dom <- function(fwd, bck) {
-    .Call('StatGen_Dedip_dom', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_StatGen_Dedip_dom', PACKAGE = 'StatGen', fwd, bck)
 }
 
 Dedip_add <- function(fwd, bck) {
-    .Call('StatGen_Dedip_add', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_StatGen_Dedip_add', PACKAGE = 'StatGen', fwd, bck)
 }
 
 Dedip_mean <- function(fwd, bck) {
-    .Call('StatGen_Dedip_mean', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_StatGen_Dedip_mean', PACKAGE = 'StatGen', fwd, bck)
 }
 
 Dedip_all <- function(fwd, bck) {
-    .Call('StatGen_Dedip_all', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_StatGen_Dedip_all', PACKAGE = 'StatGen', fwd, bck)
 }
 
 ExactBackwardNoExpAVX3_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('StatGen_ExactBackwardNoExpAVX3_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_StatGen_ExactBackwardNoExpAVX3_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactBackwardNoExpAVX3_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_ParExactBackwardNoExpAVX3_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_StatGen_ParExactBackwardNoExpAVX3_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('StatGen_ExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_StatGen_ExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_ParExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_StatGen_ParExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactBackwardNoExpAVX3_scPi_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('StatGen_ExactBackwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_StatGen_ExactBackwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactBackwardNoExpAVX3_scPi_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_ParExactBackwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_StatGen_ParExactBackwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactForwardNoExpAVX3_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('StatGen_ExactForwardNoExpAVX3_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_StatGen_ExactForwardNoExpAVX3_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactForwardNoExpAVX3_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_ParExactForwardNoExpAVX3_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_StatGen_ParExactForwardNoExpAVX3_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('StatGen_ExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_StatGen_ExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_ParExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_StatGen_ParExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactForwardNoExpAVX3_scPi_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('StatGen_ExactForwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_StatGen_ExactForwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactForwardNoExpAVX3_scPi_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_ParExactForwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_StatGen_ParExactForwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ResetForwardTable <- function(fwd) {
-    invisible(.Call('StatGen_ResetForwardTable', PACKAGE = 'StatGen', fwd))
+    invisible(.Call('_StatGen_ResetForwardTable', PACKAGE = 'StatGen', fwd))
 }
 
 Forward_densePi_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_Forward_densePi_cpp', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_StatGen_Forward_densePi_cpp', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
 }
 
 Forward_scalarPi_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('StatGen_Forward_scalarPi_cpp', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_StatGen_Forward_scalarPi_cpp', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
 }
 
 FillTableCache <- function(cache, Pi, mu, rho, nthreads, from = 0L, to = 0L) {
-    invisible(.Call('StatGen_FillTableCache', PACKAGE = 'StatGen', cache, Pi, mu, rho, nthreads, from, to))
+    invisible(.Call('_StatGen_FillTableCache', PACKAGE = 'StatGen', cache, Pi, mu, rho, nthreads, from, to))
 }
 
 CopyForwardTable <- function(to, from) {
-    invisible(.Call('StatGen_CopyForwardTable', PACKAGE = 'StatGen', to, from))
+    invisible(.Call('_StatGen_CopyForwardTable', PACKAGE = 'StatGen', to, from))
 }
 
