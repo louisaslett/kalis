@@ -8,6 +8,6 @@ void ComputeStatus() {
 #else
   Rcout << "\nCurrently not using any special instruction sets (WARNING: poor performance likely).\n";
   Rcout << "If this is unexpected (i.e. your CPU is Intel Haswell or newer architecture), then ensure that you are targeting the native architecture in compilation.  The easiest method is to add/change the following line in ~/.R/Makevars\n";
-  Rcout << "CXX1XFLAGS=-march=native -mtune=native -O3\n\n";
+  Rcout << "CXX11FLAGS=-march=native -mtune=native -O3\n\n";
 #endif
 }
