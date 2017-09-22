@@ -26,7 +26,7 @@ Forward <- function(fwd, t, Pi, mu, rho, nthreads = 1) {
   L <- get("seq_size", envir = pkgCache)
   N <- length(get("seqs", envir = pkgCache))
   if(fwd$l > t) {
-    stop("The forward table provided is for locus position ", l, " which is already past requested locus ", t)
+    stop("The forward table provided is for locus position ", fwd$l, " which is already past requested locus ", t)
   }
   if(nrow(fwd$alpha) != N || ncol(fwd$alpha) != fwd$to_recipient-fwd$from_recipient+1) {
     stop("Forward table is of the wrong dimensions for this problem.")
@@ -80,7 +80,7 @@ Backward <- function(bck, t, Pi, mu, rho, nthreads = 1) {
   L <- get("seq_size", envir = pkgCache)
   N <- length(get("seqs", envir = pkgCache))
   if(bck$l < t) {
-    stop("The backward table provided is for locus position ", l, " which is already before requested locus ", t)
+    stop("The backward table provided is for locus position ", bck$l, " which is already before requested locus ", t)
   }
   if(nrow(bck$beta) != N || ncol(bck$beta) != bck$to_recipient-bck$from_recipient+1) {
     stop("Forward table is of the wrong dimensions for this problem.")
