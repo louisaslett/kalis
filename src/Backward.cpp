@@ -90,7 +90,9 @@ void Backward_densePi_cpp(List bck,
                                rho);
   }
 #endif
-  as<NumericVector>(bck["l"])[0] = t;
+  NumericVector newl(1);
+  newl[0] = t;
+  bck["l"] = newl;
 }
 
 // [[Rcpp::export]]
@@ -183,5 +185,7 @@ void Backward_scalarPi_cpp(List bck,
                                rho);
   }
 #endif
-  as<NumericVector>(bck["l"])[0] = t;
+  NumericVector newl(1);
+  newl[0] = t;
+  bck["l"] = newl;
 }

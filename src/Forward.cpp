@@ -6,7 +6,9 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 void ResetForwardTable(List fwd) {
-  as<NumericVector>(fwd["l"])[0] = 0;
+  NumericVector newl(1);
+  newl[0] = 0;
+  fwd["l"] = newl;
 }
 
 // [[Rcpp::export]]
@@ -96,7 +98,9 @@ void Forward_densePi_cpp(List fwd,
   }
 #endif
 
-  as<NumericVector>(fwd["l"])[0] = t;
+  NumericVector newl(1);
+  newl[0] = t;
+  fwd["l"] = newl;
 }
 
 // [[Rcpp::export]]
@@ -190,5 +194,7 @@ void Forward_scalarPi_cpp(List fwd,
   }
 #endif
 
-  as<NumericVector>(fwd["l"])[0] = t;
+  NumericVector newl(1);
+  newl[0] = t;
+  fwd["l"] = newl;
 }
