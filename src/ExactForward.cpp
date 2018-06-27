@@ -163,18 +163,18 @@ void ExactForwardNoExpAVX3_cpp_raw(double *const __restrict__ alpha,
 
 // [[Rcpp::export]]
 void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
-                                   NumericVector alpha_f,
-                                   NumericVector alpha_f2,
-                                   const int alpha_from_rec,
-                                   const int alpha_t,
-                                   const int t,
-                                   const int from_rec,
-                                   const int to_rec,
-                                   const int L,
-                                   const int N,
-                                   NumericMatrix Pi,
-                                   NumericVector mu,
-                                   NumericVector rho) {
+                               NumericVector alpha_f,
+                               NumericVector alpha_f2,
+                               const int alpha_from_rec,
+                               const int alpha_t,
+                               const int t,
+                               const int from_rec,
+                               const int to_rec,
+                               const int L,
+                               const int N,
+                               NumericMatrix Pi,
+                               NumericVector mu,
+                               NumericVector rho) {
   ExactForwardNoExpAVX3_cpp_raw(&(alpha[0]),
                                 &(alpha_f[0]),
                                 &(alpha_f2[0]),
@@ -229,7 +229,7 @@ void ParExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
                                   &(Pi[0]),
                                   &(mu[0]),
                                   &(rho[0])));
-    // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
+                                  // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
   }
 
   for(auto& th : threads) {

@@ -4,7 +4,8 @@
 \alias{Forward}
 \title{Propagate an HMM forward table}
 \usage{
-Forward(fwd, t, Pi, mu, rho, nthreads = 1)
+Forward(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha) - 1),
+  nthreads = 1)
 }
 \arguments{
 \item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
@@ -12,14 +13,24 @@ Forward(fwd, t, Pi, mu, rho, nthreads = 1)
 \item{t}{a locus position to move the forward table to.  Must be greater than
 or equal to locus position of table provided in \code{fwd}.}
 
-\item{Pi}{a matrix of background copying probabilities.  Can also provide a
-scalar value for uniform background copying probability.}
+\item{morgan.dist}{a vector of recombination distances between loci, in Morgans.
+Note element i of this vector should be the distance between loci i and i+1
+(not i and i-1), and thus length one less than the sequence length.}
 
-\item{mu}{a vector of ...}
+\item{Ne}{a scalar for the effective population size.  Can be autotuned, see ...}
 
-\item{rho}{a vector of ...}
+\item{gamma}{a scalar power to which the Morgan distances are raised.  Can be
+autotuned, see ...}
 
-\item{nthreads}{the number of CPU cores on which to run}
+\item{mu}{a scalar (for uniform) or vector (for varying) mutation costs.}
+
+\item{Pi}{leaving the default of uniform copying probabilities is recommended for
+computational efficiency.  If desired, a full matrix of background copying
+probabilities can be provided, such that the (i,j)-th element is the background
+probability that i copies j.  Hence, (a) the diagonal must be zero; and (b)
+the columns of Pi must sum to 1.}
+
+\item{nthreads}{the number of CPU cores on which to run.}
 }
 \value{
 There is nothing returned.  For performance reasons, the forward
@@ -30,6 +41,9 @@ Takes a forward table and propagates it in-place to a later locus position.
 }
 \details{
 Detailed description
+
+For example, mention that each column is an independent HMM and highlight that
+forward table (and Pi) are therefore to be viewed column-wise.
 }
 \examples{
 fwd <- MakeForwardTable()

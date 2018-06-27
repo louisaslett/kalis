@@ -9,19 +9,19 @@ using namespace Rcpp;
 
 #include "Cache.h"
 
-void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
-                                         double *const __restrict__ beta_g,
-                                         double *const __restrict__ beta_g2,
-                                         const int beta_from_rec,
-                                         const int beta_t,
-                                         const int t,
-                                         const int from_rec,
-                                         const int to_rec,
-                                         const int L,
-                                         const int N,
-                                         const double Pi,
-                                         const double *const __restrict__ mu,
-                                         const double *const __restrict__ rho) {
+void ExactBackwardNoExpAVX3_scmuPi_cpp_raw(double *const __restrict__ beta,
+                                           double *const __restrict__ beta_g,
+                                           double *const __restrict__ beta_g2,
+                                           const int beta_from_rec,
+                                           const int beta_t,
+                                           const int t,
+                                           const int from_rec,
+                                           const int to_rec,
+                                           const int L,
+                                           const int N,
+                                           const double Pi,
+                                           const double mu,
+                                           const double *const __restrict__ rho) {
 
 #if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
 
@@ -45,15 +45,15 @@ void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
       for(int_fast32_t donor=0; donor<N; ++donor) {
         int32_t donor_hap = (seq_locus[l][donor/32] >> donor%32) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
-        double theta = (H * mu[l]
-                          + (1-H) * (1.0 - mu[l]));
+        double theta = (H * mu
+                          + (1-H) * (1.0 - mu));
 
         beta[donor + N*recipient_beta] = 1.0;
 
         gold[recipient_beta] += Pi * theta;
       }
       // Adjust due to scalar Pi for recipient/receipient locus
-      gold[recipient_beta] -= (1.0-mu[0])*Pi;
+      gold[recipient_beta] -= (1.0-mu)*Pi;
 
       gold[recipient_beta] = -log(gold[recipient_beta]*rho[l-1]);
     }
@@ -63,6 +63,9 @@ void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
   __m256d _one = _mm256_set1_pd(1.0);
   const __m256d _Pi = _mm256_set1_pd(Pi);
 
+  // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
+  const double muTmp1 = 2.0 * mu - 1.0, muTmp2 = - mu + 1.0;
+  const __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
   for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
     int_fast32_t recipient_beta = recipient-beta_from_rec;
     l = reset_l;
@@ -87,11 +90,6 @@ void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
       //       donors at a time
       double *__restrict__ betaRow = &(beta[N*recipient_beta]);
 
-      // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
-      const double muTmp1a = 2.0 * mu[l+1] - 1.0, muTmp2a = - mu[l+1] + 1.0;
-      const __m256d _muTmp1a = _mm256_broadcast_sd(&muTmp1a), _muTmp2a = _mm256_broadcast_sd(&muTmp2a);
-      const double muTmp1b = 2.0 * mu[l] - 1.0, muTmp2b = - mu[l] + 1.0;
-      const __m256d _muTmp1b = _mm256_broadcast_sd(&muTmp1b), _muTmp2b = _mm256_broadcast_sd(&muTmp2b);
       for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
         // Load next 256 donors and XOR with recipients
         __m256i _HA = _mm256_xor_si256(_recipient_hap_prev, _mm256_load_si256((__m256i*) &(seq_locus[l+1][donoroff*8])));
@@ -117,10 +115,10 @@ void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
           __m256d _theta3 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4+2)/8]) >> (((donor*4+2)%8)*4), mask))));
           __m256d _theta4 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4+3)/8]) >> (((donor*4+3)%8)*4), mask))));
 
-          _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
-          _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
-          _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
-          _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
+          _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
+          _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
+          _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
+          _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
 
           _beta1          = _mm256_mul_pd(_beta1, _theta1); // (theta*beta)
           _beta2          = _mm256_mul_pd(_beta2, _theta2); // (theta*beta)
@@ -137,10 +135,10 @@ void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
           _theta3         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+2)/8]) >> (((donor*4+2)%8)*4), mask))));
           _theta4         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+3)/8]) >> (((donor*4+3)%8)*4), mask))));
 
-          _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-          _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-          _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-          _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
+          _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
+          _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
+          _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
+          _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
 
           _theta1         = _mm256_mul_pd(_beta1, _theta1); // (theta*beta)
           _theta2         = _mm256_mul_pd(_beta2, _theta2); // (theta*beta)
@@ -163,14 +161,14 @@ void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
       for(int32_t donor=0; donor<N%(32*8); ++donor) {
         int32_t donor_hap = (seq_locus[l+1][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
         int32_t H = (recipient_hap_prev ^ donor_hap) & 1;
-        betaRow[(N/(32*8))*32*8+donor] = 1.0 + (H * muTmp1a + muTmp2a) * betaRow[(N/(32*8))*32*8+donor] * gratioMulOmRho;
+        betaRow[(N/(32*8))*32*8+donor] = 1.0 + (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor] * gratioMulOmRho;
 
         donor_hap = (seq_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
         H = (recipient_hap ^ donor_hap) & 1;
-        g[recipient-from_rec] += Pi * (H * muTmp1b + muTmp2b) * betaRow[(N/(32*8))*32*8+donor];
+        g[recipient-from_rec] += Pi * (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor];
       }
       // Adjustments for scalar Pi
-      g[recipient-from_rec] -= Pi * muTmp2b * betaRow[recipient];
+      g[recipient-from_rec] -= Pi * muTmp2 * betaRow[recipient];
       betaRow[recipient] = 0.0;
 
       // Accumulate row sum into g[recipient-from_rec]
@@ -189,49 +187,49 @@ void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
 }
 
 // [[Rcpp::export]]
-void ExactBackwardNoExpAVX3_scPi_cpp(NumericMatrix beta,
-                                     NumericVector beta_g,
-                                     NumericVector beta_g2,
-                                     const int beta_from_rec,
-                                     const int beta_t,
-                                     const int t,
-                                     const int from_rec,
-                                     const int to_rec,
-                                     const int L,
-                                     const int N,
-                                     const double Pi,
-                                     NumericVector mu,
-                                     NumericVector rho) {
-  ExactBackwardNoExpAVX3_scPi_cpp_raw(&(beta[0]),
-                                      &(beta_g[0]),
-                                      &(beta_g2[0]),
-                                      beta_from_rec,
-                                      beta_t,
-                                      t,
-                                      from_rec,
-                                      to_rec,
-                                      L,
-                                      N,
-                                      Pi,
-                                      &(mu[0]),
-                                      &(rho[0]));
+void ExactBackwardNoExpAVX3_scmuPi_cpp(NumericMatrix beta,
+                                       NumericVector beta_g,
+                                       NumericVector beta_g2,
+                                       const int beta_from_rec,
+                                       const int beta_t,
+                                       const int t,
+                                       const int from_rec,
+                                       const int to_rec,
+                                       const int L,
+                                       const int N,
+                                       const double Pi,
+                                       const double mu,
+                                       NumericVector rho) {
+  ExactBackwardNoExpAVX3_scmuPi_cpp_raw(&(beta[0]),
+                                        &(beta_g[0]),
+                                        &(beta_g2[0]),
+                                        beta_from_rec,
+                                        beta_t,
+                                        t,
+                                        from_rec,
+                                        to_rec,
+                                        L,
+                                        N,
+                                        Pi,
+                                        mu,
+                                        &(rho[0]));
 }
 
 // [[Rcpp::export]]
-void ParExactBackwardNoExpAVX3_scPi_cpp(NumericMatrix beta,
-                                        NumericVector beta_g,
-                                        NumericVector beta_g2,
-                                        const int beta_from_rec,
-                                        const int beta_t,
-                                        const int t,
-                                        const int from_rec,
-                                        const int to_rec,
-                                        const int L,
-                                        const int N,
-                                        const double Pi,
-                                        NumericVector mu,
-                                        NumericVector rho,
-                                        const int nthreads) {
+void ParExactBackwardNoExpAVX3_scmuPi_cpp(NumericMatrix beta,
+                                          NumericVector beta_g,
+                                          NumericVector beta_g2,
+                                          const int beta_from_rec,
+                                          const int beta_t,
+                                          const int t,
+                                          const int from_rec,
+                                          const int to_rec,
+                                          const int L,
+                                          const int N,
+                                          const double Pi,
+                                          const double mu,
+                                          NumericVector rho,
+                                          const int nthreads) {
   std::vector<std::thread> threads;
 
   if(nthreads < 2) {
@@ -242,7 +240,7 @@ void ParExactBackwardNoExpAVX3_scPi_cpp(NumericMatrix beta,
   double spacing = double(to_rec-from_rec) / double(nthreads);
 
   for(int_fast32_t i=0; i<nthreads; ++i) {
-    threads.push_back(std::thread(ExactBackwardNoExpAVX3_scPi_cpp_raw,
+    threads.push_back(std::thread(ExactBackwardNoExpAVX3_scmuPi_cpp_raw,
                                   &(beta[0]),
                                   &(beta_g[0]),
                                   &(beta_g2[0]),
@@ -254,9 +252,9 @@ void ParExactBackwardNoExpAVX3_scPi_cpp(NumericMatrix beta,
                                   L,
                                   N,
                                   Pi,
-                                  &(mu[0]),
+                                  mu,
                                   &(rho[0])));
-                                  // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
+    // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
   }
 
   for(auto& th : threads) {

@@ -262,7 +262,7 @@ void ParExactBackwardNoExpAVX3_cpp(NumericMatrix beta,
                                   &(Pi[0]),
                                   &(mu[0]),
                                   &(rho[0])));
-    // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
+                                  // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
   }
 
   for(auto& th : threads) {

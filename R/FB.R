@@ -4,14 +4,25 @@
 #'
 #' Detailed description
 #'
+#' For example, mention that each column is an independent HMM and highlight that
+#' forward table (and Pi) are therefore to be viewed column-wise.
+#'
 #' @param fwd a forward table as returned by \code{\link{MakeForwardTable}}
 #' @param t a locus position to move the forward table to.  Must be greater than
 #'   or equal to locus position of table provided in \code{fwd}.
-#' @param Pi a matrix of background copying probabilities.  Can also provide a
-#'   scalar value for uniform background copying probability.
-#' @param mu a vector of ...
-#' @param rho a vector of ...
-#' @param nthreads the number of CPU cores on which to run
+#' @param morgan.dist a vector of recombination distances between loci, in Morgans.
+#'   Note element i of this vector should be the distance between loci i and i+1
+#'   (not i and i-1), and thus length one less than the sequence length.
+#' @param Ne a scalar for the effective population size.  Can be autotuned, see ...
+#' @param gamma a scalar power to which the Morgan distances are raised.  Can be
+#'   autotuned, see ...
+#' @param mu a scalar (for uniform) or vector (for varying) mutation costs.
+#' @param Pi leaving the default of uniform copying probabilities is recommended for
+#'   computational efficiency.  If desired, a full matrix of background copying
+#'   probabilities can be provided, such that the (i,j)-th element is the background
+#'   probability that i copies j.  Hence, (a) the diagonal must be zero; and (b)
+#'   the columns of Pi must sum to 1.
+#' @param nthreads the number of CPU cores on which to run.
 #'
 #' @return There is nothing returned.  For performance reasons, the forward
 #'   table which was passed in is updated in-place.
@@ -22,7 +33,7 @@
 #' @examples
 #' fwd <- MakeForwardTable()
 #' Forward(fwd, 100, Pi, mu, rho)
-Forward <- function(fwd, t, Pi, mu, rho, nthreads = 1) {
+Forward <- function(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha)-1), nthreads = 1) {
   L <- get("seq_size", envir = pkgCache)
   N <- length(get("seqs", envir = pkgCache))
   if(fwd$l > t) {
@@ -31,23 +42,55 @@ Forward <- function(fwd, t, Pi, mu, rho, nthreads = 1) {
   if(nrow(fwd$alpha) != N || ncol(fwd$alpha) != fwd$to_recipient-fwd$from_recipient+1) {
     stop("Forward table is of the wrong dimensions for this problem.")
   }
+  if(!is.vector(morgan.dist)) {
+    stop("morgan.dist must be a vector of recombination distances.")
+  }
+  if(!is.numeric(morgan.dist)) {
+    stop("morgan.dist must be numeric vector type.")
+  }
+  if(length(morgan.dist) != L-1) {
+    stop("morgan.dist is the wrong length for this problem.")
+  }
+  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
+    stop("Ne must be a scalar.")
+  }
+  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1) {
+    stop("gamma must be a scalar.")
+  }
+  if(!is.vector(mu)) {
+    stop("mu must be either a vector or a scalar.")
+  }
+  if(!is.numeric(mu)) {
+    stop("mu must be numeric.")
+  }
+  if(length(mu) != 1 && length(mu) != L) {
+    stop("mu is the wrong length for this problem.")
+  }
+  if(is.data.frame(Pi)) {
+    stop("Pi must be a matrix, not a data frame.")
+  }
   if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
     stop("Pi is of the wrong dimensions for this problem.")
   }
-  if(!is.matrix(Pi) && !(is.atomic(Pi) && length(Pi) == 1L && !is.character(Pi) && Im(Pi)==0)) {
-    stop("If Pi is not a full matrix of background copying probabilities then it must be a single scalar for uniform background copying probability.")
-  }
-  if(!is.vector(mu) || length(mu) != L) {
-    stop("mu is of the wrong type/length.")
-  }
-  if(!is.vector(rho) || length(rho) != L) {
-    stop("rho is of the wrong type/length.")
+  if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(nrow(fwd$alpha)-1))) {
+    stop("Pi can only be set to a matrix, or omitted to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
   }
 
+  rho <- c(1-exp(-Ne*morgan.dist^gamma), 1)
+  rho <- ifelse(rho<1e-16, 1e-16, rho)
+
   if(is.matrix(Pi)) {
-    Forward_densePi_cpp(fwd, t, Pi, mu, rho, nthreads)
+    if(length(mu) == 1) {
+      Forward_densePi_scalarmu_cpp(fwd, t, Pi, mu, rho, nthreads)
+    } else {
+      Forward_densePi_densemu_cpp(fwd, t, Pi, mu, rho, nthreads)
+    }
   } else {
-    Forward_scalarPi_cpp(fwd, t, Pi, mu, rho, nthreads)
+    if(length(mu) == 1) {
+      Forward_scalarPi_scalarmu_cpp(fwd, t, Pi, mu, rho, nthreads)
+    } else {
+      Forward_scalarPi_densemu_cpp(fwd, t, Pi, mu, rho, nthreads)
+    }
   }
 }
 
@@ -61,11 +104,19 @@ Forward <- function(fwd, t, Pi, mu, rho, nthreads = 1) {
 #' @param bck a backward table as returned by \code{\link{MakeBackwardTable}}
 #' @param t a locus position to move the backward table to.  Must be less than
 #'   or equal to locus position of table provided in \code{bck}.
-#' @param Pi a matrix of background copying probabilities.  Can also provide a
-#'   scalar value for uniform background copying probability.
-#' @param mu a vector of ...
-#' @param rho a vector of ...
-#' @param nthreads the number of CPU cores on which to run
+#' @param morgan.dist a vector of recombination distances between loci, in Morgans.
+#'   Note element i of this vector should be the distance between loci i and i+1
+#'   (not i and i-1), and thus length one less than the sequence length.
+#' @param Ne a scalar for the effective population size.  Can be autotuned, see ...
+#' @param gamma a scalar power to which the Morgan distances are raised.  Can be
+#'   autotuned, see ...
+#' @param mu a scalar (for uniform) or vector (for varying) mutation costs.
+#' @param Pi leaving the default of uniform copying probabilities is recommended for
+#'   computational efficiency.  If desired, a full matrix of background copying
+#'   probabilities can be provided, such that the (i,j)-th element is the background
+#'   probability that i copies j.  Hence, (a) the diagonal must be zero; and (b)
+#'   the columns of Pi must sum to 1.
+#' @param nthreads the number of CPU cores on which to run.
 #'
 #' @return There is nothing returned.  For performance reasons, the backward
 #'   table which was passed in is updated in-place.
@@ -76,7 +127,7 @@ Forward <- function(fwd, t, Pi, mu, rho, nthreads = 1) {
 #' @examples
 #' bck <- MakeBackwardTable()
 #' Backward(bck, 100, Pi, mu, rho)
-Backward <- function(bck, t, Pi, mu, rho, nthreads = 1) {
+Backward <- function(bck, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(bck$beta)-1), nthreads = 1) {
   L <- get("seq_size", envir = pkgCache)
   N <- length(get("seqs", envir = pkgCache))
   if(bck$l < t) {
@@ -85,27 +136,54 @@ Backward <- function(bck, t, Pi, mu, rho, nthreads = 1) {
   if(nrow(bck$beta) != N || ncol(bck$beta) != bck$to_recipient-bck$from_recipient+1) {
     stop("Forward table is of the wrong dimensions for this problem.")
   }
+  if(!is.vector(morgan.dist)) {
+    stop("morgan.dist must be a vector of recombination distances.")
+  }
+  if(!is.numeric(morgan.dist)) {
+    stop("morgan.dist must be numeric vector type.")
+  }
+  if(length(morgan.dist) != L-1) {
+    stop("morgan.dist is the wrong length for this problem.")
+  }
+  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
+    stop("Ne must be a scalar.")
+  }
+  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1) {
+    stop("gamma must be a scalar.")
+  }
+  if(!is.vector(mu)) {
+    stop("mu must be either a vector or a scalar.")
+  }
+  if(!is.numeric(mu)) {
+    stop("mu must be numeric.")
+  }
+  if(length(mu) != 1 && length(mu) != L) {
+    stop("mu is the wrong length for this problem.")
+  }
+  if(is.data.frame(Pi)) {
+    stop("Pi must be a matrix, not a data frame.")
+  }
   if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
     stop("Pi is of the wrong dimensions for this problem.")
   }
-  if(!is.matrix(Pi) && !(is.atomic(Pi) && length(Pi) == 1L && !is.character(Pi) && Im(Pi)==0)) {
-    stop("If Pi is not a full matrix of background copying probabilities then it must be a single scalar for uniform background copying probability.")
+  if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(nrow(bck$beta)-1))) {
+    stop("Pi can only be set to a matrix, or omitted to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
   }
-  if(!is.vector(mu) || length(mu) != L) {
-    stop("mu is of the wrong type/length.")
-  }
-  if(!is.vector(rho) || length(rho) != L) {
-    stop("rho is of the wrong type/length.")
-  }
+
+  rho <- c(1-exp(-Ne*morgan.dist^gamma), 1)
+  rho <- ifelse(rho<1e-16, 1e-16, rho)
 
   if(is.matrix(Pi)) {
-    Backward_densePi_cpp(bck, t, Pi, mu, rho, nthreads)
+    if(length(mu) == 1) {
+      Backward_densePi_scalarmu_cpp(bck, t, Pi, mu, rho, nthreads)
+    } else {
+      Backward_densePi_densemu_cpp(bck, t, Pi, mu, rho, nthreads)
+    }
   } else {
-    Backward_scalarPi_cpp(bck, t, Pi, mu, rho, nthreads)
+    if(length(mu) == 1) {
+      Backward_scalarPi_scalarmu_cpp(bck, t, Pi, mu, rho, nthreads)
+    } else {
+      Backward_scalarPi_densemu_cpp(bck, t, Pi, mu, rho, nthreads)
+    }
   }
 }
-
-
-
-
-

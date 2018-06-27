@@ -12,12 +12,12 @@ void ResetForwardTable(List fwd) {
 }
 
 // [[Rcpp::export]]
-void Forward_densePi_cpp(List fwd,
-                         const int t,
-                         NumericMatrix Pi,
-                         NumericVector mu,
-                         NumericVector rho,
-                         const int nthreads) {
+void Forward_densePi_densemu_cpp(List fwd,
+                                 const int t,
+                                 NumericMatrix Pi,
+                                 NumericVector mu,
+                                 NumericVector rho,
+                                 const int nthreads) {
   const int L = seq_size;
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
@@ -29,7 +29,7 @@ void Forward_densePi_cpp(List fwd,
 
   if(l>t) {
     Rcout << "The forward table provided is for locus position " << l << " which is already past requested locus " << t << "\n";
-    return;
+      return;
   }
   if(l==t) {
     return;
@@ -68,21 +68,6 @@ void Forward_densePi_cpp(List fwd,
 #else
   if(nthreads>1) {
     ParExactForwardNaiveC_cpp(alpha,
-                                 alpha_f,
-                                 alpha_f2,
-                                 from_rec-1,
-                                 l-1,
-                                 t-1,
-                                 from_rec-1,
-                                 to_rec,
-                                 L,
-                                 N,
-                                 Pi,
-                                 mu,
-                                 rho,
-                                 nthreads);
-  } else {
-    ExactForwardNaiveC_cpp(alpha,
                               alpha_f,
                               alpha_f2,
                               from_rec-1,
@@ -94,7 +79,22 @@ void Forward_densePi_cpp(List fwd,
                               N,
                               Pi,
                               mu,
-                              rho);
+                              rho,
+                              nthreads);
+  } else {
+    ExactForwardNaiveC_cpp(alpha,
+                           alpha_f,
+                           alpha_f2,
+                           from_rec-1,
+                           l-1,
+                           t-1,
+                           from_rec-1,
+                           to_rec,
+                           L,
+                           N,
+                           Pi,
+                           mu,
+                           rho);
   }
 #endif
 
@@ -104,12 +104,12 @@ void Forward_densePi_cpp(List fwd,
 }
 
 // [[Rcpp::export]]
-void Forward_scalarPi_cpp(List fwd,
-                          const int t,
-                          const double Pi,
-                          NumericVector mu,
-                          NumericVector rho,
-                          const int nthreads) {
+void Forward_scalarPi_densemu_cpp(List fwd,
+                                  const int t,
+                                  const double Pi,
+                                  NumericVector mu,
+                                  NumericVector rho,
+                                  const int nthreads) {
   const int L = seq_size;
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
@@ -121,7 +121,7 @@ void Forward_scalarPi_cpp(List fwd,
 
   if(l>t) {
     Rcout << "The forward table provided is for locus position " << l << " which is already past requested locus " << t << "\n";
-    return;
+      return;
   }
   if(l==t) {
     return;
@@ -164,21 +164,6 @@ void Forward_scalarPi_cpp(List fwd,
 
   if(nthreads>1) {
     ParExactForwardNaiveC_cpp(alpha,
-                                 alpha_f,
-                                 alpha_f2,
-                                 from_rec-1,
-                                 l-1,
-                                 t-1,
-                                 from_rec-1,
-                                 to_rec,
-                                 L,
-                                 N,
-                                 Pimat,
-                                 mu,
-                                 rho,
-                                 nthreads);
-  } else {
-    ExactForwardNaiveC_cpp(alpha,
                               alpha_f,
                               alpha_f2,
                               from_rec-1,
@@ -190,7 +175,215 @@ void Forward_scalarPi_cpp(List fwd,
                               N,
                               Pimat,
                               mu,
-                              rho);
+                              rho,
+                              nthreads);
+  } else {
+    ExactForwardNaiveC_cpp(alpha,
+                           alpha_f,
+                           alpha_f2,
+                           from_rec-1,
+                           l-1,
+                           t-1,
+                           from_rec-1,
+                           to_rec,
+                           L,
+                           N,
+                           Pimat,
+                           mu,
+                           rho);
+  }
+#endif
+
+  NumericVector newl(1);
+  newl[0] = t;
+  fwd["l"] = newl;
+}
+
+// [[Rcpp::export]]
+void Forward_densePi_scalarmu_cpp(List fwd,
+                                  const int t,
+                                  NumericMatrix Pi,
+                                  const double mu,
+                                  NumericVector rho,
+                                  const int nthreads) {
+  const int L = seq_size;
+  const int N = num_inds;
+  NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
+  NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
+  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
+  int l        = as<int>(fwd["l"]);
+  int from_rec = as<int>(fwd["from_recipient"]);
+  int to_rec   = as<int>(fwd["to_recipient"]);
+
+  if(l>t) {
+    Rcout << "The forward table provided is for locus position " << l << " which is already past requested locus " << t << "\n";
+      return;
+  }
+  if(l==t) {
+    return;
+  }
+#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
+  if(nthreads>1) {
+    ParExactForwardNoExpAVX3_scmu_cpp(alpha,
+                                      alpha_f,
+                                      alpha_f2,
+                                      from_rec-1,
+                                      l-1,
+                                      t-1,
+                                      from_rec-1,
+                                      to_rec,
+                                      L,
+                                      N,
+                                      Pi,
+                                      mu,
+                                      rho,
+                                      nthreads);
+  } else {
+    ExactForwardNoExpAVX3_scmu_cpp(alpha,
+                                   alpha_f,
+                                   alpha_f2,
+                                   from_rec-1,
+                                   l-1,
+                                   t-1,
+                                   from_rec-1,
+                                   to_rec,
+                                   L,
+                                   N,
+                                   Pi,
+                                   mu,
+                                   rho);
+  }
+#else
+  NumericVector muvec(N);
+  muvec.fill(mu);
+
+  if(nthreads>1) {
+    ParExactForwardNaiveC_cpp(alpha,
+                              alpha_f,
+                              alpha_f2,
+                              from_rec-1,
+                              l-1,
+                              t-1,
+                              from_rec-1,
+                              to_rec,
+                              L,
+                              N,
+                              Pi,
+                              muvec,
+                              rho,
+                              nthreads);
+  } else {
+    ExactForwardNaiveC_cpp(alpha,
+                           alpha_f,
+                           alpha_f2,
+                           from_rec-1,
+                           l-1,
+                           t-1,
+                           from_rec-1,
+                           to_rec,
+                           L,
+                           N,
+                           Pi,
+                           muvec,
+                           rho);
+  }
+#endif
+
+  NumericVector newl(1);
+  newl[0] = t;
+  fwd["l"] = newl;
+}
+
+// [[Rcpp::export]]
+void Forward_scalarPi_scalarmu_cpp(List fwd,
+                                   const int t,
+                                   const double Pi,
+                                   const double mu,
+                                   NumericVector rho,
+                                   const int nthreads) {
+  const int L = seq_size;
+  const int N = num_inds;
+  NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
+  NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
+  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
+  int l        = as<int>(fwd["l"]);
+  int from_rec = as<int>(fwd["from_recipient"]);
+  int to_rec   = as<int>(fwd["to_recipient"]);
+
+  if(l>t) {
+    Rcout << "The forward table provided is for locus position " << l << " which is already past requested locus " << t << "\n";
+      return;
+  }
+  if(l==t) {
+    return;
+  }
+#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
+  if(nthreads>1) {
+    ParExactForwardNoExpAVX3_scmuPi_cpp(alpha,
+                                        alpha_f,
+                                        alpha_f2,
+                                        from_rec-1,
+                                        l-1,
+                                        t-1,
+                                        from_rec-1,
+                                        to_rec,
+                                        L,
+                                        N,
+                                        Pi,
+                                        mu,
+                                        rho,
+                                        nthreads);
+  } else {
+    ExactForwardNoExpAVX3_scmuPi_cpp(alpha,
+                                     alpha_f,
+                                     alpha_f2,
+                                     from_rec-1,
+                                     l-1,
+                                     t-1,
+                                     from_rec-1,
+                                     to_rec,
+                                     L,
+                                     N,
+                                     Pi,
+                                     mu,
+                                     rho);
+  }
+#else
+  NumericMatrix Pimat(N, N);
+  Pimat.fill(Pi);
+  Pimat.fill_diag(0.0);
+  NumericVector muvec(N);
+  muvec.fill(mu);
+
+  if(nthreads>1) {
+    ParExactForwardNaiveC_cpp(alpha,
+                              alpha_f,
+                              alpha_f2,
+                              from_rec-1,
+                              l-1,
+                              t-1,
+                              from_rec-1,
+                              to_rec,
+                              L,
+                              N,
+                              Pimat,
+                              muvec,
+                              rho,
+                              nthreads);
+  } else {
+    ExactForwardNaiveC_cpp(alpha,
+                           alpha_f,
+                           alpha_f2,
+                           from_rec-1,
+                           l-1,
+                           t-1,
+                           from_rec-1,
+                           to_rec,
+                           L,
+                           N,
+                           Pimat,
+                           muvec,
+                           rho);
   }
 #endif
 
