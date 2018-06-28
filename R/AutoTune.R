@@ -31,5 +31,23 @@
 #' @examples
 #'
 AutoTune <- function(t, cache, morgan.dist, Pi = 1/(nrow(fwd$alpha)-1), nthreads = 1) {
+  if(!is.vector(t)) {
+    stop("t must be either a vector or a scalar.")
+  }
+  if(!is.numeric(t)) {
+    stop("t must be numeric.")
+  }
+  if(length(t) < 1 || length(t) > L) {
+    stop("t is the wrong length for this problem.")
+  }
+
+
+  if(length(t) == 1) {
+    t <-
+  }
+
+}
+
+InvRecombMap <- (morgan.dist) {
 
 }
