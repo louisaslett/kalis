@@ -4,7 +4,7 @@
 \alias{AutoTune}
 \title{Auto-tune the parameters for HMM}
 \usage{
-AutoTune(t, cache, morgan.dist, Pi = 1/(nrow(fwd$alpha) - 1), nthreads = 1)
+AutoTune(t, cache, morgan.dist, nthreads = 1)
 }
 \arguments{
 \item{t}{the number of loci to auto-tune against (which will be evently spaced
@@ -18,13 +18,13 @@ Note this cache will be overwritten.}
 Note element i of this vector should be the distance between loci i and i+1
 (not i and i-1), and thus length one less than the sequence length.}
 
+\item{nthreads}{the number of CPU cores on which to run.}
+
 \item{Pi}{leaving the default of uniform copying probabilities is recommended for
 computational efficiency.  If desired, a full matrix of background copying
 probabilities can be provided, such that the (i,j)-th element is the background
 probability that i copies j.  Hence, (a) the diagonal must be zero; and (b)
 the columns of Pi must sum to 1.}
-
-\item{nthreads}{the number of CPU cores on which to run.}
 }
 \value{
 The optimal parameters for the HMM as a list.

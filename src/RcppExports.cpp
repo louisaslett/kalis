@@ -5,6 +5,16 @@
 
 using namespace Rcpp;
 
+// ResetBackwardTable
+void ResetBackwardTable(List bck);
+RcppExport SEXP _StatGen_ResetBackwardTable(SEXP bckSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
+    ResetBackwardTable(bck);
+    return R_NilValue;
+END_RCPP
+}
 // Backward_densePi_densemu_cpp
 void Backward_densePi_densemu_cpp(List bck, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
 RcppExport SEXP _StatGen_Backward_densePi_densemu_cpp(SEXP bckSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
@@ -837,6 +847,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_StatGen_ResetBackwardTable", (DL_FUNC) &_StatGen_ResetBackwardTable, 1},
     {"_StatGen_Backward_densePi_densemu_cpp", (DL_FUNC) &_StatGen_Backward_densePi_densemu_cpp, 6},
     {"_StatGen_Backward_scalarPi_densemu_cpp", (DL_FUNC) &_StatGen_Backward_scalarPi_densemu_cpp, 6},
     {"_StatGen_Backward_densePi_scalarmu_cpp", (DL_FUNC) &_StatGen_Backward_densePi_scalarmu_cpp, 6},

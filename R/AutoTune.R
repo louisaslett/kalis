@@ -30,7 +30,7 @@
 #'
 #' @examples
 #'
-AutoTune <- function(t, cache, morgan.dist, Pi = 1/(nrow(fwd$alpha)-1), nthreads = 1) {
+AutoTune <- function(t, cache, morgan.dist, nthreads = 1) {
   if(!is.vector(t)) {
     stop("t must be either a vector or a scalar.")
   }
@@ -61,21 +61,22 @@ AutoTune <- function(t, cache, morgan.dist, Pi = 1/(nrow(fwd$alpha)-1), nthreads
   if(length(morgan.dist) != L-1) {
     stop("morgan.dist is the wrong length for this problem.")
   }
-  if(is.data.frame(Pi)) {
-    stop("Pi must be a matrix or scalar, not a data frame.")
-  }
-  # if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
-  #   stop("Pi is of the wrong dimensions for this problem.")
-  if(is.matrix(Pi)) {
-    stop("Only scalar Pi is supported for auto-tuning.")
-  }
-  if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(nrow(fwd$alpha)-1))) {
-    stop("Pi can only be set to a matrix, or omitted to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
-  }
+  # if(is.data.frame(Pi)) {
+  #   stop("Pi must be a matrix or scalar, not a data frame.")
+  # }
+  # # if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
+  # #   stop("Pi is of the wrong dimensions for this problem.")
+  # if(is.matrix(Pi)) {
+  #   stop("Only scalar Pi is supported for auto-tuning.")
+  # }
+  # if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(nrow(fwd$alpha)-1))) {
+  #   stop("Pi can only be set to a matrix, or omitted to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
+  # }
+  Pi <- 1/(nrow(cache[[1]]$alpha)-1)
 
   # If not given specific loci, use the cumulative recombination map to find sensibly spaced ones
   if(length(t) == 1) {
-    t <- InvRecombMap(morgan.dist)
+    t <- InvRecombMap(morgan.dist, t)
   }
 
   # Check the cache is big enough -- we should add checkpointing in future?
@@ -84,10 +85,11 @@ AutoTune <- function(t, cache, morgan.dist, Pi = 1/(nrow(fwd$alpha)-1), nthreads
   }
 
   bck <- MakeBackwardTable(cache[[1]]$from_recipient, cache[[1]]$to_recipient)
-  bo <- BayesianOptimization(function(Ne, gamma, mu) { AutoTuneTarget(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads) },
-                             bounds = list(Ne = c(0.01, 1000), gamma = c(0.001, 10), mu = c(1e-10, 1)),
+  bo <- BayesianOptimization(function(Ne, gamma, mu) { print(c("Trying Ne =", Ne, ", gamma =", gamma, ", mu =", mu, "\n")); AutoTuneTarget(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads) },
+                             bounds = list(Ne = c(0.01, 100), gamma = c(0.1, 10), mu = c(1e-10, 1)),
                              init_points = 4, n_iter = 30)
   rm(bck)
+  bo
 }
 
 AutoTuneTarget <- function(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads) {
@@ -96,8 +98,9 @@ AutoTuneTarget <- function(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthrea
   rho <- c(1-exp(-Ne*morgan.dist^gamma), 1)
   rho <- ifelse(rho<1e-16, 1e-16, rho)
 
+  ResetBackwardTable(bck)
   AutoTuneFillForwardCache(cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads)
-  for(i in 1:length(t)) {
+  for(i in length(t):1) {
     Forward1step_scalarPi_scalarmu_cpp(cache[[i]], t[i], Pi, mu, rho, nthreads)
     Backward(bck, t[i], morgan.dist, Ne, gamma, mu, Pi, nthreads)
 
@@ -115,8 +118,8 @@ AutoTuneTarget <- function(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthrea
     mu <- mean(y)
     sigma <- sqrt(mu*(1-mu))
 
-    obs <- crossprod(y-mu, M%*%(y-mu))
-    neglog.p.val[i] <- -QFIntBounds(obs, M, rep(mu, nrow(M)), rep(sigma, nrow(M)), 25, log = TRUE)[1,4]
+    obs <- c(crossprod(y-mu, M%*%(y-mu)))
+    neglog.p.val[i] <- -QFIntBounds(obs, as(M, "dsyMatrix"), rep(mu, nrow(M)), rep(sigma, nrow(M)), 25, log = TRUE)[1,4]
   }
 
   list(Score = sum(neglog.p.val), Pred = 0)
@@ -129,39 +132,39 @@ AutoTuneFillForwardCache <- function(cache, t, morgan.dist, Ne, gamma, mu, Pi, n
   N <- length(t)
   ResetForwardTable(cache[[N]])
 
-  for(i in t.pre[-N]) {
-    Forward(cache[[N]], i, morgan.dist, Ne, gamma, mu, Pi, nthreads)
+  for(i in 1:(N-1)) {
+    Forward(cache[[N]], t.pre[i], morgan.dist, Ne, gamma, mu, Pi, nthreads)
     CopyForwardTable(cache[[i]], cache[[N]])
   }
 }
 
-InvRecombMap <- function(morgan.dist,num.loci) {
+InvRecombMap <- function(morgan.dist, num.loci) {
   #morgan.dist<-c(0.1,0.4,0.2,0.23,0.43,0.12,0.7,0.10)
   morgan.cdf<-cumsum(morgan.dist)
-  
-  # Could just set it so that if 
-  
+
+  # Could just set it so that if
+
   #num.loci<-6
-  
-  # If an two SNPs are further apart than the gap between target loci, then we don't want to depend 
+
+  # If an two SNPs are further apart than the gap between target loci, then we don't want to depend
   # on the estimation of that recombination hotspot, so we simply ignore that hotspot to be convervative
-  
+
   delta<-(morgan.cdf[length(morgan.cdf)]-morgan.cdf[1])/(num.loci+1)
   # loci.to.exclude<-which(morgan.dist>(delta-1e-12))
   # morgan.dist.thinned<-morgan.dist[-loci.to.exclude]
   # locs<-2:(length(morgan.dist)+1)[-loci.to.exclude]
   # morgan.cdf.thinned<-cumsum(morgan.dist.thinned)
-  # 
+  #
   target.grid<-seq(0,morgan.cdf[length(morgan.cdf)],length.out = num.loci+2)[-1]
   target.grid<-target.grid[-length(target.grid)]
 
   yy<-approxfun(x=morgan.cdf,y=2:(length(morgan.dist)+1),method="constant")(target.grid)
   #plot(2:(length(morgan.dist)+1),morgan.cdf,type="S")
   #for(i in 1:length(target.grid)){abline(h=target.grid[i])}
-  
+
   #for(i in 1:length(yy)){abline(v=yy[i])}
   return(yy)
-  # ties 
+  # ties
   # integer
   # robust to all possible inputs
-  }
+}
