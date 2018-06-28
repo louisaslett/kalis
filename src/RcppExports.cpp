@@ -498,6 +498,51 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// ExactForward1stepNoExpAVX3_scmuPi_cpp
+void ExactForward1stepNoExpAVX3_scmuPi_cpp(NumericMatrix alpha, NumericVector alpha_f, NumericVector alpha_f2, const int alpha_from_rec, const int alpha_t, const int t, const int from_rec, const int to_rec, const int L, const int N, const double Pi, const double mu, NumericVector rho);
+RcppExport SEXP _StatGen_ExactForward1stepNoExpAVX3_scmuPi_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type alpha_f(alpha_fSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type alpha_f2(alpha_f2SEXP);
+    Rcpp::traits::input_parameter< const int >::type alpha_from_rec(alpha_from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type alpha_t(alpha_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< const int >::type from_rec(from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type to_rec(to_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const double >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    ExactForward1stepNoExpAVX3_scmuPi_cpp(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho);
+    return R_NilValue;
+END_RCPP
+}
+// ParExactForward1stepNoExpAVX3_scmuPi_cpp
+void ParExactForward1stepNoExpAVX3_scmuPi_cpp(NumericMatrix alpha, NumericVector alpha_f, NumericVector alpha_f2, const int alpha_from_rec, const int alpha_t, const int t, const int from_rec, const int to_rec, const int L, const int N, const double Pi, const double mu, NumericVector rho, const int nthreads);
+RcppExport SEXP _StatGen_ParExactForward1stepNoExpAVX3_scmuPi_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type alpha_f(alpha_fSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type alpha_f2(alpha_f2SEXP);
+    Rcpp::traits::input_parameter< const int >::type alpha_from_rec(alpha_from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type alpha_t(alpha_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< const int >::type from_rec(from_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type to_rec(to_recSEXP);
+    Rcpp::traits::input_parameter< const int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const double >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    ParExactForward1stepNoExpAVX3_scmuPi_cpp(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads);
+    return R_NilValue;
+END_RCPP
+}
 // ExactForwardNaiveC_cpp
 void ExactForwardNaiveC_cpp(NumericMatrix alpha, NumericVector alpha_f, NumericVector alpha_f2, const int alpha_from_rec, const int alpha_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
 RcppExport SEXP _StatGen_ExactForwardNaiveC_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
@@ -748,6 +793,21 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// Forward1step_scalarPi_scalarmu_cpp
+void Forward1step_scalarPi_scalarmu_cpp(List fwd, const int t, const double Pi, const double mu, NumericVector rho, const int nthreads);
+RcppExport SEXP _StatGen_Forward1step_scalarPi_scalarmu_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< const int >::type t(tSEXP);
+    Rcpp::traits::input_parameter< const double >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    Forward1step_scalarPi_scalarmu_cpp(fwd, t, Pi, mu, rho, nthreads);
+    return R_NilValue;
+END_RCPP
+}
 // FillTableCache
 void FillTableCache(List cache, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads, int from, int to);
 RcppExport SEXP _StatGen_FillTableCache(SEXP cacheSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP, SEXP fromSEXP, SEXP toSEXP) {
@@ -807,6 +867,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_StatGen_ParExactBackwardNoExpAVX3_scPi_cpp", (DL_FUNC) &_StatGen_ParExactBackwardNoExpAVX3_scPi_cpp, 14},
     {"_StatGen_ExactForwardNoExpAVX3_cpp", (DL_FUNC) &_StatGen_ExactForwardNoExpAVX3_cpp, 13},
     {"_StatGen_ParExactForwardNoExpAVX3_cpp", (DL_FUNC) &_StatGen_ParExactForwardNoExpAVX3_cpp, 14},
+    {"_StatGen_ExactForward1stepNoExpAVX3_scmuPi_cpp", (DL_FUNC) &_StatGen_ExactForward1stepNoExpAVX3_scmuPi_cpp, 13},
+    {"_StatGen_ParExactForward1stepNoExpAVX3_scmuPi_cpp", (DL_FUNC) &_StatGen_ParExactForward1stepNoExpAVX3_scmuPi_cpp, 14},
     {"_StatGen_ExactForwardNaiveC_cpp", (DL_FUNC) &_StatGen_ExactForwardNaiveC_cpp, 13},
     {"_StatGen_ParExactForwardNaiveC_cpp", (DL_FUNC) &_StatGen_ParExactForwardNaiveC_cpp, 14},
     {"_StatGen_ExactForwardNoExpAVX3_scmu_cpp", (DL_FUNC) &_StatGen_ExactForwardNoExpAVX3_scmu_cpp, 13},
@@ -820,6 +882,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_StatGen_Forward_scalarPi_densemu_cpp", (DL_FUNC) &_StatGen_Forward_scalarPi_densemu_cpp, 6},
     {"_StatGen_Forward_densePi_scalarmu_cpp", (DL_FUNC) &_StatGen_Forward_densePi_scalarmu_cpp, 6},
     {"_StatGen_Forward_scalarPi_scalarmu_cpp", (DL_FUNC) &_StatGen_Forward_scalarPi_scalarmu_cpp, 6},
+    {"_StatGen_Forward1step_scalarPi_scalarmu_cpp", (DL_FUNC) &_StatGen_Forward1step_scalarPi_scalarmu_cpp, 6},
     {"_StatGen_FillTableCache", (DL_FUNC) &_StatGen_FillTableCache, 7},
     {"_StatGen_CopyForwardTable", (DL_FUNC) &_StatGen_CopyForwardTable, 2},
     {NULL, NULL, 0}

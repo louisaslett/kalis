@@ -67,7 +67,7 @@ Forward <- function(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha)-
     stop("mu is the wrong length for this problem.")
   }
   if(is.data.frame(Pi)) {
-    stop("Pi must be a matrix, not a data frame.")
+    stop("Pi must be a matrix or scalar, not a data frame.")
   }
   if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
     stop("Pi is of the wrong dimensions for this problem.")
@@ -161,7 +161,7 @@ Backward <- function(bck, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(bck$beta)-
     stop("mu is the wrong length for this problem.")
   }
   if(is.data.frame(Pi)) {
-    stop("Pi must be a matrix, not a data frame.")
+    stop("Pi must be a matrix or scalar, not a data frame.")
   }
   if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
     stop("Pi is of the wrong dimensions for this problem.")

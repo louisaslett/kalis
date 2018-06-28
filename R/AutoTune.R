@@ -37,15 +37,102 @@ AutoTune <- function(t, cache, morgan.dist, Pi = 1/(nrow(fwd$alpha)-1), nthreads
   if(!is.numeric(t)) {
     stop("t must be numeric.")
   }
-  if(length(t) < 1 || length(t) > L) {
+  if(length(t) < 1 || length(t) >= L) {
     stop("t is the wrong length for this problem.")
   }
-
-
-  if(length(t) == 1) {
-    t <-
+  if(length(t) == 1 && (t < 1 || t >= L)) {
+    stop("Invalid number of loci chosen for auto-tuning.")
+  }
+  if(length(t) > 1 && !isTRUE(all.equal(t, sort(t)))) {
+    stop("Loci specified in t are not sorted ... are these definitely loci for auto-tuning?")
+  }
+  if(length(t) > 1 && (any(t<1) || any(t>L))) {
+    stop("Invalid loci numbers specified in t.")
+  }
+  if(class(cache) != "StatGenCheckpointTable") {
+    stop("cache must be a StatGenCheckpointTable.")
+  }
+  if(!is.vector(morgan.dist)) {
+    stop("morgan.dist must be a vector of recombination distances.")
+  }
+  if(!is.numeric(morgan.dist)) {
+    stop("morgan.dist must be numeric vector type.")
+  }
+  if(length(morgan.dist) != L-1) {
+    stop("morgan.dist is the wrong length for this problem.")
+  }
+  if(is.data.frame(Pi)) {
+    stop("Pi must be a matrix or scalar, not a data frame.")
+  }
+  # if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
+  #   stop("Pi is of the wrong dimensions for this problem.")
+  if(is.matrix(Pi)) {
+    stop("Only scalar Pi is supported for auto-tuning.")
+  }
+  if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(nrow(fwd$alpha)-1))) {
+    stop("Pi can only be set to a matrix, or omitted to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
   }
 
+  # If not given specific loci, use the cumulative recombination map to find sensibly spaced ones
+  if(length(t) == 1) {
+    t <- InvRecombMap(morgan.dist)
+  }
+
+  # Check the cache is big enough -- we should add checkpointing in future?
+  if(length(cache) < length(t)) {
+    stop("cache is not large enough to store the forward table at all loci: checkpointing will be implemented in a future release, for now please increase table cache size or auto-tune using fewer loci.")
+  }
+
+  bck <- MakeBackwardTable(cache[[1]]$from_recipient, cache[[1]]$to_recipient)
+  bo <- BayesianOptimization(function(Ne, gamma, mu) { AutoTuneTarget(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads) },
+                             bounds = list(Ne = c(0.01, 1000), gamma = c(0.001, 10), mu = c(1e-10, 1)),
+                             init_points = 4, n_iter = 30)
+  rm(bck)
+}
+
+AutoTuneTarget <- function(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads) {
+  neglog.p.val <- rep(0, length(t))
+
+  rho <- c(1-exp(-Ne*morgan.dist^gamma), 1)
+  rho <- ifelse(rho<1e-16, 1e-16, rho)
+
+  AutoTuneFillForwardCache(cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads)
+  for(i in 1:length(t)) {
+    Forward1step_scalarPi_scalarmu_cpp(cache[[i]], t[i], Pi, mu, rho, nthreads)
+    Backward(bck, t[i], morgan.dist, Ne, gamma, mu, Pi, nthreads)
+
+    # Get distance matrix
+    M <- -log(t(cache[[i]]$alpha*bck$beta)) + cache[[i]]$alpha.f2 + bck$beta.g2
+    diag(M) <- Inf
+    min_dist_vec <- M[cbind(1:nrow(M), max.col(-M))]
+    lZ <- log(rowSums(exp(min_dist_vec - M))) - min_dist_vec
+    M <- M+lZ
+    diag(M) <- 0
+    M <- (M+t(M))/2
+
+    # Compute p-value
+    y <- QueryCache(start = t[i], length = 1)[,1]
+    mu <- mean(y)
+    sigma <- sqrt(mu*(1-mu))
+
+    obs <- crossprod(y-mu, M%*%(y-mu))
+    neglog.p.val[i] <- -QFIntBounds(obs, M, rep(mu, nrow(M)), rep(sigma, nrow(M)), 25, log = TRUE)[1,4]
+  }
+
+  list(Score = sum(neglog.p.val), Pred = 0)
+}
+
+AutoTuneFillForwardCache <- function(cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads) {
+  t.pre <- t-1
+
+  # Use the final element of cache as the table to move forward
+  N <- length(t)
+  ResetForwardTable(cache[[N]])
+
+  for(i in t.pre[-N]) {
+    Forward(cache[[N]], i, morgan.dist, Ne, gamma, mu, Pi, nthreads)
+    CopyForwardTable(cache[[i]], cache[[N]])
+  }
 }
 
 InvRecombMap <- function(morgan.dist) {

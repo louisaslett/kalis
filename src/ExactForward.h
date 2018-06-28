@@ -149,4 +149,33 @@ void ParExactForwardNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
                                          NumericVector rho,
                                          const int nthreads);
 
+void ExactForward1stepNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
+                                           NumericVector alpha_f,
+                                           NumericVector alpha_f2,
+                                           const int alpha_from_rec,
+                                           const int alpha_t,
+                                           const int t,
+                                           const int from_rec,
+                                           const int to_rec,
+                                           const int L,
+                                           const int N,
+                                           const double Pi,
+                                           const double mu,
+                                           NumericVector rho);
+
+void ParExactForward1stepNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
+                                              NumericVector alpha_f,
+                                              NumericVector alpha_f2,
+                                              const int alpha_from_rec,
+                                              const int alpha_t,
+                                              const int t,
+                                              const int from_rec,
+                                              const int to_rec,
+                                              const int L,
+                                              const int N,
+                                              const double Pi,
+                                              const double mu,
+                                              NumericVector rho,
+                                              const int nthreads);
+
 #endif
