@@ -48,6 +48,6 @@ AutoTune <- function(t, cache, morgan.dist, Pi = 1/(nrow(fwd$alpha)-1), nthreads
 
 }
 
-InvRecombMap <- (morgan.dist) {
+InvRecombMap <- function(morgan.dist) {
 
 }
