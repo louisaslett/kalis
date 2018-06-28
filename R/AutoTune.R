@@ -30,7 +30,7 @@
 #'
 #' @examples
 #'
-AutoTune <- function(t, cache, morgan.dist, nthreads = 1) {
+AutoTune <- function(t, cache, morgan.dist, it = 30, nthreads = 1) {
   if(!is.vector(t)) {
     stop("t must be either a vector or a scalar.")
   }
@@ -87,7 +87,7 @@ AutoTune <- function(t, cache, morgan.dist, nthreads = 1) {
   bck <- MakeBackwardTable(cache[[1]]$from_recipient, cache[[1]]$to_recipient)
   bo <- BayesianOptimization(function(Ne, gamma, mu) { print(c("Trying Ne =", Ne, ", gamma =", gamma, ", mu =", mu, "\n")); AutoTuneTarget(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads) },
                              bounds = list(Ne = c(0.01, 100), gamma = c(0.1, 10), mu = c(1e-10, 1)),
-                             init_points = 4, n_iter = 30)
+                             init_points = 4, n_iter = it)
   rm(bck)
   bo
 }
