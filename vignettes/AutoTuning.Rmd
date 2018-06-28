@@ -1,10 +1,10 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "Auto-tuning HMM Parameters for Local Phylogeny Inference"
+author: "Louis Aslett & Ryan Christ"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Auto-tuning HMM Parameters for Local Phylogeny Inference}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,15 +16,33 @@ knitr::opts_chunk$set(
 )
 ```
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
 
-## Vignette Info
+## Motivation
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+The StatGen Package is designed to obtain distance matrices that each coarsely approximate the local phylogeny underlying a given locus of the genome using the Li & Stephens Model.   
+
+As noted, there are three parameters...
+
+Those parameters do not have biological meaning for our purposes but are simply tunable to allow us to optimize for local phylogeny inference.
+
+motivating objective...but you should look at entire histogram
+
+What part of the genome to run this on?  Well, ideally just the chromosome you're working with.  
+
+You'd want to know if the different chromosomes were yielding different parameter estimates. 
+
+Here we provide the functionality for doing a single chromosome on a single machine.  You can send this out on your cluster to do two chromosomes separately and compare the results.
+
+We have here a suggested method for combining the parameter estimates from across chromosomes.Though in principle, we don't see immediately any reason why there'd be problems combining info for say population structure with slightly different parameters.
+
+If parameters are actually different between chromosomes, then we'd suggest using the parameters only on their respective chromosomes.  
+
+If you'd like to do the optimization jointly over all chromosomes, that's totally fine, but we'd suggest that you do it on a single chromosome first to give yourself a good initialization point then proceed.  Unfortunately the optimal way to do that depends on your cluster architecture.
+
+Below we'll give an example of how to do multi-chromosome comparison.  
+
 
 ## Styles
 

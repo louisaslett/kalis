@@ -48,6 +48,33 @@ AutoTune <- function(t, cache, morgan.dist, Pi = 1/(nrow(fwd$alpha)-1), nthreads
 
 }
 
-InvRecombMap <- function(morgan.dist) {
+InvRecombMap <- function(morgan.dist,num.loci) {
+  #morgan.dist<-c(0.1,0.4,0.2,0.23,0.43,0.12,0.7,0.10)
+  morgan.cdf<-cumsum(morgan.dist)
+  
+  # Could just set it so that if 
+  
+  #num.loci<-6
+  
+  # If an two SNPs are further apart than the gap between target loci, then we don't want to depend 
+  # on the estimation of that recombination hotspot, so we simply ignore that hotspot to be convervative
+  
+  delta<-(morgan.cdf[length(morgan.cdf)]-morgan.cdf[1])/(num.loci+1)
+  # loci.to.exclude<-which(morgan.dist>(delta-1e-12))
+  # morgan.dist.thinned<-morgan.dist[-loci.to.exclude]
+  # locs<-2:(length(morgan.dist)+1)[-loci.to.exclude]
+  # morgan.cdf.thinned<-cumsum(morgan.dist.thinned)
+  # 
+  target.grid<-seq(0,morgan.cdf[length(morgan.cdf)],length.out = num.loci+2)[-1]
+  target.grid<-target.grid[-length(target.grid)]
 
-}
+  yy<-approxfun(x=morgan.cdf,y=2:(length(morgan.dist)+1),method="constant")(target.grid)
+  #plot(2:(length(morgan.dist)+1),morgan.cdf,type="S")
+  #for(i in 1:length(target.grid)){abline(h=target.grid[i])}
+  
+  #for(i in 1:length(yy)){abline(v=yy[i])}
+  return(yy)
+  # ties 
+  # integer
+  # robust to all possible inputs
+  }
