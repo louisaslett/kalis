@@ -146,43 +146,43 @@ InvRecombMap <- function(morgan.dist, num.target.loci) {
   #morgan.dist.orig<-c(morgan.dist.orig[1:200],.5,morgan.dist.orig[201:600],.5,morgan.dist.orig[601:1000])
   #morgan.dist<-morgan.dist.orig
   #num.target.loci<-10
-  
-  L<-length(morgan.dist)+1
-  delta<-(sum(morgan.dist)-morgan.dist[1])/(num.target.loci+1)-sqrt(.Machine$double.eps)
-  
-  # This function finds all points in the recombination map where the map jumps more than delta and 
-  # then tempers the peaks of the recomb map just enough to ensure that all of the peaks are less than delta 
-  # while redistributing the mass so that the recombination map CDF adds up to the same number.
-  # This allows us to maintain the local recombination architecture while ensuring that training points are all 
-  # distinct integers that do not neglect sampling more densely from regions with high recombination hotspots
-  
-  if(any(morgan.dist>delta)){
-    
-    leveler<-function(x,morgan.dist,L,delta){
-      temp<-(morgan.dist-x)
-      eps<-sum(temp[which(temp>0)])/(L-1)
-      return(delta-(x+eps))
-    }
-    
-    ideal.x<-uniroot(leveler,morgan.dist=morgan.dist,L=L,delta=delta,upper = delta,lower=0)$root
-    temp<-morgan.dist-ideal.x
-    eps<-sum(temp[which(temp>0)])/(L-1)
-    morgan.dist<-ifelse(morgan.dist<=ideal.x,morgan.dist,rep(ideal.x,L-1))+eps
-  
-  }
-  
-  morgan.cdf<-cumsum(morgan.dist)
-  target.grid<-seq(0,morgan.cdf[L-1],length.out = num.target.loci+2)[-1]
-  target.grid<-target.grid[-length(target.grid)]
 
-  yy<-approxfun(x=morgan.cdf,y=2:L,method="constant")(target.grid)
-  
-  if(anyDuplicated(yy)!=0){stop("Duplicated target loci returned when inverting recomb map")}
-  
-  return(yy)
-  
+  if(length(morgan.dist) < num.target.loci) stop("Cannot return more target loci than exist in morgan.dist")
+
+  L <- length(morgan.dist)+1
+  delta <- (sum(morgan.dist)-morgan.dist[1])/(num.target.loci+1)-sqrt(.Machine$double.eps)
+
+  # This function finds all points in the recombination map where the map jumps more than delta and
+  # then tempers the peaks of the recomb map just enough to ensure that all of the peaks are less than delta
+  # while redistributing the mass so that the recombination map CDF adds up to the same number.
+  # This allows us to maintain the local recombination architecture while ensuring that training points are all
+  # distinct integers that do not neglect sampling more densely from regions with high recombination hotspots
+
+  if(any(morgan.dist>delta)) {
+    tryCatch({
+      ideal.x <- uniroot(function(x, morgan.dist, L, delta) {
+        temp <- (morgan.dist-x)
+        eps <- sum(temp[which(temp>0)])/(L-1)
+        return(delta-(x+eps))
+      }, morgan.dist = morgan.dist, L = L, delta = delta, upper = delta, lower = 0)$root
+    }, error = function(e) stop("Cannot uniformly space that many target loci on this morgan.dist object.  Try reducing num.target.loci."))
+    temp <- morgan.dist-ideal.x
+    eps <- sum(temp[which(temp>0)])/(L-1)
+    morgan.dist <- ifelse(morgan.dist<=ideal.x, morgan.dist, ideal.x) + eps
+  }
+
+  morgan.cdf <- cumsum(morgan.dist)
+  target.grid <- seq(0,morgan.cdf[L-1], length.out = num.target.loci+2)[-1]
+  target.grid <- target.grid[-length(target.grid)]
+
+  yy <- approxfun(x = morgan.cdf, y = 2:L, method = "constant")(target.grid)
+
+  if(anyDuplicated(yy)!=0) stop("Duplicated target loci returned when inverting recomb map")
+
   #plot(2:L,cumsum(morgan.dist.orig),type="S")
   #lines(2:L,morgan.cdf,type="S",col="blue")
   # for(i in 1:length(target.grid)){abline(h=target.grid[i])}
   # for(i in 1:length(yy)){abline(v=yy[i])}
+
+  yy
 }
