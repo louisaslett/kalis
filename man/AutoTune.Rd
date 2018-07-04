@@ -4,7 +4,7 @@
 \alias{AutoTune}
 \title{Auto-tune the parameters for HMM}
 \usage{
-AutoTune(t, cache, morgan.dist, nthreads = 1)
+AutoTune(t, cache, morgan.dist, gamma = NULL, it = 30, nthreads = 1)
 }
 \arguments{
 \item{t}{the number of loci to auto-tune against (which will be evently spaced

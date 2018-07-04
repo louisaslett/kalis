@@ -31,6 +31,8 @@
 #' @examples
 #'
 AutoTune <- function(t, cache, morgan.dist, gamma = NULL, it = 30, nthreads = 1) {
+  init_points <- 4
+
   if(!is.vector(t)) {
     stop("t must be either a vector or a scalar.")
   }
@@ -93,26 +95,32 @@ AutoTune <- function(t, cache, morgan.dist, gamma = NULL, it = 30, nthreads = 1)
   if(is.null(gamma)) {
     BO.fn <- function(Ne, gamma, mu) {
       print(c("Trying Ne =", Ne, ", gamma =", gamma, ", mu =", mu, "\n"))
-      AutoTuneTarget(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads)
+      AutoTuneTarget(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, e, nthreads)
     }
     BO.bounds <- list(Ne = c(0.01, 100), gamma = c(0.1, 10), mu = c(1e-10, 1))
   } else {
     BO.fn <- function(Ne, mu) {
       print(c("Trying Ne =", Ne, ", mu =", mu, "\n"))
-      AutoTuneTarget(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads)
+      AutoTuneTarget(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, e, nthreads)
     }
     BO.bounds <- list(Ne = c(0.01, 100), mu = c(1e-10, 1))
   }
 
+  # We want to extract the negative log p-values for diagnostics
+  e <- new.env(parent = emptyenv())
+  e$neglog.p.val <- matrix(0, init_points+it, length(t))
+  e$i <- 1
+
   # Do Bayesian optimisation search for best parameters
   bck <- MakeBackwardTable(cache[[1]]$from_recipient, cache[[1]]$to_recipient)
   bo <- BayesianOptimization(BO.fn, bounds = BO.bounds,
-                             init_points = 4, n_iter = it)
+                             init_points = init_points, n_iter = it)
   rm(bck)
-  bo
+  list(BayesianOptimization = bo,
+       neglog.p.val = e$neglog.p.val)
 }
 
-AutoTuneTarget <- function(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads) {
+AutoTuneTarget <- function(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, e, nthreads) {
   neglog.p.val <- rep(0, length(t))
 
   rho <- c(1-exp(-Ne*morgan.dist^gamma), 1)
@@ -141,6 +149,9 @@ AutoTuneTarget <- function(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthrea
     obs <- c(crossprod(y-mu, M%*%(y-mu)))
     neglog.p.val[i] <- -QFIntBounds(obs, as(M, "dsyMatrix"), rep(mu, nrow(M)), rep(sigma, nrow(M)), 25, log = TRUE)[1,4]
   }
+
+  e$neglog.p.val[e$i,] <- neglog.p.val
+  e$i <- e$i+1
 
   list(Score = sum(neglog.p.val), Pred = 0)
 }
