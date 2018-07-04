@@ -30,7 +30,7 @@
 #'
 #' @examples
 #'
-AutoTune <- function(t, cache, morgan.dist, it = 30, nthreads = 1) {
+AutoTune <- function(t, cache, morgan.dist, gamma = NULL, it = 30, nthreads = 1) {
   if(!is.vector(t)) {
     stop("t must be either a vector or a scalar.")
   }
@@ -61,6 +61,11 @@ AutoTune <- function(t, cache, morgan.dist, it = 30, nthreads = 1) {
   if(length(morgan.dist) != L-1) {
     stop("morgan.dist is the wrong length for this problem.")
   }
+  if(!is.null(gamma)) {
+    if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma <= 0) {
+      stop("gamma must be a positive scalar.")
+    }
+  }
   # if(is.data.frame(Pi)) {
   #   stop("Pi must be a matrix or scalar, not a data frame.")
   # }
@@ -84,9 +89,24 @@ AutoTune <- function(t, cache, morgan.dist, it = 30, nthreads = 1) {
     stop("cache is not large enough to store the forward table at all loci: checkpointing will be implemented in a future release, for now please increase table cache size or auto-tune using fewer loci.")
   }
 
+  # Tuning combinations
+  if(is.null(gamma)) {
+    BO.fn <- function(Ne, gamma, mu) {
+      print(c("Trying Ne =", Ne, ", gamma =", gamma, ", mu =", mu, "\n"))
+      AutoTuneTarget(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads)
+    }
+    BO.bounds <- list(Ne = c(0.01, 100), gamma = c(0.1, 10), mu = c(1e-10, 1))
+  } else {
+    BO.fn <- function(Ne, mu) {
+      print(c("Trying Ne =", Ne, ", mu =", mu, "\n"))
+      AutoTuneTarget(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads)
+    }
+    BO.bounds <- list(Ne = c(0.01, 100), mu = c(1e-10, 1))
+  }
+
+  # Do Bayesian optimisation search for best parameters
   bck <- MakeBackwardTable(cache[[1]]$from_recipient, cache[[1]]$to_recipient)
-  bo <- BayesianOptimization(function(Ne, gamma, mu) { print(c("Trying Ne =", Ne, ", gamma =", gamma, ", mu =", mu, "\n")); AutoTuneTarget(bck, cache, t, morgan.dist, Ne, gamma, mu, Pi, nthreads) },
-                             bounds = list(Ne = c(0.01, 100), gamma = c(0.1, 10), mu = c(1e-10, 1)),
+  bo <- BayesianOptimization(BO.fn, bounds = BO.bounds,
                              init_points = 4, n_iter = it)
   rm(bck)
   bo

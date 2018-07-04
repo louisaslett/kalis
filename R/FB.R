@@ -54,8 +54,8 @@ Forward <- function(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha)-
   if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
     stop("Ne must be a scalar.")
   }
-  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1) {
-    stop("gamma must be a scalar.")
+  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma <= 0) {
+    stop("gamma must be a positive scalar.")
   }
   if(!is.vector(mu)) {
     stop("mu must be either a vector or a scalar.")
