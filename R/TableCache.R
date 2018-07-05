@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' # Examples
-CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient = Inf) {
+CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient = Inf, max.tables = 0) {
   seqs <- get("seqs", envir = pkgCache)
   if(anyNA(seqs)) {
     stop("No sequences cached ... cannot determine table size until cache is loaded with CacheAllSequences().")
@@ -32,6 +32,9 @@ CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient =
     to_recipient <- N
   }
   delN <- to_recipient-from_recipient+1
+  if(!is.vector(max.tables) || !is.numeric(max.tables) || length(max.tables) != 1 || max.tables < 0) {
+    stop("max.tables must be a positive scalar.")
+  }
 
   cat("Found", N, "sequences in the cache.")
   if((delN*N+2*delN+1)*8/1e9 > size) {
@@ -39,9 +42,12 @@ CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient =
   }
   cat("  Constructing table cache of appropriate size ...\n")
 
+  if(max.tables == 0) {
+    max.tables <- floor(log2(L))
+  }
   cache <- list()
   i <- 1
-  while((length(cache) == 0 || ((object.size(cache)*(length(cache)+1))/length(cache))/1e9 < size) && length(cache)<floor(log2(L))) {
+  while((length(cache) == 0 || ((object.size(cache)*(length(cache)+1))/length(cache))/1e9 < size) && length(cache)<max.tables) {
     cache[[i]] <- MakeForwardTable(from_recipient, to_recipient)
     i <- i+1
   }
