@@ -170,6 +170,7 @@ AutoTuneFillForwardCache <- function(cache, t, morgan.dist, Ne, gamma, mu, Pi, n
     Forward(cache[[N]], t.pre[i], morgan.dist, Ne, gamma, mu, Pi, nthreads)
     CopyForwardTable(cache[[i]], cache[[N]])
   }
+  Forward(cache[[N]], t.pre[N], morgan.dist, Ne, gamma, mu, Pi, nthreads)
 }
 
 InvRecombMap <- function(morgan.dist, num.target.loci) {
