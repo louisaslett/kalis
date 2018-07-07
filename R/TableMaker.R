@@ -33,12 +33,12 @@ MakeForwardTable <- function(from_recipient = 1, to_recipient = Inf) {
   }
   delN <- to_recipient-from_recipient+1
 
-  list(alpha          = matrix(0, N, delN),
-       alpha.f        = rep(0, delN),
-       alpha.f2       = rep(0, delN),
-       l              = c(0),
-       from_recipient = from_recipient,
-       to_recipient   = to_recipient)
+  duplicate(list(alpha          = matrix(0, N, delN),
+                 alpha.f        = rep(0, delN),
+                 alpha.f2       = rep(0, delN),
+                 l              = c(0),
+                 from_recipient = from_recipient,
+                 to_recipient   = to_recipient))
 }
 
 #' Title
@@ -76,10 +76,10 @@ MakeBackwardTable <- function(from_recipient = 1, to_recipient = Inf) {
   }
   delN <- to_recipient-from_recipient+1
 
-  list(beta           = matrix(0, N, delN),
-       beta.g         = rep(0, delN),
-       beta.g2        = rep(0, delN),
-       l              = c(2147483647),
-       from_recipient = from_recipient,
-       to_recipient   = to_recipient)
+  duplicate(list(beta           = matrix(0, N, delN),
+                 beta.g         = rep(0, delN),
+                 beta.g2        = rep(0, delN),
+                 l              = c(2147483647),
+                 from_recipient = from_recipient,
+                 to_recipient   = to_recipient))
 }

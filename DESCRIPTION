@@ -12,7 +12,8 @@ Imports:
     rhdf5,
     dplyr,
     stringr,
-    glue
+    glue,
+    rlang
 LinkingTo:
     Rcpp
 SystemRequirements:
