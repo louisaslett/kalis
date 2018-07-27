@@ -27,7 +27,7 @@ CacheAllSequences <- function() {
   assign("seq_size", CacheAllSequences2(seqs, buf.size), envir = pkgCache)
 }
 
-CacheAllSequencesH5 <- function(hdf5.file) {
+CacheAllSequencesH5 <- function(hdf5.file, haps.in.rows = TRUE) {
   # Make sure we don't double up cache content if there is already stuff cached
   if(!is.na(get("seqs", envir = pkgCache)[1])) {
     warning("sequences already cached ... overwriting existing cache.")
@@ -60,7 +60,10 @@ CacheAllSequencesH5 <- function(hdf5.file) {
         return(matrix(nrow = 0, ncol = 0))
       }
       upto <- min(current.step + step.size - 1, N)
-      res <- h5read(hdf5.file, "seqs", index = list(NULL, current.step:upto))
+      if(haps.in.rows)
+        res <- h5read(hdf5.file, "seqs", index = list(NULL, current.step:upto))
+      else
+        res <- h5read(hdf5.file, "seqs", index = list(current.step:upto, NULL))
       current.step <<- upto + 1
       res
     }
