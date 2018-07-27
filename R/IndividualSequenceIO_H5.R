@@ -44,8 +44,6 @@ WriteIndividualSequenceH5 <- function(hdf5.file, ind.sequence) {
   # Write
   message(glue("Writing {N} sequence(s) of size {L} ...\n"))
   h5write(ind.sequence, hdf5.file, "seqs", index = list(NULL, from:to))
-
-  H5close()
 }
 
 ReadIndividualSequenceH5 <- function(hdf5.file, inds) {
