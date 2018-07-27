@@ -27,7 +27,10 @@ CacheAllSequences <- function() {
   assign("seq_size", CacheAllSequences2(seqs, buf.size), envir = pkgCache)
 }
 
-CacheAllSequencesH5 <- function(hdf5.file, haps.in.cols = TRUE) {
+# We assume haplotypes are stored in the slowest changing dimension
+# per the HDF5 spec definition.  This is "row-wise" in the C standard
+# spec, or "col-wise" in the rhdf5 spec.
+CacheAllSequencesH5 <- function(hdf5.file, transpose = FALSE) {
   # Make sure we don't double up cache content if there is already stuff cached
   if(!is.na(get("seqs", envir = pkgCache)[1])) {
     warning("sequences already cached ... overwriting existing cache.")
@@ -44,7 +47,7 @@ CacheAllSequencesH5 <- function(hdf5.file, haps.in.cols = TRUE) {
     stop("HDF5 file already exists but does not contain sequence data.")
   }
   hdf5.dim <- h5ls(hdf5.file) %>% filter(name == "seqs") %>% select(dim) %>% str_split_fixed("x", n = Inf) %>% as.integer()
-  if(haps.in.cols) {
+  if(!transpose) {
     N <- hdf5.dim[2]
     L <- hdf5.dim[1]
   } else {
@@ -56,16 +59,16 @@ CacheAllSequencesH5 <- function(hdf5.file, haps.in.cols = TRUE) {
   assign("seqs", 1:N, envir = pkgCache)
 
   # Create a closure for easy access of HDF5 file
-  # We'll read in 1MB (raw size) chunks
+  # We'll read in 10MB (raw size) chunks
   make.hdf5.access <- function(hdf5.file, N, L) {
-    step.size <- round(1000000/(L/8))
+    step.size <- round(10000000/(L/8))
     current.step <- 1
     function() {
       if(current.step > N) {
         return(matrix(nrow = 0, ncol = 0))
       }
       upto <- min(current.step + step.size - 1, N)
-      if(haps.in.cols)
+      if(!transpose)
         res <- h5read(hdf5.file, "seqs", index = list(NULL, current.step:upto))
       else
         res <- t(h5read(hdf5.file, "seqs", index = list(current.step:upto, NULL)))
