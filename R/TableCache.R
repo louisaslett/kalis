@@ -53,7 +53,7 @@ CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient =
   }
   cat("Cache constructed, can hold ", length(cache), " tables for recipients ", from_recipient, " ... ", to_recipient, ".  Actual size ≈ ", ceiling(object.size(cache)/1e6)/1e3, "GB.\n", sep = "")
 
-  class(cache) <- "StatGenCheckpointTable"
+  class(cache) <- "kalisCheckpointTable"
   cache
 }
 
@@ -160,9 +160,9 @@ ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads = 1) {
   }
 }
 
-print.StatGenCheckpointTable <- function(x, ...) {
-  if(class(x)!="StatGenCheckpointTable")
-    stop("Not a StatGenCheckpointTable object")
+print.kalisCheckpointTable <- function(x, ...) {
+  if(class(x)!="kalisCheckpointTable")
+    stop("Not a kalisCheckpointTable object")
 
   cat("Checkpoint Table object containing", length(x), "checkpoints.\n")
   cat("  Loci of checkpoints:\n")

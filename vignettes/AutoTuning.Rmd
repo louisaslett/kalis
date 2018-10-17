@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 ## Motivation
 
 
-The StatGen Package is designed to obtain distance matrices that each coarsely approximate the local phylogeny underlying a given locus of the genome using the Li & Stephens Model.   
+The kalis Package is designed to obtain distance matrices that each coarsely approximate the local phylogeny underlying a given locus of the genome using the Li & Stephens Model.   
 
 As noted, there are three parameters...
 

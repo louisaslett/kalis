@@ -2,198 +2,198 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 ResetBackwardTable <- function(bck) {
-    invisible(.Call('_StatGen_ResetBackwardTable', PACKAGE = 'StatGen', bck))
+    invisible(.Call('_kalis_ResetBackwardTable', PACKAGE = 'kalis', bck))
 }
 
 Backward_densePi_densemu_cpp <- function(bck, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_Backward_densePi_densemu_cpp', PACKAGE = 'StatGen', bck, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_Backward_densePi_densemu_cpp', PACKAGE = 'kalis', bck, t, Pi, mu, rho, nthreads))
 }
 
 Backward_scalarPi_densemu_cpp <- function(bck, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_Backward_scalarPi_densemu_cpp', PACKAGE = 'StatGen', bck, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_Backward_scalarPi_densemu_cpp', PACKAGE = 'kalis', bck, t, Pi, mu, rho, nthreads))
 }
 
 Backward_densePi_scalarmu_cpp <- function(bck, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_Backward_densePi_scalarmu_cpp', PACKAGE = 'StatGen', bck, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_Backward_densePi_scalarmu_cpp', PACKAGE = 'kalis', bck, t, Pi, mu, rho, nthreads))
 }
 
 Backward_scalarPi_scalarmu_cpp <- function(bck, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_Backward_scalarPi_scalarmu_cpp', PACKAGE = 'StatGen', bck, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_Backward_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', bck, t, Pi, mu, rho, nthreads))
 }
 
 CacheAllSequences2 <- function(seqs, bufsize) {
-    .Call('_StatGen_CacheAllSequences2', PACKAGE = 'StatGen', seqs, bufsize)
+    .Call('_kalis_CacheAllSequences2', PACKAGE = 'kalis', seqs, bufsize)
 }
 
 CacheAllSequencesH52 <- function(nextseqs, N, L) {
-    .Call('_StatGen_CacheAllSequencesH52', PACKAGE = 'StatGen', nextseqs, N, L)
+    .Call('_kalis_CacheAllSequencesH52', PACKAGE = 'kalis', nextseqs, N, L)
 }
 
 QueryCache2_ind <- function(idx) {
-    .Call('_StatGen_QueryCache2_ind', PACKAGE = 'StatGen', idx)
+    .Call('_kalis_QueryCache2_ind', PACKAGE = 'kalis', idx)
 }
 
 QueryCache2_loc <- function(idx) {
-    .Call('_StatGen_QueryCache2_loc', PACKAGE = 'StatGen', idx)
+    .Call('_kalis_QueryCache2_loc', PACKAGE = 'kalis', idx)
 }
 
 ClearSequenceCache2 <- function() {
-    invisible(.Call('_StatGen_ClearSequenceCache2', PACKAGE = 'StatGen'))
+    invisible(.Call('_kalis_ClearSequenceCache2', PACKAGE = 'kalis'))
 }
 
 ComputeStatus <- function() {
-    invisible(.Call('_StatGen_ComputeStatus', PACKAGE = 'StatGen'))
+    invisible(.Call('_kalis_ComputeStatus', PACKAGE = 'kalis'))
 }
 
 Exact_ComputeTable_naive_cpp <- function(l, Pi, mu, rho) {
-    .Call('_StatGen_Exact_ComputeTable_naive_cpp', PACKAGE = 'StatGen', l, Pi, mu, rho)
+    .Call('_kalis_Exact_ComputeTable_naive_cpp', PACKAGE = 'kalis', l, Pi, mu, rho)
 }
 
 Dedip_min <- function(fwd, bck) {
-    .Call('_StatGen_Dedip_min', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_kalis_Dedip_min', PACKAGE = 'kalis', fwd, bck)
 }
 
 Dedip_2nd_min <- function(fwd, bck) {
-    .Call('_StatGen_Dedip_2nd_min', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_kalis_Dedip_2nd_min', PACKAGE = 'kalis', fwd, bck)
 }
 
 Dedip_max <- function(fwd, bck) {
-    .Call('_StatGen_Dedip_max', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_kalis_Dedip_max', PACKAGE = 'kalis', fwd, bck)
 }
 
 Dedip_dom <- function(fwd, bck) {
-    .Call('_StatGen_Dedip_dom', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_kalis_Dedip_dom', PACKAGE = 'kalis', fwd, bck)
 }
 
 Dedip_add <- function(fwd, bck) {
-    .Call('_StatGen_Dedip_add', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_kalis_Dedip_add', PACKAGE = 'kalis', fwd, bck)
 }
 
 Dedip_mean <- function(fwd, bck) {
-    .Call('_StatGen_Dedip_mean', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_kalis_Dedip_mean', PACKAGE = 'kalis', fwd, bck)
 }
 
 Dedip_all <- function(fwd, bck) {
-    .Call('_StatGen_Dedip_all', PACKAGE = 'StatGen', fwd, bck)
+    .Call('_kalis_Dedip_all', PACKAGE = 'kalis', fwd, bck)
 }
 
 ExactBackwardNoExpAVX3_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_StatGen_ExactBackwardNoExpAVX3_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_kalis_ExactBackwardNoExpAVX3_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactBackwardNoExpAVX3_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_ParExactBackwardNoExpAVX3_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_ParExactBackwardNoExpAVX3_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_StatGen_ExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_kalis_ExactBackwardNaiveC_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_ParExactBackwardNaiveC_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_ParExactBackwardNaiveC_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactBackwardNoExpAVX3_scmu_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_StatGen_ExactBackwardNoExpAVX3_scmu_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_kalis_ExactBackwardNoExpAVX3_scmu_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactBackwardNoExpAVX3_scmu_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_ParExactBackwardNoExpAVX3_scmu_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_ParExactBackwardNoExpAVX3_scmu_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactBackwardNoExpAVX3_scmuPi_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_StatGen_ExactBackwardNoExpAVX3_scmuPi_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_kalis_ExactBackwardNoExpAVX3_scmuPi_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactBackwardNoExpAVX3_scmuPi_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_ParExactBackwardNoExpAVX3_scmuPi_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_ParExactBackwardNoExpAVX3_scmuPi_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactBackwardNoExpAVX3_scPi_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_StatGen_ExactBackwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_kalis_ExactBackwardNoExpAVX3_scPi_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactBackwardNoExpAVX3_scPi_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_ParExactBackwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_ParExactBackwardNoExpAVX3_scPi_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactForwardNoExpAVX3_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_StatGen_ExactForwardNoExpAVX3_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_kalis_ExactForwardNoExpAVX3_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactForwardNoExpAVX3_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_ParExactForwardNoExpAVX3_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_ParExactForwardNoExpAVX3_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactForward1stepNoExpAVX3_scmuPi_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_StatGen_ExactForward1stepNoExpAVX3_scmuPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_kalis_ExactForward1stepNoExpAVX3_scmuPi_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactForward1stepNoExpAVX3_scmuPi_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_ParExactForward1stepNoExpAVX3_scmuPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_ParExactForward1stepNoExpAVX3_scmuPi_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_StatGen_ExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_kalis_ExactForwardNaiveC_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_ParExactForwardNaiveC_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_ParExactForwardNaiveC_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactForwardNoExpAVX3_scmu_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_StatGen_ExactForwardNoExpAVX3_scmu_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_kalis_ExactForwardNoExpAVX3_scmu_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactForwardNoExpAVX3_scmu_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_ParExactForwardNoExpAVX3_scmu_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_ParExactForwardNoExpAVX3_scmu_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactForwardNoExpAVX3_scmuPi_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_StatGen_ExactForwardNoExpAVX3_scmuPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_kalis_ExactForwardNoExpAVX3_scmuPi_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactForwardNoExpAVX3_scmuPi_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_ParExactForwardNoExpAVX3_scmuPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_ParExactForwardNoExpAVX3_scmuPi_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ExactForwardNoExpAVX3_scPi_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_StatGen_ExactForwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+    invisible(.Call('_kalis_ExactForwardNoExpAVX3_scPi_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
 
 ParExactForwardNoExpAVX3_scPi_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_ParExactForwardNoExpAVX3_scPi_cpp', PACKAGE = 'StatGen', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_ParExactForwardNoExpAVX3_scPi_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
 }
 
 ResetForwardTable <- function(fwd) {
-    invisible(.Call('_StatGen_ResetForwardTable', PACKAGE = 'StatGen', fwd))
+    invisible(.Call('_kalis_ResetForwardTable', PACKAGE = 'kalis', fwd))
 }
 
 Forward_densePi_densemu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_Forward_densePi_densemu_cpp', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_Forward_densePi_densemu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
 }
 
 Forward_scalarPi_densemu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_Forward_scalarPi_densemu_cpp', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_Forward_scalarPi_densemu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
 }
 
 Forward_densePi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_Forward_densePi_scalarmu_cpp', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_Forward_densePi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
 }
 
 Forward_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_Forward_scalarPi_scalarmu_cpp', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_Forward_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
 }
 
 Forward1step_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_StatGen_Forward1step_scalarPi_scalarmu_cpp', PACKAGE = 'StatGen', fwd, t, Pi, mu, rho, nthreads))
+    invisible(.Call('_kalis_Forward1step_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
 }
 
 FillTableCache <- function(cache, Pi, mu, rho, nthreads, from = 0L, to = 0L) {
-    invisible(.Call('_StatGen_FillTableCache', PACKAGE = 'StatGen', cache, Pi, mu, rho, nthreads, from, to))
+    invisible(.Call('_kalis_FillTableCache', PACKAGE = 'kalis', cache, Pi, mu, rho, nthreads, from, to))
 }
 
 CopyForwardTable <- function(to, from) {
-    invisible(.Call('_StatGen_CopyForwardTable', PACKAGE = 'StatGen', to, from))
+    invisible(.Call('_kalis_CopyForwardTable', PACKAGE = 'kalis', to, from))
 }
 

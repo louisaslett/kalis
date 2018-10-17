@@ -127,5 +127,5 @@ ClearSequenceCache <- function() {
 
 .onUnload <- function(libpath) {
   ClearSequenceCache()
-  library.dynam.unload("StatGen", libpath)
+  library.dynam.unload("kalis", libpath)
 }

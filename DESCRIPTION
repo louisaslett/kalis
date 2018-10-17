@@ -1,14 +1,29 @@
-Package: StatGen
+Package: kalis
 Type: Package
-Title: Ryan's stats algorithm
-Version: 0.1.7
-Author: Louis Aslett
-Maintainer: Louis Aslett <aslett@stats.ox.ac.uk>
-Description: Ryan's stats algorithm
+Title: High Performance Li & Stephens Local Ancestry Inference
+Version: 0.2.0
+Authors@R: c(person("Louis", "Aslett", role = c("aut", "cre"),
+                    email = "louis.aslett@durham.ac.uk"),
+             person("Ryan", "Christ", role = "ctb",
+                    email = "rchrist@wustl.edu"))
+Author: Louis Aslett [aut, cre],
+  Ryan Christ [ctb]
+Maintainer: Louis Aslett <louis.aslett@durham.ac.uk>
+Description: kalis provides a high performance implementation of the Li &
+  Stephens model <https://www.ncbi.nlm.nih.gov/pubmed/14704198> for local
+  ancestry inference (local referring to a region of the genome).  For a set of
+  N phased haplotypes, kalis computes the posterior marginal probability of each
+  haplotype copying every other haplotype by running N hidden Markov models in
+  parallel.  This yields an N x N matrix that summarizes the recent local
+  ancestry at each locus of interest.  The package provides functionality for
+  specifying a recombination map, site-specific mutation rates, and differing
+  prior copying probabilities for each recipient haplotype.  Extensive use is 
+  made of low level threading and CPU vector instructions.
 License: GPL (>= 2)
 LazyData: TRUE
+Depends: R (>= 3.5.0)
 Imports:
-    Rcpp (>= 0.12.10),
+    Rcpp (>= 0.12.19),
     rhdf5,
     dplyr,
     stringr,
