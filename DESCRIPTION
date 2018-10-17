@@ -37,3 +37,4 @@ RoxygenNote: 6.1.0
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
+Encoding: UTF-8
