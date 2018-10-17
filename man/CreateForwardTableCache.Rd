@@ -4,8 +4,8 @@
 \alias{CreateForwardTableCache}
 \title{Title}
 \usage{
-CreateForwardTableCache(size = 1, from_recipient = 1, to_recipient = Inf,
-  max.tables = 0)
+CreateForwardTableCache(size = 1, from_recipient = 1,
+  to_recipient = Inf, max.tables = 0)
 }
 \arguments{
 \item{size}{the maximum amount of RAM (in GB) to devote to this cache.}
