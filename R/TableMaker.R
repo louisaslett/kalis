@@ -33,12 +33,36 @@ MakeForwardTable <- function(from_recipient = 1, to_recipient = Inf) {
   }
   delN <- to_recipient-from_recipient+1
 
-  duplicate(list(alpha          = matrix(0, N, delN),
-                 alpha.f        = rep(0, delN),
-                 alpha.f2       = rep(0, delN),
-                 l              = c(0),
-                 from_recipient = from_recipient,
-                 to_recipient   = to_recipient))
+  fwd <- duplicate(list(alpha          = matrix(0, N, delN),
+                        alpha.f        = rep(0, delN),
+                        alpha.f2       = rep(0, delN),
+                        l              = c(0),
+                        from_recipient = from_recipient,
+                        to_recipient   = to_recipient))
+
+  class(fwd) <- "kalisForwardTable"
+  fwd
+}
+
+print.kalisForwardTable <- function(x, ...) {
+  if(class(x)!="kalisForwardTable")
+    stop("Not a kalisForwardTable object")
+
+  d <- dim(x$alpha)
+
+  if(d[1]==d[2]) {
+    cat(glue("Full Forward Table object for {d[1]} haplotypes."), "\n")
+  } else {
+    cat(glue("Partial Forward Table object for {d[1]} haplotypes."), "\n")
+    cat(glue("  Recipients {x$from_recipient} to {x$to_recipient}"), "\n")
+  }
+
+  if(x$l == 0) {
+    cat("  Newly created table, currently uninitialised to any locus (ready for Forward function next).\n")
+  } else {
+    cat(glue("  Current locus = {x$l}"), "\n")
+  }
+  cat("  Memory consumed ≈", ceiling(object.size(x)/1e6)/1e3, "GB.\n")
 }
 
 #' Title
@@ -76,10 +100,35 @@ MakeBackwardTable <- function(from_recipient = 1, to_recipient = Inf) {
   }
   delN <- to_recipient-from_recipient+1
 
-  duplicate(list(beta           = matrix(0, N, delN),
-                 beta.g         = rep(0, delN),
-                 beta.g2        = rep(0, delN),
-                 l              = c(2147483647),
-                 from_recipient = from_recipient,
-                 to_recipient   = to_recipient))
+  bck <- duplicate(list(beta           = matrix(0, N, delN),
+                        beta.g         = rep(0, delN),
+                        beta.g2        = rep(0, delN),
+                        l              = c(2147483647),
+                        from_recipient = from_recipient,
+                        to_recipient   = to_recipient))
+
+  class(bck) <- "kalisBackwardTable"
+  bck
 }
+
+print.kalisBackwardTable <- function(x, ...) {
+  if(class(x)!="kalisBackwardTable")
+    stop("Not a kalisBackwardTable object")
+
+  d <- dim(x$beta)
+
+  if(d[1]==d[2]) {
+    cat(glue("Full Backward Table object for {d[1]} haplotypes."), "\n")
+  } else {
+    cat(glue("Partial Backward Table object for {d[1]} haplotypes."), "\n")
+    cat(glue("  Recipients {x$from_recipient} to {x$to_recipient}"), "\n")
+  }
+
+  if(x$l == 2147483647) {
+    cat("  Newly created table, currently uninitialised to any locus (ready for Backward function next).\n")
+  } else {
+    cat(glue("  Current locus = {x$l}"), "\n")
+  }
+  cat("  Memory consumed ≈", ceiling(object.size(x)/1e6)/1e3, "GB.\n")
+}
+
