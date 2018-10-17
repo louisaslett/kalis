@@ -1,19 +1,52 @@
-#' Title
+#' Create a Forward Table
 #'
-#' Short description
+#' Allocates the memory for and sets up a forward table.
 #'
-#' Detailed description
+#' For performance and numerical stability reasons kalis operates with lag
+#' scaled probabilities and these additional scaling factors must be tracked to
+#' enable recovery of standard forward probabilities.
+#' This utility function allocates memory for the forward table and also sets up
+#' the necessary internal tracking of correct scaling factors.
+#' However, note that this utility is purely for creating the correct object
+#' to track forward computations and upon creation the forward table itself is
+#' uninitialised.
 #'
-#' @param from_recipient ...
-#' @param to_recipient ...
+#' Therefore, the standard workflow with kalis is to create a forward table
+#' using this utility function before passing that to the \code{\link{Forward}}
+#' function.  \code{\link{Forward}} will identify uninitialised tables and propagate
+#' them correctly from the first locus.
 #'
-#' @return Return value
+#' Since there is an independent hidden Markov model run for each recipient
+#' haplotype, it is possible to create a partial forward table object which
+#' corresponds to a subset of recipients using the \code{from_recipient} and
+#' \code{to_recipient} arguments.
+#'
+#' @param from_recipient first recipient haplotype if creating a partial forward
+#'   table.  By default includes from the first recipient haplotype.
+#' @param to_recipient last recipient haplotype if creating a partial forward
+#'   table.  By default includes to the last recipient haplotype.
+#'
+#' @return an object of class \code{kalisForwardTable} containing
 #'
 #' @seealso \code{\link{Forward}} to propagate the newly created table forward
 #'   through the genome.
 #'
 #' @examples
 #' # Examples
+#' \dontrun{
+#' # Create a forward table for the hidden Markov model incorporating all
+#' # recipient and donor haplotypes
+#' fwd <- MakeForwardTable()
+#'
+#' # Create a forward table for the hidden Markov model incorporating only
+#' # recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.
+#' fwd <- MakeForwardTable(100, 200)
+#'
+#' # This table is uninitialised, but ready to pass to the Forward function
+#' # which will trigger initialisation and propagation from the first locus.
+#' # For example, initialise and propagate forward to locus 10:
+#' Forward(fwd, 10, morgan.dist, Ne, gamma, mu, nthreads = 8)
+#' }
 MakeForwardTable <- function(from_recipient = 1, to_recipient = Inf) {
   seqs <- get("seqs", envir = pkgCache)
   if(anyNA(seqs)) {
