@@ -1,10 +1,13 @@
-#' Propagate an HMM forward table
+#' Propagate an HMM Forward Table
 #'
 #' Takes a forward table and propagates it in-place to a later locus position.
 #'
 #' Detailed description
 #'
-#' For example, mention that each column is an independent HMM and highlight that
+#' Forward implements the forward algorithm to advance the forward probabilities stored in
+#' a forward table fwd to a new target locus t.  Note that t must be greater than the current fwd locus.
+#'
+#' mention that each column is an independent HMM and highlight that
 #' forward table (and Pi) are therefore to be viewed column-wise.
 #'
 #' @param fwd a forward table as returned by \code{\link{MakeForwardTable}}
