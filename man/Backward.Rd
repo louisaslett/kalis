@@ -46,6 +46,7 @@ Detailed description
 \examples{
 bck <- MakeBackwardTable()
 Backward(bck, 100, Pi, mu, rho)
+
 }
 \seealso{
 \code{\link{MakeBackwardTable}} to generate backward table;

@@ -51,6 +51,7 @@ forward table (and Pi) are therefore to be viewed column-wise.
 \examples{
 fwd <- MakeForwardTable()
 Forward(fwd, 100, Pi, mu, rho)
+
 }
 \seealso{
 \code{\link{MakeForwardTable}} to generate forward table;

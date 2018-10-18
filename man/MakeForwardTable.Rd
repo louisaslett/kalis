@@ -55,6 +55,7 @@ fwd <- MakeForwardTable(100, 200)
 # For example, initialise and propagate forward to locus 10:
 Forward(fwd, 10, morgan.dist, Ne, gamma, mu, nthreads = 8)
 }
+
 }
 \seealso{
 \code{\link{Forward}} to propagate the newly created table forward
