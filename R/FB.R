@@ -36,6 +36,8 @@
 #' @examples
 #' fwd <- MakeForwardTable()
 #' Forward(fwd, 100, Pi, mu, rho)
+#'
+#' @export Forward
 Forward <- function(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha)-1), nthreads = 1) {
   L <- get("hap_size", envir = pkgCache)
   N <- length(get("haps", envir = pkgCache))
@@ -130,6 +132,8 @@ Forward <- function(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha)-
 #' @examples
 #' bck <- MakeBackwardTable()
 #' Backward(bck, 100, Pi, mu, rho)
+#'
+#' @export Backward
 Backward <- function(bck, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(bck$beta)-1), nthreads = 1) {
   L <- get("hap_size", envir = pkgCache)
   N <- length(get("haps", envir = pkgCache))

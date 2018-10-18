@@ -47,6 +47,8 @@
 #' # For example, initialise and propagate forward to locus 10:
 #' Forward(fwd, 10, morgan.dist, Ne, gamma, mu, nthreads = 8)
 #' }
+#'
+#' @export MakeForwardTable
 MakeForwardTable <- function(from_recipient = 1, to_recipient = Inf) {
   haps <- get("haps", envir = pkgCache)
   if(anyNA(haps)) {
