@@ -170,12 +170,12 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
   if((length(ids)==1 && is.na(ids)) || all(ids==1:length(haps))) {
     ids <- 1:length(haps)
 
-    res <- matrix(nrow = length(ids), ncol = length)
+    res <- matrix(nrow = length, ncol = length(ids))
     for(l in start:(start+length-1)) {
-      res[,l-start+1] <- as.integer(intToBits(QueryCache2_loc(l-1)))[1:length(ids)]
+      res[l-start+1,] <- as.integer(intToBits(QueryCache2_loc(l-1)))[1:length(ids)]
     }
   } else {
-    res <- matrix(nrow = length(ids), ncol = length)
+    res <- matrix(nrow = length, ncol = length(ids))
     for(i in 1:length(ids)) {
       id <- ids[i]
       if(is.numeric(id) && abs(id - round(id)) < .Machine$double.eps^0.5) {
@@ -192,7 +192,7 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
 
       hap <- as.integer(intToBits(QueryCache2_ind(idx-1)))
 
-      res[i,] <- hap[start:(start+length-1)]
+      res[,i] <- hap[start:(start+length-1)]
     }
   }
 
