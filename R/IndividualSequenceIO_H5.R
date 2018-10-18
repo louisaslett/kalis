@@ -1,3 +1,34 @@
+#' Write haplotype matrix to HDF5 formatted cache-friendly file
+#'
+#' Writes an R matrix of 0/1s to the HDF5 format which is used for reading to
+#' optimised in memory cache.
+#'
+#' The primary method to load data into kalis' internal optimised cache is from
+#' an HDF5 file storage.  If the user has a collection of haplotypes already
+#' represented as a matrix of 0's and 1's in R, this function can be used to
+#' write to HDF5 the format required to load into cache.
+#'
+#' The package expects a 2-dimensional object named \code{seqs} at the root
+#' level of the HDF5 file.  Haplotypes should be stored in the slowest changing
+#' dimension as defined in the HDF5 specification (note that different languages
+#' treat this as rows or columns).  If the haplotypes are stored in the other
+#' dimension then simply set the argument \code{transpose = TRUE}.
+#' If the user is unsure of the convention of
+#' the language they used to create the HDF5 file, then the simplest approach is
+#' to just load the data specifying only the HDF5 file name and then confirm
+#' that number of haplotypes and sequence length have not been exchanged.
+#'
+#' @return Nothing is returned.
+#'
+#' @seealso \code{\link{Forward}} to propagate the newly created table forward
+#'   through the genome.
+#'
+#' @examples
+#' # Examples
+#' \dontrun{
+#' }
+#'
+#' @export WriteIndividualSequenceH5
 WriteIndividualSequenceH5 <- function(hdf5.file, ind.sequence) {
   if(any(!(ind.sequence == 1 | ind.sequence == 0))) {
     stop("sequence is not binary.")

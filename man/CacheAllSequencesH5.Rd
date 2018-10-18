@@ -14,7 +14,10 @@ table.  By default includes from the first recipient haplotype.}
 table.  By default includes to the last recipient haplotype.}
 }
 \value{
-Nothing is returned by the function.
+Nothing is returned by the function.  However, a status message is
+  output indicating how the dimensions of the HDF5 \code{seqs} object have
+  been interpreted.  If this message shows the dimensions incorrectly ordered,
+  call the function again with argument \code{transpose = TRUE}.
 }
 \description{
 Load haplotype sequences from hard drive to memory.
@@ -22,31 +25,34 @@ Load haplotype sequences from hard drive to memory.
 \details{
 To achieve higher performance, kalis internally represents haplotype sequences
 in an efficient raw binary format in memory.  This function will load sequences
-from the hard drive and convert into this format ready for use by the other
-functions in this package.
+from an HDF5 file and convert this into kalis' internal format ready for use
+by the other functions in this package.
 
-The package assumes haplotypes are stored in the slowest changing dimension
-as per the HDF5 specification (note that different languages treat this as
-rows or columns).  If the user is unsure of the convention of the language
-they used to create the HDF5 file, then the simplest approach is probably to
-test loading the data and confirm that number of haplotypes and sequence
-length have not been exchanged.
+The package expects a 2-dimensional object named \code{seqs} at the root
+level of the HDF5 file.  Haplotypes should be stored in the slowest changing
+dimension as defined in the HDF5 specification (note that different languages
+treat this as rows or columns).  If the haplotypes are stored in the other
+dimension then simply set the argument \code{transpose = TRUE}.
+If the user is unsure of the convention of
+the language they used to create the HDF5 file, then the simplest approach is
+to just load the data specifying only the HDF5 file name and then confirm
+that number of haplotypes and sequence length have not been exchanged.
 }
 \examples{
 # Examples
 \dontrun{
-# Create a forward table for the hidden Markov model incorporating all
-# recipient and donor haplotypes
-fwd <- MakeForwardTable()
 
-# Create a forward table for the hidden Markov model incorporating only
-# recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.
-fwd <- MakeForwardTable(100, 200)
+# Load sequences to cache from an HDF5 file on disk
+CacheAllSequencesH5("myseqs.h5")
 
-# This table is uninitialised, but ready to pass to the Forward function
-# which will trigger initialisation and propagation from the first locus.
-# For example, initialise and propagate forward to locus 10:
-Forward(fwd, 10, morgan.dist, Ne, gamma, mu, nthreads = 8)
+# If the diagnostic message printed during the above indicates the numbers
+# of haplotypes and sequence length are the wrong way around, reload with
+# argument to transpose
+CacheAllSequencesH5("myseqs.h5", transpose = TRUE)
+
+# When correct orientation is known, can avoid diagnostic messages for running
+# in script files
+suppressMessages(CacheAllSequencesH5("myseqs.h5"))
 }
 
 }

@@ -93,7 +93,14 @@ int CacheAllSequencesH52(Function nextseqs, int N, int L) {
     nextseqmat = nextseqs();
   }
 
-  Rcout << "Cache loaded: " << num_inds << " sequences of length " << seq_size << " (consuming " << (seq_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0 << " GB RAM)" << std::endl;
+  Rcpp::Function msg("message");
+  msg(std::string("Cache loaded: ") +
+    std::to_string(num_inds) +
+    std::string(" sequences of length ") +
+    std::to_string(seq_size) +
+    std::string(" (consuming ") +
+    std::to_string((seq_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0) +
+    std::string(" GB RAM)"));
   // std::bitset<8> x(seq_ind[3][4]);
   // Rcout << seqs[3];
   // Rcout << x;

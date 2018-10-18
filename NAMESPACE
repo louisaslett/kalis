@@ -3,6 +3,7 @@
 export(CacheAllSequencesH5)
 export(ClearSequenceCache)
 export(QueryCache)
+export(WriteIndividualSequenceH5)
 import(dplyr)
 import(rhdf5)
 importFrom(glue,glue)
