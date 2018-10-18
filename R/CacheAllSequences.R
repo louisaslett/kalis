@@ -30,6 +30,51 @@ CacheAllSequences <- function() {
 # We assume haplotypes are stored in the slowest changing dimension
 # per the HDF5 spec definition.  This is "row-wise" in the C standard
 # spec, or "col-wise" in the rhdf5 spec.
+
+#' Create memory cache of haplotype sequences
+#'
+#' Load haplotype sequences from hard drive to memory.
+#'
+#' To achieve higher performance, kalis internally represents haplotype sequences
+#' in an efficient raw binary format in memory.  This function will load sequences
+#' from the hard drive and convert into this format ready for use by the other
+#' functions in this package.
+#'
+#' The package assumes haplotypes are stored in the slowest changing dimension
+#' as per the HDF5 specification (note that different languages treat this as
+#' rows or columns).  If the user is unsure of the convention of the language
+#' they used to create the HDF5 file, then the simplest approach is probably to
+#' test loading the data and confirm that number of haplotypes and sequence
+#' length have not been exchanged.
+#'
+#' @param from_recipient first recipient haplotype if creating a partial forward
+#'   table.  By default includes from the first recipient haplotype.
+#' @param to_recipient last recipient haplotype if creating a partial forward
+#'   table.  By default includes to the last recipient haplotype.
+#'
+#' @return Nothing is returned by the function.
+#'
+#' @seealso \code{\link{Forward}} to propagate the newly created table forward
+#'   through the genome.
+#'
+#' @examples
+#' # Examples
+#' \dontrun{
+#' # Create a forward table for the hidden Markov model incorporating all
+#' # recipient and donor haplotypes
+#' fwd <- MakeForwardTable()
+#'
+#' # Create a forward table for the hidden Markov model incorporating only
+#' # recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.
+#' fwd <- MakeForwardTable(100, 200)
+#'
+#' # This table is uninitialised, but ready to pass to the Forward function
+#' # which will trigger initialisation and propagation from the first locus.
+#' # For example, initialise and propagate forward to locus 10:
+#' Forward(fwd, 10, morgan.dist, Ne, gamma, mu, nthreads = 8)
+#' }
+#'
+#' @export CacheAllSequencesH5
 CacheAllSequencesH5 <- function(hdf5.file, transpose = FALSE) {
   # Make sure we don't double up cache content if there is already stuff cached
   if(!is.na(get("seqs", envir = pkgCache)[1])) {
@@ -81,6 +126,33 @@ CacheAllSequencesH5 <- function(hdf5.file, transpose = FALSE) {
   assign("seq_size", CacheAllSequencesH52(make.hdf5.access(hdf5.file, N, L), N, L), envir = pkgCache)
 }
 
+#' Retrieve haplotypes from memory cache
+#'
+#' Retrieve haplotypes from the memory cache, converting the raw binary into
+#' a simple integer 0/1 vector for use in R.
+#'
+#' To achieve higher performance, kalis internally represents haplotype sequences
+#' in an efficient raw binary format in memory which cannot be directly viewed
+#' or manipulated in R.  This function enables users to copy whole or partial
+#' haplotype sequences out of this low-level format and into a standard R
+#' vector of 0's and 1's.
+#'
+#' @param ids which haplotypes to retrieve from the cache
+#' @param start the first locus position to retrieve for the specified haplotypes
+#' @param length the number of consecutive loci to return from the start position
+#'
+#' @return A matrix of 0/1 integers with \code{length} rows and
+#'   \code{length(ids)} columns, such that haplotypes appear in columns.
+#'
+#' @seealso \code{\link{Forward}} to propagate the newly created table forward
+#'   through the genome.
+#'
+#' @examples
+#' # Examples
+#' \dontrun{
+#' }
+#'
+#' @export QueryCache
 QueryCache <- function(ids = NA, start = 1, length = NA) {
   seqs <- get("seqs", envir = pkgCache)
 
@@ -119,6 +191,29 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
   res
 }
 
+#' Remove all cached sequences and free memory
+#'
+#' Remove all the sequences which were cached using a previous caching call and
+#' free the memory that was allocated up for future use.
+#'
+#' To achieve higher performance, kalis internally represents haplotype sequences
+#' in an efficient raw binary format in memory which cannot be directly viewed
+#' or manipulated in R.  In particular, this cache sits outside R's memory
+#' management and will never be garbage collected (unless R is quit or the
+#' package is unloaded).  Therefore, this function is provided to enable freeing
+#' the memory used by this cache.
+#'
+#' @return Nothing is returned.
+#'
+#' @seealso \code{\link{Forward}} to propagate the newly created table forward
+#'   through the genome.
+#'
+#' @examples
+#' # Examples
+#' \dontrun{
+#' }
+#'
+#' @export ClearSequenceCache
 ClearSequenceCache <- function() {
   assign("seqs", NA, envir = pkgCache)
   assign("seq_size", NA, envir = pkgCache)
