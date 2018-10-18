@@ -18,7 +18,7 @@ void Backward_densePi_densemu_cpp(List bck,
                                   NumericVector mu,
                                   NumericVector rho,
                                   const int nthreads) {
-  const int L = seq_size;
+  const int L = hap_size;
   const int N = num_inds;
   NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
   NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);
@@ -109,7 +109,7 @@ void Backward_scalarPi_densemu_cpp(List bck,
                                    NumericVector mu,
                                    NumericVector rho,
                                    const int nthreads) {
-  const int L = seq_size;
+  const int L = hap_size;
   const int N = num_inds;
   NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
   NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);
@@ -204,7 +204,7 @@ void Backward_densePi_scalarmu_cpp(List bck,
                                    const double mu,
                                    NumericVector rho,
                                    const int nthreads) {
-  const int L = seq_size;
+  const int L = hap_size;
   const int N = num_inds;
   NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
   NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);
@@ -298,7 +298,7 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
                                     const double mu,
                                     NumericVector rho,
                                     const int nthreads) {
-  const int L = seq_size;
+  const int L = hap_size;
   const int N = num_inds;
   NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
   NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);

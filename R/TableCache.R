@@ -15,12 +15,12 @@
 #' @examples
 #' # Examples
 CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient = Inf, max.tables = 0) {
-  seqs <- get("seqs", envir = pkgCache)
-  if(anyNA(seqs)) {
-    stop("No sequences cached ... cannot determine table size until cache is loaded with CacheAllSequences().")
+  haps <- get("haps", envir = pkgCache)
+  if(anyNA(haps)) {
+    stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
   }
-  N <- length(seqs)
-  L <- get("seq_size", envir = pkgCache)
+  N <- length(haps)
+  L <- get("hap_size", envir = pkgCache)
 
   if(from_recipient>to_recipient) {
     stop("from_recipient must be smaller than to_recipient.")
@@ -36,7 +36,7 @@ CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient =
     stop("max.tables must be a positive scalar.")
   }
 
-  cat("Found", N, "sequences in the cache.")
+  cat("Found", N, "haplotypes in the cache.")
   if((delN*N+2*delN+1)*8/1e9 > size) {
     stop(size, "GB is not big enough for even 1 table.")
   }

@@ -8,122 +8,122 @@ using namespace Rcpp;
 #include <stdlib.h>
 
 #include "Cache.h"
-uint32_t *seq_data = NULL;
-uint32_t **seq_locus = NULL;
+uint32_t *hap_data = NULL;
+uint32_t **hap_locus = NULL;
 int32_t num_inds = 0;
-int32_t seq_size = 0;
+int32_t hap_size = 0;
 
 // [[Rcpp::export]]
-int CacheAllSequences2(CharacterVector seqs, int bufsize) {
-  num_inds = seqs.size();
+int CacheAllHaplotypes2(CharacterVector haps, int bufsize) {
+  num_inds = haps.size();
 
-  // Process first individual separately to learn sequence lengths
-  std::ifstream input(seqs[0], std::ios::binary);
-  input.read((char*)&seq_size, sizeof(seq_size));
+  // Process first individual separately to learn haplotype lengths
+  std::ifstream input(haps[0], std::ios::binary);
+  input.read((char*)&hap_size, sizeof(hap_size));
 
   // Setup cache storage
-  //seq_data = new uint32_t[seq_size*int(ceil(num_inds/32.0))];
+  //hap_data = new uint32_t[hap_size*int(ceil(num_inds/32.0))];
   // NB need 32-byte aligned for AVX.  Note also that *each* new locus must be on a 32-byte boundary!
   //   int(ceil(num_inds/32.0)) ints are required per locus to store all individuals
   //   int(ceil((num_inds/32.0)/8.0)) __m256i's are required per locus to store all individuals
-  posix_memalign((void**) &seq_data, 32, seq_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t));
-  seq_locus = new uint32_t*[seq_size];
-  for(int l=0; l<seq_size; l++) {
-    seq_locus[l] = seq_data + l*int(ceil((num_inds/32.0)/8.0))*8;
+  posix_memalign((void**) &hap_data, 32, hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t));
+  hap_locus = new uint32_t*[hap_size];
+  for(int l=0; l<hap_size; l++) {
+    hap_locus[l] = hap_data + l*int(ceil((num_inds/32.0)/8.0))*8;
   }
-  uint32_t seq_tmp[int(ceil(seq_size/32.0))];
+  uint32_t hap_tmp[int(ceil(hap_size/32.0))];
 
   // Finish processing first individual separately
-  input.read((char*) seq_tmp, int(ceil(seq_size/8.0)));
-  for(int_fast32_t l=0; l<seq_size; l++) {
-    seq_locus[l][0] ^= (-((seq_tmp[l/32] >> l%32) & 1) ^ seq_locus[l][0]) & (1 << 0);
+  input.read((char*) hap_tmp, int(ceil(hap_size/8.0)));
+  for(int_fast32_t l=0; l<hap_size; l++) {
+    hap_locus[l][0] ^= (-((hap_tmp[l/32] >> l%32) & 1) ^ hap_locus[l][0]) & (1 << 0);
   }
   input.close();
 
   // Process remainder
-  int32_t this_seq_size;
+  int32_t this_hap_size;
   for(int_fast32_t i=1; i<num_inds; i++) {
-    std::ifstream input(seqs[i], std::ios::binary);
-    input.read((char*)&this_seq_size, sizeof(this_seq_size));
-    if(this_seq_size != seq_size) {
-      Rcout << "Error: individual " << seqs[i] << " has differing sequence length (" << this_seq_size << ") --- skipping\n";
+    std::ifstream input(haps[i], std::ios::binary);
+    input.read((char*)&this_hap_size, sizeof(this_hap_size));
+    if(this_hap_size != hap_size) {
+      Rcout << "Error: individual " << haps[i] << " has differing haplotype length (" << this_hap_size << ") --- skipping\n";
     } else {
-      input.read((char*) seq_tmp, int(ceil(seq_size/8.0)));
-      for(int_fast32_t l=0; l<seq_size; l++) {
-        seq_locus[l][i/32] ^= (-((seq_tmp[l/32] >> l%32) & 1) ^ seq_locus[l][i/32]) & (1 << i%32);
+      input.read((char*) hap_tmp, int(ceil(hap_size/8.0)));
+      for(int_fast32_t l=0; l<hap_size; l++) {
+        hap_locus[l][i/32] ^= (-((hap_tmp[l/32] >> l%32) & 1) ^ hap_locus[l][i/32]) & (1 << i%32);
       }
     }
     input.close();
   }
 
-  Rcout << "Cache loaded: " << num_inds << " sequences of length " << seq_size << " (consuming " << (seq_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0 << " GB RAM)" << std::endl;
-  // std::bitset<8> x(seq_ind[3][4]);
-  // Rcout << seqs[3];
+  Rcout << "Cache loaded: " << num_inds << " haplotypes of length " << hap_size << " (consuming " << (hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0 << " GB RAM)" << std::endl;
+  // std::bitset<8> x(hap_ind[3][4]);
+  // Rcout << haps[3];
   // Rcout << x;
 
-  return(seq_size);
+  return(hap_size);
 }
 
 // [[Rcpp::export]]
-int CacheAllSequencesH52(Function nextseqs, int N, int L) {
+int CacheAllHaplotypesH52(Function nexthaps, int N, int L) {
   num_inds = N;
-  seq_size = L;
+  hap_size = L;
 
   // Setup cache storage
   // NB need 32-byte aligned for AVX.  Note also that *each* new locus must be on a 32-byte boundary!
   //   int(ceil(num_inds/32.0)) ints are required per locus to store all individuals
   //   int(ceil((num_inds/32.0)/8.0)) __m256i's are required per locus to store all individuals
-  posix_memalign((void**) &seq_data, 32, seq_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t));
-  seq_locus = new uint32_t*[seq_size];
-  for(int l=0; l<seq_size; l++) {
-    seq_locus[l] = seq_data + l*int(ceil((num_inds/32.0)/8.0))*8;
+  posix_memalign((void**) &hap_data, 32, hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t));
+  hap_locus = new uint32_t*[hap_size];
+  for(int l=0; l<hap_size; l++) {
+    hap_locus[l] = hap_data + l*int(ceil((num_inds/32.0)/8.0))*8;
   }
 
-  // Process sequences in chunks from input function
-  IntegerMatrix nextseqmat;
-  nextseqmat = nextseqs();
-  while(nextseqmat.nrow() > 0) {
+  // Process haplotypes in chunks from input function
+  IntegerMatrix nexthapmat;
+  nexthapmat = nexthaps();
+  while(nexthapmat.nrow() > 0) {
     int_fast32_t ind = 0;
-    for(int_fast32_t i=0; i<nextseqmat.ncol(); i++) {
-      for(int_fast32_t l=0; l<seq_size; l++) {
-        seq_locus[l][ind/32] ^= (-(nextseqmat(l,ind)) ^ seq_locus[l][ind/32]) & (1 << ind%32);
+    for(int_fast32_t i=0; i<nexthapmat.ncol(); i++) {
+      for(int_fast32_t l=0; l<hap_size; l++) {
+        hap_locus[l][ind/32] ^= (-(nexthapmat(l,ind)) ^ hap_locus[l][ind/32]) & (1 << ind%32);
       }
       ind++;
     }
-    nextseqmat = nextseqs();
+    nexthapmat = nexthaps();
   }
 
   Rcpp::Function msg("message");
   msg(std::string("Cache loaded: ") +
     std::to_string(num_inds) +
-    std::string(" sequences of length ") +
-    std::to_string(seq_size) +
+    std::string(" haplotypes of length ") +
+    std::to_string(hap_size) +
     std::string(" (consuming ") +
-    std::to_string((seq_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0) +
+    std::to_string((hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0) +
     std::string(" GB RAM)"));
-  // std::bitset<8> x(seq_ind[3][4]);
-  // Rcout << seqs[3];
+  // std::bitset<8> x(hap_ind[3][4]);
+  // Rcout << haps[3];
   // Rcout << x;
 
-  return(seq_size);
+  return(hap_size);
 }
 
 // [[Rcpp::export]]
 IntegerVector QueryCache2_ind(int idx) {
-  IntegerVector res(int(ceil(seq_size/32.0)));
+  IntegerVector res(int(ceil(hap_size/32.0)));
 
   if(idx > num_inds) {
     return(res);
   }
 
   // Extract individual from locus oriented layout
-  uint32_t seq_tmp[int(ceil(seq_size/32.0))];
-  for(int_fast32_t l=0; l<seq_size; l++) {
-    seq_tmp[l/32] ^= (-((seq_locus[l][idx/32] >> idx%32) & 1) ^ seq_tmp[l/32]) & (1 << l%32);
+  uint32_t hap_tmp[int(ceil(hap_size/32.0))];
+  for(int_fast32_t l=0; l<hap_size; l++) {
+    hap_tmp[l/32] ^= (-((hap_locus[l][idx/32] >> idx%32) & 1) ^ hap_tmp[l/32]) & (1 << l%32);
   }
 
   // Copy and return
-  std::copy_n(seq_tmp, int(ceil(seq_size/32.0)), res.begin());
+  std::copy_n(hap_tmp, int(ceil(hap_size/32.0)), res.begin());
 
   return(res);
 }
@@ -132,32 +132,32 @@ IntegerVector QueryCache2_ind(int idx) {
 IntegerVector QueryCache2_loc(int idx) {
   IntegerVector res(int(ceil(num_inds/32.0)));
 
-  if(idx > seq_size) {
+  if(idx > hap_size) {
     return(res);
   }
 
   // Extract locus from locus oriented layout
-  uint32_t seq_tmp[int(ceil(num_inds/32.0))];
+  uint32_t hap_tmp[int(ceil(num_inds/32.0))];
   for(int_fast32_t i=0; i<ceil(num_inds/32.0); i++) {
-    seq_tmp[i] = seq_locus[idx][i];
+    hap_tmp[i] = hap_locus[idx][i];
   }
 
   // Copy and return
-  std::copy_n(seq_tmp, int(ceil(num_inds/32.0)), res.begin());
+  std::copy_n(hap_tmp, int(ceil(num_inds/32.0)), res.begin());
 
   return(res);
 }
 
 // [[Rcpp::export]]
-void ClearSequenceCache2() {
-  if(seq_data != NULL) {
-    free(seq_data);
-    seq_data = NULL;
+void ClearHaplotypeCache2() {
+  if(hap_data != NULL) {
+    free(hap_data);
+    hap_data = NULL;
   }
-  if(seq_locus != NULL) {
-    delete[] seq_locus;
-    seq_locus = NULL;
+  if(hap_locus != NULL) {
+    delete[] hap_locus;
+    hap_locus = NULL;
   }
   num_inds = 0;
-  seq_size = 0;
+  hap_size = 0;
 }

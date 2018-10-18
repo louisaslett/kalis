@@ -21,12 +21,12 @@ Backward_scalarPi_scalarmu_cpp <- function(bck, t, Pi, mu, rho, nthreads) {
     invisible(.Call('_kalis_Backward_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', bck, t, Pi, mu, rho, nthreads))
 }
 
-CacheAllSequences2 <- function(seqs, bufsize) {
-    .Call('_kalis_CacheAllSequences2', PACKAGE = 'kalis', seqs, bufsize)
+CacheAllHaplotypes2 <- function(haps, bufsize) {
+    .Call('_kalis_CacheAllHaplotypes2', PACKAGE = 'kalis', haps, bufsize)
 }
 
-CacheAllSequencesH52 <- function(nextseqs, N, L) {
-    .Call('_kalis_CacheAllSequencesH52', PACKAGE = 'kalis', nextseqs, N, L)
+CacheAllHaplotypesH52 <- function(nexthaps, N, L) {
+    .Call('_kalis_CacheAllHaplotypesH52', PACKAGE = 'kalis', nexthaps, N, L)
 }
 
 QueryCache2_ind <- function(idx) {
@@ -37,8 +37,8 @@ QueryCache2_loc <- function(idx) {
     .Call('_kalis_QueryCache2_loc', PACKAGE = 'kalis', idx)
 }
 
-ClearSequenceCache2 <- function() {
-    invisible(.Call('_kalis_ClearSequenceCache2', PACKAGE = 'kalis'))
+ClearHaplotypeCache2 <- function() {
+    invisible(.Call('_kalis_ClearHaplotypeCache2', PACKAGE = 'kalis'))
 }
 
 ComputeStatus <- function() {

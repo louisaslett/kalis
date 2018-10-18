@@ -27,11 +27,11 @@ void ExactForwardYepppExpC_cpp(NumericMatrix alpha, NumericVector alpha_f, int a
   if(l<0) {
     l = 0;
     for(int_fast32_t recipient=0; recipient<N; ++recipient) {
-      int32_t recipient_hap = (seq_locus[0][recipient/32] >> recipient%32) & 1;
+      int32_t recipient_hap = (hap_locus[0][recipient/32] >> recipient%32) & 1;
       fold[recipient] = 0.0;
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
-        int32_t donor_hap = (seq_locus[0][donor/32] >> donor%32) & 1;
+        int32_t donor_hap = (hap_locus[0][donor/32] >> donor%32) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
         double theta = (H * mu[0]
                         + (1-H) * (1.0 - mu[0]));
@@ -49,7 +49,7 @@ void ExactForwardYepppExpC_cpp(NumericMatrix alpha, NumericVector alpha_f, int a
     ++l;
     for(int_fast32_t recipient=0; recipient<N; ++recipient) {
       int32_t recipient_hap = 0;
-      recipient_hap -= (seq_locus[l][recipient/32] >> recipient%32) & 1;
+      recipient_hap -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
 
       f[recipient] = 0.0;
 
@@ -64,9 +64,9 @@ void ExactForwardYepppExpC_cpp(NumericMatrix alpha, NumericVector alpha_f, int a
       yepCore_Multiply_IV64fS64f_IV64f(alphaRow, (1.0-rho[l-1]), N);
       double muTmp = mu[l];
       for(int_fast32_t donoroff=0; donoroff<N/32; ++donoroff) {
-        int32_t H = (recipient_hap ^ seq_locus[l][donoroff]); // _mm256_xor_si256
+        int32_t H = (recipient_hap ^ hap_locus[l][donoroff]); // _mm256_xor_si256
         for(char donor=0; donor<32; ++donor) {
-          // donor_hap = (seq_locus[l][donoroff] >> donor) & 1;
+          // donor_hap = (hap_locus[l][donoroff] >> donor) & 1;
           // H = (recipient_hap ^ donor_hap) & 1;
           // YepppTmp[donoroff*8+donor] = (H * muTmp
                                            //                      + (1-H) * (1.0 - muTmp));
@@ -75,7 +75,7 @@ void ExactForwardYepppExpC_cpp(NumericMatrix alpha, NumericVector alpha_f, int a
         }
       }
       for(char donor=0; donor<N%32; ++donor) {
-        int32_t donor_hap = (seq_locus[l][N/32] >> donor) & 1;
+        int32_t donor_hap = (hap_locus[l][N/32] >> donor) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
         YepppTmp[(N/32)*32+donor] = (H * muTmp
                                      + (1-H) * (1.0 - muTmp));
@@ -118,11 +118,11 @@ void ExactForwardYepppExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, int
   if(l<0) {
     l = 0;
     for(int_fast32_t recipient=0; recipient<N; ++recipient) {
-      int32_t recipient_hap = (seq_locus[0][recipient/32] >> recipient%32) & 1;
+      int32_t recipient_hap = (hap_locus[0][recipient/32] >> recipient%32) & 1;
       fold[recipient] = 0.0;
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
-        int32_t donor_hap = (seq_locus[0][donor/32] >> donor%32) & 1;
+        int32_t donor_hap = (hap_locus[0][donor/32] >> donor%32) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
         double theta = (H * mu[0]
                         + (1-H) * (1.0 - mu[0]));
@@ -140,7 +140,7 @@ void ExactForwardYepppExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, int
     ++l;
     for(int_fast32_t recipient=0; recipient<N; ++recipient) {
       int32_t recipient_hap = 0;
-      recipient_hap -= (seq_locus[l][recipient/32] >> recipient%32) & 1;
+      recipient_hap -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
       __m256i _recipient_hap = _mm256_set1_epi32(recipient_hap);
 
       f[recipient] = 0.0;
@@ -159,14 +159,14 @@ void ExactForwardYepppExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, int
       __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
       for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
         // Tried pipelining two packed doubles but it's slower (register pressure?)
-        __m256i _donor_hapA = _mm256_load_si256((__m256i*) &(seq_locus[l][donoroff*8]));
+        __m256i _donor_hapA = _mm256_load_si256((__m256i*) &(hap_locus[l][donoroff*8]));
 
-        //int32_t H = (recipient_hap ^ seq_locus[l][donoroff]); // _mm256_xor_si256
+        //int32_t H = (recipient_hap ^ hap_locus[l][donoroff]); // _mm256_xor_si256
         __m256i _HA = _mm256_xor_si256(_recipient_hap, _donor_hapA);
         __m128i ones = _mm_set1_epi32(1);
         double tmp[8] __attribute__ ((aligned (32)));
         for(char donor=0; donor<32; ++donor) {
-        // donor_hap = (seq_locus[l][donoroff] >> donor) & 1;
+        // donor_hap = (hap_locus[l][donoroff] >> donor) & 1;
         // H = (recipient_hap ^ donor_hap) & 1;
         // YepppTmp[donoroff*8+donor] = (H * muTmp
         //                      + (1-H) * (1.0 - muTmp));
@@ -201,7 +201,7 @@ void ExactForwardYepppExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, int
       }
         // Tidy up any ragged end past a multiple of 256 ...
         for(int32_t donor=0; donor<N%(32*8); ++donor) {
-        int32_t donor_hap = (seq_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+        int32_t donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
         YepppTmp[(N/(32*8))*32*8+donor] = H * muTmp1 + muTmp2;
         }
@@ -243,11 +243,11 @@ void ExactForwardYepppExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, int
       if(l<0) {
       l = 0;
       for(int_fast32_t recipient=0; recipient<N; ++recipient) {
-      int32_t recipient_hap = (seq_locus[0][recipient/32] >> recipient%32) & 1;
+      int32_t recipient_hap = (hap_locus[0][recipient/32] >> recipient%32) & 1;
       fold[recipient] = 0.0;
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
-      int32_t donor_hap = (seq_locus[0][donor/32] >> donor%32) & 1;
+      int32_t donor_hap = (hap_locus[0][donor/32] >> donor%32) & 1;
       int32_t H = (recipient_hap ^ donor_hap) & 1;
       double theta = (H * mu[0]
       + (1-H) * (1.0 - mu[0]));
@@ -265,7 +265,7 @@ void ExactForwardYepppExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, int
       ++l;
       for(int_fast32_t recipient=0; recipient<N; ++recipient) {
       int32_t recipient_hap = 0;
-      recipient_hap -= (seq_locus[l][recipient/32] >> recipient%32) & 1;
+      recipient_hap -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
       __m256i _recipient_hap = _mm256_set1_epi32(recipient_hap);
 
       f[recipient] = 0.0;
@@ -284,14 +284,14 @@ void ExactForwardYepppExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, int
       __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
       for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
       // Tried pipelining two packed doubles but it's slower (register pressure?)
-      __m256i _donor_hapA = _mm256_load_si256((__m256i*) &(seq_locus[l][donoroff*8]));
+      __m256i _donor_hapA = _mm256_load_si256((__m256i*) &(hap_locus[l][donoroff*8]));
 
-      //int32_t H = (recipient_hap ^ seq_locus[l][donoroff]); // _mm256_xor_si256
+      //int32_t H = (recipient_hap ^ hap_locus[l][donoroff]); // _mm256_xor_si256
       __m256i _HA = _mm256_xor_si256(_recipient_hap, _donor_hapA);
       __m128i ones = _mm_set1_epi32(1);
       double tmp[8] __attribute__ ((aligned (32)));
       for(char donor=0; donor<32; ++donor) {
-        // donor_hap = (seq_locus[l][donoroff] >> donor) & 1;
+        // donor_hap = (hap_locus[l][donoroff] >> donor) & 1;
         // H = (recipient_hap ^ donor_hap) & 1;
         // YepppTmp[donoroff*8+donor] = (H * muTmp
                                          //                      + (1-H) * (1.0 - muTmp));
@@ -325,7 +325,7 @@ void ExactForwardYepppExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, int
       }
     // Tidy up any ragged end past a multiple of 256 ...
     for(int32_t donor=0; donor<N%(32*8); ++donor) {
-      int32_t donor_hap = (seq_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+      int32_t donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
       int32_t H = (recipient_hap ^ donor_hap) & 1;
       YepppTmp[(N/(32*8))*32*8+donor] = H * muTmp1 + muTmp2;
     }
@@ -392,12 +392,12 @@ void ExactForwardNoExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, Numeri
   if(l<0) {
     l = 0;
     for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
-      int32_t recipient_hap = (seq_locus[0][recipient/32] >> recipient%32) & 1;
+      int32_t recipient_hap = (hap_locus[0][recipient/32] >> recipient%32) & 1;
       fold[recipient]    = 0.0;
       foldold[recipient] = 0.0;
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
-        int32_t donor_hap = (seq_locus[0][donor/32] >> donor%32) & 1;
+        int32_t donor_hap = (hap_locus[0][donor/32] >> donor%32) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
         double theta = (H * mu[0]
                         + (1-H) * (1.0 - mu[0]));
@@ -423,7 +423,7 @@ void ExactForwardNoExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, Numeri
     for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
       // Load this recipient's bit into all 256-bits of an AVX register
       int32_t recipient_hap = 0;
-      recipient_hap -= (seq_locus[l][recipient/32] >> recipient%32) & 1;
+      recipient_hap -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
       __m256i _recipient_hap = _mm256_set1_epi32(recipient_hap);
 
       f[recipient] = 0.0;
@@ -440,7 +440,7 @@ void ExactForwardNoExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, Numeri
       __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
       for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
       // Load next 256 donors and XOR with recipients
-      __m256i _HA = _mm256_xor_si256(_recipient_hap, _mm256_load_si256((__m256i*) &(seq_locus[l][donoroff*8])));
+      __m256i _HA = _mm256_xor_si256(_recipient_hap, _mm256_load_si256((__m256i*) &(hap_locus[l][donoroff*8])));
       uint32_t *HA = (uint32_t*) &_HA;
 
       const uint32_t mask = 16843009;
@@ -458,7 +458,7 @@ void ExactForwardNoExpAVX_cpp(NumericMatrix alpha, NumericVector alpha_f, Numeri
       }
       // Tidy up any ragged end past a multiple of 256 ...
       for(int32_t donor=0; donor<N%(32*8); ++donor) {
-      int32_t donor_hap = (seq_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+      int32_t donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
       int32_t H = (recipient_hap ^ donor_hap) & 1;
       alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (PiRow[(N/(32*8))*32*8+donor] + fratioMulOmRho[recipient-from_rec] * alphaRow[(N/(32*8))*32*8+donor]);
       }
@@ -504,12 +504,12 @@ void ExactForwardNoExpAVX2_cpp(NumericMatrix alpha,
     l = 0;
     for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
       int_fast32_t recipient_alpha = recipient-alpha_from_rec;
-      int32_t recipient_hap = (seq_locus[0][recipient/32] >> recipient%32) & 1;
+      int32_t recipient_hap = (hap_locus[0][recipient/32] >> recipient%32) & 1;
       fold[recipient_alpha]    = 0.0;
       foldold[recipient_alpha] = 0.0;
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
-        int32_t donor_hap = (seq_locus[0][donor/32] >> donor%32) & 1;
+        int32_t donor_hap = (hap_locus[0][donor/32] >> donor%32) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
         double theta = (H * mu[0]
                           + (1-H) * (1.0 - mu[0]));
@@ -535,7 +535,7 @@ void ExactForwardNoExpAVX2_cpp(NumericMatrix alpha,
 
       // Load this recipient's bit into all 256-bits of an AVX register
       int32_t recipient_hap = 0;
-      recipient_hap -= (seq_locus[l][recipient/32] >> recipient%32) & 1;
+      recipient_hap -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
       __m256i _recipient_hap = _mm256_set1_epi32(recipient_hap);
 
       f[recipient-from_rec] = 0.0;
@@ -552,7 +552,7 @@ void ExactForwardNoExpAVX2_cpp(NumericMatrix alpha,
       __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
       for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
         // Load next 256 donors and XOR with recipients
-        __m256i _HA = _mm256_xor_si256(_recipient_hap, _mm256_load_si256((__m256i*) &(seq_locus[l][donoroff*8])));
+        __m256i _HA = _mm256_xor_si256(_recipient_hap, _mm256_load_si256((__m256i*) &(hap_locus[l][donoroff*8])));
         uint32_t *HA = (uint32_t*) &_HA;
 
         const uint32_t mask = 16843009;
@@ -602,7 +602,7 @@ void ExactForwardNoExpAVX2_cpp(NumericMatrix alpha,
       }
       // Tidy up any ragged end past a multiple of 256 ...
       for(int32_t donor=0; donor<N%(32*8); ++donor) {
-        int32_t donor_hap = (seq_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+        int32_t donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
         alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (PiRow[(N/(32*8))*32*8+donor] + fratioMulOmRho[recipient-from_rec] * alphaRow[(N/(32*8))*32*8+donor]);
       }

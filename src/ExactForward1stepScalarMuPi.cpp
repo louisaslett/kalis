@@ -38,13 +38,13 @@ void ExactForward1stepNoExpAVX3_scmuPi_cpp_raw(double *const __restrict__ alpha,
     l = 0;
     for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
       int_fast32_t recipient_alpha = recipient-alpha_from_rec;
-      int32_t recipient_hap = (seq_locus[0][recipient/32] >> recipient%32) & 1;
+      int32_t recipient_hap = (hap_locus[0][recipient/32] >> recipient%32) & 1;
 
       fold[recipient_alpha]    = 0.0;
       foldold[recipient_alpha] = 0.0;
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
-        int32_t donor_hap = (seq_locus[0][donor/32] >> donor%32) & 1;
+        int32_t donor_hap = (hap_locus[0][donor/32] >> donor%32) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
         double theta = (H * mu
                           + (1-H) * (1.0 - mu));
@@ -192,7 +192,7 @@ void ParExactForward1stepNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
     Rcout << "Only use parallel function with at least 2 threads";
   }
 
-  // round(seq(0, nthreads) * double(to_rec-from_rec) / double(nthreads)) + from_rec;
+  // round(hap(0, nthreads) * double(to_rec-from_rec) / double(nthreads)) + from_rec;
   double spacing = double(to_rec-from_rec) / double(nthreads);
 
   for(int_fast32_t i=0; i<nthreads; ++i) {

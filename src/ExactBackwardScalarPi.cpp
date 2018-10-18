@@ -37,13 +37,13 @@ void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
     l = L-1;
     for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
       int_fast32_t recipient_beta = recipient-beta_from_rec;
-      int32_t recipient_hap = (seq_locus[l][recipient/32] >> recipient%32) & 1;
+      int32_t recipient_hap = (hap_locus[l][recipient/32] >> recipient%32) & 1;
 
       gold[recipient_beta] = 0.0;
       goldold[recipient_beta] = 0.0;
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
-        int32_t donor_hap = (seq_locus[l][donor/32] >> donor%32) & 1;
+        int32_t donor_hap = (hap_locus[l][donor/32] >> donor%32) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
         double theta = (H * mu[l]
                           + (1-H) * (1.0 - mu[l]));
@@ -75,8 +75,8 @@ void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
 
       // Load this recipient's bit into all 256-bits of an AVX register
       int32_t recipient_hap = 0, recipient_hap_prev = 0;
-      recipient_hap_prev -= (seq_locus[l+1][recipient/32] >> recipient%32) & 1;
-      recipient_hap      -= (seq_locus[l][recipient/32] >> recipient%32) & 1;
+      recipient_hap_prev -= (hap_locus[l+1][recipient/32] >> recipient%32) & 1;
+      recipient_hap      -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
       __m256i _recipient_hap_prev = _mm256_set1_epi32(recipient_hap_prev);
       __m256i _recipient_hap      = _mm256_set1_epi32(recipient_hap);
 
@@ -94,9 +94,9 @@ void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
       const __m256d _muTmp1b = _mm256_broadcast_sd(&muTmp1b), _muTmp2b = _mm256_broadcast_sd(&muTmp2b);
       for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
         // Load next 256 donors and XOR with recipients
-        __m256i _HA = _mm256_xor_si256(_recipient_hap_prev, _mm256_load_si256((__m256i*) &(seq_locus[l+1][donoroff*8])));
+        __m256i _HA = _mm256_xor_si256(_recipient_hap_prev, _mm256_load_si256((__m256i*) &(hap_locus[l+1][donoroff*8])));
         uint32_t *HA = (uint32_t*) &_HA;
-        __m256i _HB = _mm256_xor_si256(_recipient_hap,      _mm256_load_si256((__m256i*) &(seq_locus[l][donoroff*8])));
+        __m256i _HB = _mm256_xor_si256(_recipient_hap,      _mm256_load_si256((__m256i*) &(hap_locus[l][donoroff*8])));
         uint32_t *HB = (uint32_t*) &_HB;
 
         const uint32_t mask = 16843009;
@@ -161,11 +161,11 @@ void ExactBackwardNoExpAVX3_scPi_cpp_raw(double *const __restrict__ beta,
       }
       // Tidy up any ragged end past a multiple of 256 ...
       for(int32_t donor=0; donor<N%(32*8); ++donor) {
-        int32_t donor_hap = (seq_locus[l+1][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+        int32_t donor_hap = (hap_locus[l+1][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
         int32_t H = (recipient_hap_prev ^ donor_hap) & 1;
         betaRow[(N/(32*8))*32*8+donor] = 1.0 + (H * muTmp1a + muTmp2a) * betaRow[(N/(32*8))*32*8+donor] * gratioMulOmRho;
 
-        donor_hap = (seq_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+        donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
         H = (recipient_hap ^ donor_hap) & 1;
         g[recipient-from_rec] += Pi * (H * muTmp1b + muTmp2b) * betaRow[(N/(32*8))*32*8+donor];
       }
@@ -238,7 +238,7 @@ void ParExactBackwardNoExpAVX3_scPi_cpp(NumericMatrix beta,
     Rcout << "Only use parallel function with at least 2 threads";
   }
 
-  // round(seq(0, nthreads) * double(to_rec-from_rec) / double(nthreads)) + from_rec;
+  // round(hap(0, nthreads) * double(to_rec-from_rec) / double(nthreads)) + from_rec;
   double spacing = double(to_rec-from_rec) / double(nthreads);
 
   for(int_fast32_t i=0; i<nthreads; ++i) {

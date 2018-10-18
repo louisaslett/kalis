@@ -15,7 +15,7 @@ void FillTableCache(List cache,
                     int from = 0,
                     int to = 0) {
 
-  const int_fast32_t L = seq_size;
+  const int_fast32_t L = hap_size;
   if(from <= 0) {
     from = 1;
   }
@@ -124,7 +124,7 @@ void CopyForwardTable(List to, List from) {
 //                             NumericVector mu,
 //                             NumericVector rho,
 //                             const int nthreads) {
-//   const int L = seq_size;
+//   const int L = hap_size;
 //   const int N = num_inds;
 //   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
 //   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);

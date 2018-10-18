@@ -2,14 +2,14 @@
 # Gold master exact table computation, matrix-wise, log-space
 Exact_ComputeTable_GMmatLS_R <- function(l, Pi, mu, rho) {
   # Load/initialise variables we require
-  L <- get("seq_size", envir = pkgCache)
+  L <- get("hap_size", envir = pkgCache)
 
-  seqs <- get("seqs", envir = pkgCache)
-  N <- length(seqs)
+  haps <- get("haps", envir = pkgCache)
+  N <- length(haps)
 
   H <- matrix(0, nrow = N, ncol = L)
   for(i in 1:N) {
-    H[i,] <- QueryCache(seqs[i])
+    H[i,] <- QueryCache(haps[i])
   }
 
   # Sanity checks

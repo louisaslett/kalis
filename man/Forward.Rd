@@ -2,7 +2,7 @@
 % Please edit documentation in R/FB.R
 \name{Forward}
 \alias{Forward}
-\title{Propagate an HMM forward table}
+\title{Propagate an HMM Forward Table}
 \usage{
 Forward(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha) - 1),
   nthreads = 1)
@@ -15,7 +15,7 @@ or equal to locus position of table provided in \code{fwd}.}
 
 \item{morgan.dist}{a vector of recombination distances between loci, in Morgans.
 Note element i of this vector should be the distance between loci i and i+1
-(not i and i-1), and thus length one less than the sequence length.}
+(not i and i-1), and thus length one less than the haplotype length.}
 
 \item{Ne}{a scalar for the effective population size.  Can be autotuned, see ...}
 
@@ -42,7 +42,10 @@ Takes a forward table and propagates it in-place to a later locus position.
 \details{
 Detailed description
 
-For example, mention that each column is an independent HMM and highlight that
+Forward implements the forward algorithm to advance the forward probabilities stored in
+a forward table fwd to a new target locus t.  Note that t must be greater than the current fwd locus.
+
+mention that each column is an independent HMM and highlight that
 forward table (and Pi) are therefore to be viewed column-wise.
 }
 \examples{

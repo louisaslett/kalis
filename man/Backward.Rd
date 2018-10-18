@@ -15,7 +15,7 @@ or equal to locus position of table provided in \code{bck}.}
 
 \item{morgan.dist}{a vector of recombination distances between loci, in Morgans.
 Note element i of this vector should be the distance between loci i and i+1
-(not i and i-1), and thus length one less than the sequence length.}
+(not i and i-1), and thus length one less than the haplotype length.}
 
 \item{Ne}{a scalar for the effective population size.  Can be autotuned, see ...}
 

@@ -18,7 +18,7 @@ void Forward_densePi_densemu_cpp(List fwd,
                                  NumericVector mu,
                                  NumericVector rho,
                                  const int nthreads) {
-  const int L = seq_size;
+  const int L = hap_size;
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
@@ -110,7 +110,7 @@ void Forward_scalarPi_densemu_cpp(List fwd,
                                   NumericVector mu,
                                   NumericVector rho,
                                   const int nthreads) {
-  const int L = seq_size;
+  const int L = hap_size;
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
@@ -206,7 +206,7 @@ void Forward_densePi_scalarmu_cpp(List fwd,
                                   const double mu,
                                   NumericVector rho,
                                   const int nthreads) {
-  const int L = seq_size;
+  const int L = hap_size;
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
@@ -301,7 +301,7 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
                                    const double mu,
                                    NumericVector rho,
                                    const int nthreads) {
-  const int L = seq_size;
+  const int L = hap_size;
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
@@ -399,7 +399,7 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
                                         const double mu,
                                         NumericVector rho,
                                         const int nthreads) {
-  const int L = seq_size;
+  const int L = hap_size;
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);

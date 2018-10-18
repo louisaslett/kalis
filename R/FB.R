@@ -15,7 +15,7 @@
 #'   or equal to locus position of table provided in \code{fwd}.
 #' @param morgan.dist a vector of recombination distances between loci, in Morgans.
 #'   Note element i of this vector should be the distance between loci i and i+1
-#'   (not i and i-1), and thus length one less than the sequence length.
+#'   (not i and i-1), and thus length one less than the haplotype length.
 #' @param Ne a scalar for the effective population size.  Can be autotuned, see ...
 #' @param gamma a scalar power to which the Morgan distances are raised.  Can be
 #'   autotuned, see ...
@@ -37,8 +37,8 @@
 #' fwd <- MakeForwardTable()
 #' Forward(fwd, 100, Pi, mu, rho)
 Forward <- function(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha)-1), nthreads = 1) {
-  L <- get("seq_size", envir = pkgCache)
-  N <- length(get("seqs", envir = pkgCache))
+  L <- get("hap_size", envir = pkgCache)
+  N <- length(get("haps", envir = pkgCache))
   if(fwd$l > t) {
     stop("The forward table provided is for locus position ", fwd$l, " which is already past requested locus ", t)
   }
@@ -109,7 +109,7 @@ Forward <- function(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha)-
 #'   or equal to locus position of table provided in \code{bck}.
 #' @param morgan.dist a vector of recombination distances between loci, in Morgans.
 #'   Note element i of this vector should be the distance between loci i and i+1
-#'   (not i and i-1), and thus length one less than the sequence length.
+#'   (not i and i-1), and thus length one less than the haplotype length.
 #' @param Ne a scalar for the effective population size.  Can be autotuned, see ...
 #' @param gamma a scalar power to which the Morgan distances are raised.  Can be
 #'   autotuned, see ...
@@ -131,8 +131,8 @@ Forward <- function(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha)-
 #' bck <- MakeBackwardTable()
 #' Backward(bck, 100, Pi, mu, rho)
 Backward <- function(bck, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(bck$beta)-1), nthreads = 1) {
-  L <- get("seq_size", envir = pkgCache)
-  N <- length(get("seqs", envir = pkgCache))
+  L <- get("hap_size", envir = pkgCache)
+  N <- length(get("haps", envir = pkgCache))
   if(bck$l < t) {
     stop("The backward table provided is for locus position ", bck$l, " which is already before requested locus ", t)
   }

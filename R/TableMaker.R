@@ -48,12 +48,12 @@
 #' Forward(fwd, 10, morgan.dist, Ne, gamma, mu, nthreads = 8)
 #' }
 MakeForwardTable <- function(from_recipient = 1, to_recipient = Inf) {
-  seqs <- get("seqs", envir = pkgCache)
-  if(anyNA(seqs)) {
-    stop("No sequences cached ... cannot determine table size until cache is loaded with CacheAllSequences().")
+  haps <- get("haps", envir = pkgCache)
+  if(anyNA(haps)) {
+    stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
   }
-  N <- length(seqs)
-  L <- get("seq_size", envir = pkgCache)
+  N <- length(haps)
+  L <- get("hap_size", envir = pkgCache)
 
   if(from_recipient>to_recipient) {
     stop("from_recipient must be smaller than to_recipient.")
@@ -115,12 +115,12 @@ print.kalisForwardTable <- function(x, ...) {
 #' @examples
 #' # Examples
 MakeBackwardTable <- function(from_recipient = 1, to_recipient = Inf) {
-  seqs <- get("seqs", envir = pkgCache)
-  if(anyNA(seqs)) {
-    stop("No sequences cached ... cannot determine table size until cache is loaded with CacheAllSequences().")
+  haps <- get("haps", envir = pkgCache)
+  if(anyNA(haps)) {
+    stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
   }
-  N <- length(seqs)
-  L <- get("seq_size", envir = pkgCache)
+  N <- length(haps)
+  L <- get("hap_size", envir = pkgCache)
 
   if(from_recipient>to_recipient) {
     stop("from_recipient must be smaller than to_recipient.")

@@ -75,28 +75,28 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// CacheAllSequences2
-int CacheAllSequences2(CharacterVector seqs, int bufsize);
-RcppExport SEXP _kalis_CacheAllSequences2(SEXP seqsSEXP, SEXP bufsizeSEXP) {
+// CacheAllHaplotypes2
+int CacheAllHaplotypes2(CharacterVector haps, int bufsize);
+RcppExport SEXP _kalis_CacheAllHaplotypes2(SEXP hapsSEXP, SEXP bufsizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< CharacterVector >::type seqs(seqsSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type haps(hapsSEXP);
     Rcpp::traits::input_parameter< int >::type bufsize(bufsizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(CacheAllSequences2(seqs, bufsize));
+    rcpp_result_gen = Rcpp::wrap(CacheAllHaplotypes2(haps, bufsize));
     return rcpp_result_gen;
 END_RCPP
 }
-// CacheAllSequencesH52
-int CacheAllSequencesH52(Function nextseqs, int N, int L);
-RcppExport SEXP _kalis_CacheAllSequencesH52(SEXP nextseqsSEXP, SEXP NSEXP, SEXP LSEXP) {
+// CacheAllHaplotypesH52
+int CacheAllHaplotypesH52(Function nexthaps, int N, int L);
+RcppExport SEXP _kalis_CacheAllHaplotypesH52(SEXP nexthapsSEXP, SEXP NSEXP, SEXP LSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Function >::type nextseqs(nextseqsSEXP);
+    Rcpp::traits::input_parameter< Function >::type nexthaps(nexthapsSEXP);
     Rcpp::traits::input_parameter< int >::type N(NSEXP);
     Rcpp::traits::input_parameter< int >::type L(LSEXP);
-    rcpp_result_gen = Rcpp::wrap(CacheAllSequencesH52(nextseqs, N, L));
+    rcpp_result_gen = Rcpp::wrap(CacheAllHaplotypesH52(nexthaps, N, L));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -122,12 +122,12 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// ClearSequenceCache2
-void ClearSequenceCache2();
-RcppExport SEXP _kalis_ClearSequenceCache2() {
+// ClearHaplotypeCache2
+void ClearHaplotypeCache2();
+RcppExport SEXP _kalis_ClearHaplotypeCache2() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    ClearSequenceCache2();
+    ClearHaplotypeCache2();
     return R_NilValue;
 END_RCPP
 }
@@ -852,11 +852,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_Backward_scalarPi_densemu_cpp", (DL_FUNC) &_kalis_Backward_scalarPi_densemu_cpp, 6},
     {"_kalis_Backward_densePi_scalarmu_cpp", (DL_FUNC) &_kalis_Backward_densePi_scalarmu_cpp, 6},
     {"_kalis_Backward_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Backward_scalarPi_scalarmu_cpp, 6},
-    {"_kalis_CacheAllSequences2", (DL_FUNC) &_kalis_CacheAllSequences2, 2},
-    {"_kalis_CacheAllSequencesH52", (DL_FUNC) &_kalis_CacheAllSequencesH52, 3},
+    {"_kalis_CacheAllHaplotypes2", (DL_FUNC) &_kalis_CacheAllHaplotypes2, 2},
+    {"_kalis_CacheAllHaplotypesH52", (DL_FUNC) &_kalis_CacheAllHaplotypesH52, 3},
     {"_kalis_QueryCache2_ind", (DL_FUNC) &_kalis_QueryCache2_ind, 1},
     {"_kalis_QueryCache2_loc", (DL_FUNC) &_kalis_QueryCache2_loc, 1},
-    {"_kalis_ClearSequenceCache2", (DL_FUNC) &_kalis_ClearSequenceCache2, 0},
+    {"_kalis_ClearHaplotypeCache2", (DL_FUNC) &_kalis_ClearHaplotypeCache2, 0},
     {"_kalis_ComputeStatus", (DL_FUNC) &_kalis_ComputeStatus, 0},
     {"_kalis_Exact_ComputeTable_naive_cpp", (DL_FUNC) &_kalis_Exact_ComputeTable_naive_cpp, 4},
     {"_kalis_Dedip_min", (DL_FUNC) &_kalis_Dedip_min, 2},
