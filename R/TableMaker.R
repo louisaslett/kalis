@@ -116,6 +116,7 @@ print.kalisForwardTable <- function(x, ...) {
 #'
 #' @examples
 #' # Examples
+#' @export MakeBackwardTable
 MakeBackwardTable <- function(from_recipient = 1, to_recipient = Inf) {
   haps <- get("haps", envir = pkgCache)
   if(anyNA(haps)) {
