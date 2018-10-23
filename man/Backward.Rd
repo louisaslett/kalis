@@ -27,7 +27,7 @@ autotuned, see ...}
 \item{Pi}{leaving the default of uniform copying probabilities is recommended for
 computational efficiency.  If desired, a full matrix of background copying
 probabilities can be provided, such that the (i,j)-th element is the background
-probability that i copies j.  Hence, (a) the diagonal must be zero; and (b)
+probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
 the columns of Pi must sum to 1.}
 
 \item{nthreads}{the number of CPU cores on which to run.}
