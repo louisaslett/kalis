@@ -4,7 +4,8 @@
 \alias{MakeForwardTable}
 \title{Create a Forward Table}
 \usage{
-MakeForwardTable(from_recipient = 1, to_recipient = Inf)
+MakeForwardTable(morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha) -
+  1), from_recipient = 1, to_recipient = Inf)
 }
 \arguments{
 \item{from_recipient}{first recipient haplotype if creating a partial forward

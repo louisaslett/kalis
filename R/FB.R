@@ -38,63 +38,36 @@
 #' Forward(fwd, 100, Pi, mu, rho)
 #'
 #' @export Forward
-Forward <- function(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha)-1), nthreads = 1) {
+Forward <- function(fwd, t, nthreads = 1) {
+  if(!("kalisForwardTable" %in% class(fwd))) {
+    stop("The fwd argument is not a valid forward table.")
+  }
   L <- get("hap_size", envir = pkgCache)
   N <- length(get("haps", envir = pkgCache))
+  if(!is.vector(t) || !is.numeric(t) || length(t) != 1) {
+    stop("t must be a scalar.")
+  }
+  if(t > L) {
+    stop("The cached haplotypes have only {L} loci ... cannot move forward to locus {t}.")
+  }
   if(fwd$l > t) {
     stop("The forward table provided is for locus position ", fwd$l, " which is already past requested locus ", t)
   }
   if(nrow(fwd$alpha) != N || ncol(fwd$alpha) != fwd$to_recipient-fwd$from_recipient+1) {
     stop("Forward table is of the wrong dimensions for this problem.")
   }
-  if(!is.vector(morgan.dist)) {
-    stop("morgan.dist must be a vector of recombination distances.")
-  }
-  if(!is.numeric(morgan.dist)) {
-    stop("morgan.dist must be numeric vector type.")
-  }
-  if(length(morgan.dist) != L-1) {
-    stop("morgan.dist is the wrong length for this problem.")
-  }
-  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
-    stop("Ne must be a scalar.")
-  }
-  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma <= 0) {
-    stop("gamma must be a positive scalar.")
-  }
-  if(!is.vector(mu)) {
-    stop("mu must be either a vector or a scalar.")
-  }
-  if(!is.numeric(mu)) {
-    stop("mu must be numeric.")
-  }
-  if(length(mu) != 1 && length(mu) != L) {
-    stop("mu is the wrong length for this problem.")
-  }
-  if(is.data.frame(Pi)) {
-    stop("Pi must be a matrix or scalar, not a data frame.")
-  }
-  if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
-    stop("Pi is of the wrong dimensions for this problem.")
-  }
-  if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(nrow(fwd$alpha)-1))) {
-    stop("Pi can only be set to a matrix, or omitted to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
-  }
-
-  rho <- c(1-exp(-Ne*morgan.dist^gamma), 1)
-  rho <- ifelse(rho<1e-16, 1e-16, rho)
 
   if(is.matrix(Pi)) {
     if(length(mu) == 1) {
-      Forward_densePi_scalarmu_cpp(fwd, t, Pi, mu, rho, nthreads)
+      Forward_densePi_scalarmu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
     } else {
-      Forward_densePi_densemu_cpp(fwd, t, Pi, mu, rho, nthreads)
+      Forward_densePi_densemu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
     }
   } else {
     if(length(mu) == 1) {
-      Forward_scalarPi_scalarmu_cpp(fwd, t, Pi, mu, rho, nthreads)
+      Forward_scalarPi_scalarmu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
     } else {
-      Forward_scalarPi_densemu_cpp(fwd, t, Pi, mu, rho, nthreads)
+      Forward_scalarPi_densemu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
     }
   }
 }

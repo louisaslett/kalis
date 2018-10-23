@@ -4,14 +4,15 @@
 \alias{Forward}
 \title{Propagate an HMM Forward Table}
 \usage{
-Forward(fwd, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha) - 1),
-  nthreads = 1)
+Forward(fwd, t, nthreads = 1)
 }
 \arguments{
 \item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
 
 \item{t}{a locus position to move the forward table to.  Must be greater than
 or equal to locus position of table provided in \code{fwd}.}
+
+\item{nthreads}{the number of CPU cores on which to run.}
 
 \item{morgan.dist}{a vector of recombination distances between loci, in Morgans.
 Note element i of this vector should be the distance between loci i and i+1
@@ -29,8 +30,6 @@ computational efficiency.  If desired, a full matrix of background copying
 probabilities can be provided, such that the (i,j)-th element is the background
 probability that i copies j.  Hence, (a) the diagonal must be zero; and (b)
 the columns of Pi must sum to 1.}
-
-\item{nthreads}{the number of CPU cores on which to run.}
 }
 \value{
 There is nothing returned.  For performance reasons, the forward
