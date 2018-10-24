@@ -55,14 +55,14 @@ Forward <- function(fwd, t, nthreads = 1) {
     stop("Forward table is of the wrong dimensions for this problem.")
   }
 
-  if(is.matrix(Pi)) {
-    if(length(mu) == 1) {
+  if(is.matrix(fwd$Pi)) {
+    if(length(fwd$mu) == 1) {
       Forward_densePi_scalarmu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
     } else {
       Forward_densePi_densemu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
     }
   } else {
-    if(length(mu) == 1) {
+    if(length(fwd$mu) == 1) {
       Forward_scalarPi_scalarmu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
     } else {
       Forward_scalarPi_densemu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
@@ -105,63 +105,33 @@ Forward <- function(fwd, t, nthreads = 1) {
 #' Backward(bck, 100, Pi, mu, rho)
 #'
 #' @export Backward
-Backward <- function(bck, t, morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(bck$beta)-1), nthreads = 1) {
+Backward <- function(bck, t, nthreads = 1) {
+  if(!("kalisBackwardTable" %in% class(bck))) {
+    stop("The bck argument is not a valid backward table.")
+  }
   L <- get("hap_size", envir = pkgCache)
   N <- length(get("haps", envir = pkgCache))
+  if(t < 1) {
+    stop("Valid target loci range from 1 to {L}...cannot move backward to locus {t}.")
+  }
   if(bck$l < t) {
     stop("The backward table provided is for locus position ", bck$l, " which is already before requested locus ", t)
   }
   if(nrow(bck$beta) != N || ncol(bck$beta) != bck$to_recipient-bck$from_recipient+1) {
-    stop("Forward table is of the wrong dimensions for this problem.")
-  }
-  if(!is.vector(morgan.dist)) {
-    stop("morgan.dist must be a vector of recombination distances.")
-  }
-  if(!is.numeric(morgan.dist)) {
-    stop("morgan.dist must be numeric vector type.")
-  }
-  if(length(morgan.dist) != L-1) {
-    stop("morgan.dist is the wrong length for this problem.")
-  }
-  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
-    stop("Ne must be a scalar.")
-  }
-  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1) {
-    stop("gamma must be a scalar.")
-  }
-  if(!is.vector(mu)) {
-    stop("mu must be either a vector or a scalar.")
-  }
-  if(!is.numeric(mu)) {
-    stop("mu must be numeric.")
-  }
-  if(length(mu) != 1 && length(mu) != L) {
-    stop("mu is the wrong length for this problem.")
-  }
-  if(is.data.frame(Pi)) {
-    stop("Pi must be a matrix or scalar, not a data frame.")
-  }
-  if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
-    stop("Pi is of the wrong dimensions for this problem.")
-  }
-  if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(nrow(bck$beta)-1))) {
-    stop("Pi can only be set to a matrix, or omitted to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
+    stop("Backward table is of the wrong dimensions for this problem.")
   }
 
-  rho <- c(1-exp(-Ne*morgan.dist^gamma), 1)
-  rho <- ifelse(rho<1e-16, 1e-16, rho)
-
-  if(is.matrix(Pi)) {
-    if(length(mu) == 1) {
-      Backward_densePi_scalarmu_cpp(bck, t, Pi, mu, rho, nthreads)
+  if(is.matrix(bck$Pi)) {
+    if(length(bck$mu) == 1) {
+      Backward_densePi_scalarmu_cpp(bck, t, bck$Pi, bck$mu, bck$rho, nthreads)
     } else {
-      Backward_densePi_densemu_cpp(bck, t, Pi, mu, rho, nthreads)
+      Backward_densePi_densemu_cpp(bck, t, bck$Pi, bck$mu, bck$rho, nthreads)
     }
   } else {
-    if(length(mu) == 1) {
-      Backward_scalarPi_scalarmu_cpp(bck, t, Pi, mu, rho, nthreads)
+    if(length(bck$mu) == 1) {
+      Backward_scalarPi_scalarmu_cpp(bck, t, bck$Pi, bck$mu, bck$rho, nthreads)
     } else {
-      Backward_scalarPi_densemu_cpp(bck, t, Pi, mu, rho, nthreads)
+      Backward_scalarPi_densemu_cpp(bck, t, bck$Pi, bck$mu, bck$rho, nthreads)
     }
   }
 }

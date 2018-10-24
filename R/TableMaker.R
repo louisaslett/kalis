@@ -49,20 +49,28 @@
 #' }
 #'
 #' @export MakeForwardTable
-MakeForwardTable <- function(morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha)-1), from_recipient = 1, to_recipient = Inf) {
+MakeForwardTable <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL, from_recipient = 1, to_recipient = Inf) {
   haps <- get("haps", envir = pkgCache)
   if(anyNA(haps)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
   }
+
   N <- length(haps)
   L <- get("hap_size", envir = pkgCache)
+
+
+  if(!is.numeric(morgan.dist)) {
+    stop("morgan.dist must be numeric vector type.")
+  }
+
+  if(length(morgan.dist)==1){
+    morgan.dist <- rep(morgan.dist, L-1)
+  }
 
   if(!is.vector(morgan.dist)) {
     stop("morgan.dist must be a vector of recombination distances.")
   }
-  if(!is.numeric(morgan.dist)) {
-    stop("morgan.dist must be numeric vector type.")
-  }
+
   if(length(morgan.dist) != L-1) {
     stop("morgan.dist is the wrong length for this problem.")
   }
@@ -81,14 +89,17 @@ MakeForwardTable <- function(morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha)
   if(length(mu) != 1 && length(mu) != L) {
     stop("mu is the wrong length for this problem.")
   }
+
+  if(is.null(Pi)){Pi <- 1/(N-1)}
+
   if(is.data.frame(Pi)) {
-    stop("Pi must be a matrix or scalar, not a data frame.")
+    stop("Pi must be a matrix or left as NULL to have uniform copying probabilities of 1/(N-1) for a problem with N recipients, not a data frame.")
   }
   if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
     stop("Pi is of the wrong dimensions for this problem.")
   }
-  if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(nrow(fwd$alpha)-1))) {
-    stop("Pi can only be set to a matrix, or omitted to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
+  if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(N-1))) {
+    stop("Pi must be a matrix or left as NULL to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
   }
 
   # Compute rho ... this is all we actually want to carry round with the forward
@@ -163,13 +174,61 @@ print.kalisForwardTable <- function(x, ...) {
 #' @examples
 #' # Examples
 #' @export MakeBackwardTable
-MakeBackwardTable <- function(from_recipient = 1, to_recipient = Inf) {
+MakeBackwardTable <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL, from_recipient = 1, to_recipient = Inf) {
   haps <- get("haps", envir = pkgCache)
   if(anyNA(haps)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
   }
+
   N <- length(haps)
   L <- get("hap_size", envir = pkgCache)
+
+  if(!is.numeric(morgan.dist)) {
+    stop("morgan.dist must be numeric vector type.")
+  }
+
+  if(length(morgan.dist)==1){
+    morgan.dist <- rep(morgan.dist, L-1)
+  }
+
+  if(!is.vector(morgan.dist)) {
+    stop("morgan.dist must be a vector of recombination distances.")
+  }
+
+  if(length(morgan.dist) != L-1) {
+    stop("morgan.dist is the wrong length for this problem.")
+  }
+  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
+    stop("Ne must be a scalar.")
+  }
+  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma <= 0) {
+    stop("gamma must be a positive scalar.")
+  }
+  if(!is.vector(mu)) {
+    stop("mu must be either a vector or a scalar.")
+  }
+  if(!is.numeric(mu)) {
+    stop("mu must be numeric.")
+  }
+  if(length(mu) != 1 && length(mu) != L) {
+    stop("mu is the wrong length for this problem.")
+  }
+
+  if(is.null(Pi)){Pi <- 1/(N-1)}
+
+  if(is.data.frame(Pi)) {
+    stop("Pi must be a matrix or left as NULL to have uniform copying probabilities of 1/(N-1) for a problem with N recipients, not a data frame.")
+  }
+  if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
+    stop("Pi is of the wrong dimensions for this problem.")
+  }
+  if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(N-1))) {
+    stop("Pi must be a matrix or left as NULL to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
+  }
+
+  # Compute rho ... this is all we actually want to carry round with the forward
+  rho <- c(1-exp(-Ne*morgan.dist^gamma), 1)
+  rho <- ifelse(rho<1e-16, 1e-16, rho)
 
   if(from_recipient>to_recipient) {
     stop("from_recipient must be smaller than to_recipient.")
@@ -189,7 +248,14 @@ MakeBackwardTable <- function(from_recipient = 1, to_recipient = Inf) {
                         from_recipient = from_recipient,
                         to_recipient   = to_recipient))
 
+  # Setup class (could invoke object duplication even withou dupliate above?)
   class(bck) <- "kalisBackwardTable"
+
+  # Add objects we want to explicitly be reference counted last
+  bck$rho <- rho
+  bck$mu <- mu
+  bck$Pi <- Pi
+
   bck
 }
 
