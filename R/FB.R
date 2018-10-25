@@ -46,10 +46,10 @@ Forward <- function(fwd, t, nthreads = 1) {
     stop("t must be a scalar.")
   }
   if(t > L) {
-    stop("The cached haplotypes have only {L} loci ... cannot move forward to locus {t}.")
+    stop(glue("Valid target loci range from 1 to {L} ... cannot move forward to locus {t}."))
   }
   if(fwd$l > t) {
-    stop("The forward table provided is for locus position ", fwd$l, " which is already past requested locus ", t)
+    stop(glue("The forward table provided is for locus position {fwd$l} which is already past requested locus {t}"))
   }
   if(nrow(fwd$alpha) != N || ncol(fwd$alpha) != fwd$to_recipient-fwd$from_recipient+1) {
     stop("Forward table is of the wrong dimensions for this problem.")
@@ -111,11 +111,14 @@ Backward <- function(bck, t, nthreads = 1) {
   }
   L <- get("hap_size", envir = pkgCache)
   N <- length(get("haps", envir = pkgCache))
+  if(!is.vector(t) || !is.numeric(t) || length(t) != 1) {
+    stop("t must be a scalar.")
+  }
   if(t < 1) {
-    stop("Valid target loci range from 1 to {L}...cannot move backward to locus {t}.")
+    stop(glue("Valid target loci range from 1 to {L} ... cannot move backward to locus {t}."))
   }
   if(bck$l < t) {
-    stop("The backward table provided is for locus position ", bck$l, " which is already before requested locus ", t)
+    stop(glue("The backward table provided is for locus position {bck$l} which is already before requested locus {t}"))
   }
   if(nrow(bck$beta) != N || ncol(bck$beta) != bck$to_recipient-bck$from_recipient+1) {
     stop("Backward table is of the wrong dimensions for this problem.")
