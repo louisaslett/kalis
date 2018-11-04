@@ -1,4 +1,4 @@
-pkgCache <- new.env()
+pkgCache <- new.env(parent = emptyenv())
 assign("working.dir", '.', envir = pkgCache)
 assign("haps", NA, envir = pkgCache)
 assign("hap_size", NA, envir = pkgCache)
