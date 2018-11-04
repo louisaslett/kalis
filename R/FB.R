@@ -55,17 +55,17 @@ Forward <- function(fwd, t, nthreads = 1) {
     stop("Forward table is of the wrong dimensions for this problem.")
   }
 
-  if(is.matrix(fwd$Pi)) {
-    if(length(fwd$mu) == 1) {
-      Forward_densePi_scalarmu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
+  if(is.matrix(fwd$pars$pars$Pi)) {
+    if(length(fwd$pars$pars$mu) == 1) {
+      Forward_densePi_scalarmu_cpp(fwd, t, fwd$pars$pars$Pi, fwd$pars$pars$mu, fwd$pars$pars$rho, nthreads)
     } else {
-      Forward_densePi_densemu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
+      Forward_densePi_densemu_cpp(fwd, t, fwd$pars$pars$Pi, fwd$pars$pars$mu, fwd$pars$pars$rho, nthreads)
     }
   } else {
-    if(length(fwd$mu) == 1) {
-      Forward_scalarPi_scalarmu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
+    if(length(fwd$pars$pars$mu) == 1) {
+      Forward_scalarPi_scalarmu_cpp(fwd, t, fwd$pars$pars$Pi, fwd$pars$pars$mu, fwd$pars$pars$rho, nthreads)
     } else {
-      Forward_scalarPi_densemu_cpp(fwd, t, fwd$Pi, fwd$mu, fwd$rho, nthreads)
+      Forward_scalarPi_densemu_cpp(fwd, t, fwd$pars$pars$Pi, fwd$pars$pars$mu, fwd$pars$pars$rho, nthreads)
     }
   }
 }
@@ -124,17 +124,17 @@ Backward <- function(bck, t, nthreads = 1) {
     stop("Backward table is of the wrong dimensions for this problem.")
   }
 
-  if(is.matrix(bck$Pi)) {
-    if(length(bck$mu) == 1) {
-      Backward_densePi_scalarmu_cpp(bck, t, bck$Pi, bck$mu, bck$rho, nthreads)
+  if(is.matrix(bck$pars$pars$Pi)) {
+    if(length(bck$pars$pars$mu) == 1) {
+      Backward_densePi_scalarmu_cpp(bck, t, bck$pars$pars$Pi, bck$pars$pars$mu, bck$pars$pars$rho, nthreads)
     } else {
-      Backward_densePi_densemu_cpp(bck, t, bck$Pi, bck$mu, bck$rho, nthreads)
+      Backward_densePi_densemu_cpp(bck, t, bck$pars$pars$Pi, bck$pars$pars$mu, bck$pars$pars$rho, nthreads)
     }
   } else {
-    if(length(bck$mu) == 1) {
-      Backward_scalarPi_scalarmu_cpp(bck, t, bck$Pi, bck$mu, bck$rho, nthreads)
+    if(length(bck$pars$pars$mu) == 1) {
+      Backward_scalarPi_scalarmu_cpp(bck, t, bck$pars$pars$Pi, bck$pars$pars$mu, bck$pars$pars$rho, nthreads)
     } else {
-      Backward_scalarPi_densemu_cpp(bck, t, bck$Pi, bck$mu, bck$rho, nthreads)
+      Backward_scalarPi_densemu_cpp(bck, t, bck$pars$pars$Pi, bck$pars$pars$mu, bck$pars$pars$rho, nthreads)
     }
   }
 }

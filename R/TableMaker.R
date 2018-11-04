@@ -21,6 +21,9 @@
 #' corresponds to a subset of recipients using the \code{from_recipient} and
 #' \code{to_recipient} arguments.
 #'
+#' @param pars a \code{kalisParameters} environment specifying the genetics
+#'   parameters to be associated with this forward table.  These parameters can
+#'   be set up by using the \code{\link{Parameters}} function.
 #' @param from_recipient first recipient haplotype if creating a partial forward
 #'   table.  By default includes from the first recipient haplotype.
 #' @param to_recipient last recipient haplotype if creating a partial forward
@@ -49,7 +52,7 @@
 #' }
 #'
 #' @export MakeForwardTable
-MakeForwardTable <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL, from_recipient = 1, to_recipient = Inf) {
+MakeForwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   haps <- get("haps", envir = pkgCache)
   if(anyNA(haps)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
@@ -58,54 +61,10 @@ MakeForwardTable <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi =
   N <- length(haps)
   L <- get("hap_size", envir = pkgCache)
 
-
-  if(!is.numeric(morgan.dist)) {
-    stop("morgan.dist must be numeric vector type.")
+  if(!("kalisParameters" %in% class(pars))) {
+    rstudioapi::sendToConsole("?Parameters")
+    stop("The pars argument is not a valid parameters object.  See Parameters() function for how to create it.")
   }
-
-  if(length(morgan.dist)==1){
-    morgan.dist <- rep(morgan.dist, L-1)
-  }
-
-  if(!is.vector(morgan.dist)) {
-    stop("morgan.dist must be a vector of recombination distances.")
-  }
-
-  if(length(morgan.dist) != L-1) {
-    stop("morgan.dist is the wrong length for this problem.")
-  }
-  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
-    stop("Ne must be a scalar.")
-  }
-  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma <= 0) {
-    stop("gamma must be a positive scalar.")
-  }
-  if(!is.vector(mu)) {
-    stop("mu must be either a vector or a scalar.")
-  }
-  if(!is.numeric(mu)) {
-    stop("mu must be numeric.")
-  }
-  if(length(mu) != 1 && length(mu) != L) {
-    stop("mu is the wrong length for this problem.")
-  }
-
-  if(is.null(Pi)){Pi <- 1/(N-1)}
-
-  if(is.data.frame(Pi)) {
-    stop("Pi must be a matrix or left as NULL to have uniform copying probabilities of 1/(N-1) for a problem with N recipients, not a data frame.")
-  }
-  if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
-    stop("Pi is of the wrong dimensions for this problem.")
-  }
-  if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(N-1))) {
-    stop("Pi must be a matrix or left as NULL to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
-  }
-
-  # Compute rho ... this is all we actually want to carry round with the forward
-  rho <- c(1-exp(-Ne*morgan.dist^gamma), 1)
-  rho <- ifelse(rho<1e-16, 1e-16, rho)
-
 
   if(from_recipient>to_recipient) {
     stop("from_recipient must be smaller than to_recipient.")
@@ -118,26 +77,28 @@ MakeForwardTable <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi =
   }
   delN <- to_recipient-from_recipient+1
 
-  # Define core table, duplicating to ensure unique to this forward table
-  fwd <- duplicate(list(alpha          = matrix(0, N, delN),
-                        alpha.f        = rep(0, delN),
-                        alpha.f2       = rep(0, delN),
-                        l              = c(0),
-                        from_recipient = from_recipient,
-                        to_recipient   = to_recipient))
-  # Setup class (could invoke object duplication even withou dupliate above?)
-  class(fwd) <- "kalisForwardTable"
+  fwd <- new.env(parent = emptyenv())
 
-  # Add objects we want to explicitly be reference counted last
-  fwd$rho <- rho
-  fwd$mu <- mu
-  fwd$Pi <- Pi
+  # Define core table, duplicating where relevant to ensure unique to this forward table
+  fwd$alpha          <- duplicate(matrix(0, N, delN))
+  fwd$alpha.f        <- duplicate(rep(0, delN))
+  fwd$alpha.f2       <- duplicate(rep(0, delN))
+  fwd$l              <- duplicate(c(0L))
+  fwd$from_recipient <- from_recipient
+  fwd$to_recipient   <- to_recipient
+  fwd$pars           <- pars
+  fwd$pars.sha256    <- pars$sha256
+
+  # Lock down (but not bindings) and checksum
+  lockEnvironment(fwd)
+  class(fwd) <- c("kalisForwardTable", class(fwd))
 
   fwd
 }
 
+#' @export print.kalisForwardTable
 print.kalisForwardTable <- function(x, ...) {
-  if(class(x)!="kalisForwardTable")
+  if(!("kalisForwardTable" %in% class(x)))
     stop("Not a kalisForwardTable object")
 
   d <- dim(x$alpha)
@@ -174,7 +135,7 @@ print.kalisForwardTable <- function(x, ...) {
 #' @examples
 #' # Examples
 #' @export MakeBackwardTable
-MakeBackwardTable <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL, from_recipient = 1, to_recipient = Inf) {
+MakeBackwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   haps <- get("haps", envir = pkgCache)
   if(anyNA(haps)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
@@ -183,52 +144,10 @@ MakeBackwardTable <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi 
   N <- length(haps)
   L <- get("hap_size", envir = pkgCache)
 
-  if(!is.numeric(morgan.dist)) {
-    stop("morgan.dist must be numeric vector type.")
+  if(!("kalisParameters" %in% class(pars))) {
+    rstudioapi::sendToConsole("?Parameters")
+    stop("The pars argument is not a valid parameters object.  See Parameters() function for how to create it.")
   }
-
-  if(length(morgan.dist)==1){
-    morgan.dist <- rep(morgan.dist, L-1)
-  }
-
-  if(!is.vector(morgan.dist)) {
-    stop("morgan.dist must be a vector of recombination distances.")
-  }
-
-  if(length(morgan.dist) != L-1) {
-    stop("morgan.dist is the wrong length for this problem.")
-  }
-  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
-    stop("Ne must be a scalar.")
-  }
-  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma <= 0) {
-    stop("gamma must be a positive scalar.")
-  }
-  if(!is.vector(mu)) {
-    stop("mu must be either a vector or a scalar.")
-  }
-  if(!is.numeric(mu)) {
-    stop("mu must be numeric.")
-  }
-  if(length(mu) != 1 && length(mu) != L) {
-    stop("mu is the wrong length for this problem.")
-  }
-
-  if(is.null(Pi)){Pi <- 1/(N-1)}
-
-  if(is.data.frame(Pi)) {
-    stop("Pi must be a matrix or left as NULL to have uniform copying probabilities of 1/(N-1) for a problem with N recipients, not a data frame.")
-  }
-  if(is.matrix(Pi) && (nrow(Pi) != N || ncol(Pi) != N)) {
-    stop("Pi is of the wrong dimensions for this problem.")
-  }
-  if(!is.matrix(Pi) && !(is.vector(Pi) && is.numeric(Pi) && length(Pi) == 1 && Pi == 1/(N-1))) {
-    stop("Pi must be a matrix or left as NULL to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
-  }
-
-  # Compute rho ... this is all we actually want to carry round with the forward
-  rho <- c(1-exp(-Ne*morgan.dist^gamma), 1)
-  rho <- ifelse(rho<1e-16, 1e-16, rho)
 
   if(from_recipient>to_recipient) {
     stop("from_recipient must be smaller than to_recipient.")
@@ -241,26 +160,28 @@ MakeBackwardTable <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi 
   }
   delN <- to_recipient-from_recipient+1
 
-  bck <- duplicate(list(beta           = matrix(0, N, delN),
-                        beta.g         = rep(0, delN),
-                        beta.g2        = rep(0, delN),
-                        l              = c(2147483647),
-                        from_recipient = from_recipient,
-                        to_recipient   = to_recipient))
+  bck <- new.env(parent = emptyenv())
 
-  # Setup class (could invoke object duplication even withou dupliate above?)
-  class(bck) <- "kalisBackwardTable"
+  # Define core table, duplicating where relevant to ensure unique to this forward table
+  bck$beta           <- duplicate(matrix(0, N, delN))
+  bck$beta.g         <- duplicate(rep(0, delN))
+  bck$beta.g2        <- duplicate(rep(0, delN))
+  bck$l              <- duplicate(c(2147483647L))
+  bck$from_recipient <- from_recipient
+  bck$to_recipient   <- to_recipient
+  bck$pars           <- pars
+  bck$pars.sha256    <- pars$sha256
 
-  # Add objects we want to explicitly be reference counted last
-  bck$rho <- rho
-  bck$mu <- mu
-  bck$Pi <- Pi
+  # Lock down (but not bindings) and checksum
+  lockEnvironment(bck)
+  class(bck) <- c("kalisBackwardTable", class(bck))
 
   bck
 }
 
+#' @export print.kalisBackwardTable
 print.kalisBackwardTable <- function(x, ...) {
-  if(class(x)!="kalisBackwardTable")
+  if(!("kalisBackwardTable" %in% class(x)))
     stop("Not a kalisBackwardTable object")
 
   d <- dim(x$beta)
@@ -279,4 +200,3 @@ print.kalisBackwardTable <- function(x, ...) {
   }
   cat("  Memory consumed ≈", ceiling(object.size(x)/1e6)/1e3, "GB.\n")
 }
-

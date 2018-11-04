@@ -4,10 +4,13 @@
 \alias{MakeForwardTable}
 \title{Create a Forward Table}
 \usage{
-MakeForwardTable(morgan.dist, Ne, gamma, mu, Pi = 1/(nrow(fwd$alpha) -
-  1), from_recipient = 1, to_recipient = Inf)
+MakeForwardTable(pars, from_recipient = 1, to_recipient = Inf)
 }
 \arguments{
+\item{pars}{a \code{kalisParameters} environment specifying the genetics
+parameters to be associated with this forward table.  These parameters can
+be set up by using the \code{\link{Parameters}} function.}
+
 \item{from_recipient}{first recipient haplotype if creating a partial forward
 table.  By default includes from the first recipient haplotype.}
 

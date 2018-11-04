@@ -4,7 +4,7 @@
 \alias{MakeBackwardTable}
 \title{Title}
 \usage{
-MakeBackwardTable(from_recipient = 1, to_recipient = Inf)
+MakeBackwardTable(pars, from_recipient = 1, to_recipient = Inf)
 }
 \arguments{
 \item{from_recipient}{...}
