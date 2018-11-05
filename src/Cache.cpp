@@ -82,11 +82,11 @@ int CacheAllHaplotypesH52(Function nexthaps, int N, int L) {
   // Process haplotypes in chunks from input function
   IntegerMatrix nexthapmat;
   nexthapmat = nexthaps();
+  int_fast32_t ind = 0;
   while(nexthapmat.nrow() > 0) {
-    int_fast32_t ind = 0;
     for(int_fast32_t i=0; i<nexthapmat.ncol(); i++) {
       for(int_fast32_t l=0; l<hap_size; l++) {
-        hap_locus[l][ind/32] ^= (-(nexthapmat(l,ind)) ^ hap_locus[l][ind/32]) & (1 << ind%32);
+        hap_locus[l][ind/32] ^= (-(nexthapmat(l,i)) ^ hap_locus[l][ind/32]) & (1 << ind%32);
       }
       ind++;
     }
