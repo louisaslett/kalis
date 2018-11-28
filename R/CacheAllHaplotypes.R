@@ -88,16 +88,23 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
     ClearHaplotypeCache()
   }
 
-  # Check for file
+  # Check for file and dataset within file
   if(!file.exists(hdf5.file)) {
     stop("Cannot find HDF5 file.")
   }
-
-  # Get dimensions of haplotype data
   if(nrow(h5ls(hdf5.file) %>% filter(name == "haps")) != 1) {
     stop("HDF5 file already exists but does not contain a 'haps' object in the root for haplotype data.")
   }
+
+  # Get dimensions of haplotype data
   hdf5.dim <- h5ls(hdf5.file) %>% filter(name == "haps") %>% select(dim) %>% str_split_fixed("x", n = Inf) %>% as.integer()
+  # Sometimes on Linux it leaves a dimension unspecified, so have to load 1 row/col to ascertain
+  if(is.na(hdf5.dim[1])) {
+    hdf5.dim[1] <- dim(h5read(hdf5.file, "/haps", index = list(NULL,1)))[1]
+  }
+  if(is.na(hdf5.dim[2])) {
+    hdf5.dim[2] <- dim(h5read(hdf5.file, "/haps", index = list(1,NULL)))[2]
+  }
   if(!transpose) {
     N <- hdf5.dim[2]
     L <- hdf5.dim[1]
