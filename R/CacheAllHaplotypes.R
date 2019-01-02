@@ -137,6 +137,10 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
 
   # Cache it!
   assign("hap_size", CacheAllHaplotypesH52(make.hdf5.access(hdf5.file, N, L), N, L), envir = pkgCache)
+  assign("N", N, envir = pkgCache)
+  assign("L", L, envir = pkgCache)
+
+
 }
 
 #' Retrieve haplotypes from memory cache
