@@ -20,6 +20,8 @@ Provides an easy function for calculating the log backward probabilities from a 
 \details{
 The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l and the haplotypes
 observed from locus fwd$l+1 up through locus L.
+
+Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
 }
 \examples{
 bck <- MakeBackwardTable()

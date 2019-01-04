@@ -5,6 +5,8 @@
 #' The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l and the haplotypes
 #' observed from locus 1 up through locus fwd$l.
 #'
+#' Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
+#'
 #' @param fwd a forward table as returned by \code{\link{MakeForwardTable}}
 #'
 #' @param log logical; if TRUE (default), the forward probabilities p are returned as log(p).
@@ -21,9 +23,9 @@
 #' @export ForwardProbs
 ForwardProbs <- function(fwd, log=TRUE){
   if(log==TRUE){
-    return(sweep(log(fwd$alpha),2,fwd$alpha.f2))
+    return(sweep(log(fwd$alpha),MARGIN = 2,STATS=log(colSums(fwd$alpha)),FUN="-"))
   }else{
-    return(exp(sweep(log(fwd$alpha),2,fwd$alpha.f2)))
+    return(exp(sweep(log(fwd$alpha),MARGIN = 2,STATS=log(colSums(fwd$alpha)),FUN="-")))
   }
 }
 
@@ -33,6 +35,8 @@ ForwardProbs <- function(fwd, log=TRUE){
 #'
 #' The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l and the haplotypes
 #' observed from locus fwd$l+1 up through locus L.
+#'
+#' Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
 #'
 #' @param bck a backward table as returned by \code{\link{MakeBackwardTable}}
 #'
@@ -47,12 +51,12 @@ ForwardProbs <- function(fwd, log=TRUE){
 #' bck <- MakeBackwardTable()
 #' Backward(bck, 100, Pi, mu, rho)
 #' BackwardProbs(bck)
-#' @export ForwardProbs
+#' @export BackwardProbs
 BackwardProbs <- function(bck, log=TRUE){
   if(log==TRUE){
-    return(sweep(log(bck$beta),2,bck$beta.g2))
+    return(sweep(log(bck$beta),MARGIN = 2,STATS=log(colSums(bck$beta)),FUN="-"))
   }else{
-    return(exp(sweep(log(bck$beta),2,bck$beta.g2)))
+    return(exp(sweep(log(bck$beta),MARGIN = 2,STATS=log(colSums(bck$beta)),FUN="-")))
   }
 }
 
@@ -63,6 +67,8 @@ BackwardProbs <- function(bck, log=TRUE){
 #'
 #' Note that the forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities.
 #' The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
+#'
+#' Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
 #'
 #' @param fwd a forward table as returned by \code{\link{MakeForwardTable}}
 #'
@@ -87,11 +93,53 @@ BackwardProbs <- function(bck, log=TRUE){
 #' PostProbs(fwd,bck)
 #' @export PostProbs
 PostProbs <- function(fwd, bck, log=TRUE){
+  if(fwd$l != bck$l){warning("Computing dist matrix but locus position of the forward table and backward table do not match.")}
+  if(fwd$pars.sha256 != bck$pars.sha256){warning("Computing dist matrix but parameters used to calculate the forward table and backward table do not match.")}
+  tempmat <- fwd$alpha*bck$beta
+  tempmat <- sweep(log(tempmat),MARGIN = 2,STATS=log(colSums(tempmat)),FUN="-")
   if(log==TRUE){
-    return(sweep(log(fwd$alpha*bck$beta),2,fwd$alpha.f2+bck$beta.g2))
+    diag(tempmat) <- 0
+    return(tempmat)
   }else{
-    return(exp(sweep(log(fwd$alpha*bck$beta),2,fwd$alpha.f2+bck$beta.g2)))
+    return(exp(tempmat))
   }
 }
 
 
+
+#' Calculate a Distance Matrix from a Forward Table Object and a Backward Table Object
+#'
+#' Provides an easy function for calculating a local distance matrix.
+#'
+#' Note that the forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities.
+#' The (i,j)-th element of of the returned matrix is the inferred distance d_(i,j) between haplotypes j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
+#'
+#' d_(i,j) = -( log(p_(i,j)) + log(p_(j,i)) ) / 2 where p_(i,j) is the posterior marginal probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
+#'
+#' @param fwd a forward table as returned by \code{\link{MakeForwardTable}}
+#'
+#' @param bck a backward table as returned by \code{\link{MakeBackwardTable}}
+#'
+#' @param log logical; if TRUE (default), the posterior marginal probabilities p are returned as log(p).
+#'
+#' @return matrix of distances
+#'
+#' @seealso
+#' \code{\link{PostProb}} to calculate the posterior marginal probabilities p_(i,j)
+#'
+#' @examples
+#' fwd <- MakeForwardTable()
+#' Forward(fwd, 100, Pi, mu, rho)
+#' bck <- MakeBackwardTable()
+#' Backward(bck, 100, Pi, mu, rho)
+#' BackwardProbs(bck)
+#' DistMat(fwd,bck)
+#' @export DistMat
+DistMat <- function(fwd, bck){
+  if(fwd$l != bck$l){warning("Computing dist matrix but locus position of the forward table and backward table do not match.")}
+  if(fwd$pars.sha256 != bck$pars.sha256){warning("Computing dist matrix but parameters used to calculate the forward table and backward table do not match.")}
+  tempmat <- fwd$alpha*bck$beta
+  tempmat <- sweep(-log(tempmat),MARGIN = 2,STATS=log(colSums(tempmat)),FUN="+")
+  diag(tempmat) <- 0
+  return((tempmat + t(tempmat))/2)
+}

@@ -22,6 +22,8 @@ Provides an easy function for calculating the log posterior marginal probabiliti
 \details{
 Note that the forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities.
 The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
+
+Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
 }
 \examples{
 fwd <- MakeForwardTable()
