@@ -26,7 +26,10 @@ int CacheAllHaplotypes2(CharacterVector haps, int bufsize) {
   // NB need 32-byte aligned for AVX.  Note also that *each* new locus must be on a 32-byte boundary!
   //   int(ceil(num_inds/32.0)) ints are required per locus to store all individuals
   //   int(ceil((num_inds/32.0)/8.0)) __m256i's are required per locus to store all individuals
-  posix_memalign((void**) &hap_data, 32, hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t));
+  if(posix_memalign((void**) &hap_data, 32, hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t)) != 0) {
+    Rcout << "Unable to assign enough aligned memory for cache storage\n";
+    return(0);
+  }
   hap_locus = new uint32_t*[hap_size];
   for(int l=0; l<hap_size; l++) {
     hap_locus[l] = hap_data + l*int(ceil((num_inds/32.0)/8.0))*8;
@@ -73,7 +76,10 @@ int CacheAllHaplotypesH52(Function nexthaps, int N, int L) {
   // NB need 32-byte aligned for AVX.  Note also that *each* new locus must be on a 32-byte boundary!
   //   int(ceil(num_inds/32.0)) ints are required per locus to store all individuals
   //   int(ceil((num_inds/32.0)/8.0)) __m256i's are required per locus to store all individuals
-  posix_memalign((void**) &hap_data, 32, hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t));
+  if(posix_memalign((void**) &hap_data, 32, hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t)) != 0) {
+    Rcout << "Unable to assign enough aligned memory for cache storage\n";
+    return(0);
+  }
   hap_locus = new uint32_t*[hap_size];
   for(int l=0; l<hap_size; l++) {
     hap_locus[l] = hap_data + l*int(ceil((num_inds/32.0)/8.0))*8;
