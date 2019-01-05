@@ -46,8 +46,8 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
   if(fwd$pars.sha256 != pars$sha256) {
     stop("The forward table provided was created with different parameter values (SHA-256 mismatch).")
   }
-  L <- get("hap_size", envir = pkgCache)
-  N <- length(get("haps", envir = pkgCache))
+  L <- get("L", envir = pkgVars)
+  N <- get("N", envir = pkgVars)
   if(!is.vector(t) || !is.numeric(t) || length(t) != 1 || is.na(t)) {
     stop("t must be a scalar.")
   }
@@ -118,8 +118,8 @@ Backward <- function(bck, pars, t = bck$l-1, nthreads = 1) {
   if(!("kalisParameters" %in% class(pars))) {
     stop("The pars argument is not a valid parameters object.")
   }
-  L <- get("hap_size", envir = pkgCache)
-  N <- length(get("haps", envir = pkgCache))
+  L <- get("L", envir = pkgVars)
+  N <- get("N", envir = pkgVars)
   if(!is.vector(t) || !is.numeric(t) || length(t) != 1 || is.na(t)) {
     stop("t must be a scalar.")
   }

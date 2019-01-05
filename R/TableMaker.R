@@ -53,13 +53,12 @@
 #'
 #' @export MakeForwardTable
 MakeForwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
-  haps <- get("haps", envir = pkgCache)
-  if(anyNA(haps)) {
+  N <- get("N", envir = pkgVars)
+  if(anyNA(N)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
   }
 
-  N <- length(haps)
-  L <- get("hap_size", envir = pkgCache)
+  L <- get("L", envir = pkgVars)
 
   if(!("kalisParameters" %in% class(pars))) {
     if("rstudioapi" %in% installed.packages()[, "Package"]) {
@@ -135,13 +134,12 @@ print.kalisForwardTable <- function(x, ...) {
 #' # Examples
 #' @export MakeBackwardTable
 MakeBackwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
-  haps <- get("haps", envir = pkgCache)
-  if(anyNA(haps)) {
+  N <- get("N", envir = pkgVars)
+  if(anyNA(N)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
   }
 
-  N <- length(haps)
-  L <- get("hap_size", envir = pkgCache)
+  L <- get("L", envir = pkgVars)
 
   if(!("kalisParameters" %in% class(pars))) {
     if("rstudioapi" %in% installed.packages()[, "Package"]) {

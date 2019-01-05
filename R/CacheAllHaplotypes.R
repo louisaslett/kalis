@@ -1,31 +1,7 @@
-pkgCache <- new.env(parent = emptyenv())
-assign("working.dir", '.', envir = pkgCache)
-assign("haps", NA, envir = pkgCache)
-assign("hap_size", NA, envir = pkgCache)
-
-CacheAllHaplotypes <- function() {
-  # Make sure we don't double up cache content if there is already stuff cached
-  if(!is.na(get("haps", envir = pkgCache)[1])) {
-    warning("haplotypes already cached ... overwriting existing cache.")
-    ClearHaplotypeCache()
-  }
-
-  working.dir <- get("working.dir", envir = pkgCache)
-
-  # Save index of haplotype ids
-  assign("haps", sub(".hap", "", list.files(GetGenWorkingDir(), "*.hap")), envir = pkgCache)
-
-  # Get all the file locations for the haplotypes and their size
-  haps <- list.files(GetGenWorkingDir(), "*.hap", full.names = TRUE)
-  sizes <- file.size(haps)
-  if(!all(sizes == sizes[1])) {
-    error("not all haplotypes in the working directory are the same length.")
-  }
-  buf.size <- sum(file.size(haps)) # strictly speaking, could remove all the space at front for ints
-
-  # Cache it!
-  assign("hap_size", CacheAllHaplotypes2(haps, buf.size), envir = pkgCache)
-}
+pkgVars <- new.env(parent = emptyenv())
+assign("working.dir", '.', envir = pkgVars)
+assign("N", NA, envir = pkgVars)
+assign("L", NA, envir = pkgVars)
 
 # We assume haplotypes are stored in the slowest changing dimension
 # per the HDF5 spec definition.  This is "row-wise" in the C standard
@@ -83,7 +59,7 @@ CacheAllHaplotypes <- function() {
 #' @export CacheAllHaplotypesH5
 CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
   # Make sure we don't double up cache content if there is already stuff cached
-  if(!is.na(get("haps", envir = pkgCache)[1])) {
+  if(!is.na(get("N", envir = pkgVars))) {
     warning("haplotypes already cached ... overwriting existing cache.")
     ClearHaplotypeCache()
   }
@@ -114,7 +90,7 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
   }
 
   # Hap IDs are only numeric for HDF5
-  assign("haps", 1:N, envir = pkgCache)
+  assign("N", N, envir = pkgVars)
 
   # Create a closure for easy access of HDF5 file
   # We'll read in 10MB (raw size) chunks
@@ -136,11 +112,7 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
   }
 
   # Cache it!
-  assign("hap_size", CacheAllHaplotypesH52(make.hdf5.access(hdf5.file, N, L), N, L), envir = pkgCache)
-  assign("N", N, envir = pkgCache)
-  assign("L", L, envir = pkgCache)
-
-
+  assign("L", CacheAllHaplotypesH52(make.hdf5.access(hdf5.file, N, L), N, L), envir = pkgCache)
 }
 
 #' Retrieve haplotypes from memory cache
@@ -173,13 +145,13 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
 #'
 #' @export QueryCache
 QueryCache <- function(ids = NA, start = 1, length = NA) {
-  haps <- get("haps", envir = pkgCache)
+  N <- get("N", envir = pkgVars)
 
   if(is.na(length)) {
-    length <- get("hap_size", envir = pkgCache)
+    length <- get("L", envir = pkgVars)
   }
-  if((length(ids)==1 && is.na(ids)) || all(ids==1:length(haps))) {
-    ids <- 1:length(haps)
+  if((length(ids)==1 && is.na(ids)) || all(ids==1:N)) {
+    ids <- 1:N
 
     res <- matrix(nrow = length, ncol = length(ids))
     for(l in start:(start+length-1)) {
@@ -190,15 +162,12 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
     for(i in 1:length(ids)) {
       id <- ids[i]
       if(is.numeric(id) && abs(id - round(id)) < .Machine$double.eps^0.5) {
-        if(id<1 || id>length(haps)) {
+        if(id<1 || id>N) {
           stop("haplotype id ", id, " is out of range.")
         }
         idx <- id
       } else {
-        idx <- which(haps == id)
-        if(length(idx)==0) {
-          stop("haplotype id ", id, " is not in the cache.")
-        }
+        stop(glue("ids must be integer values identifying haplotype number between 1 and {N}."))
       }
 
       hap <- as.integer(intToBits(QueryCache2_ind(idx-1)))
@@ -234,8 +203,8 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
 #'
 #' @export ClearHaplotypeCache
 ClearHaplotypeCache <- function() {
-  assign("haps", NA, envir = pkgCache)
-  assign("hap_size", NA, envir = pkgCache)
+  assign("N", NA, envir = pkgCache)
+  assign("L", NA, envir = pkgCache)
   ClearHaplotypeCache2()
 }
 

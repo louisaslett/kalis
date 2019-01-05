@@ -27,13 +27,12 @@
 #'
 #' @export Parameters
 Parameters <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL) {
-  haps <- get("haps", envir = pkgCache)
-  if(anyNA(haps)) {
+  N <- get("N", envir = pkgVars)
+  if(anyNA(N)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
   }
 
-  N <- length(haps)
-  L <- get("hap_size", envir = pkgCache)
+  L <- get("L", envir = pkgVars)
 
   if(!is.numeric(morgan.dist)) {
     stop("morgan.dist must be numeric vector type.")

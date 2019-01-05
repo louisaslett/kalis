@@ -31,10 +31,10 @@
 # #' @examples
 # #'
 AutoTune <- function(t, cache, morgan.dist, gamma = NULL, it = 30, nthreads = 1) {
-  L <- get("seq_size", envir = pkgCache)
-  N <- length(get("seqs", envir = pkgCache))
+  L <- get("L", envir = pkgVars)
+  N <- get("N", envir = pkgVars)
 
-    init_points <- 4
+  init_points <- 4
 
   if(!is.vector(t)) {
     stop("t must be either a vector or a scalar.")

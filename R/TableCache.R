@@ -19,12 +19,11 @@ CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recip
     stop("The pars argument is not a valid parameters object.")
   }
 
-  haps <- get("haps", envir = pkgCache)
-  if(anyNA(haps)) {
+  N <- get("N", envir = pkgVars)
+  if(anyNA(N)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
   }
-  N <- length(haps)
-  L <- get("hap_size", envir = pkgCache)
+  L <- get("L", envir = pkgVars)
 
   if(from_recipient>to_recipient) {
     stop("from_recipient must be smaller than to_recipient.")
