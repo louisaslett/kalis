@@ -14,6 +14,7 @@
 #'
 #' @examples
 #' # Examples
+#' @export
 CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recipient = Inf, max.tables = 0) {
   if(!("kalisParameters" %in% class(pars))) {
     stop("The pars argument is not a valid parameters object.")
@@ -89,6 +90,7 @@ CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recip
 #'
 #' @examples
 #' # Examples
+#' @export
 ForwardUsingTableCache <- function(fwd, pars, cache, t = fwd$l+1, nthreads = 1) {
   if(!("kalisForwardTable" %in% class(fwd))) {
     stop("The fwd argument is not a valid forward table.")

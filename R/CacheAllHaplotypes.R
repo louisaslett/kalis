@@ -112,7 +112,7 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
   }
 
   # Cache it!
-  assign("L", CacheAllHaplotypesH52(make.hdf5.access(hdf5.file, N, L), N, L), envir = pkgCache)
+  assign("L", CacheAllHaplotypesH52(make.hdf5.access(hdf5.file, N, L), N, L), envir = pkgVars)
 }
 
 #' Retrieve haplotypes from memory cache
@@ -203,8 +203,8 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
 #'
 #' @export ClearHaplotypeCache
 ClearHaplotypeCache <- function() {
-  assign("N", NA, envir = pkgCache)
-  assign("L", NA, envir = pkgCache)
+  assign("N", NA, envir = pkgVars)
+  assign("L", NA, envir = pkgVars)
   ClearHaplotypeCache2()
 }
 
