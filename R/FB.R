@@ -42,7 +42,7 @@ Forward <- function(fwd, t, nthreads = 1) {
   }
   L <- get("hap_size", envir = pkgCache)
   N <- length(get("haps", envir = pkgCache))
-  if(!is.vector(t) || !is.numeric(t) || length(t) != 1) {
+  if(!is.vector(t) || !is.numeric(t) || length(t) != 1 || is.na(t)) {
     stop("t must be a scalar.")
   }
   if(t > L) {
@@ -111,7 +111,7 @@ Backward <- function(bck, t, nthreads = 1) {
   }
   L <- get("hap_size", envir = pkgCache)
   N <- length(get("haps", envir = pkgCache))
-  if(!is.vector(t) || !is.numeric(t) || length(t) != 1) {
+  if(!is.vector(t) || !is.numeric(t) || length(t) != 1 || is.na(t)) {
     stop("t must be a scalar.")
   }
   if(t < 1) {
