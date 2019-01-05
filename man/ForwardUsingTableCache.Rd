@@ -4,7 +4,7 @@
 \alias{ForwardUsingTableCache}
 \title{Title}
 \usage{
-ForwardUsingTableCache(fwd, cache, t, Pi, mu, rho, nthreads = 1)
+ForwardUsingTableCache(fwd, pars, cache, t = fwd$l + 1, nthreads = 1)
 }
 \arguments{
 \item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
@@ -16,14 +16,14 @@ ForwardUsingTableCache(fwd, cache, t, Pi, mu, rho, nthreads = 1)
 performance.  Must be greater than or equal to locus position of table
 provided in \code{fwd}.}
 
+\item{nthreads}{the number of CPU cores on which to run}
+
 \item{Pi}{a matrix of background copying probabilities.  Can also provide a
 scalar value for uniform background copying probability.}
 
 \item{mu}{a vector of ...}
 
 \item{rho}{a vector of ...}
-
-\item{nthreads}{the number of CPU cores on which to run}
 }
 \value{
 There is nothing returned.  For performance reasons, the forward

@@ -4,7 +4,7 @@
 \alias{Forward}
 \title{Propagate an HMM Forward Table}
 \usage{
-Forward(fwd, t, nthreads = 1)
+Forward(fwd, pars, t = fwd$l + 1, nthreads = 1)
 }
 \arguments{
 \item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}

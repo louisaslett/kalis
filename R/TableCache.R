@@ -14,7 +14,11 @@
 #'
 #' @examples
 #' # Examples
-CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient = Inf, max.tables = 0) {
+CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recipient = Inf, max.tables = 0) {
+  if(!("kalisParameters" %in% class(pars))) {
+    stop("The pars argument is not a valid parameters object.")
+  }
+
   haps <- get("haps", envir = pkgCache)
   if(anyNA(haps)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
@@ -48,12 +52,12 @@ CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient =
   cache <- list()
   i <- 1
   while((length(cache) == 0 || ((object.size(cache)*(length(cache)+1))/length(cache))/1e9 < size) && length(cache)<max.tables) {
-    cache[[i]] <- MakeForwardTable(from_recipient, to_recipient)
+    cache[[i]] <- MakeForwardTable(pars, from_recipient, to_recipient)
     i <- i+1
   }
   cat("Cache constructed, can hold ", length(cache), " tables for recipients ", from_recipient, " ... ", to_recipient, ".  Actual size ≈ ", ceiling(object.size(cache)/1e6)/1e3, "GB.\n", sep = "")
 
-  class(cache) <- "kalisCheckpointTable"
+  class(cache) <- c("kalisCheckpointTable", class(cache))
   cache
 }
 
@@ -86,7 +90,22 @@ CreateForwardTableCache <- function(size = 1, from_recipient = 1, to_recipient =
 #'
 #' @examples
 #' # Examples
-ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads = 1) {
+ForwardUsingTableCache <- function(fwd, pars, cache, t = fwd$l+1, nthreads = 1) {
+  if(!("kalisForwardTable" %in% class(fwd))) {
+    stop("The fwd argument is not a valid forward table.")
+  }
+  if(!("kalisParameters" %in% class(pars))) {
+    stop("The pars argument is not a valid parameters object.")
+  }
+  if(fwd$pars.sha256 != pars$sha256) {
+    stop("The forward table provided was created with different parameter values (SHA-256 mismatch).")
+  }
+  if(!("kalisCheckpointTable" %in% class(cache))) {
+    stop("The cache argument is not a valid forward table cache.")
+  }
+  if(cache[[1]]$pars.sha256 != pars$sha256) {
+    stop("The forward table cache provided was created with different parameter values (SHA-256 mismatch).")
+  }
   l <- sapply(cache, function(x) { x$l })
   if(any(l==t)) {
     CopyForwardTable(fwd, cache[[which(l==t)]])
@@ -98,7 +117,7 @@ ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads = 1) {
   # and march on
   if(max(l) == -1) {
     ResetForwardTable(cache[[1]]) # Have to do this in C++ as must in place modify
-    Forward(cache[[1]], 1, Pi, mu, rho, nthreads)
+    Forward(cache[[1]], pars, 1, nthreads)
     l[1] <- 1
     todo <- which(l==-1)
   }
@@ -109,7 +128,7 @@ ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads = 1) {
   # the last checkpoint already.  If so, run forward and return right away
   if(length(todo)==0) {
     CopyForwardTable(fwd, cache[[from.idx]])
-    Forward(fwd, t, Pi, mu, rho, nthreads)
+    Forward(fwd, pars, t, nthreads)
     return()
   }
 
@@ -117,7 +136,7 @@ ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads = 1) {
   # forward to it right away though I have spare checkpoint slots
   if(t == from+1) {
     CopyForwardTable(fwd, cache[[from.idx]])
-    Forward(fwd, t, Pi, mu, rho, nthreads)
+    Forward(fwd, pars, t, nthreads)
     return()
   }
 
@@ -129,11 +148,11 @@ ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads = 1) {
     # NB t-from >= 2 due to if statement above
     for(i in 1:(t-from-1)) {
       CopyForwardTable(cache[[todo[i]]], cache[[from.idx]])
-      Forward(cache[[todo[i]]], from+i, Pi, mu, rho, nthreads)
+      Forward(cache[[todo[i]]], pars, from+i, nthreads)
       from.idx <- todo[i]
     }
     CopyForwardTable(fwd, cache[[from.idx]])
-    Forward(fwd, t, Pi, mu, rho, nthreads)
+    Forward(fwd, pars, t, nthreads)
   } else {
     # We have more steps than spare slots, so we need a schedule to fill in the
     # gaps
@@ -152,11 +171,11 @@ ForwardUsingTableCache <- function(fwd, cache, t, Pi, mu, rho, nthreads = 1) {
 
     for(i in 1:length(fillin)) {
       CopyForwardTable(cache[[todo[i]]], cache[[from.idx]])
-      Forward(cache[[todo[i]]], fillin[i], Pi, mu, rho, nthreads)
+      Forward(cache[[todo[i]]], pars, fillin[i], nthreads)
       from.idx <- todo[i]
     }
     CopyForwardTable(fwd, cache[[from.idx]])
-    Forward(fwd, t, Pi, mu, rho, nthreads)
+    Forward(fwd, pars, t, nthreads)
   }
 }
 

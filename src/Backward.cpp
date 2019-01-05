@@ -5,14 +5,14 @@ using namespace Rcpp;
 #include "ExactBackward.h"
 
 // [[Rcpp::export]]
-void ResetBackwardTable(Environment bck) {
+void ResetBackwardTable(List bck) {
   NumericVector newl(1);
   newl[0] = 2147483647;
   bck["l"] = newl;
 }
 
 // [[Rcpp::export]]
-void Backward_densePi_densemu_cpp(Environment bck,
+void Backward_densePi_densemu_cpp(List bck,
                                   const int t,
                                   NumericMatrix Pi,
                                   NumericVector mu,
@@ -103,7 +103,7 @@ void Backward_densePi_densemu_cpp(Environment bck,
 }
 
 // [[Rcpp::export]]
-void Backward_scalarPi_densemu_cpp(Environment bck,
+void Backward_scalarPi_densemu_cpp(List bck,
                                    const int t,
                                    const double Pi,
                                    NumericVector mu,
@@ -198,7 +198,7 @@ void Backward_scalarPi_densemu_cpp(Environment bck,
 }
 
 // [[Rcpp::export]]
-void Backward_densePi_scalarmu_cpp(Environment bck,
+void Backward_densePi_scalarmu_cpp(List bck,
                                    const int t,
                                    NumericMatrix Pi,
                                    const double mu,
@@ -292,7 +292,7 @@ void Backward_densePi_scalarmu_cpp(Environment bck,
 }
 
 // [[Rcpp::export]]
-void Backward_scalarPi_scalarmu_cpp(Environment bck,
+void Backward_scalarPi_scalarmu_cpp(List bck,
                                     const int t,
                                     const double Pi,
                                     const double mu,

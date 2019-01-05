@@ -4,7 +4,7 @@
 \alias{CreateForwardTableCache}
 \title{Title}
 \usage{
-CreateForwardTableCache(size = 1, from_recipient = 1,
+CreateForwardTableCache(pars, size = 1, from_recipient = 1,
   to_recipient = Inf, max.tables = 0)
 }
 \arguments{

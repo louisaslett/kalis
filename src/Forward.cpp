@@ -5,14 +5,14 @@ using namespace Rcpp;
 #include "ExactForward.h"
 
 // [[Rcpp::export]]
-void ResetForwardTable(Environment fwd) {
+void ResetForwardTable(List fwd) {
   NumericVector newl(1);
   newl[0] = 0;
   fwd["l"] = newl;
 }
 
 // [[Rcpp::export]]
-void Forward_densePi_densemu_cpp(Environment fwd,
+void Forward_densePi_densemu_cpp(List fwd,
                                  const int t,
                                  NumericMatrix Pi,
                                  NumericVector mu,
@@ -104,7 +104,7 @@ void Forward_densePi_densemu_cpp(Environment fwd,
 }
 
 // [[Rcpp::export]]
-void Forward_scalarPi_densemu_cpp(Environment fwd,
+void Forward_scalarPi_densemu_cpp(List fwd,
                                   const int t,
                                   const double Pi,
                                   NumericVector mu,
@@ -200,7 +200,7 @@ void Forward_scalarPi_densemu_cpp(Environment fwd,
 }
 
 // [[Rcpp::export]]
-void Forward_densePi_scalarmu_cpp(Environment fwd,
+void Forward_densePi_scalarmu_cpp(List fwd,
                                   const int t,
                                   NumericMatrix Pi,
                                   const double mu,
@@ -295,7 +295,7 @@ void Forward_densePi_scalarmu_cpp(Environment fwd,
 }
 
 // [[Rcpp::export]]
-void Forward_scalarPi_scalarmu_cpp(Environment fwd,
+void Forward_scalarPi_scalarmu_cpp(List fwd,
                                    const int t,
                                    const double Pi,
                                    const double mu,
@@ -393,7 +393,7 @@ void Forward_scalarPi_scalarmu_cpp(Environment fwd,
 }
 
 // [[Rcpp::export]]
-void Forward1step_scalarPi_scalarmu_cpp(Environment fwd,
+void Forward1step_scalarPi_scalarmu_cpp(List fwd,
                                         const int t,
                                         const double Pi,
                                         const double mu,

@@ -62,7 +62,9 @@ MakeForwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   L <- get("hap_size", envir = pkgCache)
 
   if(!("kalisParameters" %in% class(pars))) {
-    rstudioapi::sendToConsole("?Parameters")
+    if("rstudioapi" %in% installed.packages()[, "Package"]) {
+      rstudioapi::sendToConsole("?Parameters")
+    }
     stop("The pars argument is not a valid parameters object.  See Parameters() function for how to create it.")
   }
 
@@ -77,20 +79,17 @@ MakeForwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   }
   delN <- to_recipient-from_recipient+1
 
-  fwd <- new.env(parent = emptyenv())
+  fwd <- list()
 
   # Define core table, duplicating where relevant to ensure unique to this forward table
   fwd$alpha          <- duplicate(matrix(0, N, delN))
   fwd$alpha.f        <- duplicate(rep(0, delN))
   fwd$alpha.f2       <- duplicate(rep(0, delN))
   fwd$l              <- duplicate(c(0L))
-  fwd$from_recipient <- from_recipient
-  fwd$to_recipient   <- to_recipient
-  fwd$pars           <- pars
-  fwd$pars.sha256    <- pars$sha256
+  fwd$from_recipient <- duplicate(from_recipient)
+  fwd$to_recipient   <- duplicate(to_recipient)
+  fwd$pars.sha256    <- duplicate(pars$sha256)
 
-  # Lock down (but not bindings) and checksum
-  lockEnvironment(fwd)
   class(fwd) <- c("kalisForwardTable", class(fwd))
 
   fwd
@@ -145,7 +144,9 @@ MakeBackwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   L <- get("hap_size", envir = pkgCache)
 
   if(!("kalisParameters" %in% class(pars))) {
-    rstudioapi::sendToConsole("?Parameters")
+    if("rstudioapi" %in% installed.packages()[, "Package"]) {
+      rstudioapi::sendToConsole("?Parameters")
+    }
     stop("The pars argument is not a valid parameters object.  See Parameters() function for how to create it.")
   }
 
@@ -160,20 +161,17 @@ MakeBackwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   }
   delN <- to_recipient-from_recipient+1
 
-  bck <- new.env(parent = emptyenv())
+  bck <- list()
 
   # Define core table, duplicating where relevant to ensure unique to this forward table
   bck$beta           <- duplicate(matrix(0, N, delN))
   bck$beta.g         <- duplicate(rep(0, delN))
   bck$beta.g2        <- duplicate(rep(0, delN))
   bck$l              <- duplicate(c(2147483647L))
-  bck$from_recipient <- from_recipient
-  bck$to_recipient   <- to_recipient
-  bck$pars           <- pars
-  bck$pars.sha256    <- pars$sha256
+  bck$from_recipient <- duplicate(from_recipient)
+  bck$to_recipient   <- duplicate(to_recipient)
+  bck$pars.sha256    <- duplicate(pars$sha256)
 
-  # Lock down (but not bindings) and checksum
-  lockEnvironment(bck)
   class(bck) <- c("kalisBackwardTable", class(bck))
 
   bck

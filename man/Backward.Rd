@@ -4,7 +4,7 @@
 \alias{Backward}
 \title{Propagate an HMM backward table}
 \usage{
-Backward(bck, t, nthreads = 1)
+Backward(bck, pars, t = bck$l - 1, nthreads = 1)
 }
 \arguments{
 \item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}

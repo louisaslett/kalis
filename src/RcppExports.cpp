@@ -6,21 +6,21 @@
 using namespace Rcpp;
 
 // ResetBackwardTable
-void ResetBackwardTable(Environment bck);
+void ResetBackwardTable(List bck);
 RcppExport SEXP _kalis_ResetBackwardTable(SEXP bckSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Environment >::type bck(bckSEXP);
+    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
     ResetBackwardTable(bck);
     return R_NilValue;
 END_RCPP
 }
 // Backward_densePi_densemu_cpp
-void Backward_densePi_densemu_cpp(Environment bck, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
+void Backward_densePi_densemu_cpp(List bck, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
 RcppExport SEXP _kalis_Backward_densePi_densemu_cpp(SEXP bckSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Environment >::type bck(bckSEXP);
+    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
     Rcpp::traits::input_parameter< const int >::type t(tSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
@@ -31,11 +31,11 @@ BEGIN_RCPP
 END_RCPP
 }
 // Backward_scalarPi_densemu_cpp
-void Backward_scalarPi_densemu_cpp(Environment bck, const int t, const double Pi, NumericVector mu, NumericVector rho, const int nthreads);
+void Backward_scalarPi_densemu_cpp(List bck, const int t, const double Pi, NumericVector mu, NumericVector rho, const int nthreads);
 RcppExport SEXP _kalis_Backward_scalarPi_densemu_cpp(SEXP bckSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Environment >::type bck(bckSEXP);
+    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
     Rcpp::traits::input_parameter< const int >::type t(tSEXP);
     Rcpp::traits::input_parameter< const double >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
@@ -46,11 +46,11 @@ BEGIN_RCPP
 END_RCPP
 }
 // Backward_densePi_scalarmu_cpp
-void Backward_densePi_scalarmu_cpp(Environment bck, const int t, NumericMatrix Pi, const double mu, NumericVector rho, const int nthreads);
+void Backward_densePi_scalarmu_cpp(List bck, const int t, NumericMatrix Pi, const double mu, NumericVector rho, const int nthreads);
 RcppExport SEXP _kalis_Backward_densePi_scalarmu_cpp(SEXP bckSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Environment >::type bck(bckSEXP);
+    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
     Rcpp::traits::input_parameter< const int >::type t(tSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
@@ -61,11 +61,11 @@ BEGIN_RCPP
 END_RCPP
 }
 // Backward_scalarPi_scalarmu_cpp
-void Backward_scalarPi_scalarmu_cpp(Environment bck, const int t, const double Pi, const double mu, NumericVector rho, const int nthreads);
+void Backward_scalarPi_scalarmu_cpp(List bck, const int t, const double Pi, const double mu, NumericVector rho, const int nthreads);
 RcppExport SEXP _kalis_Backward_scalarPi_scalarmu_cpp(SEXP bckSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Environment >::type bck(bckSEXP);
+    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
     Rcpp::traits::input_parameter< const int >::type t(tSEXP);
     Rcpp::traits::input_parameter< const double >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
@@ -734,21 +734,21 @@ BEGIN_RCPP
 END_RCPP
 }
 // ResetForwardTable
-void ResetForwardTable(Environment fwd);
+void ResetForwardTable(List fwd);
 RcppExport SEXP _kalis_ResetForwardTable(SEXP fwdSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Environment >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
     ResetForwardTable(fwd);
     return R_NilValue;
 END_RCPP
 }
 // Forward_densePi_densemu_cpp
-void Forward_densePi_densemu_cpp(Environment fwd, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
+void Forward_densePi_densemu_cpp(List fwd, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
 RcppExport SEXP _kalis_Forward_densePi_densemu_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Environment >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
     Rcpp::traits::input_parameter< const int >::type t(tSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
@@ -759,11 +759,11 @@ BEGIN_RCPP
 END_RCPP
 }
 // Forward_scalarPi_densemu_cpp
-void Forward_scalarPi_densemu_cpp(Environment fwd, const int t, const double Pi, NumericVector mu, NumericVector rho, const int nthreads);
+void Forward_scalarPi_densemu_cpp(List fwd, const int t, const double Pi, NumericVector mu, NumericVector rho, const int nthreads);
 RcppExport SEXP _kalis_Forward_scalarPi_densemu_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Environment >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
     Rcpp::traits::input_parameter< const int >::type t(tSEXP);
     Rcpp::traits::input_parameter< const double >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
@@ -774,11 +774,11 @@ BEGIN_RCPP
 END_RCPP
 }
 // Forward_densePi_scalarmu_cpp
-void Forward_densePi_scalarmu_cpp(Environment fwd, const int t, NumericMatrix Pi, const double mu, NumericVector rho, const int nthreads);
+void Forward_densePi_scalarmu_cpp(List fwd, const int t, NumericMatrix Pi, const double mu, NumericVector rho, const int nthreads);
 RcppExport SEXP _kalis_Forward_densePi_scalarmu_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Environment >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
     Rcpp::traits::input_parameter< const int >::type t(tSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
@@ -789,11 +789,11 @@ BEGIN_RCPP
 END_RCPP
 }
 // Forward_scalarPi_scalarmu_cpp
-void Forward_scalarPi_scalarmu_cpp(Environment fwd, const int t, const double Pi, const double mu, NumericVector rho, const int nthreads);
+void Forward_scalarPi_scalarmu_cpp(List fwd, const int t, const double Pi, const double mu, NumericVector rho, const int nthreads);
 RcppExport SEXP _kalis_Forward_scalarPi_scalarmu_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Environment >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
     Rcpp::traits::input_parameter< const int >::type t(tSEXP);
     Rcpp::traits::input_parameter< const double >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
@@ -804,11 +804,11 @@ BEGIN_RCPP
 END_RCPP
 }
 // Forward1step_scalarPi_scalarmu_cpp
-void Forward1step_scalarPi_scalarmu_cpp(Environment fwd, const int t, const double Pi, const double mu, NumericVector rho, const int nthreads);
+void Forward1step_scalarPi_scalarmu_cpp(List fwd, const int t, const double Pi, const double mu, NumericVector rho, const int nthreads);
 RcppExport SEXP _kalis_Forward1step_scalarPi_scalarmu_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Environment >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
     Rcpp::traits::input_parameter< const int >::type t(tSEXP);
     Rcpp::traits::input_parameter< const double >::type Pi(PiSEXP);
     Rcpp::traits::input_parameter< const double >::type mu(muSEXP);

@@ -36,9 +36,15 @@
 #' Forward(fwd, 100, Pi, mu, rho)
 #'
 #' @export Forward
-Forward <- function(fwd, t, nthreads = 1) {
+Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
   if(!("kalisForwardTable" %in% class(fwd))) {
     stop("The fwd argument is not a valid forward table.")
+  }
+  if(!("kalisParameters" %in% class(pars))) {
+    stop("The pars argument is not a valid parameters object.")
+  }
+  if(fwd$pars.sha256 != pars$sha256) {
+    stop("The forward table provided was created with different parameter values (SHA-256 mismatch).")
   }
   L <- get("hap_size", envir = pkgCache)
   N <- length(get("haps", envir = pkgCache))
@@ -55,17 +61,17 @@ Forward <- function(fwd, t, nthreads = 1) {
     stop("Forward table is of the wrong dimensions for this problem.")
   }
 
-  if(is.matrix(fwd$pars$pars$Pi)) {
-    if(length(fwd$pars$pars$mu) == 1) {
-      Forward_densePi_scalarmu_cpp(fwd, t, fwd$pars$pars$Pi, fwd$pars$pars$mu, fwd$pars$pars$rho, nthreads)
+  if(is.matrix(pars$pars$Pi)) {
+    if(length(pars$pars$mu) == 1) {
+      Forward_densePi_scalarmu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     } else {
-      Forward_densePi_densemu_cpp(fwd, t, fwd$pars$pars$Pi, fwd$pars$pars$mu, fwd$pars$pars$rho, nthreads)
+      Forward_densePi_densemu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     }
   } else {
-    if(length(fwd$pars$pars$mu) == 1) {
-      Forward_scalarPi_scalarmu_cpp(fwd, t, fwd$pars$pars$Pi, fwd$pars$pars$mu, fwd$pars$pars$rho, nthreads)
+    if(length(pars$pars$mu) == 1) {
+      Forward_scalarPi_scalarmu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     } else {
-      Forward_scalarPi_densemu_cpp(fwd, t, fwd$pars$pars$Pi, fwd$pars$pars$mu, fwd$pars$pars$rho, nthreads)
+      Forward_scalarPi_densemu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     }
   }
 }
@@ -105,9 +111,12 @@ Forward <- function(fwd, t, nthreads = 1) {
 #' Backward(bck, 100, Pi, mu, rho)
 #'
 #' @export Backward
-Backward <- function(bck, t, nthreads = 1) {
+Backward <- function(bck, pars, t = bck$l-1, nthreads = 1) {
   if(!("kalisBackwardTable" %in% class(bck))) {
     stop("The bck argument is not a valid backward table.")
+  }
+  if(!("kalisParameters" %in% class(pars))) {
+    stop("The pars argument is not a valid parameters object.")
   }
   L <- get("hap_size", envir = pkgCache)
   N <- length(get("haps", envir = pkgCache))
@@ -124,17 +133,17 @@ Backward <- function(bck, t, nthreads = 1) {
     stop("Backward table is of the wrong dimensions for this problem.")
   }
 
-  if(is.matrix(bck$pars$pars$Pi)) {
-    if(length(bck$pars$pars$mu) == 1) {
-      Backward_densePi_scalarmu_cpp(bck, t, bck$pars$pars$Pi, bck$pars$pars$mu, bck$pars$pars$rho, nthreads)
+  if(is.matrix(pars$pars$Pi)) {
+    if(length(pars$pars$mu) == 1) {
+      Backward_densePi_scalarmu_cpp(bck, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     } else {
-      Backward_densePi_densemu_cpp(bck, t, bck$pars$pars$Pi, bck$pars$pars$mu, bck$pars$pars$rho, nthreads)
+      Backward_densePi_densemu_cpp(bck, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     }
   } else {
-    if(length(bck$pars$pars$mu) == 1) {
-      Backward_scalarPi_scalarmu_cpp(bck, t, bck$pars$pars$Pi, bck$pars$pars$mu, bck$pars$pars$rho, nthreads)
+    if(length(pars$pars$mu) == 1) {
+      Backward_scalarPi_scalarmu_cpp(bck, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     } else {
-      Backward_scalarPi_densemu_cpp(bck, t, bck$pars$pars$Pi, bck$pars$pars$mu, bck$pars$pars$rho, nthreads)
+      Backward_scalarPi_densemu_cpp(bck, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     }
   }
 }
