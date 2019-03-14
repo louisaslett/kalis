@@ -51,8 +51,8 @@ Parameters <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL)
     stop("Ne must be a scalar.")
   }
 
-  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma <= 0) {
-    stop("gamma must be a positive scalar.")
+  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma < 0) {
+    stop("gamma must be a non-negative scalar.")
   }
 
   if(!is.vector(mu)) {
