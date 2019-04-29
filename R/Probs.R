@@ -23,9 +23,9 @@
 #' @export ForwardProbs
 ForwardProbs <- function(fwd, log=TRUE){
   if(log==TRUE){
-    return(sweep(log(fwd$alpha),MARGIN = 2,STATS=log(colSums(fwd$alpha)),FUN="-"))
+    return(sweep(log(fwd$alpha), MARGIN = 2, STATS = log(colSums(fwd$alpha)), FUN = "-"))
   }else{
-    return(exp(sweep(log(fwd$alpha),MARGIN = 2,STATS=log(colSums(fwd$alpha)),FUN="-")))
+    return(exp(sweep(log(fwd$alpha), MARGIN = 2, STATS = log(colSums(fwd$alpha)), FUN = "-")))
   }
 }
 
@@ -52,11 +52,11 @@ ForwardProbs <- function(fwd, log=TRUE){
 #' Backward(bck, 100, Pi, mu, rho)
 #' BackwardProbs(bck)
 #' @export BackwardProbs
-BackwardProbs <- function(bck, log=TRUE){
-  if(log==TRUE){
-    return(sweep(log(bck$beta),MARGIN = 2,STATS=log(colSums(bck$beta)),FUN="-"))
+BackwardProbs <- function(bck, log = TRUE){
+  if(log == TRUE){
+    return(sweep(log(bck$beta), MARGIN = 2, STATS = log(colSums(bck$beta)), FUN = "-"))
   }else{
-    return(exp(sweep(log(bck$beta),MARGIN = 2,STATS=log(colSums(bck$beta)),FUN="-")))
+    return(exp(sweep(log(bck$beta), MARGIN = 2, STATS = log(colSums(bck$beta)), FUN = "-")))
   }
 }
 
@@ -92,12 +92,16 @@ BackwardProbs <- function(bck, log=TRUE){
 #' BackwardProbs(bck)
 #' PostProbs(fwd,bck)
 #' @export PostProbs
-PostProbs <- function(fwd, bck, log=TRUE){
-  if(fwd$l != bck$l){warning("Computing dist matrix but locus position of the forward table and backward table do not match.")}
-  if(fwd$pars.sha256 != bck$pars.sha256){warning("Computing dist matrix but parameters used to calculate the forward table and backward table do not match.")}
+PostProbs <- function(fwd, bck, log = TRUE){
+  if(fwd$l != bck$l) {
+    warning("Computing dist matrix but locus position of the forward table and backward table do not match.")
+  }
+  if(fwd$pars.sha256 != bck$pars.sha256) {
+    warning("Computing dist matrix but parameters used to calculate the forward table and backward table do not match.")
+  }
   tempmat <- fwd$alpha*bck$beta
-  tempmat <- sweep(log(tempmat),MARGIN = 2,STATS=log(colSums(tempmat)),FUN="-")
-  if(log==TRUE){
+  tempmat <- sweep(log(tempmat), MARGIN = 2, STATS = log(colSums(tempmat)), FUN = "-")
+  if(log == TRUE){
     diag(tempmat) <- 0
     return(tempmat)
   }else{
@@ -136,10 +140,14 @@ PostProbs <- function(fwd, bck, log=TRUE){
 #' DistMat(fwd,bck)
 #' @export DistMat
 DistMat <- function(fwd, bck){
-  if(fwd$l != bck$l){warning("Computing dist matrix but locus position of the forward table and backward table do not match.")}
-  if(fwd$pars.sha256 != bck$pars.sha256){warning("Computing dist matrix but parameters used to calculate the forward table and backward table do not match.")}
+  if(fwd$l != bck$l) {
+    warning("Computing dist matrix but locus position of the forward table and backward table do not match.")
+  }
+  if(fwd$pars.sha256 != bck$pars.sha256) {
+    warning("Computing dist matrix but parameters used to calculate the forward table and backward table do not match.")
+  }
   tempmat <- fwd$alpha*bck$beta
-  tempmat <- sweep(-log(tempmat),MARGIN = 2,STATS=log(colSums(tempmat)),FUN="+")
+  tempmat <- sweep(-log(tempmat), MARGIN = 2, STATS = log(colSums(tempmat)), FUN = "+")
   diag(tempmat) <- 0
   return((tempmat + t(tempmat))/2)
 }
