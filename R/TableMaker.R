@@ -71,11 +71,19 @@ MakeForwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
     stop("from_recipient must be smaller than to_recipient.")
   }
   if(from_recipient < 1) {
-    from_recipient <- 1
+    from_recipient <- 1L
   }
   if(to_recipient > N) {
     to_recipient <- N
   }
+  if(as.integer(from_recipient) != from_recipient) {
+    stop("from_recipient must be an integer.")
+  }
+  if(as.integer(to_recipient) != to_recipient) {
+    stop("to_recipient must be an integer.")
+  }
+  from_recipient <- as.integer(from_recipient)
+  to_recipient <- as.integer(to_recipient)
   delN <- to_recipient-from_recipient+1
 
   fwd <- list()
@@ -152,11 +160,19 @@ MakeBackwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
     stop("from_recipient must be smaller than to_recipient.")
   }
   if(from_recipient < 1) {
-    from_recipient <- 1
+    from_recipient <- 1L
   }
   if(to_recipient > N) {
     to_recipient <- N
   }
+  if(as.integer(from_recipient) != from_recipient) {
+    stop("from_recipient must be an integer.")
+  }
+  if(as.integer(to_recipient) != to_recipient) {
+    stop("to_recipient must be an integer.")
+  }
+  from_recipient <- as.integer(from_recipient)
+  to_recipient <- as.integer(to_recipient)
   delN <- to_recipient-from_recipient+1
 
   bck <- list()

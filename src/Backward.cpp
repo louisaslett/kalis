@@ -6,7 +6,7 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 void ResetBackwardTable(List bck) {
-  NumericVector newl(1);
+  IntegerVector newl(1);
   newl[0] = 2147483647;
   bck["l"] = newl;
 }
@@ -97,7 +97,7 @@ void Backward_densePi_densemu_cpp(List bck,
                             rho);
   }
 #endif
-  NumericVector newl(1);
+  IntegerVector newl(1);
   newl[0] = t;
   bck["l"] = newl;
 }
@@ -192,7 +192,7 @@ void Backward_scalarPi_densemu_cpp(List bck,
                             rho);
   }
 #endif
-  NumericVector newl(1);
+  IntegerVector newl(1);
   newl[0] = t;
   bck["l"] = newl;
 }
@@ -286,7 +286,7 @@ void Backward_densePi_scalarmu_cpp(List bck,
                             rho);
   }
 #endif
-  NumericVector newl(1);
+  IntegerVector newl(1);
   newl[0] = t;
   bck["l"] = newl;
 }
@@ -383,7 +383,7 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
                             rho);
   }
 #endif
-  NumericVector newl(1);
+  IntegerVector newl(1);
   newl[0] = t;
   bck["l"] = newl;
 }

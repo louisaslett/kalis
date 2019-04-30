@@ -6,7 +6,7 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 void ResetForwardTable(List fwd) {
-  NumericVector newl(1);
+  IntegerVector newl(1);
   newl[0] = 0;
   fwd["l"] = newl;
 }
@@ -98,7 +98,7 @@ void Forward_densePi_densemu_cpp(List fwd,
   }
 #endif
 
-  NumericVector newl(1);
+  IntegerVector newl(1);
   newl[0] = t;
   fwd["l"] = newl;
 }
@@ -194,7 +194,7 @@ void Forward_scalarPi_densemu_cpp(List fwd,
   }
 #endif
 
-  NumericVector newl(1);
+  IntegerVector newl(1);
   newl[0] = t;
   fwd["l"] = newl;
 }
@@ -289,7 +289,7 @@ void Forward_densePi_scalarmu_cpp(List fwd,
   }
 #endif
 
-  NumericVector newl(1);
+  IntegerVector newl(1);
   newl[0] = t;
   fwd["l"] = newl;
 }
@@ -387,7 +387,7 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
   }
 #endif
 
-  NumericVector newl(1);
+  IntegerVector newl(1);
   newl[0] = t;
   fwd["l"] = newl;
 }
@@ -488,7 +488,7 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
   // }
 #endif
 
-  NumericVector newl(1);
+  IntegerVector newl(1);
   newl[0] = t;
   fwd["l"] = newl;
 }

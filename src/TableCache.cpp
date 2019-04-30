@@ -114,7 +114,7 @@ void CopyForwardTable(List to, List from) {
   memcpy(&(as<NumericVector>(to["alpha.f2"])[0]),
          &(as<NumericVector>(from["alpha.f2"])[0]),
          alpha_f2_size);
-  as<NumericVector>(to["l"])[0] = as<NumericVector>(from["l"])[0];
+  as<IntegerVector>(to["l"])[0] = as<IntegerVector>(from["l"])[0];
 }
 
 // // [[Rcpp::export]]
