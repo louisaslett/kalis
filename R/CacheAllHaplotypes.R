@@ -58,19 +58,29 @@ assign("L", NA, envir = pkgVars)
 #'
 #' @export CacheAllHaplotypesH5
 CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
+
+  # Check for file and dataset within file
+  if(!file.exists(hdf5.file)) {
+    if(!is.na(get("N", envir = pkgVars))){
+      stop("Cannot find HDF5 file to make new cache. Keeping existing cache.")
+    }else{
+      stop("Cannot find HDF5 file.")
+    }
+  }
+  if(nrow(h5ls(hdf5.file) %>% filter(name == "haps")) != 1) {
+    if(!is.na(get("N", envir = pkgVars))){
+      stop("HDF5 file already exists but does not contain a 'haps' object in the root for haplotype data. Keeping existing cache.")
+    }else{
+      stop("HDF5 file already exists but does not contain a 'haps' object in the root for haplotype data.")
+    }
+  }
+
   # Make sure we don't double up cache content if there is already stuff cached
   if(!is.na(get("N", envir = pkgVars))) {
     warning("haplotypes already cached ... overwriting existing cache.")
     ClearHaplotypeCache()
   }
 
-  # Check for file and dataset within file
-  if(!file.exists(hdf5.file)) {
-    stop("Cannot find HDF5 file.")
-  }
-  if(nrow(h5ls(hdf5.file) %>% filter(name == "haps")) != 1) {
-    stop("HDF5 file already exists but does not contain a 'haps' object in the root for haplotype data.")
-  }
 
   # Get dimensions of haplotype data
   hdf5.dim <- h5ls(hdf5.file) %>% filter(name == "haps") %>% select(dim) %>% str_split_fixed("x", n = Inf) %>% as.integer()

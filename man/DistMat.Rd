@@ -10,8 +10,6 @@ DistMat(fwd, bck)
 \item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
 
 \item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}
-
-\item{log}{logical; if TRUE (default), the posterior marginal probabilities p are returned as log(p).}
 }
 \value{
 matrix of distances
@@ -20,19 +18,20 @@ matrix of distances
 Provides an easy function for calculating a local distance matrix.
 }
 \details{
-Note that the forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities.
+The forward and backward tables must be at the same locus.
 The (i,j)-th element of of the returned matrix is the inferred distance d_(i,j) between haplotypes j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
 
 d_(i,j) = -( log(p_(i,j)) + log(p_(j,i)) ) / 2 where p_(i,j) is the posterior marginal probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
+
+By convention, d_(i,i) = 0 for all i.
 }
 \examples{
-fwd <- MakeForwardTable()
-Forward(fwd, 100, Pi, mu, rho)
-bck <- MakeBackwardTable()
-Backward(bck, 100, Pi, mu, rho)
-BackwardProbs(bck)
 DistMat(fwd,bck)
 }
 \seealso{
-\code{\link{PostProb}} to calculate the posterior marginal probabilities p_(i,j)
+\code{\link{PostProb}} to calculate the posterior marginal probabilities p_(i,j);
+\code{\link{MakeForward}} to generate Forward table;
+\code{\link{Forward}} to propogate a Backward table to a new locus;
+\code{\link{MakeBackwardTable}} to generate a Backward table;
+\code{\link{Backward}} to propogate a Backward table to a new locus.
 }

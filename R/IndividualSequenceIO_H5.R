@@ -1,10 +1,12 @@
 #' Write haplotype matrix to HDF5 formatted cache-friendly file
 #'
 #' Writes an R matrix of 0/1s to the HDF5 format which is used for reading to
-#' optimised in memory cache.
+#' optimised in memory cache.  If you're working with a large haplotype dataset,
+#' we recommend that you convert it directly to our HDF5 format (see vignette)
+#' rather than read it into R.
 #'
 #' The primary method to load data into kalis' internal optimised cache is from
-#' an HDF5 file storage.  If the user has a collection of haplotypes already
+#' an HDF5 storage file.  If the user has a collection of haplotypes already
 #' represented as a matrix of 0's and 1's in R, this function can be used to
 #' write to HDF5 the format required to load into cache.
 #'
@@ -18,10 +20,17 @@
 #' to just load the data specifying only the HDF5 file name and then confirm
 #' that number of haplotypes and their length have not been exchanged.
 #'
+#' Note that if hdf5.file exists but does not contain a dataset named "haps", \code{WriteIndividualHaplotypeH5} will simply create a "haps" dataset within the existing file.
+#'
+#'
+#' @param hdf5.file the name of the file which the haplotypes are to be written to.
+#' @param ind.haplotype a vector or a matrix where each column is a haplotype to be stored
+#' @param append a logical indicating whether overwrite (default) or append an existing "haps" dataset if it already exists in hdf5.file
+#'
 #' @return Nothing is returned.
 #'
-#' @seealso \code{\link{Forward}} to propagate the newly created table forward
-#'   through the genome.
+#' @seealso \code{\link{ReadIndividualHaplotypeH5}} to read haplotypes from HDF5 file into an R matrix
+#' \code{\link{CacheAllHaplotypes}} to fill the kalis cache with haplotypes
 #'
 #' @examples
 #' # Examples
@@ -29,7 +38,7 @@
 #' }
 #'
 #' @export WriteIndividualHaplotypeH5
-WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype) {
+WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype, append = FALSE) {
   if(any(!(ind.haplotype == 1 | ind.haplotype == 0))) {
     stop("haplotype is not binary.")
   }
@@ -46,13 +55,37 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype) {
 
   if(file.exists(hdf5.file)) {
     if(nrow(h5ls(hdf5.file) %>% filter(name == "haps")) != 1) {
-      stop("HDF5 file already exists but does not contain haplotype data.")
+      message("HDF5 file already exists but does not contain haplotype data, now adding haps dataset")
+      h5createDataset(file = hdf5.file,
+                      dataset = "haps",
+                      dims = c(L, 0),
+                      maxdims = c(L, 10e9),
+                      storage.mode = "integer",
+                      chunk = c(L, 1),
+                      level = 7)
+      hdf5.dim <- c(L, 0)
+    } else {
+      if(append) {
+        hdf5.dim <- h5ls(hdf5.file) %>% filter(name == "haps") %>% select(dim) %>% str_split_fixed("x", n = Inf) %>% as.integer()
+        if(hdf5.dim[1] != L) {
+          stop(glue("HDF5 file contains haplotypes of length {hdf5.dim[1]}, but ind.haplotype contains haplotypes of length {L}."))
+        }
+        message("HDF5 file already exists, appending haplotypes ...\n")
+      } else {
+        message("HDF5 file exists and already contains a haps dataset, overwriting existing haps dataset...\n")
+        h5delete(file = hdf5.file, name = "haps")
+        h5createDataset(file = hdf5.file,
+                        dataset = "haps",
+                        dims = c(L, 0),
+                        maxdims = c(L, 10e9),
+                        storage.mode = "integer",
+                        chunk = c(L, 1),
+                        level = 7)
+        hdf5.dim <- c(L, 0)
+      }
+
     }
-    hdf5.dim <- h5ls(hdf5.file) %>% filter(name == "haps") %>% select(dim) %>% str_split_fixed("x", n = Inf) %>% as.integer()
-    if(hdf5.dim[1] != L) {
-      stop(glue("HDF5 file contains haplotypes of length {hdf5.dim[1]}, but ind.haplotype contains haplotypes of length {L}."))
-    }
-    message("HDF5 file already exists, appending haplotypes ...\n")
+
   } else {
     message("Creating HDF5 file ...\n")
     h5createFile(hdf5.file)

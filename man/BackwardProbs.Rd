@@ -4,12 +4,12 @@
 \alias{BackwardProbs}
 \title{Calculate Backward Probabilities from a Backward Table Object}
 \usage{
-BackwardProbs(bck, log = TRUE)
+BackwardProbs(bck, log = FALSE)
 }
 \arguments{
 \item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}
 
-\item{log}{logical; if TRUE (default), the backward probabilities p are returned as log(p).}
+\item{log}{logical; if TRUE, the backward probabilities p are returned as log(p).}
 }
 \value{
 matrix of backward probabilities
@@ -18,14 +18,12 @@ matrix of backward probabilities
 Provides an easy function for calculating the log backward probabilities from a backward table object bck.
 }
 \details{
-The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l and the haplotypes
-observed from locus fwd$l+1 up through locus L.
+The (i,j)-th element of of the returned matrix is the probability that j copies i at locus bck$l given the haplotypes
+observed from locus bck$l+1 up through locus L.  Note: each column represents the backward probabilities from an independent HMM.
 
 Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
 }
 \examples{
-bck <- MakeBackwardTable()
-Backward(bck, 100, Pi, mu, rho)
 BackwardProbs(bck)
 }
 \seealso{

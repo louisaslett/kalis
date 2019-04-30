@@ -4,28 +4,26 @@
 \alias{ForwardProbs}
 \title{Calculate Forward Probabilities from a Forward Table Object}
 \usage{
-ForwardProbs(fwd, log = TRUE)
+ForwardProbs(fwd, log = FALSE)
 }
 \arguments{
 \item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
 
-\item{log}{logical; if TRUE (default), the forward probabilities p are returned as log(p).}
+\item{log}{logical; if TRUE, the forward probabilities p are returned as log(p).}
 }
 \value{
 matrix of forward probabilities
 }
 \description{
-Provides an easy function for calculating the log forward probabilities from a forward table object fwd.
+Provides an easy function for calculating the forward probabilities from a forward table object fwd.
 }
 \details{
 The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l and the haplotypes
-observed from locus 1 up through locus fwd$l.
+observed from locus 1 up through locus fwd$l.  Note: each column represents the backward probabilities from an independent HMM.
 
 Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
 }
 \examples{
-fwd <- MakeForwardTable()
-Forward(fwd, 100, Pi, mu, rho)
 ForwardProbs(fwd)
 }
 \seealso{

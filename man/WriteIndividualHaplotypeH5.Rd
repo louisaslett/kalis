@@ -4,18 +4,27 @@
 \alias{WriteIndividualHaplotypeH5}
 \title{Write haplotype matrix to HDF5 formatted cache-friendly file}
 \usage{
-WriteIndividualHaplotypeH5(hdf5.file, ind.haplotype)
+WriteIndividualHaplotypeH5(hdf5.file, ind.haplotype, append = FALSE)
+}
+\arguments{
+\item{hdf5.file}{the name of the file which the haplotypes are to be written to.}
+
+\item{ind.haplotype}{a vector or a matrix where each column is a haplotype to be stored}
+
+\item{append}{a logical indicating whether overwrite (default) or append an existing "haps" dataset if it already exists in hdf5.file}
 }
 \value{
 Nothing is returned.
 }
 \description{
 Writes an R matrix of 0/1s to the HDF5 format which is used for reading to
-optimised in memory cache.
+optimised in memory cache.  If you're working with a large haplotype dataset,
+we recommend that you convert it directly to our HDF5 format (see vignette)
+rather than read it into R.
 }
 \details{
 The primary method to load data into kalis' internal optimised cache is from
-an HDF5 file storage.  If the user has a collection of haplotypes already
+an HDF5 storage file.  If the user has a collection of haplotypes already
 represented as a matrix of 0's and 1's in R, this function can be used to
 write to HDF5 the format required to load into cache.
 
@@ -28,6 +37,8 @@ If the user is unsure of the convention of
 the language they used to create the HDF5 file, then the simplest approach is
 to just load the data specifying only the HDF5 file name and then confirm
 that number of haplotypes and their length have not been exchanged.
+
+Note that if hdf5.file exists but does not contain a dataset named "haps", \code{WriteIndividualHaplotypeH5} will simply create a "haps" dataset within the existing file.
 }
 \examples{
 # Examples
@@ -36,6 +47,6 @@ that number of haplotypes and their length have not been exchanged.
 
 }
 \seealso{
-\code{\link{Forward}} to propagate the newly created table forward
-  through the genome.
+\code{\link{ReadIndividualHaplotypeH5}} to read haplotypes from HDF5 file into an R matrix
+\code{\link{CacheAllHaplotypes}} to fill the kalis cache with haplotypes
 }

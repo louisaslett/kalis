@@ -4,33 +4,28 @@
 \alias{PostProbs}
 \title{Calculate Posterior Marginal Probabilities from a Forward Table Object and a Backward Table Object}
 \usage{
-PostProbs(fwd, bck, log = TRUE)
+PostProbs(fwd, bck, log = FALSE)
 }
 \arguments{
 \item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
 
 \item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}
 
-\item{log}{logical; if TRUE (default), the posterior marginal probabilities p are returned as log(p).}
+\item{log}{logical; if FALSE, the posterior marginal probabilities p are returned as log(p).}
 }
 \value{
 matrix of posterior marginal probabilities
 }
 \description{
-Provides an easy function for calculating the log posterior marginal probabilities.
+Provides an easy function for calculating the posterior marginal probabilities.
 }
 \details{
-Note that the forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities.
-The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
+The forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities at locus l.
+The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).  Note: each column represents the backward probabilities from an independent HMM.
 
 Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
 }
 \examples{
-fwd <- MakeForwardTable()
-Forward(fwd, 100, Pi, mu, rho)
-bck <- MakeBackwardTable()
-Backward(bck, 100, Pi, mu, rho)
-BackwardProbs(bck)
 PostProbs(fwd,bck)
 }
 \seealso{
