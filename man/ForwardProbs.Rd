@@ -2,7 +2,7 @@
 % Please edit documentation in R/Probs.R
 \name{ForwardProbs}
 \alias{ForwardProbs}
-\title{Calculate Forward Probabilities from a Forward Table Object}
+\title{Calculate Normalized Forward Probabilities from a Forward Table Object}
 \usage{
 ForwardProbs(fwd, log = FALSE)
 }
@@ -15,13 +15,13 @@ ForwardProbs(fwd, log = FALSE)
 matrix of forward probabilities
 }
 \description{
-Provides an easy function for calculating the forward probabilities from a forward table object fwd.
+Provides an easy function for calculating the normalized forward probabilities from a forward table object fwd.
 }
 \details{
-The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l and the haplotypes
-observed from locus 1 up through locus fwd$l.  Note: each column represents the backward probabilities from an independent HMM.
+The (j,i)-th element of of the returned matrix is the probability that j is copied by i at locus fwd$l given the haplotypes
+observed from locus 1 up through locus fwd$l.  Note: each column represents an independent HMM.
 
-Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
+By convention, every diagonal element is zero.
 }
 \examples{
 ForwardProbs(fwd)

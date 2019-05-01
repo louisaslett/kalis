@@ -1,11 +1,11 @@
-#' Calculate Forward Probabilities from a Forward Table Object
+#' Calculate Normalized Forward Probabilities from a Forward Table Object
 #'
-#' Provides an easy function for calculating the forward probabilities from a forward table object fwd.
+#' Provides an easy function for calculating the normalized forward probabilities from a forward table object fwd.
 #'
-#' The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l and the haplotypes
-#' observed from locus 1 up through locus fwd$l.  Note: each column represents the backward probabilities from an independent HMM.
+#' The (j,i)-th element of of the returned matrix is the probability that j is copied by i at locus fwd$l given the haplotypes
+#' observed from locus 1 up through locus fwd$l.  Note: each column represents an independent HMM.
 #'
-#' Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
+#' By convention, every diagonal element is zero.
 #'
 #' @param fwd a forward table as returned by \code{\link{MakeForwardTable}}
 #'
@@ -27,14 +27,16 @@ ForwardProbs <- function(fwd, log = FALSE){
   }
 }
 
-#' Calculate Backward Probabilities from a Backward Table Object
+#' Calculate Normalized Backward Probabilities from a Backward Table Object
 #'
-#' Provides an easy function for calculating the log backward probabilities from a backward table object bck.
+#' Provides an easy function for calculating the normalized backward probabilities from a backward table object bck.
 #'
-#' The (i,j)-th element of of the returned matrix is the probability that j copies i at locus bck$l given the haplotypes
-#' observed from locus bck$l+1 up through locus L.  Note: each column represents the backward probabilities from an independent HMM.
+#' The (j,i)-th element of of the returned matrix is the probability of observing the haplotypes from locus bck$l+1
+#' up through locus L given that j is copied by i at bck$l divided by the sum over i of those probabilities.
+#' Although this matrix does not have a clean probabilistic interpretation, it captures how similar haplotypes are to each
+#' other downstream of bck$l.  Note: each column represents an independent HMM.
 #'
-#' Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
+#' By convention, every diagonal element is zero.
 #'
 #' @param bck a backward table as returned by \code{\link{MakeBackwardTable}}
 #'
@@ -62,9 +64,10 @@ BackwardProbs <- function(bck, log = FALSE){
 #' Provides an easy function for calculating the posterior marginal probabilities.
 #'
 #' The forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities at locus l.
-#' The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).  Note: each column represents the backward probabilities from an independent HMM.
+#' The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
+#' Note: each column represents an independent HMM.
 #'
-#' Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
+#' By convention, every diagonal element is zero.
 #'
 #' @param fwd a forward table as returned by \code{\link{MakeForwardTable}}
 #'

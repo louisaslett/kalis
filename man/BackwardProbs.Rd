@@ -2,7 +2,7 @@
 % Please edit documentation in R/Probs.R
 \name{BackwardProbs}
 \alias{BackwardProbs}
-\title{Calculate Backward Probabilities from a Backward Table Object}
+\title{Calculate Normalized Backward Probabilities from a Backward Table Object}
 \usage{
 BackwardProbs(bck, log = FALSE)
 }
@@ -15,13 +15,15 @@ BackwardProbs(bck, log = FALSE)
 matrix of backward probabilities
 }
 \description{
-Provides an easy function for calculating the log backward probabilities from a backward table object bck.
+Provides an easy function for calculating the normalized backward probabilities from a backward table object bck.
 }
 \details{
-The (i,j)-th element of of the returned matrix is the probability that j copies i at locus bck$l given the haplotypes
-observed from locus bck$l+1 up through locus L.  Note: each column represents the backward probabilities from an independent HMM.
+The (j,i)-th element of of the returned matrix is the probability of observing the haplotypes from locus bck$l+1
+up through locus L given that j is copied by i at bck$l divided by the sum over i of those probabilities.
+Although this matrix does not have a clean probabilistic interpretation, it captures how similar haplotypes are to each
+other downstream of bck$l.  Note: each column represents an independent HMM.
 
-Since a haplotype is not allowed to copy from itself, every diagonal element is zero.
+By convention, every diagonal element is zero.
 }
 \examples{
 BackwardProbs(bck)

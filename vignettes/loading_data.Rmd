@@ -1,0 +1,82 @@
+---
+title: "Loading Haplotype Data"
+author: "Louis Aslett & Ryan Christ"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Loading Haplotype Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Data Types
+
+The primary input to kalis is a $N$ by $P$
+
+The StatGen Package is designed to obtain distance matrices that each coarsely approximate the local phylogeny underlying a given locus of the genome using the Li & Stephens Model.   
+
+As noted, there are three parameters...
+
+Those parameters do not have biological meaning for our purposes but are simply tunable to allow us to optimize for local phylogeny inference.
+
+motivating objective...but you should look at entire histogram
+
+What part of the genome to run this on?  Well, ideally just the chromosome you're working with.  
+
+You'd want to know if the different chromosomes were yielding different parameter estimates. 
+
+Here we provide the functionality for doing a single chromosome on a single machine.  You can send this out on your cluster to do two chromosomes separately and compare the results.
+
+We have here a suggested method for combining the parameter estimates from across chromosomes.Though in principle, we don't see immediately any reason why there'd be problems combining info for say population structure with slightly different parameters.
+
+If parameters are actually different between chromosomes, then we'd suggest using the parameters only on their respective chromosomes.  
+
+If you'd like to do the optimization jointly over all chromosomes, that's totally fine, but we'd suggest that you do it on a single chromosome first to give yourself a good initialization point then proceed.  Unfortunately the optimal way to do that depends on your cluster architecture.
+
+Below we'll give an example of how to do multi-chromosome comparison.  
+
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
