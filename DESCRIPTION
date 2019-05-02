@@ -19,7 +19,7 @@ Description: kalis provides a high performance implementation of the Li &
   specifying a recombination map, site-specific mutation rates, and differing
   prior copying probabilities for each recipient haplotype.  Extensive use is 
   made of low level threading and CPU vector instructions.
-License: GPL (>= 2)
+License: GPL (>= 3)
 LazyData: TRUE
 Depends: R (>= 3.5.0)
 Imports:
@@ -29,7 +29,10 @@ Imports:
     stringr,
     glue (>= 1.3.0),
     rlang,
-    digest (>= 0.6.18)
+    digest (>= 0.6.18),
+    fastcluster,
+    lattice,
+    RColorBrewer
 LinkingTo:
     Rcpp
 SystemRequirements:

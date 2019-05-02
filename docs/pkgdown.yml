@@ -3,5 +3,5 @@ pkgdown: 1.3.0
 pkgdown_sha: ~
 articles:
   AutoTuning: AutoTuning.html
-  loading_data: loading_data.html
+  Decoding_a_Single_Locus: Decoding_a_Single_Locus.html
 

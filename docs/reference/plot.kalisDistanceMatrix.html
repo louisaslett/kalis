@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Remove all cached haplotypes and free memory — ClearHaplotypeCache • kalis</title>
+<title>Plotting function for a kalisDistanceMatrix object — plot.kalisDistanceMatrix • kalis</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,10 +30,9 @@
 
 
 
-<meta property="og:title" content="Remove all cached haplotypes and free memory — ClearHaplotypeCache" />
+<meta property="og:title" content="Plotting function for a kalisDistanceMatrix object — plot.kalisDistanceMatrix" />
 
-<meta property="og:description" content="Remove all the haplotypes that were cached by a previous caching call and
-free up the memory that was allocated for future use." />
+<meta property="og:description" content="Clusters the given distance matrix and generates a heatmap to display it." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -110,58 +109,42 @@ free up the memory that was allocated for future use." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Remove all cached haplotypes and free memory</h1>
+    <h1>Plotting function for a kalisDistanceMatrix object</h1>
     
-    <div class="hidden name"><code>ClearHaplotypeCache.Rd</code></div>
+    <div class="hidden name"><code>plot.kalisDistanceMatrix.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Remove all the haplotypes that were cached by a previous caching call and
-free up the memory that was allocated for future use.</p>
+    <p>Clusters the given distance matrix and generates a heatmap to display it.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>ClearHaplotypeCache</span>()</pre>
-        
+    <pre class="usage"><span class='co'># S3 method for kalisDistanceMatrix</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>d</span>, <span class='no'>...</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>d</th>
+      <td><p>a kalisDistanceMatrix</p></td>
+    </tr>
+    </table>
+    
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Nothing is returned.</p>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>To achieve higher performance, kalis internally represents haplotypes
-in an efficient raw binary format in memory which cannot be directly viewed
-or manipulated in R.  In particular, this cache sits outside R's memory
-management and will never be garbage collected (unless R is quit or the
-package is unloaded).  Therefore, this function is provided to enable freeing
-the memory used by this cache.</p>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='CacheAllHaplotypesH5.html'>CacheAllHaplotypesH5</a></code> to propagate the newly created table forward
-  through the genome.</p></div>
+    <p>There is nothing returned.</p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'># Examples
-</div># NOT RUN {
-# }
-<div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>

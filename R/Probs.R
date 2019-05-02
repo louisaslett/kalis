@@ -131,14 +131,34 @@ PostProbs <- function(fwd, bck, log = FALSE){
 #' DistMat(fwd,bck)
 #' @export DistMat
 DistMat <- function(fwd, bck){
+
   if(fwd$l != bck$l) {
     warning("Computing dist matrix but locus position of the forward table and backward table do not match.")
   }
   if(fwd$pars.sha256 != bck$pars.sha256) {
     warning("Computing dist matrix but parameters used to calculate the forward table and backward table do not match.")
   }
+
   tempmat <- fwd$alpha*bck$beta
   tempmat <- sweep(-log(tempmat), MARGIN = 2, STATS = log(colSums(tempmat)), FUN = "+")
   diag(tempmat) <- 0
-  return((tempmat + t(tempmat))/2)
+
+  d <- (tempmat + t(tempmat))/2
+
+  class(d) <- c("kalisDistanceMatrix", class(d))
+
+  d
+}
+
+#' Plotting function for a kalisDistanceMatrix object
+#'
+#' Clusters the given distance matrix and generates a heatmap to display it.
+#'
+#' @param d a kalisDistanceMatrix
+#' @return There is nothing returned.
+#' @method plot kalisDistanceMatrix
+#' @S3method plot kalisDistanceMatrix
+plot.kalisDistanceMatrix <- function(d, ...){
+  perm <- fastcluster::hclust(as.dist(d),method="average")$order
+  print(lattice::levelplot(d[perm,][,rev(perm)],useRaster=T,col.regions=grDevices::colorRampPalette(RColorBrewer::brewer.pal(9,name = "BuPu"))(100),yaxt="n",xaxt="n",xlab="",ylab="",xaxt="n"))
 }
