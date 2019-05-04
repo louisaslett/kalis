@@ -126,7 +126,9 @@ rather than read it into R.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>WriteIndividualHaplotypeH5</span>(<span class='no'>hdf5.file</span>, <span class='no'>ind.haplotype</span>, <span class='kw'>append</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>WriteIndividualHaplotypeH5</span>(<span class='no'>hdf5.file</span>, <span class='no'>ind.haplotype</span>, <span class='kw'>append</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+
+<span class='fu'>ReadIndividualHaplotypeH5</span>(<span class='no'>hdf5.file</span>, <span class='no'>inds</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -166,6 +168,12 @@ to just load the data specifying only the HDF5 file name and then confirm
 that number of haplotypes and their length have not been exchanged.</p>
 <p>Note that if hdf5.file exists but does not contain a dataset named "haps", <code>WriteIndividualHaplotypeH5</code> will simply create a "haps" dataset within the existing file.</p>
     
+    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+
+    <ul>
+<li><p><code>ReadIndividualHaplotypeH5</code>: Read haplotype matrix from HDF5 formatted cache-friendly file</p></li>
+</ul>
+    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code>ReadIndividualHaplotypeH5</code> to read haplotypes from HDF5 file into an R matrix
@@ -174,9 +182,9 @@ that number of haplotypes and their length have not been exchanged.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'># Examples
-</div># NOT RUN {
-# }
-<div class='input'>
+</div><span class='co'># NOT RUN {</span>
+<span class='fu'>WriteIndividualHaplotypeH5</span>(<span class='no'>...</span>)
+<span class='co'># }</span><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -187,6 +195,8 @@ that number of haplotypes and their length have not been exchanged.</p>
       <li><a href="#value">Value</a></li>
 
       <li><a href="#details">Details</a></li>
+
+      <li><a href="#functions">Functions</a></li>
 
       <li><a href="#see-also">See also</a></li>
       

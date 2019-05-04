@@ -185,7 +185,10 @@ the columns of Pi must sum to 1.</p></td>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>bck</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='MakeBackwardTable.html'>MakeBackwardTable</a></span>()</div><div class='output co'>#&gt; <span class='error'>Error in MakeBackwardTable(): No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().</span></div><div class='input'><span class='fu'>Backward</span>(<span class='no'>bck</span>, <span class='fl'>100</span>, <span class='no'>Pi</span>, <span class='no'>mu</span>, <span class='no'>rho</span>)</div><div class='output co'>#&gt; <span class='error'>Error in Backward(bck, 100, Pi, mu, rho): unused argument (rho)</span></div><div class='input'>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='no'>bck</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='MakeBackwardTable.html'>MakeBackwardTable</a></span>()
+<span class='fu'>Backward</span>(<span class='no'>bck</span>, <span class='fl'>100</span>, <span class='no'>Pi</span>, <span class='no'>mu</span>, <span class='no'>rho</span>)
+<span class='co'># }</span><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
