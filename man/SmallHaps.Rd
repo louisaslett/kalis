@@ -12,6 +12,7 @@ data(SmallHaps)
 Simulated dataset with N=100 haplotypes at L=500 loci generated using msprime (see reference).
 }
 \examples{
+\dontrun{
 data(SmallHaps)
 # Plot Allele Frequencies
 hist(rowMeans(SmallHaps),breaks=20)
@@ -21,6 +22,7 @@ WriteIndividualHaplotypeH5("SmallHaps.h5",SmallHaps)
 
 # Import into kalis cache
 CacheAllHaplotypesH5("SmallHaps.h5")
+}
 
 }
 \references{

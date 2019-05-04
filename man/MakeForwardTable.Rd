@@ -2,6 +2,7 @@
 % Please edit documentation in R/TableMaker.R
 \name{MakeForwardTable}
 \alias{MakeForwardTable}
+\alias{print.kalisForwardTable}
 \title{Create a Forward Table}
 \usage{
 MakeForwardTable(pars, from_recipient = 1, to_recipient = Inf)

@@ -24,6 +24,7 @@ the memory used by this cache.
 \examples{
 # Examples
 \dontrun{
+ClearHaplotypeCache()
 }
 
 }

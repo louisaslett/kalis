@@ -13,7 +13,10 @@
 #' @seealso See also
 #'
 #' @examples
-#' # Examples
+#' \dontrun{
+#' CreateForwardTableCache(...)
+#' }
+#'
 #' @export
 CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recipient = Inf, max.tables = 0) {
   if(!("kalisParameters" %in% class(pars))) {
@@ -51,11 +54,11 @@ CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recip
   }
   cache <- list()
   i <- 1
-  while((length(cache) == 0 || ((object.size(cache)*(length(cache)+1))/length(cache))/1e9 < size) && length(cache)<max.tables) {
+  while((length(cache) == 0 || ((utils::object.size(cache)*(length(cache)+1))/length(cache))/1e9 < size) && length(cache)<max.tables) {
     cache[[i]] <- MakeForwardTable(pars, from_recipient, to_recipient)
     i <- i+1
   }
-  cat("Cache constructed, can hold ", length(cache), " tables for recipients ", from_recipient, " ... ", to_recipient, ".  Actual size ≈ ", ceiling(object.size(cache)/1e6)/1e3, "GB.\n", sep = "")
+  cat("Cache constructed, can hold ", length(cache), " tables for recipients ", from_recipient, " ... ", to_recipient, ".  Actual size approx ", ceiling(utils::object.size(cache)/1e6)/1e3, "GB.\n", sep = "")
 
   class(cache) <- c("kalisCheckpointTable", class(cache))
   cache
@@ -89,7 +92,10 @@ CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recip
 #'   \code{\link{Forward}} for forward function without using a cache.
 #'
 #' @examples
-#' # Examples
+#' \dontrun{
+#' ForwardUsingTableCache(...)
+#' }
+#'
 #' @export
 ForwardUsingTableCache <- function(fwd, pars, cache, t = fwd$l+1, nthreads = 1) {
   if(!("kalisForwardTable" %in% class(fwd))) {
@@ -187,5 +193,5 @@ print.kalisCheckpointTable <- function(x, ...) {
   cat("Checkpoint Table object containing", length(x), "checkpoints.\n")
   cat("  Loci of checkpoints:\n")
   cat("   ", sapply(x, function(x) { x$l }), "\n")
-  cat("  Memory consumed ≈", ceiling(object.size(x)/1e6)/1e3, "GB.\n")
+  cat("  Memory consumed: ", ceiling(utils::object.size(x)/1e6)/1e3, "GB.\n")
 }

@@ -33,6 +33,7 @@ vector of 0's and 1's.
 \examples{
 # Examples
 \dontrun{
+QueryCache(...)
 }
 
 }

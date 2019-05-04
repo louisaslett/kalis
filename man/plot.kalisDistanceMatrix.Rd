@@ -4,7 +4,7 @@
 \alias{plot.kalisDistanceMatrix}
 \title{Plotting function for a kalisDistanceMatrix object}
 \usage{
-\method{plot}{kalisDistanceMatrix}(d, ...)
+\method{plot}{kalisDistanceMatrix}(x, ...)
 }
 \arguments{
 \item{d}{a kalisDistanceMatrix}

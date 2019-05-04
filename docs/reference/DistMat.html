@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">kalis</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -148,15 +148,18 @@ The (i,j)-th element of of the returned matrix is the inferred distance d_(i,j) 
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code>PostProb</code> to calculate the posterior marginal probabilities p_(i,j);
-<code>MakeForward</code> to generate Forward table;
+    <div class='dont-index'><p><code><a href='PostProbs.html'>PostProbs</a></code> to calculate the posterior marginal probabilities p_(i,j);
+<code><a href='MakeForwardTable.html'>MakeForwardTable</a></code> to generate Forward table;
 <code><a href='Forward.html'>Forward</a></code> to propogate a Backward table to a new locus;
 <code><a href='MakeBackwardTable.html'>MakeBackwardTable</a></code> to generate a Backward table;
 <code><a href='Backward.html'>Backward</a></code> to propogate a Backward table to a new locus.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>DistMat</span>(<span class='no'>fwd</span>,<span class='no'>bck</span>)</div><div class='output co'>#&gt; <span class='error'>Error in DistMat(fwd, bck): object 'fwd' not found</span></div></pre>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='fu'>DistMat</span>(<span class='no'>fwd</span>, <span class='no'>bak</span>)
+<span class='co'># }</span><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -177,7 +180,7 @@ The (i,j)-th element of of the returned matrix is the inferred distance d_(i,j) 
 
       <footer>
       <div class="copyright">
-  <p>Developed by Louis Aslett.</p>
+  <p>Developed by Louis Aslett, Ryan Christ.</p>
 </div>
 
 <div class="pkgdown">

@@ -27,11 +27,14 @@ Note: each column represents an independent HMM.
 By convention, every diagonal element is zero.
 }
 \examples{
+\dontrun{
 PostProbs(fwd,bck)
 }
+
+}
 \seealso{
-\code{\link{MakeForward}} to generate Forward table;
-  \code{\link{Forward}} to propogate a Backward table to a new locus;
+\code{\link{MakeForwardTable}} to generate Forward table;
+\code{\link{Forward}} to propogate a Backward table to a new locus;
 \code{\link{MakeBackwardTable}} to generate a Backward table;
-  \code{\link{Backward}} to propogate a Backward table to a new locus.
+\code{\link{Backward}} to propogate a Backward table to a new locus.
 }

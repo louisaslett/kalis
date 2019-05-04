@@ -24,7 +24,10 @@ observed from locus 1 up through locus fwd$l.  Note: each column represents an i
 By convention, every diagonal element is zero.
 }
 \examples{
+\dontrun{
 ForwardProbs(fwd)
+}
+
 }
 \seealso{
 \code{\link{MakeForwardTable}} to generate forward table;

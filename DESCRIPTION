@@ -1,13 +1,13 @@
 Package: kalis
 Type: Package
 Title: High Performance Li & Stephens Local Ancestry Inference
-Version: 0.2.0
+Version: 0.9.0
 Authors@R: c(person("Louis", "Aslett", role = c("aut", "cre"),
                     email = "louis.aslett@durham.ac.uk"),
-             person("Ryan", "Christ", role = "ctb",
+             person("Ryan", "Christ", role = "aut",
                     email = "rchrist@wustl.edu"))
 Author: Louis Aslett [aut, cre],
-  Ryan Christ [ctb]
+  Ryan Christ [aut]
 Maintainer: Louis Aslett <louis.aslett@durham.ac.uk>
 Description: kalis provides a high performance implementation of the Li &
   Stephens model <https://www.ncbi.nlm.nih.gov/pubmed/14704198> for local
@@ -23,6 +23,9 @@ License: GPL (>= 3)
 LazyData: TRUE
 Depends: R (>= 3.5.0)
 Imports:
+    utils,
+    methods,
+    stats,
     Rcpp (>= 0.12.19),
     rhdf5,
     dplyr,
@@ -39,6 +42,7 @@ SystemRequirements:
     C++11
 RoxygenNote: 6.1.1
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    rstudioapi
 VignetteBuilder: knitr
 Encoding: UTF-8

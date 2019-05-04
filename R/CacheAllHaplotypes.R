@@ -42,7 +42,6 @@ assign("L", NA, envir = pkgVars)
 #' @examples
 #' # Examples
 #' \dontrun{
-#'
 #' # Load haplotypes to cache from an HDF5 file on disk
 #' CacheAllHaplotypesH5("myhaps.h5")
 #'
@@ -61,16 +60,17 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
 
   # Check for file and dataset within file
   if(!file.exists(hdf5.file)) {
-    if(!is.na(get("N", envir = pkgVars))){
+    if(!is.na(get("N", envir = pkgVars))) {
       stop("Cannot find HDF5 file to make new cache. Keeping existing cache.")
-    }else{
+    } else {
       stop("Cannot find HDF5 file.")
     }
   }
-  if(nrow(h5ls(hdf5.file) %>% filter(name == "haps")) != 1) {
-    if(!is.na(get("N", envir = pkgVars))){
+  h5content <- h5ls(hdf5.file)
+  if(!("haps" %in% h5content$name)) {
+    if(!is.na(get("N", envir = pkgVars))) {
       stop("HDF5 file already exists but does not contain a 'haps' object in the root for haplotype data. Keeping existing cache.")
-    }else{
+    } else {
       stop("HDF5 file already exists but does not contain a 'haps' object in the root for haplotype data.")
     }
   }
@@ -83,7 +83,7 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
 
 
   # Get dimensions of haplotype data
-  hdf5.dim <- h5ls(hdf5.file) %>% filter(name == "haps") %>% select(dim) %>% str_split_fixed("x", n = Inf) %>% as.integer()
+  hdf5.dim <- as.integer(str_split_fixed(h5content[h5content$name=="haps","dim"], "x", n = Inf))
   # Sometimes on Linux it leaves a dimension unspecified, so have to load 1 row/col to ascertain
   if(is.na(hdf5.dim[1])) {
     hdf5.dim[1] <- dim(h5read(hdf5.file, "/haps", index = list(NULL,1)))[1]
@@ -151,6 +151,7 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
 #' @examples
 #' # Examples
 #' \dontrun{
+#' QueryCache(...)
 #' }
 #'
 #' @export QueryCache
@@ -209,9 +210,10 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
 #' @examples
 #' # Examples
 #' \dontrun{
+#' ClearHaplotypeCache()
 #' }
 #'
-#' @export ClearHaplotypeCache
+#' @export
 ClearHaplotypeCache <- function() {
   assign("N", NA, envir = pkgVars)
   assign("L", NA, envir = pkgVars)

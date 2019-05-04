@@ -15,6 +15,7 @@
 #'
 #'
 #' @examples
+#' \dontrun{
 #' data(SmallHaps)
 #' # Plot Allele Frequencies
 #' hist(rowMeans(SmallHaps),breaks=20)
@@ -24,5 +25,6 @@
 #'
 #' # Import into kalis cache
 #' CacheAllHaplotypesH5("SmallHaps.h5")
+#' }
 #'
 "SmallHaps"

@@ -24,7 +24,10 @@ Short description
 Detailed description
 }
 \examples{
-# Examples
+\dontrun{
+CreateForwardTableCache(...)
+}
+
 }
 \seealso{
 See also

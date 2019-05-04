@@ -35,7 +35,9 @@ Sets up the genetics parameters to be used for a problem.
 Detailed description
 }
 \examples{
+\dontrun{
 pars <- Parameters(...)
+}
 
 }
 \seealso{
