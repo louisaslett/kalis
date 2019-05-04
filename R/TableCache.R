@@ -13,7 +13,10 @@
 #' @seealso See also
 #'
 #' @examples
-#' # Examples
+#' \dontrun{
+#' CreateForwardTableCache(...)
+#' }
+#'
 #' @export
 CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recipient = Inf, max.tables = 0) {
   if(!("kalisParameters" %in% class(pars))) {
@@ -89,7 +92,10 @@ CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recip
 #'   \code{\link{Forward}} for forward function without using a cache.
 #'
 #' @examples
-#' # Examples
+#' \dontrun{
+#' ForwardUsingTableCache(...)
+#' }
+#'
 #' @export
 ForwardUsingTableCache <- function(fwd, pars, cache, t = fwd$l+1, nthreads = 1) {
   if(!("kalisForwardTable" %in% class(fwd))) {

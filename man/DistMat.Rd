@@ -26,12 +26,14 @@ d_(i,j) = -( log(p_(i,j)) + log(p_(j,i)) ) / 2 where p_(i,j) is the posterior ma
 By convention, d_(i,i) = 0 for all i.
 }
 \examples{
-DistMat(fwd,bck)
+\dontrun{
+DistMat(fwd, bak)
+}
 
 }
 \seealso{
-\code{\link{PostProb}} to calculate the posterior marginal probabilities p_(i,j);
-\code{\link{MakeForward}} to generate Forward table;
+\code{\link{PostProbs}} to calculate the posterior marginal probabilities p_(i,j);
+\code{\link{MakeForwardTable}} to generate Forward table;
 \code{\link{Forward}} to propogate a Backward table to a new locus;
 \code{\link{MakeBackwardTable}} to generate a Backward table;
 \code{\link{Backward}} to propogate a Backward table to a new locus.

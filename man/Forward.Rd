@@ -46,8 +46,10 @@ mention that each column is an independent HMM and highlight that
 forward table (and Pi) are therefore to be viewed column-wise.
 }
 \examples{
+\dontrun{
 fwd <- MakeForwardTable()
 Forward(fwd, 100, Pi, mu, rho)
+}
 
 }
 \seealso{

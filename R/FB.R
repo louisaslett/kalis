@@ -32,8 +32,10 @@
 #'   \code{\link{Backward}} for analagous backward induction function.
 #'
 #' @examples
+#' \dontrun{
 #' fwd <- MakeForwardTable()
 #' Forward(fwd, 100, Pi, mu, rho)
+#' }
 #'
 #' @export Forward
 Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
@@ -107,8 +109,10 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
 #'   \code{\link{Forward}} for analagous forward induction function.
 #'
 #' @examples
+#' \dontrun{
 #' bck <- MakeBackwardTable()
 #' Backward(bck, 100, Pi, mu, rho)
+#' }
 #'
 #' @export Backward
 Backward <- function(bck, pars, t = bck$l-1, nthreads = 1) {

@@ -17,7 +17,9 @@
 #'   \code{\link{Forward}} to propogate a forward table to a new locus.
 #'
 #' @examples
+#' \dontrun{
 #' ForwardProbs(fwd)
+#' }
 #'
 #' @export ForwardProbs
 ForwardProbs <- function(fwd, log = FALSE) {
@@ -51,7 +53,9 @@ ForwardProbs <- function(fwd, log = FALSE) {
 #'   \code{\link{Backward}} to propogate a backward table to a new locus.
 #'
 #' @examples
+#' \dontrun{
 #' BackwardProbs(bck)
+#' }
 #'
 #' @export BackwardProbs
 BackwardProbs <- function(bck, log = FALSE) {
@@ -83,13 +87,15 @@ BackwardProbs <- function(bck, log = FALSE) {
 #' @return matrix of posterior marginal probabilities
 #'
 #' @seealso
-#' \code{\link{MakeForward}} to generate Forward table;
-#'   \code{\link{Forward}} to propogate a Backward table to a new locus;
+#' \code{\link{MakeForwardTable}} to generate Forward table;
+#' \code{\link{Forward}} to propogate a Backward table to a new locus;
 #' \code{\link{MakeBackwardTable}} to generate a Backward table;
-#'   \code{\link{Backward}} to propogate a Backward table to a new locus.
+#' \code{\link{Backward}} to propogate a Backward table to a new locus.
 #'
 #' @examples
+#' \dontrun{
 #' PostProbs(fwd,bck)
+#' }
 #'
 #' @export PostProbs
 PostProbs <- function(fwd, bck, log = FALSE) {
@@ -128,14 +134,16 @@ PostProbs <- function(fwd, bck, log = FALSE) {
 #' @return matrix of distances
 #'
 #' @seealso
-#' \code{\link{PostProb}} to calculate the posterior marginal probabilities p_(i,j);
-#' \code{\link{MakeForward}} to generate Forward table;
+#' \code{\link{PostProbs}} to calculate the posterior marginal probabilities p_(i,j);
+#' \code{\link{MakeForwardTable}} to generate Forward table;
 #' \code{\link{Forward}} to propogate a Backward table to a new locus;
 #' \code{\link{MakeBackwardTable}} to generate a Backward table;
 #' \code{\link{Backward}} to propogate a Backward table to a new locus.
 #'
 #' @examples
-#' DistMat(fwd,bck)
+#' \dontrun{
+#' DistMat(fwd, bak)
+#' }
 #'
 #' @export DistMat
 DistMat <- function(fwd, bck) {
@@ -168,7 +176,7 @@ DistMat <- function(fwd, bck) {
 #'
 #' @export
 plot.kalisDistanceMatrix <- function(x, ...) {
-  perm <- fastcluster::hclust(as.dist(x),method="average")$order
+  perm <- fastcluster::hclust(stats::as.dist(x),method="average")$order
   print(lattice::levelplot(x[perm,][,rev(perm)],
                            useRaster = TRUE,
                            col.regions = grDevices::colorRampPalette(RColorBrewer::brewer.pal(9,name = "BuPu"))(100),

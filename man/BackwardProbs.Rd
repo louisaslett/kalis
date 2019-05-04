@@ -26,7 +26,9 @@ other downstream of bck$l.  Note: each column represents an independent HMM.
 By convention, every diagonal element is zero.
 }
 \examples{
+\dontrun{
 BackwardProbs(bck)
+}
 
 }
 \seealso{

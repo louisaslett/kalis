@@ -2,9 +2,12 @@
 % Please edit documentation in R/IndividualSequenceIO_H5.R
 \name{WriteIndividualHaplotypeH5}
 \alias{WriteIndividualHaplotypeH5}
+\alias{ReadIndividualHaplotypeH5}
 \title{Write haplotype matrix to HDF5 formatted cache-friendly file}
 \usage{
 WriteIndividualHaplotypeH5(hdf5.file, ind.haplotype, append = FALSE)
+
+ReadIndividualHaplotypeH5(hdf5.file, inds)
 }
 \arguments{
 \item{hdf5.file}{the name of the file which the haplotypes are to be written to.}
@@ -40,9 +43,15 @@ that number of haplotypes and their length have not been exchanged.
 
 Note that if hdf5.file exists but does not contain a dataset named "haps", \code{WriteIndividualHaplotypeH5} will simply create a "haps" dataset within the existing file.
 }
+\section{Functions}{
+\itemize{
+\item \code{ReadIndividualHaplotypeH5}: Read haplotype matrix from HDF5 formatted cache-friendly file
+}}
+
 \examples{
 # Examples
 \dontrun{
+WriteIndividualHaplotypeH5(...)
 }
 
 }

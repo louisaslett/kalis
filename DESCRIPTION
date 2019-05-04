@@ -24,6 +24,8 @@ LazyData: TRUE
 Depends: R (>= 3.5.0)
 Imports:
     utils,
+    methods,
+    stats,
     Rcpp (>= 0.12.19),
     rhdf5,
     dplyr,

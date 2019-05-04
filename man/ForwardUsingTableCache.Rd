@@ -36,7 +36,10 @@ Short description
 Detailed description
 }
 \examples{
-# Examples
+\dontrun{
+ForwardUsingTableCache(...)
+}
+
 }
 \seealso{
 \code{\link{MakeForwardTable}} to make a forward table;

@@ -23,7 +23,9 @@
 #'   construct table objects which internally reference a parameters environment.
 #'
 #' @examples
+#' \dontrun{
 #' pars <- Parameters(...)
+#' }
 #'
 #' @export Parameters
 Parameters <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL) {

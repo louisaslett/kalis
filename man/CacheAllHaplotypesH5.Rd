@@ -41,7 +41,6 @@ that number of haplotypes and their length have not been exchanged.
 \examples{
 # Examples
 \dontrun{
-
 # Load haplotypes to cache from an HDF5 file on disk
 CacheAllHaplotypesH5("myhaps.h5")
 

@@ -140,7 +140,9 @@ print.kalisForwardTable <- function(x, ...) {
 #'   through the genome.
 #'
 #' @examples
-#' # Examples
+#' \dontrun{
+#' MakeBackwardTable(...)
+#' }
 #'
 #' @aliases print.kalisBackwardTable
 #' @export MakeBackwardTable

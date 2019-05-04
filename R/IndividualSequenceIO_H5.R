@@ -35,6 +35,7 @@
 #' @examples
 #' # Examples
 #' \dontrun{
+#' WriteIndividualHaplotypeH5(...)
 #' }
 #'
 #' @export WriteIndividualHaplotypeH5
@@ -54,8 +55,9 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype, append = FALSE)
   }
 
   if(file.exists(hdf5.file)) {
-    if(nrow(h5ls(hdf5.file) %>% filter(name == "haps")) != 1) {
-      message("HDF5 file already exists but does not contain haplotype data, now adding haps dataset")
+    h5content <- h5ls(hdf5.file)
+    if(!("haps" %in% h5content$name)) {
+      message("HDF5 file already exists but does not contain haplotype data, now adding haps dataset.")
       h5createDataset(file = hdf5.file,
                       dataset = "haps",
                       dims = c(L, 0),
@@ -66,7 +68,7 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype, append = FALSE)
       hdf5.dim <- c(L, 0)
     } else {
       if(append) {
-        hdf5.dim <- h5ls(hdf5.file) %>% filter(name == "haps") %>% select(dim) %>% str_split_fixed("x", n = Inf) %>% as.integer()
+        hdf5.dim <- as.integer(str_split_fixed(h5content[h5content$name=="haps","dim"], "x", n = Inf))
         if(hdf5.dim[1] != L) {
           stop(glue("HDF5 file contains haplotypes of length {hdf5.dim[1]}, but ind.haplotype contains haplotypes of length {L}."))
         }
@@ -110,6 +112,9 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype, append = FALSE)
   h5write(ind.haplotype, hdf5.file, "haps", index = list(NULL, from:to))
 }
 
+
+#' @describeIn WriteIndividualHaplotypeH5 Read haplotype matrix from HDF5 formatted cache-friendly file
+#' @export ReadIndividualHaplotypeH5
 ReadIndividualHaplotypeH5 <- function(hdf5.file, inds) {
   if(!is.vector(inds, mode = "numeric")) {
     stop("inds must be a vector of haplotype indices.")
@@ -121,10 +126,11 @@ ReadIndividualHaplotypeH5 <- function(hdf5.file, inds) {
   }
 
   # Get dimensions of haplotype data
-  if(nrow(h5ls(hdf5.file) %>% filter(name == "haps")) != 1) {
-    stop("HDF5 file already exists but does not contain haplotype data.")
+  h5content <- h5ls(hdf5.file)
+  if(!("haps" %in% h5content$name)) {
+    stop("HDF5 file already exists but does not contain a 'haps' object in the root for haplotype data.")
   }
-  hdf5.dim <- h5ls(hdf5.file) %>% filter(name == "haps") %>% select(dim) %>% str_split_fixed("x", n = Inf) %>% as.integer()
+  hdf5.dim <- as.integer(str_split_fixed(h5content[h5content$name=="haps","dim"], "x", n = Inf))
   N <- hdf5.dim[2]
   L <- hdf5.dim[1]
 

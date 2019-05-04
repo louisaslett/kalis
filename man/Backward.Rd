@@ -43,8 +43,10 @@ position.
 Detailed description
 }
 \examples{
+\dontrun{
 bck <- MakeBackwardTable()
 Backward(bck, 100, Pi, mu, rho)
+}
 
 }
 \seealso{
