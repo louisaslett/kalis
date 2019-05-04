@@ -166,10 +166,10 @@ DistMat <- function(fwd, bck) {
 #' @param d a kalisDistanceMatrix
 #' @return There is nothing returned.
 #'
-#' @export plot.kalisDistanceMatrix
-plot.kalisDistanceMatrix <- function(d, ...) {
-  perm <- fastcluster::hclust(as.dist(d),method="average")$order
-  print(lattice::levelplot(d[perm,][,rev(perm)],
+#' @export
+plot.kalisDistanceMatrix <- function(x, ...) {
+  perm <- fastcluster::hclust(as.dist(x),method="average")$order
+  print(lattice::levelplot(x[perm,][,rev(perm)],
                            useRaster = TRUE,
                            col.regions = grDevices::colorRampPalette(RColorBrewer::brewer.pal(9,name = "BuPu"))(100),
                            yaxt = "n", xaxt = "n", xlab = "", ylab = "", xaxt = "n"))

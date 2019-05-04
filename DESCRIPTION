@@ -23,6 +23,7 @@ License: GPL (>= 3)
 LazyData: TRUE
 Depends: R (>= 3.5.0)
 Imports:
+    utils,
     Rcpp (>= 0.12.19),
     rhdf5,
     dplyr,
@@ -39,6 +40,7 @@ SystemRequirements:
     C++11
 RoxygenNote: 6.1.1
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    rstudioapi
 VignetteBuilder: knitr
 Encoding: UTF-8

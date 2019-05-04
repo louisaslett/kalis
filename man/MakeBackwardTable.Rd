@@ -2,6 +2,7 @@
 % Please edit documentation in R/TableMaker.R
 \name{MakeBackwardTable}
 \alias{MakeBackwardTable}
+\alias{print.kalisBackwardTable}
 \title{Title}
 \usage{
 MakeBackwardTable(pars, from_recipient = 1, to_recipient = Inf)
@@ -22,6 +23,7 @@ Detailed description
 }
 \examples{
 # Examples
+
 }
 \seealso{
 \code{\link{Backward}} to propagate the newly created table forward

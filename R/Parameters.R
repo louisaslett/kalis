@@ -100,7 +100,7 @@ Parameters <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL)
   res
 }
 
-#' @export print.kalisParameters
+#' @export
 print.kalisParameters <- function(x, ...) {
   cat(glue("Parameters object with:\n",
            "{'  '}morgan.dist = ({glue_collapse(head(x$pars$morgan.dist, 3), ', ')}, ..., {glue_collapse(tail(x$pars$morgan.dist, 3), ', ')})\n",

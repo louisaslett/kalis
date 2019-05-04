@@ -51,6 +51,7 @@
 #' Forward(fwd, 10, morgan.dist, Ne, gamma, mu, nthreads = 8)
 #' }
 #'
+#' @aliases print.kalisForwardTable
 #' @export MakeForwardTable
 MakeForwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   N <- get("N", envir = pkgVars)
@@ -61,7 +62,7 @@ MakeForwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   L <- get("L", envir = pkgVars)
 
   if(!("kalisParameters" %in% class(pars))) {
-    if("rstudioapi" %in% installed.packages()[, "Package"]) {
+    if("rstudioapi" %in% utils::installed.packages()[, "Package"]) {
       rstudioapi::sendToConsole("?Parameters")
     }
     stop("The pars argument is not a valid parameters object.  See Parameters() function for how to create it.")
@@ -102,7 +103,7 @@ MakeForwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   fwd
 }
 
-#' @export print.kalisForwardTable
+#' @export
 print.kalisForwardTable <- function(x, ...) {
   if(!("kalisForwardTable" %in% class(x)))
     stop("Not a kalisForwardTable object")
@@ -121,7 +122,7 @@ print.kalisForwardTable <- function(x, ...) {
   } else {
     cat(glue("  Current locus = {x$l}"), "\n")
   }
-  cat("  Memory consumed ≈", ceiling(object.size(x)/1e6)/1e3, "GB.\n")
+  cat("  Memory consumed: ", ceiling(utils::object.size(x)/1e6)/1e3, "GB.\n")
 }
 
 #' Title
@@ -140,6 +141,8 @@ print.kalisForwardTable <- function(x, ...) {
 #'
 #' @examples
 #' # Examples
+#'
+#' @aliases print.kalisBackwardTable
 #' @export MakeBackwardTable
 MakeBackwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   N <- get("N", envir = pkgVars)
@@ -150,7 +153,7 @@ MakeBackwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   L <- get("L", envir = pkgVars)
 
   if(!("kalisParameters" %in% class(pars))) {
-    if("rstudioapi" %in% installed.packages()[, "Package"]) {
+    if("rstudioapi" %in% utils::installed.packages()[, "Package"]) {
       rstudioapi::sendToConsole("?Parameters")
     }
     stop("The pars argument is not a valid parameters object.  See Parameters() function for how to create it.")
@@ -191,7 +194,7 @@ MakeBackwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   bck
 }
 
-#' @export print.kalisBackwardTable
+#' @export
 print.kalisBackwardTable <- function(x, ...) {
   if(!("kalisBackwardTable" %in% class(x)))
     stop("Not a kalisBackwardTable object")
@@ -210,5 +213,5 @@ print.kalisBackwardTable <- function(x, ...) {
   } else {
     cat(glue("  Current locus = {x$l}"), "\n")
   }
-  cat("  Memory consumed ≈", ceiling(object.size(x)/1e6)/1e3, "GB.\n")
+  cat("  Memory consumed: ", ceiling(utils::object.size(x)/1e6)/1e3, "GB.\n")
 }
