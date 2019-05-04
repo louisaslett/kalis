@@ -18,14 +18,17 @@
 #'
 #' @examples
 #' ForwardProbs(fwd)
+#'
 #' @export ForwardProbs
-ForwardProbs <- function(fwd, log = FALSE){
-  if(log){
+ForwardProbs <- function(fwd, log = FALSE) {
+  if(log) {
     return(sweep(log(fwd$alpha), MARGIN = 2, STATS = log(colSums(fwd$alpha)), FUN = "-"))
-  }else{
+  } else {
     return(exp(sweep(log(fwd$alpha), MARGIN = 2, STATS = log(colSums(fwd$alpha)), FUN = "-")))
   }
 }
+
+
 
 #' Calculate Normalized Backward Probabilities from a Backward Table Object
 #'
@@ -49,14 +52,16 @@ ForwardProbs <- function(fwd, log = FALSE){
 #'
 #' @examples
 #' BackwardProbs(bck)
+#'
 #' @export BackwardProbs
-BackwardProbs <- function(bck, log = FALSE){
-  if(log){
+BackwardProbs <- function(bck, log = FALSE) {
+  if(log) {
     return(sweep(log(bck$beta), MARGIN = 2, STATS = log(colSums(bck$beta)), FUN = "-"))
-  }else{
+  } else {
     return(exp(sweep(log(bck$beta), MARGIN = 2, STATS = log(colSums(bck$beta)), FUN = "-")))
   }
 }
+
 
 
 #' Calculate Posterior Marginal Probabilities from a Forward Table Object and a Backward Table Object
@@ -85,8 +90,9 @@ BackwardProbs <- function(bck, log = FALSE){
 #'
 #' @examples
 #' PostProbs(fwd,bck)
+#'
 #' @export PostProbs
-PostProbs <- function(fwd, bck, log = FALSE){
+PostProbs <- function(fwd, bck, log = FALSE) {
   if(fwd$l != bck$l) {
     warning("Computing dist matrix but locus position of the forward table and backward table do not match.")
   }
@@ -95,12 +101,13 @@ PostProbs <- function(fwd, bck, log = FALSE){
   }
   tempmat <- fwd$alpha*bck$beta
   tempmat <- sweep(log(tempmat), MARGIN = 2, STATS = log(colSums(tempmat)), FUN = "-")
-  if(log){
+  if(log) {
     return(tempmat)
-  }else{
+  } else {
     return(exp(tempmat))
   }
 }
+
 
 
 #' Calculate a Distance Matrix from a Forward Table Object and a Backward Table Object
@@ -129,9 +136,9 @@ PostProbs <- function(fwd, bck, log = FALSE){
 #'
 #' @examples
 #' DistMat(fwd,bck)
+#'
 #' @export DistMat
-DistMat <- function(fwd, bck){
-
+DistMat <- function(fwd, bck) {
   if(fwd$l != bck$l) {
     warning("Computing dist matrix but locus position of the forward table and backward table do not match.")
   }
@@ -150,15 +157,20 @@ DistMat <- function(fwd, bck){
   d
 }
 
+
+
 #' Plotting function for a kalisDistanceMatrix object
 #'
 #' Clusters the given distance matrix and generates a heatmap to display it.
 #'
 #' @param d a kalisDistanceMatrix
 #' @return There is nothing returned.
-#' @method plot kalisDistanceMatrix
-#' @S3method plot kalisDistanceMatrix
-plot.kalisDistanceMatrix <- function(d, ...){
+#'
+#' @export plot.kalisDistanceMatrix
+plot.kalisDistanceMatrix <- function(d, ...) {
   perm <- fastcluster::hclust(as.dist(d),method="average")$order
-  print(lattice::levelplot(d[perm,][,rev(perm)],useRaster=T,col.regions=grDevices::colorRampPalette(RColorBrewer::brewer.pal(9,name = "BuPu"))(100),yaxt="n",xaxt="n",xlab="",ylab="",xaxt="n"))
+  print(lattice::levelplot(d[perm,][,rev(perm)],
+                           useRaster = TRUE,
+                           col.regions = grDevices::colorRampPalette(RColorBrewer::brewer.pal(9,name = "BuPu"))(100),
+                           yaxt = "n", xaxt = "n", xlab = "", ylab = "", xaxt = "n"))
 }

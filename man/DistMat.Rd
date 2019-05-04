@@ -27,6 +27,7 @@ By convention, d_(i,i) = 0 for all i.
 }
 \examples{
 DistMat(fwd,bck)
+
 }
 \seealso{
 \code{\link{PostProb}} to calculate the posterior marginal probabilities p_(i,j);

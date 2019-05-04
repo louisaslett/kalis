@@ -28,6 +28,7 @@ By convention, every diagonal element is zero.
 }
 \examples{
 PostProbs(fwd,bck)
+
 }
 \seealso{
 \code{\link{MakeForward}} to generate Forward table;

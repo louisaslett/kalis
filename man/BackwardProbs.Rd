@@ -27,6 +27,7 @@ By convention, every diagonal element is zero.
 }
 \examples{
 BackwardProbs(bck)
+
 }
 \seealso{
 \code{\link{MakeBackwardTable}} to generate backward table;
