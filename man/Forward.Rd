@@ -2,48 +2,30 @@
 % Please edit documentation in R/FB.R
 \name{Forward}
 \alias{Forward}
-\title{Propagate an HMM Forward Table}
+\title{Propagate a Forward Table}
 \usage{
 Forward(fwd, pars, t = fwd$l + 1, nthreads = 1)
 }
 \arguments{
-\item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
+\item{fwd}{\code{kalisForwardTable} as returned by \code{\link{MakeForwardTable}}}
+
+\item{pars}{a \code{kalisParameters} object returned by \code{Parameters}}
 
 \item{t}{a locus position to move the forward table to.  Must be greater than
 or equal to locus position of table provided in \code{fwd}.}
 
-\item{nthreads}{the number of CPU cores on which to run.}
-
-\item{morgan.dist}{a vector of recombination distances between loci, in Morgans.
-Note element i of this vector should be the distance between loci i and i+1
-(not i and i-1), and thus length one less than the haplotype length.}
-
-\item{Ne}{a scalar for the effective population size.  Can be autotuned, see ...}
-
-\item{gamma}{a scalar power to which the Morgan distances are raised.  Can be
-autotuned, see ...}
-
-\item{mu}{a scalar (for uniform) or vector (for varying) mutation costs.}
-
-\item{Pi}{leaving the default of uniform copying probabilities is recommended for
-computational efficiency.  If desired, a full matrix of background copying
-probabilities can be provided, such that the (i,j)-th element is the background
-probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
-the columns of Pi must sum to 1.}
+\item{nthreads}{the number of CPU cores to use}
 }
 \value{
 There is nothing returned.  For performance reasons, the forward
   table which was passed in is updated in-place.
 }
 \description{
-Takes a forward table and propagates it in-place to a later locus position.
+Propagates a \code{kalisForwardTable} to a downstream locus position (nothing is returned: the table is updated in-place).
 }
 \details{
-Forward implements the forward algorithm to advance the lag-scaled forward probabilities stored in
-a forward table fwd to a new target locus t.  Note that t must be greater than the current fwd locus.
-The standard forward probabilities
-mention that each column is an independent HMM and highlight that
-forward table (and Pi) are therefore to be viewed column-wise.
+Forward implements the forward algorithm to advance the rescaled HMM forward probabilities stored in
+a \code{kalisForwardTable} \code{fwd} to a new target locus \code{t}.  Note that \code{t} must be greater than the current locus, \code{fwd$l}.
 }
 \examples{
 \dontrun{
@@ -54,5 +36,5 @@ Forward(fwd, 100, Pi, mu, rho)
 }
 \seealso{
 \code{\link{MakeForwardTable}} to generate forward table;
-  \code{\link{Backward}} for analagous backward induction function.
+  \code{\link{Backward}} for the analagous backward propagation function.
 }

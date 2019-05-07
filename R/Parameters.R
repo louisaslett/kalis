@@ -1,34 +1,27 @@
-#' Setup genetics parameters
+#' Calculate recombination parameter rho from more standard genetics parameters
 #'
-#' Sets up the genetics parameters to be used for a problem.
+#' Sets up the Li & Stephens HMM transition probabilities rho to be used for a problem.
 #'
 #' Detailed description
 #'
-#' @param morgan.dist a vector of recombination distances between loci, in Morgans.
+#' @param morgan.dist a vector specifying the recombination distance between loci in Morgans .
 #'   Note element i of this vector should be the distance between loci i and i+1
-#'   (not i and i-1), and thus length one less than the haplotype length.
-#' @param Ne a scalar for the effective population size.  Can be autotuned, see ...
-#' @param gamma a scalar power to which the Morgan distances are raised.  Can be
-#'   autotuned, see ...
-#' @param mu a scalar (for uniform) or vector (for varying) mutation costs.
-#' @param Pi leaving the default of uniform copying probabilities is recommended for
-#'   computational efficiency.  If desired, a full matrix of background copying
-#'   probabilities can be provided, such that the (i,j)-th element is the background
-#'   probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
-#'   the columns of Pi must sum to 1.
+#'   (not i and i-1), and thus length one less than the haplotype length.  Can be easily obtained by applying \code{diff} to a recombination map "CDF".
+#' @param Ne a scalar for the effective population size.
+#' @param gamma a scalar power to which the Morgan distances are raised.
+#' @param floor.rho a logical, if TRUE (default), then all rho that are initially calculated to be less than 1e-16 are set to zero.  If FALSE, all rho initially calculated to be less than 1e-16 are set to 1e-16.
 #'
-#' @return A new parameters environment.
+#' @return A vector of transition probabilities
 #'
-#' @seealso \code{\link{MakeForwardTable}}, \code{\link{MakeForwardTable}} which
-#'   construct table objects which internally reference a parameters environment.
+#' @seealso \code{\link{Parameters}} to use the resulting transition probabilities to construct a kalisParameters object
 #'
 #' @examples
 #' \dontrun{
-#' pars <- Parameters(...)
+#' pars <- CalcRho(...)
 #' }
 #'
-#' @export Parameters
-Parameters <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL) {
+#' @export CalcRho
+CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor.rho = TRUE) {
   N <- get("N", envir = pkgVars)
   if(anyNA(N)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
@@ -56,6 +49,54 @@ Parameters <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL)
   if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma < 0) {
     stop("gamma must be a non-negative scalar.")
   }
+
+
+  # Compute rho
+  rho <- c(1 - exp(-Ne*morgan.dist^gamma), 1)
+
+  if(floor.rho){
+    rho <- ifelse(rho < 1e-16, 0, rho)
+  }else{
+    rho <- ifelse(rho < 1e-16, 1e-16, rho)
+  }
+
+  rho
+}
+
+
+
+#' Setup kalis HMM parameters
+#'
+#' Sets up the genetics parameters to be used for a problem.
+#'
+#' Detailed description
+#'
+#' @param rho recombination probability vector (must be L-1 long), see \code{CalcRho}
+#' @param mu a scalar (for uniform) or vector (for varying) mutation costs.
+#' @param Pi leaving the default of uniform copying probabilities is recommended for
+#'   computational efficiency.  If desired, a full matrix of background copying
+#'   probabilities can be provided, such that the (i,j)-th element is the background
+#'   probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
+#'   the columns of Pi must sum to 1.
+#'
+#' @return A new parameters environment.
+#'
+#' @seealso \code{\link{MakeForwardTable}}, \code{\link{MakeForwardTable}} which
+#'   construct table objects which internally reference a parameters environment.
+#'
+#' @examples
+#' \dontrun{
+#' pars <- Parameters(...)
+#' }
+#'
+#' @export Parameters
+Parameters <- function(rho = rep(0,get("L", envir = pkgVars)-1), mu = 1e-8, Pi = NULL) {
+  N <- get("N", envir = pkgVars)
+  if(anyNA(N)) {
+    stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
+  }
+
+  L <- get("L", envir = pkgVars)
 
   if(!is.vector(mu)) {
     stop("mu must be either a vector or a scalar.")

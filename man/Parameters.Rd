@@ -2,20 +2,13 @@
 % Please edit documentation in R/Parameters.R
 \name{Parameters}
 \alias{Parameters}
-\title{Setup genetics parameters}
+\title{Setup kalis HMM parameters}
 \usage{
-Parameters(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-08,
+Parameters(rho = rep(0, get("L", envir = pkgVars) - 1), mu = 1e-08,
   Pi = NULL)
 }
 \arguments{
-\item{morgan.dist}{a vector of recombination distances between loci, in Morgans.
-Note element i of this vector should be the distance between loci i and i+1
-(not i and i-1), and thus length one less than the haplotype length.}
-
-\item{Ne}{a scalar for the effective population size.  Can be autotuned, see ...}
-
-\item{gamma}{a scalar power to which the Morgan distances are raised.  Can be
-autotuned, see ...}
+\item{rho}{recombination probability vector (must be L-1 long), see \code{CalcRho}}
 
 \item{mu}{a scalar (for uniform) or vector (for varying) mutation costs.}
 

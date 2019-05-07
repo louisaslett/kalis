@@ -1,20 +1,11 @@
-#' Create a Forward Table
+#' Create a \code{kalisForwardTable}
 #'
-#' Allocates the memory for and sets up a forward table.
+#' Allocates the memory for and initializes up a forward table.
 #'
-#' For performance and numerical stability reasons kalis operates with lag
-#' scaled probabilities and these additional scaling factors must be tracked to
-#' enable recovery of standard forward probabilities.
-#' This utility function allocates memory for the forward table and also sets up
-#' the necessary internal tracking of correct scaling factors.
-#' However, note that this utility is purely for creating the correct object
-#' to track forward computations and upon creation the forward table itself is
-#' uninitialised.
-#'
-#' Therefore, the standard workflow with kalis is to create a forward table
-#' using this utility function before passing that to the \code{\link{Forward}}
-#' function.  \code{\link{Forward}} will identify uninitialised tables and propagate
-#' them correctly from the first locus.
+#' \code{MakeForwardTable} returns a \code{kalisForwardTable} object appropriate for
+#' a given set of haplotypes (that must have already been cached by \code{CacheAllHaplotypes}) and
+#' a given set of HMM parameters specified by \code{pars}.  The returned \code{kalisForwardTable} is
+#' initialized at locus 0 and is ready to be propagated to a given target locus with the function \code{\link{Forward}}.
 #'
 #' Since there is an independent hidden Markov model run for each recipient
 #' haplotype, it is possible to create a partial forward table object which
@@ -29,10 +20,19 @@
 #' @param to_recipient last recipient haplotype if creating a partial forward
 #'   table.  By default includes to the last recipient haplotype.
 #'
-#' @return an object of class \code{kalisForwardTable} containing
+#' @return a specialized list of class \code{kalisForwardTable}.  For a given \code{kalisForwardTable}, \code{fwd},
+#' \code{fwd$l} denotes the current locus position of \code{fwd}.  \code{fwd$alpha} is a matrix of rescaled forward probabilities under the Li \& Stephens HMM.
+#' Each column of \code{fwd$alpha} corresponds to an independent HMM such that \eqn{\alpha^l_{ji}}
+#' is proportional to the probability that haplotype \eqn{j} is copied by haplotype \eqn{i} at locus \eqn{l} and
+#' observing haplotype \eqn{i} from locus 1 up through locus \eqn{l}.  \code{fwd$alpha.f} and \code{fwd$alpha.f2}
+#' are both vectors containing scaling constants needed to continue propagating the HMM (please see kalis paper for details).
 #'
-#' @seealso \code{\link{Forward}} to propagate the newly created table forward
-#'   through the genome.
+#' \code{kalisForwardTable} also carries with it a checksum key for the parameters \code{pars} it was provided.
+#' If a user attempts to interact a \code{kalisForwardTable} with a \code{kalisBackwardTable} with mismatched
+#' parameters, an error will be thrown.
+#'
+#'
+#' @seealso \code{\link{Forward}} to propagate the newly created \code{kalisForwardTable}.
 #'
 #' @examples
 #' # Examples
@@ -125,19 +125,42 @@ print.kalisForwardTable <- function(x, ...) {
   cat("  Memory consumed: ", ceiling(utils::object.size(x)/1e6)/1e3, "GB.\n")
 }
 
-#' Title
+#' Create a \code{kalisBackwardTable}
 #'
-#' Short description
+#' Allocates the memory for and initializes up a backward table.
 #'
-#' Detailed description
+#' \code{MakeBackwardTable} returns a \code{kalisBackwardTable} object appropriate for
+#' a given set of haplotypes (that must have already been cached by \code{CacheAllHaplotypes}) and
+#' a given set of HMM parameters specified by \code{pars}.  The returned \code{kalisBackwardTable} is
+#' initialized at the end of the cached haplotypes (technically \code{bck$l}=2,147,483,647 for computational reasons)
+#' and is ready to be propagated to a given target locus with the function \code{\link{Backward}}.
 #'
-#' @param from_recipient ...
-#' @param to_recipient ...
+#' Since there is an independent hidden Markov model run for each recipient
+#' haplotype, it is possible to create a partial forward table object which
+#' corresponds to a subset of recipients using the \code{from_recipient} and
+#' \code{to_recipient} arguments.
 #'
-#' @return Return value
+#' @param pars a \code{kalisParameters} environment specifying the genetics
+#'   parameters to be associated with this forward table.  These parameters can
+#'   be set up by using the \code{\link{Parameters}} function.
+#' @param from_recipient first recipient haplotype if creating a partial forward
+#'   table.  By default includes from the first recipient haplotype.
+#' @param to_recipient last recipient haplotype if creating a partial forward
+#'   table.  By default includes to the last recipient haplotype.
 #'
-#' @seealso \code{\link{Backward}} to propagate the newly created table forward
-#'   through the genome.
+#' @return a specialized list of class \code{kalisBackwardTable}.  For a given \code{kalisBackwardTable}, \code{bck},
+#'  \code{bck$l} denotes the current locus position of \code{fwd}.  \code{bck$beta} is a matrix of rescaled backward probabilities under the Li \& Stephens HMM.
+#' Each column of \code{bck$beta} corresponds to an independent HMM such that \eqn{\beta^\ell_{ji}}
+#' is proportional to the probability of observing haplotype \eqn{i} from locus \eqn{l+1} up through locus \eqn{L} given that haplotype \eqn{j}
+#' is copied by haplotype \eqn{i} at locus \eqn{\ell}.  \code{bck$beta.g} and \code{bck$beta.g2}
+#' are both vectors containing scaling constants needed to continue propagating the HMM (please see kalis paper for details).
+#'
+#' \code{kalisBackwardTable} also carries with it a checksum key for the parameters \code{pars} it was provided.
+#' If a user attempts to interact a \code{kalisBackwardTable} with a \code{kalisForwardTable} with mismatched
+#' parameters, an error will be thrown.
+#'
+#
+#' @seealso \code{\link{Backward}} to propagate the newly created \code{kalisBackwardTable}.
 #'
 #' @examples
 #' \dontrun{

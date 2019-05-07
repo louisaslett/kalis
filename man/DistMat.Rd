@@ -2,7 +2,7 @@
 % Please edit documentation in R/Probs.R
 \name{DistMat}
 \alias{DistMat}
-\title{Calculate a Distance Matrix from a Forward Table Object and a Backward Table Object}
+\title{Calculate a Distance Matrix from a Forward Table and a Backward Table}
 \usage{
 DistMat(fwd, bck)
 }
@@ -15,13 +15,13 @@ DistMat(fwd, bck)
 matrix of distances
 }
 \description{
-Provides an easy function for calculating a local distance matrix.
+Calculates a local distance matrix from a \code{kalisForwardTable} and a \code{kalisBackwardTable} at the same locus.
 }
 \details{
-The forward and backward tables must be at the same locus.
-The (i,j)-th element of of the returned matrix is the inferred distance d_(i,j) between haplotypes j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
+The forward and backward tables must be at the same locus l.
+The (j,i)-th element of of the returned matrix is the inferred distance d_(j,i) between haplotypes j and i at the current locus of the two tables, l, given the haplotypes observed (from locus 1 to L).
 
-d_(i,j) = -( log(p_(i,j)) + log(p_(j,i)) ) / 2 where p_(i,j) is the posterior marginal probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
+d_(j,i) = -( log(p_(j,i)) + log(p_(i,j)) ) / 2 where p_(j,i) is the posterior marginal probability that j is coped by i at the current locus of the two tables, l, given the haplotypes observed (from locus 1 to L).
 
 By convention, d_(i,i) = 0 for all i.
 }
@@ -32,7 +32,7 @@ DistMat(fwd, bak)
 
 }
 \seealso{
-\code{\link{PostProbs}} to calculate the posterior marginal probabilities p_(i,j);
+\code{\link{PostProbs}} to calculate the posterior marginal probabilities p_(j,i);
 \code{\link{MakeForwardTable}} to generate Forward table;
 \code{\link{Forward}} to propogate a Backward table to a new locus;
 \code{\link{MakeBackwardTable}} to generate a Backward table;

@@ -21,7 +21,7 @@ Provides an easy function for calculating the posterior marginal probabilities.
 }
 \details{
 The forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities at locus l.
-The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
+The (j,i)-th element of of the returned matrix is the probability that j is copied by i at the current locus of the two tables, l, given the haplotypes observed (from locus 1 to L).
 Note: each column represents an independent HMM.
 
 By convention, every diagonal element is zero.
@@ -33,6 +33,7 @@ PostProbs(fwd,bck)
 
 }
 \seealso{
+\code{\link{DistMat}} to generate calculate \eqn{d_{ji}} distances directly
 \code{\link{MakeForwardTable}} to generate Forward table;
 \code{\link{Forward}} to propogate a Backward table to a new locus;
 \code{\link{MakeBackwardTable}} to generate a Backward table;
