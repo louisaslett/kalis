@@ -43,19 +43,49 @@ assign("L", NA, envir = pkgVars)
 #' # Examples
 #' \dontrun{
 #' # Load haplotypes to cache from an HDF5 file on disk
-#' CacheAllHaplotypesH5("myhaps.h5")
+#' CacheAllHaplotypes("myhaps.h5")
 #'
 #' # If the diagnostic message printed during the above indicates the numbers
 #' # of haplotypes and their length are the wrong way around, reload with
 #' # argument to transpose
-#' CacheAllHaplotypesH5("myhaps.h5", transpose = TRUE)
+#' CacheAllHaplotypes("myhaps.h5", transpose = TRUE)
 #'
 #' # When correct orientation is known, can avoid diagnostic messages for running
 #' # in script files
-#' suppressMessages(CacheAllHaplotypesH5("myhaps.h5"))
+#' suppressMessages(CacheAllHaplotypes("myhaps.h5"))
 #' }
 #'
-#' @export CacheAllHaplotypesH5
+#' @export
+CacheAllHaplotypes <- function(file, format = "auto", ...) {
+  if(!file.exists(file)) {
+    if(!is.na(get("N", envir = pkgVars))) {
+      stop("Cannot find file to make new cache. Keeping existing cache.")
+    } else {
+      stop("Cannot find file.")
+    }
+  }
+
+  cached <- FALSE
+  ext <- stringr::str_to_lower(stringr::str_extract(file, stringr::regex("\\.[0-9a-z]+$")))
+
+  if(format == "hdf5" ||
+     (format == "auto" && (ext == ".h5" ||
+                           ext == ".hdf5"))) {
+    CacheAllHaplotypesH5(file, ...)
+    cached <- TRUE
+  }
+  if(format == "vcf" ||
+     (format == "auto" && (ext == ".vcf" ||
+                           ext == ".gz" && stringr::str_to_lower(stringr::str_extract(file, stringr::regex("\\.[0-9a-z]\\.[0-9a-z]+$"))) == ".vcf.gz"))) {
+    message("Native import of VCF is currently not supported.  Please see the vignettes for a simple script to convert VCF to HDF5.")
+    cached <- TRUE
+  }
+
+  if(!cached) {
+    stop("Unable to identify file format.")
+  }
+}
+
 CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
 
   # Check for file and dataset within file
