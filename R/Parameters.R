@@ -24,11 +24,11 @@
 #'
 #' @examples
 #' \dontrun{
-#' pars <- Parameters(...)
+#' pars <- Parameters(CalcRho(Morgan.dist, 1, 1), rep(1e-08, L), Pi)
 #' }
 #'
-#' @export Parameters
-Parameters <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL) {
+#' @export
+Parameters <- function(rho = 1e-16, mu = 1e-8, Pi = NULL) {
   N <- get("N", envir = pkgVars)
   if(anyNA(N)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
@@ -36,25 +36,17 @@ Parameters <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL)
 
   L <- get("L", envir = pkgVars)
 
-  if(!is.numeric(morgan.dist)) {
-    stop("morgan.dist must be numeric vector type.")
+  if(!is.numeric(rho)) {
+    stop("rho must be numeric vector type.")
   }
-  if(length(morgan.dist) == 1){
-    morgan.dist <- rep(morgan.dist, L-1)
+  if(!is.vector(rho)) {
+    stop("rho must be a vector of recombination distances.")
   }
-  if(!is.vector(morgan.dist)) {
-    stop("morgan.dist must be a vector of recombination distances.")
+  if(length(rho) == 1){
+    rho <- rep(rho, L)
   }
-  if(length(morgan.dist) != L-1) {
-    stop("morgan.dist is the wrong length for this problem.")
-  }
-
-  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
-    stop("Ne must be a scalar.")
-  }
-
-  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma < 0) {
-    stop("gamma must be a non-negative scalar.")
+  if(length(rho) != L) {
+    stop("rho is the wrong length for this problem.")
   }
 
   if(!is.vector(mu)) {
@@ -83,15 +75,9 @@ Parameters <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL)
   # Create the new parameter environment
   res <- new.env(parent = emptyenv())
   res$pars <- new.env(parent = emptyenv())
-  res$pars$morgan.dist <- morgan.dist
-  res$pars$Ne          <- Ne
-  res$pars$gamma       <- gamma
-  res$pars$mu          <- mu
-  res$pars$Pi          <- Pi
-
-  # Compute rho ... this is the derived parameter we actually care about
-  res$pars$rho <- c(1 - exp(-Ne*morgan.dist^gamma), 1)
-  res$pars$rho <- ifelse(res$pars$rho < 1e-16, 1e-16, res$pars$rho)
+  res$pars$rho <- rho
+  res$pars$mu  <- mu
+  res$pars$Pi  <- Pi
 
   # Lock down and checksum
   lockEnvironment(res$pars, bindings = TRUE)
@@ -103,11 +89,57 @@ Parameters <- function(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-8, Pi = NULL)
 }
 
 #' @export
+CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, threshold = 1e-16) {
+  L <- get("L", envir = pkgVars)
+  if(anyNA(L)) {
+    stop("No haplotypes cached ... cannot determine rho length until cache is loaded with CacheAllHaplotypes().")
+  }
+
+  if(threshold < 0) {
+    stop("threshold must be non-negative.")
+  }
+
+  if(!is.numeric(morgan.dist)) {
+    stop("morgan.dist must be numeric vector type.")
+  }
+  if(length(morgan.dist) == 1){
+    morgan.dist <- rep(morgan.dist, L-1)
+  }
+  if(!is.vector(morgan.dist)) {
+    stop("morgan.dist must be a vector of recombination distances.")
+  }
+  if(length(morgan.dist) != L-1) {
+    stop("morgan.dist is the wrong length for this problem.")
+  }
+
+  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
+    stop("Ne must be a scalar.")
+  }
+
+  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma < 0) {
+    stop("gamma must be a non-negative scalar.")
+  }
+
+  # Compute rho ... this is the derived parameter we actually care about
+  rho <- c(1 - exp(-Ne*morgan.dist^gamma), 1)
+  rho <- ifelse(rho < threshold, threshold, rho)
+  rho
+}
+
+#' @export
 print.kalisParameters <- function(x, ...) {
+  if(is.matrix(x$pars$Pi)) {
+    Pi <- glue("large matrix, first row: ({glue_collapse(head(x$pars$Pi[1,], 3), ', ')}, ..., {glue_collapse(tail(x$pars$Pi[1,], 3), ', ')})")
+  } else {
+    Pi <- x$pars$Pi
+  }
+  if(length(x$pars$mu)>1) {
+    mu <- glue("({glue_collapse(head(x$pars$mu, 3), ', ')}, ..., {glue_collapse(tail(x$pars$mu, 3), ', ')})")
+  } else {
+    mu <- x$pars$mu
+  }
   cat(glue("Parameters object with:\n",
-           "{'  '}morgan.dist = ({glue_collapse(head(x$pars$morgan.dist, 3), ', ')}, ..., {glue_collapse(tail(x$pars$morgan.dist, 3), ', ')})\n",
-           "{'  '}Ne          = {x$pars$Ne}\n",
-           "{'  '}gamma       = {x$pars$gamma}\n",
-           "{'  '}mu          = {x$pars$mu}\n",
-           "{'  '}Pi          = {x$pars$Pi}"))
+           "{'  '}rho   = ({glue_collapse(head(x$pars$rho, 3), ', ')}, ..., {glue_collapse(tail(x$pars$rho, 3), ', ')})\n",
+           "{'  '}mu    = {mu}\n",
+           "{'  '}Pi    = {Pi}"))
 }

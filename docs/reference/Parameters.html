@@ -120,12 +120,23 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>Parameters</span>(<span class='kw'>morgan.dist</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>Ne</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>gamma</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>mu</span> <span class='kw'>=</span> <span class='fl'>1e-08</span>,
-  <span class='kw'>Pi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>Parameters</span>(<span class='kw'>rho</span> <span class='kw'>=</span> <span class='fl'>1e-16</span>, <span class='kw'>mu</span> <span class='kw'>=</span> <span class='fl'>1e-08</span>, <span class='kw'>Pi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>mu</th>
+      <td><p>a scalar (for uniform) or vector (for varying) mutation costs.</p></td>
+    </tr>
+    <tr>
+      <th>Pi</th>
+      <td><p>leaving the default of uniform copying probabilities is recommended for
+computational efficiency.  If desired, a full matrix of background copying
+probabilities can be provided, such that the (i,j)-th element is the background
+probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
+the columns of Pi must sum to 1.</p></td>
+    </tr>
     <tr>
       <th>morgan.dist</th>
       <td><p>a vector of recombination distances between loci, in Morgans.
@@ -140,18 +151,6 @@ Note element i of this vector should be the distance between loci i and i+1
       <th>gamma</th>
       <td><p>a scalar power to which the Morgan distances are raised.  Can be
 autotuned, see ...</p></td>
-    </tr>
-    <tr>
-      <th>mu</th>
-      <td><p>a scalar (for uniform) or vector (for varying) mutation costs.</p></td>
-    </tr>
-    <tr>
-      <th>Pi</th>
-      <td><p>leaving the default of uniform copying probabilities is recommended for
-computational efficiency.  If desired, a full matrix of background copying
-probabilities can be provided, such that the (i,j)-th element is the background
-probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
-the columns of Pi must sum to 1.</p></td>
     </tr>
     </table>
     
@@ -171,7 +170,7 @@ the columns of Pi must sum to 1.</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='no'>pars</span> <span class='kw'>&lt;-</span> <span class='fu'>Parameters</span>(<span class='no'>...</span>)
+<span class='no'>pars</span> <span class='kw'>&lt;-</span> <span class='fu'>Parameters</span>(<span class='fu'>CalcRho</span>(<span class='no'>Morgan.dist</span>, <span class='fl'>1</span>, <span class='fl'>1</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1e-08</span>, <span class='no'>L</span>), <span class='no'>Pi</span>)
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>

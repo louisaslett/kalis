@@ -4,10 +4,17 @@
 \alias{Parameters}
 \title{Setup genetics parameters}
 \usage{
-Parameters(morgan.dist = 0, Ne = 1, gamma = 1, mu = 1e-08,
-  Pi = NULL)
+Parameters(rho = 1e-16, mu = 1e-08, Pi = NULL)
 }
 \arguments{
+\item{mu}{a scalar (for uniform) or vector (for varying) mutation costs.}
+
+\item{Pi}{leaving the default of uniform copying probabilities is recommended for
+computational efficiency.  If desired, a full matrix of background copying
+probabilities can be provided, such that the (i,j)-th element is the background
+probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
+the columns of Pi must sum to 1.}
+
 \item{morgan.dist}{a vector of recombination distances between loci, in Morgans.
 Note element i of this vector should be the distance between loci i and i+1
 (not i and i-1), and thus length one less than the haplotype length.}
@@ -16,14 +23,6 @@ Note element i of this vector should be the distance between loci i and i+1
 
 \item{gamma}{a scalar power to which the Morgan distances are raised.  Can be
 autotuned, see ...}
-
-\item{mu}{a scalar (for uniform) or vector (for varying) mutation costs.}
-
-\item{Pi}{leaving the default of uniform copying probabilities is recommended for
-computational efficiency.  If desired, a full matrix of background copying
-probabilities can be provided, such that the (i,j)-th element is the background
-probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
-the columns of Pi must sum to 1.}
 }
 \value{
 A new parameters environment.
@@ -36,7 +35,7 @@ Detailed description
 }
 \examples{
 \dontrun{
-pars <- Parameters(...)
+pars <- Parameters(CalcRho(Morgan.dist, 1, 1), rep(1e-08, L), Pi)
 }
 
 }
