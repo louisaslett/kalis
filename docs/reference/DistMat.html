@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calculate a Distance Matrix from a Forward Table Object and a Backward Table Object — DistMat • kalis</title>
+<title>Calculate a Distance Matrix from a Forward Table and a Backward Table — DistMat • kalis</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Calculate a Distance Matrix from a Forward Table Object and a Backward Table Object — DistMat" />
+<meta property="og:title" content="Calculate a Distance Matrix from a Forward Table and a Backward Table — DistMat" />
 
-<meta property="og:description" content="Provides an easy function for calculating a local distance matrix." />
+<meta property="og:description" content="Calculates a local distance matrix from a kalisForwardTable and a kalisBackwardTable at the same locus." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -109,14 +109,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate a Distance Matrix from a Forward Table Object and a Backward Table Object</h1>
+    <h1>Calculate a Distance Matrix from a Forward Table and a Backward Table</h1>
     
     <div class="hidden name"><code>DistMat.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Provides an easy function for calculating a local distance matrix.</p>
+    <p>Calculates a local distance matrix from a <code>kalisForwardTable</code> and a <code>kalisBackwardTable</code> at the same locus.</p>
     
     </div>
 
@@ -141,14 +141,14 @@
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The forward and backward tables must be at the same locus.
-The (i,j)-th element of of the returned matrix is the inferred distance d_(i,j) between haplotypes j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).</p>
-<p>d_(i,j) = -( log(p_(i,j)) + log(p_(j,i)) ) / 2 where p_(i,j) is the posterior marginal probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).</p>
+    <p>The forward and backward tables must be at the same locus l.
+The (j,i)-th element of of the returned matrix is the inferred distance d_(j,i) between haplotypes j and i at the current locus of the two tables, l, given the haplotypes observed (from locus 1 to L).</p>
+<p>d_(j,i) = -( log(p_(j,i)) + log(p_(i,j)) ) / 2 where p_(j,i) is the posterior marginal probability that j is coped by i at the current locus of the two tables, l, given the haplotypes observed (from locus 1 to L).</p>
 <p>By convention, d_(i,i) = 0 for all i.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='PostProbs.html'>PostProbs</a></code> to calculate the posterior marginal probabilities p_(i,j);
+    <div class='dont-index'><p><code><a href='PostProbs.html'>PostProbs</a></code> to calculate the posterior marginal probabilities p_(j,i);
 <code><a href='MakeForwardTable.html'>MakeForwardTable</a></code> to generate Forward table;
 <code><a href='Forward.html'>Forward</a></code> to propogate a Backward table to a new locus;
 <code><a href='MakeBackwardTable.html'>MakeBackwardTable</a></code> to generate a Backward table;

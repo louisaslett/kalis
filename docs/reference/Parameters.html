@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Setup genetics parameters — Parameters • kalis</title>
+<title>Setup kalis HMM parameters — Parameters • kalis</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="Setup genetics parameters — Parameters" />
+<meta property="og:title" content="Setup kalis HMM parameters — Parameters" />
 
 <meta property="og:description" content="Sets up the genetics parameters to be used for a problem." />
 <meta name="twitter:card" content="summary" />
@@ -109,7 +109,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Setup genetics parameters</h1>
+    <h1>Setup kalis HMM parameters</h1>
     
     <div class="hidden name"><code>Parameters.Rd</code></div>
     </div>
@@ -120,11 +120,16 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>Parameters</span>(<span class='kw'>rho</span> <span class='kw'>=</span> <span class='fl'>1e-16</span>, <span class='kw'>mu</span> <span class='kw'>=</span> <span class='fl'>1e-08</span>, <span class='kw'>Pi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>Parameters</span>(<span class='kw'>rho</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>0</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/get'>get</a></span>(<span class='st'>"L"</span>, <span class='kw'>envir</span> <span class='kw'>=</span> <span class='no'>pkgVars</span>) - <span class='fl'>1</span>), <span class='kw'>mu</span> <span class='kw'>=</span> <span class='fl'>1e-08</span>,
+  <span class='kw'>Pi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>rho</th>
+      <td><p>recombination probability vector (must be L-1 long), see <code>CalcRho</code></p></td>
+    </tr>
     <tr>
       <th>mu</th>
       <td><p>a scalar (for uniform) or vector (for varying) mutation costs.</p></td>
@@ -136,21 +141,6 @@ computational efficiency.  If desired, a full matrix of background copying
 probabilities can be provided, such that the (i,j)-th element is the background
 probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
 the columns of Pi must sum to 1.</p></td>
-    </tr>
-    <tr>
-      <th>morgan.dist</th>
-      <td><p>a vector of recombination distances between loci, in Morgans.
-Note element i of this vector should be the distance between loci i and i+1
-(not i and i-1), and thus length one less than the haplotype length.</p></td>
-    </tr>
-    <tr>
-      <th>Ne</th>
-      <td><p>a scalar for the effective population size.  Can be autotuned, see ...</p></td>
-    </tr>
-    <tr>
-      <th>gamma</th>
-      <td><p>a scalar power to which the Morgan distances are raised.  Can be
-autotuned, see ...</p></td>
     </tr>
     </table>
     
@@ -170,7 +160,7 @@ construct table objects which internally reference a parameters environment.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='no'>pars</span> <span class='kw'>&lt;-</span> <span class='fu'>Parameters</span>(<span class='fu'>CalcRho</span>(<span class='no'>Morgan.dist</span>, <span class='fl'>1</span>, <span class='fl'>1</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1e-08</span>, <span class='no'>L</span>), <span class='no'>Pi</span>)
+<span class='no'>pars</span> <span class='kw'>&lt;-</span> <span class='fu'>Parameters</span>(<span class='no'>...</span>)
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>

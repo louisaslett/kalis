@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Title — MakeBackwardTable • kalis</title>
+<title>Create a <code>kalisBackwardTable</code> — MakeBackwardTable • kalis</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Title — MakeBackwardTable" />
+<meta property="og:title" content="Create a <code>kalisBackwardTable</code> — MakeBackwardTable" />
 
-<meta property="og:description" content="Short description" />
+<meta property="og:description" content="Allocates the memory for and initializes up a backward table." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -109,14 +109,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Title</h1>
+    <h1>Create a <code>kalisBackwardTable</code></h1>
     
     <div class="hidden name"><code>MakeBackwardTable.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Short description</p>
+    <p>Allocates the memory for and initializes up a backward table.</p>
     
     </div>
 
@@ -126,27 +126,50 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>pars</th>
+      <td><p>a <code>kalisParameters</code> environment specifying the genetics
+parameters to be associated with this forward table.  These parameters can
+be set up by using the <code><a href='Parameters.html'>Parameters</a></code> function.</p></td>
+    </tr>
+    <tr>
       <th>from_recipient</th>
-      <td><p>...</p></td>
+      <td><p>first recipient haplotype if creating a partial forward
+table.  By default includes from the first recipient haplotype.</p></td>
     </tr>
     <tr>
       <th>to_recipient</th>
-      <td><p>...</p></td>
+      <td><p>last recipient haplotype if creating a partial forward
+table.  By default includes to the last recipient haplotype.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Return value</p>
+    <p>a specialized list of class <code>kalisBackwardTable</code>.  For a given <code>kalisBackwardTable</code>, <code>bck</code>,
+<code>bck$l</code> denotes the current locus position of <code>fwd</code>.  <code>bck$beta</code> is a matrix of rescaled backward probabilities under the Li &amp; Stephens HMM.
+Each column of <code>bck$beta</code> corresponds to an independent HMM such that \(\beta^\ell_{ji}\)
+is proportional to the probability of observing haplotype \(i\) from locus \(l+1\) up through locus \(L\) given that haplotype \(j\)
+is copied by haplotype \(i\) at locus \(\ell\).  <code>bck$beta.g</code> and <code>bck$beta.g2</code>
+are both vectors containing scaling constants needed to continue propagating the HMM (please see kalis paper for details).</p>
+<p><code>kalisBackwardTable</code> also carries with it a checksum key for the parameters <code>pars</code> it was provided.
+If a user attempts to interact a <code>kalisBackwardTable</code> with a <code>kalisForwardTable</code> with mismatched
+parameters, an error will be thrown.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Detailed description</p>
+    <p><code>MakeBackwardTable</code> returns a <code>kalisBackwardTable</code> object appropriate for
+a given set of haplotypes (that must have already been cached by <code>CacheAllHaplotypes</code>) and
+a given set of HMM parameters specified by <code>pars</code>.  The returned <code>kalisBackwardTable</code> is
+initialized at the end of the cached haplotypes (technically <code>bck$l</code>=2,147,483,647 for computational reasons)
+and is ready to be propagated to a given target locus with the function <code><a href='Backward.html'>Backward</a></code>.</p>
+<p>Since there is an independent hidden Markov model run for each recipient
+haplotype, it is possible to create a partial forward table object which
+corresponds to a subset of recipients using the <code>from_recipient</code> and
+<code>to_recipient</code> arguments.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='Backward.html'>Backward</a></code> to propagate the newly created table forward
-through the genome.</p></div>
+    <div class='dont-index'><p><code><a href='Backward.html'>Backward</a></code> to propagate the newly created <code>kalisBackwardTable</code>.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

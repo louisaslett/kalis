@@ -20,7 +20,7 @@ table.  By default includes to the last recipient haplotype.}
 }
 \value{
 a specialized list of class \code{kalisForwardTable}.  For a given \code{kalisForwardTable}, \code{fwd},
-\code{fwd$l} denotes the current locus position of \code{fwd}.  \code{fwd$alpha} is a matrix of rescaled forward probabilities under the Li \& Stephens HMM.
+\code{fwd$l} denotes the current locus position of \code{fwd}.  \code{fwd$alpha} is a matrix of rescaled forward probabilities under the Li & Stephens HMM.
 Each column of \code{fwd$alpha} corresponds to an independent HMM such that \eqn{\alpha^l_{ji}}
 is proportional to the probability that haplotype \eqn{j} is copied by haplotype \eqn{i} at locus \eqn{l} and
 observing haplotype \eqn{i} from locus 1 up through locus \eqn{l}.  \code{fwd$alpha.f} and \code{fwd$alpha.f2}
@@ -63,10 +63,5 @@ Forward(fwd, 10, morgan.dist, Ne, gamma, mu, nthreads = 8)
 
 }
 \seealso{
-<<<<<<< HEAD
-\code{\link{Forward}} to propagate the newly created table forward
-through the genome.
-=======
 \code{\link{Forward}} to propagate the newly created \code{kalisForwardTable}.
->>>>>>> d2d34af838555a42ea3adce61dc7f3744e1cc85f
 }

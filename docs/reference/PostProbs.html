@@ -146,13 +146,14 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities at locus l.
-The (i,j)-th element of of the returned matrix is the probability that j copies i at locus fwd$l=bck$l given the haplotypes observed (from locus 1 to L).
+The (j,i)-th element of of the returned matrix is the probability that j is copied by i at the current locus of the two tables, l, given the haplotypes observed (from locus 1 to L).
 Note: each column represents an independent HMM.</p>
 <p>By convention, every diagonal element is zero.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='MakeForwardTable.html'>MakeForwardTable</a></code> to generate Forward table;
+    <div class='dont-index'><p><code><a href='DistMat.html'>DistMat</a></code> to generate calculate \(d_{ji}\) distances directly
+<code><a href='MakeForwardTable.html'>MakeForwardTable</a></code> to generate Forward table;
 <code><a href='Forward.html'>Forward</a></code> to propogate a Backward table to a new locus;
 <code><a href='MakeBackwardTable.html'>MakeBackwardTable</a></code> to generate a Backward table;
 <code><a href='Backward.html'>Backward</a></code> to propogate a Backward table to a new locus.</p></div>

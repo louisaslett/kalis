@@ -16,13 +16,8 @@ Backward(bck, pars, t = bck$l - 1, nthreads = 1)
 \item{nthreads}{the number of CPU cores to use}
 }
 \value{
-<<<<<<< HEAD
-There is nothing returned.  For performance reasons, the backward
-table which was passed in is updated in-place.
-=======
 There is nothing returned.  For performance reasons, the forward
-  table which was passed in is updated in-place.
->>>>>>> d2d34af838555a42ea3adce61dc7f3744e1cc85f
+table which was passed in is updated in-place.
 }
 \description{
 Propagates a \code{kalisBackwardTable} to an upstream locus position (nothing is returned: the table is updated in-place).
@@ -40,9 +35,5 @@ Backward(bck, pars, 2500)
 }
 \seealso{
 \code{\link{MakeBackwardTable}} to generate backward table;
-<<<<<<< HEAD
-\code{\link{Forward}} for analagous forward induction function.
-=======
-  \code{\link{Backward}} for analagous forward induction function.
->>>>>>> d2d34af838555a42ea3adce61dc7f3744e1cc85f
+\code{\link{Backward}} for analagous forward induction function.
 }

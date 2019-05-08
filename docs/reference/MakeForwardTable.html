@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create a Forward Table — MakeForwardTable • kalis</title>
+<title>Create a <code>kalisForwardTable</code> — MakeForwardTable • kalis</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Create a Forward Table — MakeForwardTable" />
+<meta property="og:title" content="Create a <code>kalisForwardTable</code> — MakeForwardTable" />
 
-<meta property="og:description" content="Allocates the memory for and sets up a forward table." />
+<meta property="og:description" content="Allocates the memory for and initializes up a forward table." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -109,14 +109,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create a Forward Table</h1>
+    <h1>Create a <code>kalisForwardTable</code></h1>
     
     <div class="hidden name"><code>MakeForwardTable.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Allocates the memory for and sets up a forward table.</p>
+    <p>Allocates the memory for and initializes up a forward table.</p>
     
     </div>
 
@@ -145,22 +145,22 @@ table.  By default includes to the last recipient haplotype.</p></td>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>an object of class <code>kalisForwardTable</code> containing</p>
+    <p>a specialized list of class <code>kalisForwardTable</code>.  For a given <code>kalisForwardTable</code>, <code>fwd</code>,
+<code>fwd$l</code> denotes the current locus position of <code>fwd</code>.  <code>fwd$alpha</code> is a matrix of rescaled forward probabilities under the Li &amp; Stephens HMM.
+Each column of <code>fwd$alpha</code> corresponds to an independent HMM such that \(\alpha^l_{ji}\)
+is proportional to the probability that haplotype \(j\) is copied by haplotype \(i\) at locus \(l\) and
+observing haplotype \(i\) from locus 1 up through locus \(l\).  <code>fwd$alpha.f</code> and <code>fwd$alpha.f2</code>
+are both vectors containing scaling constants needed to continue propagating the HMM (please see kalis paper for details).</p>
+<p><code>kalisForwardTable</code> also carries with it a checksum key for the parameters <code>pars</code> it was provided.
+If a user attempts to interact a <code>kalisForwardTable</code> with a <code>kalisBackwardTable</code> with mismatched
+parameters, an error will be thrown.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>For performance and numerical stability reasons kalis operates with lag
-scaled probabilities and these additional scaling factors must be tracked to
-enable recovery of standard forward probabilities.
-This utility function allocates memory for the forward table and also sets up
-the necessary internal tracking of correct scaling factors.
-However, note that this utility is purely for creating the correct object
-to track forward computations and upon creation the forward table itself is
-uninitialised.</p>
-<p>Therefore, the standard workflow with kalis is to create a forward table
-using this utility function before passing that to the <code><a href='Forward.html'>Forward</a></code>
-function.  <code><a href='Forward.html'>Forward</a></code> will identify uninitialised tables and propagate
-them correctly from the first locus.</p>
+    <p><code>MakeForwardTable</code> returns a <code>kalisForwardTable</code> object appropriate for
+a given set of haplotypes (that must have already been cached by <code>CacheAllHaplotypes</code>) and
+a given set of HMM parameters specified by <code>pars</code>.  The returned <code>kalisForwardTable</code> is
+initialized at locus 0 and is ready to be propagated to a given target locus with the function <code><a href='Forward.html'>Forward</a></code>.</p>
 <p>Since there is an independent hidden Markov model run for each recipient
 haplotype, it is possible to create a partial forward table object which
 corresponds to a subset of recipients using the <code>from_recipient</code> and
@@ -168,8 +168,7 @@ corresponds to a subset of recipients using the <code>from_recipient</code> and
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='Forward.html'>Forward</a></code> to propagate the newly created table forward
-through the genome.</p></div>
+    <div class='dont-index'><p><code><a href='Forward.html'>Forward</a></code> to propagate the newly created <code>kalisForwardTable</code>.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

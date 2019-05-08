@@ -20,7 +20,7 @@ assign("L", NA, envir = pkgVars)
 #' script to convert from VCF to HDF5.  If there is sufficient demand other formats
 #' may be added in future
 #'
-#' ## HDF5 format
+#' **HDF5 format**
 #'
 #' For HDF5 files, kalis expects a 2-dimensional object named `haps` at the root
 #' level of the HDF5 file.  Haplotypes should be stored in the slowest changing

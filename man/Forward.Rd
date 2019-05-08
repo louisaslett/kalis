@@ -36,9 +36,5 @@ Forward(fwd, 100, Pi, mu, rho)
 }
 \seealso{
 \code{\link{MakeForwardTable}} to generate forward table;
-<<<<<<< HEAD
-\code{\link{Backward}} for analagous backward induction function.
-=======
-  \code{\link{Backward}} for the analagous backward propagation function.
->>>>>>> d2d34af838555a42ea3adce61dc7f3744e1cc85f
+\code{\link{Backward}} for the analagous backward propagation function.
 }

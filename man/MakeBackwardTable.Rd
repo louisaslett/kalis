@@ -20,7 +20,7 @@ table.  By default includes to the last recipient haplotype.}
 }
 \value{
 a specialized list of class \code{kalisBackwardTable}.  For a given \code{kalisBackwardTable}, \code{bck},
- \code{bck$l} denotes the current locus position of \code{fwd}.  \code{bck$beta} is a matrix of rescaled backward probabilities under the Li \& Stephens HMM.
+\code{bck$l} denotes the current locus position of \code{fwd}.  \code{bck$beta} is a matrix of rescaled backward probabilities under the Li & Stephens HMM.
 Each column of \code{bck$beta} corresponds to an independent HMM such that \eqn{\beta^\ell_{ji}}
 is proportional to the probability of observing haplotype \eqn{i} from locus \eqn{l+1} up through locus \eqn{L} given that haplotype \eqn{j}
 is copied by haplotype \eqn{i} at locus \eqn{\ell}.  \code{bck$beta.g} and \code{bck$beta.g2}
@@ -52,10 +52,5 @@ MakeBackwardTable(...)
 
 }
 \seealso{
-<<<<<<< HEAD
-\code{\link{Backward}} to propagate the newly created table forward
-through the genome.
-=======
 \code{\link{Backward}} to propagate the newly created \code{kalisBackwardTable}.
->>>>>>> d2d34af838555a42ea3adce61dc7f3744e1cc85f
 }

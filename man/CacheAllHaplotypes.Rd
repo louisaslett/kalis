@@ -42,7 +42,9 @@ by the other functions in this package.
 
 At present, only HDF5 is supported natively and there is a vignette giving a simple
 script to convert from VCF to HDF5.  If there is sufficient demand other formats
-may be added in futureHDF5 format
+may be added in future
+
+\strong{HDF5 format}
 
 For HDF5 files, kalis expects a 2-dimensional object named \code{haps} at the root
 level of the HDF5 file.  Haplotypes should be stored in the slowest changing
