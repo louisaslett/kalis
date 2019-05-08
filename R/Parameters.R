@@ -17,39 +17,36 @@
 #'
 #' @examples
 #' \dontrun{
-<<<<<<< HEAD
 #' pars <- CalcRho(...)
 #' }
-#'
-#' @export CalcRho
-CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor.rho = TRUE) {
-=======
-#' pars <- Parameters(CalcRho(Morgan.dist, 1, 1), rep(1e-08, L), Pi)
-#' }
-#'
+
 #' @export
-Parameters <- function(rho = 1e-16, mu = 1e-8, Pi = NULL) {
->>>>>>> e87a9ec840220b404718e1da1159bc2150b5ea5f
-  N <- get("N", envir = pkgVars)
-  if(anyNA(N)) {
-    stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
-  }
-
+CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor.rho = TRUE) {
   L <- get("L", envir = pkgVars)
-
-  if(!is.numeric(rho)) {
-    stop("rho must be numeric vector type.")
-  }
-  if(!is.vector(rho)) {
-    stop("rho must be a vector of recombination distances.")
-  }
-  if(length(rho) == 1){
-    rho <- rep(rho, L)
-  }
-  if(length(rho) != L) {
-    stop("rho is the wrong length for this problem.")
+  if(anyNA(L)) {
+    stop("No haplotypes cached ... cannot determine rho length until cache is loaded with CacheAllHaplotypes().")
   }
 
+  if(!is.numeric(morgan.dist)) {
+    stop("morgan.dist must be numeric vector type.")
+  }
+  if(length(morgan.dist) == 1){
+    morgan.dist <- rep(morgan.dist, L-1)
+  }
+  if(!is.vector(morgan.dist)) {
+    stop("morgan.dist must be a vector of recombination distances.")
+  }
+  if(length(morgan.dist) != L-1) {
+    stop("morgan.dist is the wrong length for this problem.")
+  }
+
+  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
+    stop("Ne must be a scalar.")
+  }
+
+  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma < 0) {
+    stop("gamma must be a non-negative scalar.")
+  }
 
   # Compute rho
   rho <- c(1 - exp(-Ne*morgan.dist^gamma), 1)
@@ -62,7 +59,6 @@ Parameters <- function(rho = 1e-16, mu = 1e-8, Pi = NULL) {
 
   rho
 }
-
 
 
 #' Setup kalis HMM parameters
@@ -135,44 +131,6 @@ Parameters <- function(rho = rep(0,get("L", envir = pkgVars)-1), mu = 1e-8, Pi =
   class(res) <- c("kalisParameters", class(res))
 
   res
-}
-
-#' @export
-CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, threshold = 1e-16) {
-  L <- get("L", envir = pkgVars)
-  if(anyNA(L)) {
-    stop("No haplotypes cached ... cannot determine rho length until cache is loaded with CacheAllHaplotypes().")
-  }
-
-  if(threshold < 0) {
-    stop("threshold must be non-negative.")
-  }
-
-  if(!is.numeric(morgan.dist)) {
-    stop("morgan.dist must be numeric vector type.")
-  }
-  if(length(morgan.dist) == 1){
-    morgan.dist <- rep(morgan.dist, L-1)
-  }
-  if(!is.vector(morgan.dist)) {
-    stop("morgan.dist must be a vector of recombination distances.")
-  }
-  if(length(morgan.dist) != L-1) {
-    stop("morgan.dist is the wrong length for this problem.")
-  }
-
-  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
-    stop("Ne must be a scalar.")
-  }
-
-  if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma < 0) {
-    stop("gamma must be a non-negative scalar.")
-  }
-
-  # Compute rho ... this is the derived parameter we actually care about
-  rho <- c(1 - exp(-Ne*morgan.dist^gamma), 1)
-  rho <- ifelse(rho < threshold, threshold, rho)
-  rho
 }
 
 #' @export

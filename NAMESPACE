@@ -5,12 +5,7 @@ S3method(print,kalisBackwardTable)
 S3method(print,kalisForwardTable)
 S3method(print,kalisParameters)
 export(Backward)
-<<<<<<< HEAD
-export(CacheAllHaplotypesH5)
-=======
-export(BackwardProbs)
 export(CacheAllHaplotypes)
->>>>>>> e87a9ec840220b404718e1da1159bc2150b5ea5f
 export(CalcRho)
 export(ClearHaplotypeCache)
 export(CreateForwardTableCache)

@@ -30,7 +30,6 @@ Detailed description
 \dontrun{
 pars <- CalcRho(...)
 }
-
 }
 \seealso{
 \code{\link{Parameters}} to use the resulting transition probabilities to construct a kalisParameters object
