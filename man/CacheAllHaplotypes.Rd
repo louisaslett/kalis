@@ -7,17 +7,29 @@
 CacheAllHaplotypes(file, format = "auto", ...)
 }
 \arguments{
-\item{hdf5.file}{the name of the file which the haplotypes are to be read from.}
+\item{file}{the name of the file which the haplotypes are to be read from.}
 
-\item{transpose}{a logical value indicating whether to switch the
+\item{format}{the file format which \code{file} is stored in, or \code{"auto"} to
+detect format based on the file extension.  Recognised options are \code{"hdf5"}
+and \code{"vcf"}}
+
+\item{...}{options passed on to the specific format transcoding engine.  The following
+additional arguments are supported:
+\enumerate{
+\item HDF5
+\itemize{
+\item \code{transpose} a logical value indicating whether to switch the
 interpretation of the slowest changing dimension (hence switching the
-number of haplotypes and the length)}
+number of haplotypes and the length)
+}
+}}
 }
 \value{
 Nothing is returned by the function.  However, a status message is
-  output indicating how the dimensions of the HDF5 \code{haps} object have
-  been interpreted.  If this message shows the dimensions incorrectly ordered,
-  call the function again with argument \code{transpose = TRUE}.
+output indicating the dimensions of the loaded data.  This can be useful for
+HDF5 input when you are uncertain about the orientation of the \code{haps} object.
+If this message shows the dimensions incorrectly ordered,
+call the function again with the extra argument \code{transpose = TRUE}.
 }
 \description{
 Load haplotypes from hard drive to memory.
@@ -25,18 +37,23 @@ Load haplotypes from hard drive to memory.
 \details{
 To achieve higher performance, kalis internally represents haplotypes
 in an efficient raw binary format in memory.  This function will load haplotypes
-from an HDF5 file and convert this into kalis' internal format ready for use
+from a file and convert this into kalis' internal format ready for use
 by the other functions in this package.
 
-The package expects a 2-dimensional object named \code{haps} at the root
+At present, only HDF5 is supported natively and there is a vignette giving a simple
+script to convert from VCF to HDF5.  If there is sufficient demand other formats
+may be added in futureHDF5 format
+
+For HDF5 files, kalis expects a 2-dimensional object named \code{haps} at the root
 level of the HDF5 file.  Haplotypes should be stored in the slowest changing
 dimension as defined in the HDF5 specification (note that different languages
 treat this as rows or columns).  If the haplotypes are stored in the other
 dimension then simply set the argument \code{transpose = TRUE}.
 If the user is unsure of the convention of
 the language they used to create the HDF5 file, then the simplest approach is
-to just load the data specifying only the HDF5 file name and then confirm
-that number of haplotypes and their length have not been exchanged.
+to simply load the data specifying only the HDF5 file name and then confirm
+that number of haplotypes and their length have not been exchanged in the diagnostic
+output which kalis prints.
 }
 \examples{
 # Examples
@@ -57,5 +74,5 @@ suppressMessages(CacheAllHaplotypes("myhaps.h5"))
 }
 \seealso{
 \code{\link{ClearHaplotypeCache}} to remove the haplotypes from
-  the cache and free the memory.
+the cache and free the memory.
 }

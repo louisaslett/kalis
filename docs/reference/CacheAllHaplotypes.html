@@ -126,44 +126,60 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>hdf5.file</th>
+      <th>file</th>
       <td><p>the name of the file which the haplotypes are to be read from.</p></td>
     </tr>
     <tr>
-      <th>transpose</th>
-      <td><p>a logical value indicating whether to switch the
+      <th>format</th>
+      <td><p>the file format which <code>file</code> is stored in, or <code>"auto"</code> to
+detect format based on the file extension.  Recognised options are <code>"hdf5"</code>
+and <code>"vcf"</code></p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>options passed on to the specific format transcoding engine.  The following
+additional arguments are supported:</p><ol>
+<li><p>HDF5</p><ul>
+<li><p><code>transpose</code> a logical value indicating whether to switch the
 interpretation of the slowest changing dimension (hence switching the
-number of haplotypes and the length)</p></td>
+number of haplotypes and the length)</p></li>
+</ul></li>
+</ol></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Nothing is returned by the function.  However, a status message is
-  output indicating how the dimensions of the HDF5 <code>haps</code> object have
-  been interpreted.  If this message shows the dimensions incorrectly ordered,
-  call the function again with argument <code>transpose = TRUE</code>.</p>
+output indicating the dimensions of the loaded data.  This can be useful for
+HDF5 input when you are uncertain about the orientation of the <code>haps</code> object.
+If this message shows the dimensions incorrectly ordered,
+call the function again with the extra argument <code>transpose = TRUE</code>.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>To achieve higher performance, kalis internally represents haplotypes
 in an efficient raw binary format in memory.  This function will load haplotypes
-from an HDF5 file and convert this into kalis' internal format ready for use
+from a file and convert this into kalis' internal format ready for use
 by the other functions in this package.</p>
-<p>The package expects a 2-dimensional object named <code>haps</code> at the root
+<p>At present, only HDF5 is supported natively and there is a vignette giving a simple
+script to convert from VCF to HDF5.  If there is sufficient demand other formats
+may be added in futureHDF5 format</p>
+<p>For HDF5 files, kalis expects a 2-dimensional object named <code>haps</code> at the root
 level of the HDF5 file.  Haplotypes should be stored in the slowest changing
 dimension as defined in the HDF5 specification (note that different languages
 treat this as rows or columns).  If the haplotypes are stored in the other
 dimension then simply set the argument <code>transpose = TRUE</code>.
 If the user is unsure of the convention of
 the language they used to create the HDF5 file, then the simplest approach is
-to just load the data specifying only the HDF5 file name and then confirm
-that number of haplotypes and their length have not been exchanged.</p>
+to simply load the data specifying only the HDF5 file name and then confirm
+that number of haplotypes and their length have not been exchanged in the diagnostic
+output which kalis prints.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='ClearHaplotypeCache.html'>ClearHaplotypeCache</a></code> to remove the haplotypes from
-  the cache and free the memory.</p></div>
+the cache and free the memory.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

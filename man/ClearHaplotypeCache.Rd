@@ -30,5 +30,5 @@ ClearHaplotypeCache()
 }
 \seealso{
 \code{\link{CacheAllHaplotypesH5}} to propagate the newly created table forward
-  through the genome.
+through the genome.
 }

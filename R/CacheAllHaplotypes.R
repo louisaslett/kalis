@@ -13,28 +13,43 @@ assign("L", NA, envir = pkgVars)
 #'
 #' To achieve higher performance, kalis internally represents haplotypes
 #' in an efficient raw binary format in memory.  This function will load haplotypes
-#' from an HDF5 file and convert this into kalis' internal format ready for use
+#' from a file and convert this into kalis' internal format ready for use
 #' by the other functions in this package.
 #'
-#' The package expects a 2-dimensional object named \code{haps} at the root
+#' At present, only HDF5 is supported natively and there is a vignette giving a simple
+#' script to convert from VCF to HDF5.  If there is sufficient demand other formats
+#' may be added in future
+#'
+#' ## HDF5 format
+#'
+#' For HDF5 files, kalis expects a 2-dimensional object named `haps` at the root
 #' level of the HDF5 file.  Haplotypes should be stored in the slowest changing
 #' dimension as defined in the HDF5 specification (note that different languages
 #' treat this as rows or columns).  If the haplotypes are stored in the other
-#' dimension then simply set the argument \code{transpose = TRUE}.
+#' dimension then simply set the argument `transpose = TRUE`.
 #' If the user is unsure of the convention of
 #' the language they used to create the HDF5 file, then the simplest approach is
-#' to just load the data specifying only the HDF5 file name and then confirm
-#' that number of haplotypes and their length have not been exchanged.
+#' to simply load the data specifying only the HDF5 file name and then confirm
+#' that number of haplotypes and their length have not been exchanged in the diagnostic
+#' output which kalis prints.
 #'
-#' @param hdf5.file the name of the file which the haplotypes are to be read from.
-#' @param transpose a logical value indicating whether to switch the
+#' @param file the name of the file which the haplotypes are to be read from.
+#' @param format the file format which `file` is stored in, or `"auto"` to
+#'   detect format based on the file extension.  Recognised options are `"hdf5"`
+#'   and `"vcf"`
+#' @param ... options passed on to the specific format transcoding engine.  The following
+#'   additional arguments are supported:
+#'
+#'   1. HDF5
+#'       - `transpose` a logical value indicating whether to switch the
 #'   interpretation of the slowest changing dimension (hence switching the
 #'   number of haplotypes and the length)
 #'
 #' @return Nothing is returned by the function.  However, a status message is
-#'   output indicating how the dimensions of the HDF5 \code{haps} object have
-#'   been interpreted.  If this message shows the dimensions incorrectly ordered,
-#'   call the function again with argument \code{transpose = TRUE}.
+#'   output indicating the dimensions of the loaded data.  This can be useful for
+#'   HDF5 input when you are uncertain about the orientation of the `haps` object.
+#'   If this message shows the dimensions incorrectly ordered,
+#'   call the function again with the extra argument `transpose = TRUE`.
 #'
 #' @seealso \code{\link{ClearHaplotypeCache}} to remove the haplotypes from
 #'   the cache and free the memory.
@@ -170,12 +185,12 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
 #' @param start the first locus position to retrieve for the specified haplotypes.
 #'   Defaults to the beginning of the haplotype.
 #' @param length the number of consecutive loci to return from the start position.
-#'   Defaults to length of entire haplotype from \code{start} argument to end.
+#'   Defaults to length of entire haplotype from `start` argument to end.
 #'
-#' @return A matrix of 0/1 integers with \code{length} rows and
-#'   \code{length(ids)} columns, such that haplotypes appear in columns.
+#' @return A matrix of 0/1 integers with `length` rows and
+#'   `length(ids)` columns, such that haplotypes appear in columns.
 #'
-#' @seealso \code{\link{CacheAllHaplotypesH5}} to fill the memory cache with
+#' @seealso \code{\link{CacheAllHaplotypes}} to fill the memory cache with
 #'   haplotypes.
 #'
 #' @examples

@@ -33,5 +33,5 @@ BackwardProbs(bck)
 }
 \seealso{
 \code{\link{MakeBackwardTable}} to generate backward table;
-  \code{\link{Backward}} to propogate a backward table to a new locus.
+\code{\link{Backward}} to propogate a backward table to a new locus.
 }

@@ -31,5 +31,5 @@ ForwardProbs(fwd)
 }
 \seealso{
 \code{\link{MakeForwardTable}} to generate forward table;
-  \code{\link{Forward}} to propogate a forward table to a new locus.
+\code{\link{Forward}} to propogate a forward table to a new locus.
 }

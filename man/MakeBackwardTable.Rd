@@ -29,5 +29,5 @@ MakeBackwardTable(...)
 }
 \seealso{
 \code{\link{Backward}} to propagate the newly created table forward
-  through the genome.
+through the genome.
 }

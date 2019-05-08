@@ -17,7 +17,7 @@ Defaults to length of entire haplotype from \code{start} argument to end.}
 }
 \value{
 A matrix of 0/1 integers with \code{length} rows and
-  \code{length(ids)} columns, such that haplotypes appear in columns.
+\code{length(ids)} columns, such that haplotypes appear in columns.
 }
 \description{
 Retrieve haplotypes from the memory cache, converting the raw binary into
@@ -38,6 +38,6 @@ QueryCache(...)
 
 }
 \seealso{
-\code{\link{CacheAllHaplotypesH5}} to fill the memory cache with
-  haplotypes.
+\code{\link{CacheAllHaplotypes}} to fill the memory cache with
+haplotypes.
 }

@@ -27,7 +27,7 @@ scalar value for uniform background copying probability.}
 }
 \value{
 There is nothing returned.  For performance reasons, the forward
-  table which was passed in is updated in-place.
+table which was passed in is updated in-place.
 }
 \description{
 Short description
@@ -44,7 +44,7 @@ ForwardUsingTableCache(...)
 \seealso{
 \code{\link{MakeForwardTable}} to make a forward table;
 
-  \code{\link{CreateForwardTableCache}} to generate a cache;
+\code{\link{CreateForwardTableCache}} to generate a cache;
 
-  \code{\link{Forward}} for forward function without using a cache.
+\code{\link{Forward}} for forward function without using a cache.
 }

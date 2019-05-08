@@ -33,7 +33,7 @@ the columns of Pi must sum to 1.}
 }
 \value{
 There is nothing returned.  For performance reasons, the backward
-  table which was passed in is updated in-place.
+table which was passed in is updated in-place.
 }
 \description{
 Takes a backward table and propagates it in-place to an earlier locus
@@ -51,5 +51,5 @@ Backward(bck, 100, Pi, mu, rho)
 }
 \seealso{
 \code{\link{MakeBackwardTable}} to generate backward table;
-  \code{\link{Forward}} for analagous forward induction function.
+\code{\link{Forward}} for analagous forward induction function.
 }

@@ -41,6 +41,7 @@ LinkingTo:
 SystemRequirements:
     C++11
 RoxygenNote: 6.1.1
+Roxygen: list(markdown = TRUE)
 Suggests: knitr,
     rmarkdown,
     rstudioapi

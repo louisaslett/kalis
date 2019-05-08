@@ -41,5 +41,5 @@ pars <- Parameters(CalcRho(Morgan.dist, 1, 1), rep(1e-08, L), Pi)
 }
 \seealso{
 \code{\link{MakeForwardTable}}, \code{\link{MakeForwardTable}} which
-  construct table objects which internally reference a parameters environment.
+construct table objects which internally reference a parameters environment.
 }

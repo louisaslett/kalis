@@ -64,5 +64,5 @@ Forward(fwd, 10, morgan.dist, Ne, gamma, mu, nthreads = 8)
 }
 \seealso{
 \code{\link{Forward}} to propagate the newly created table forward
-  through the genome.
+through the genome.
 }
