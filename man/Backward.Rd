@@ -2,54 +2,47 @@
 % Please edit documentation in R/FB.R
 \name{Backward}
 \alias{Backward}
-\title{Propagate an HMM backward table}
+\title{Propagate a Backward Table}
 \usage{
 Backward(bck, pars, t = bck$l - 1, nthreads = 1)
 }
 \arguments{
-\item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}
+\item{bck}{\code{kalisBackwardTable} as returned by \code{\link{MakeBackwardTable}}}
 
-\item{t}{a locus position to move the backward table to.  Must be less than
-or equal to locus position of table provided in \code{bck}.}
+\item{pars}{a \code{kalisParameters} object returned by \code{Parameters}}
 
-\item{nthreads}{the number of CPU cores on which to run.}
+\item{t}{a locus position to move the forward table to.  Must be lessless than or equal to the current locus, \code{bck$l}.}
 
-\item{morgan.dist}{a vector of recombination distances between loci, in Morgans.
-Note element i of this vector should be the distance between loci i and i+1
-(not i and i-1), and thus length one less than the haplotype length.}
-
-\item{Ne}{a scalar for the effective population size.  Can be autotuned, see ...}
-
-\item{gamma}{a scalar power to which the Morgan distances are raised.  Can be
-autotuned, see ...}
-
-\item{mu}{a scalar (for uniform) or vector (for varying) mutation costs.}
-
-\item{Pi}{leaving the default of uniform copying probabilities is recommended for
-computational efficiency.  If desired, a full matrix of background copying
-probabilities can be provided, such that the (i,j)-th element is the background
-probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
-the columns of Pi must sum to 1.}
+\item{nthreads}{the number of CPU cores to use}
 }
 \value{
+<<<<<<< HEAD
 There is nothing returned.  For performance reasons, the backward
 table which was passed in is updated in-place.
+=======
+There is nothing returned.  For performance reasons, the forward
+  table which was passed in is updated in-place.
+>>>>>>> d2d34af838555a42ea3adce61dc7f3744e1cc85f
 }
 \description{
-Takes a backward table and propagates it in-place to an earlier locus
-position.
+Propagates a \code{kalisBackwardTable} to an upstream locus position (nothing is returned: the table is updated in-place).
 }
 \details{
-Detailed description
+Backward implements the backward algorithm to advance the rescaled HMM backward probabilities stored in
+a \code{kalisBackwardTable} \code{bck} to a new target locus \code{t}.  Note that \code{t} must be less than or equal to the current locus, \code{bck$l}.
 }
 \examples{
 \dontrun{
 bck <- MakeBackwardTable()
-Backward(bck, 100, Pi, mu, rho)
+Backward(bck, pars, 2500)
 }
 
 }
 \seealso{
 \code{\link{MakeBackwardTable}} to generate backward table;
+<<<<<<< HEAD
 \code{\link{Forward}} for analagous forward induction function.
+=======
+  \code{\link{Backward}} for analagous forward induction function.
+>>>>>>> d2d34af838555a42ea3adce61dc7f3744e1cc85f
 }

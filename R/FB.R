@@ -1,35 +1,21 @@
-#' Propagate an HMM Forward Table
+#' Propagate a Forward Table
 #'
-#' Takes a forward table and propagates it in-place to a later locus position.
+#' Propagates a \code{kalisForwardTable} to a downstream locus position (nothing is returned: the table is updated in-place).
 #'
-#' Forward implements the forward algorithm to advance the lag-scaled forward probabilities stored in
-#' a forward table fwd to a new target locus t.  Note that t must be greater than the current fwd locus.
-#' The standard forward probabilities
-#' mention that each column is an independent HMM and highlight that
-#' forward table (and Pi) are therefore to be viewed column-wise.
+#' Forward implements the forward algorithm to advance the rescaled HMM forward probabilities stored in
+#' a \code{kalisForwardTable} \code{fwd} to a new target locus \code{t}.  Note that \code{t} must be greater than the current locus, \code{fwd$l}.
 #'
-#' @param fwd a forward table as returned by \code{\link{MakeForwardTable}}
+#' @param fwd \code{kalisForwardTable} as returned by \code{\link{MakeForwardTable}}
+#' @param pars a \code{kalisParameters} object returned by \code{Parameters}
 #' @param t a locus position to move the forward table to.  Must be greater than
 #'   or equal to locus position of table provided in \code{fwd}.
-#' @param morgan.dist a vector of recombination distances between loci, in Morgans.
-#'   Note element i of this vector should be the distance between loci i and i+1
-#'   (not i and i-1), and thus length one less than the haplotype length.
-#' @param Ne a scalar for the effective population size.  Can be autotuned, see ...
-#' @param gamma a scalar power to which the Morgan distances are raised.  Can be
-#'   autotuned, see ...
-#' @param mu a scalar (for uniform) or vector (for varying) mutation costs.
-#' @param Pi leaving the default of uniform copying probabilities is recommended for
-#'   computational efficiency.  If desired, a full matrix of background copying
-#'   probabilities can be provided, such that the (i,j)-th element is the background
-#'   probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
-#'   the columns of Pi must sum to 1.
-#' @param nthreads the number of CPU cores on which to run.
+#' @param nthreads the number of CPU cores to use
 #'
 #' @return There is nothing returned.  For performance reasons, the forward
 #'   table which was passed in is updated in-place.
 #'
 #' @seealso \code{\link{MakeForwardTable}} to generate forward table;
-#'   \code{\link{Backward}} for analagous backward induction function.
+#'   \code{\link{Backward}} for the analagous backward propagation function.
 #'
 #' @examples
 #' \dontrun{
@@ -78,40 +64,29 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
   }
 }
 
-#' Propagate an HMM backward table
+
+#' Propagate a Backward Table
 #'
-#' Takes a backward table and propagates it in-place to an earlier locus
-#' position.
+#' Propagates a \code{kalisBackwardTable} to an upstream locus position (nothing is returned: the table is updated in-place).
 #'
-#' Detailed description
+#' Backward implements the backward algorithm to advance the rescaled HMM backward probabilities stored in
+#' a \code{kalisBackwardTable} \code{bck} to a new target locus \code{t}.  Note that \code{t} must be less than or equal to the current locus, \code{bck$l}.
 #'
-#' @param bck a backward table as returned by \code{\link{MakeBackwardTable}}
-#' @param t a locus position to move the backward table to.  Must be less than
-#'   or equal to locus position of table provided in \code{bck}.
-#' @param morgan.dist a vector of recombination distances between loci, in Morgans.
-#'   Note element i of this vector should be the distance between loci i and i+1
-#'   (not i and i-1), and thus length one less than the haplotype length.
-#' @param Ne a scalar for the effective population size.  Can be autotuned, see ...
-#' @param gamma a scalar power to which the Morgan distances are raised.  Can be
-#'   autotuned, see ...
-#' @param mu a scalar (for uniform) or vector (for varying) mutation costs.
-#' @param Pi leaving the default of uniform copying probabilities is recommended for
-#'   computational efficiency.  If desired, a full matrix of background copying
-#'   probabilities can be provided, such that the (i,j)-th element is the background
-#'   probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
-#'   the columns of Pi must sum to 1.
-#' @param nthreads the number of CPU cores on which to run.
+#' @param bck \code{kalisBackwardTable} as returned by \code{\link{MakeBackwardTable}}
+#' @param pars a \code{kalisParameters} object returned by \code{Parameters}
+#' @param t a locus position to move the forward table to.  Must be lessless than or equal to the current locus, \code{bck$l}.
+#' @param nthreads the number of CPU cores to use
 #'
-#' @return There is nothing returned.  For performance reasons, the backward
+#' @return There is nothing returned.  For performance reasons, the forward
 #'   table which was passed in is updated in-place.
 #'
 #' @seealso \code{\link{MakeBackwardTable}} to generate backward table;
-#'   \code{\link{Forward}} for analagous forward induction function.
+#'   \code{\link{Backward}} for analagous forward induction function.
 #'
 #' @examples
 #' \dontrun{
 #' bck <- MakeBackwardTable()
-#' Backward(bck, 100, Pi, mu, rho)
+#' Backward(bck, pars, 2500)
 #' }
 #'
 #' @export Backward

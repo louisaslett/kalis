@@ -2,11 +2,14 @@
 % Please edit documentation in R/Parameters.R
 \name{Parameters}
 \alias{Parameters}
-\title{Setup genetics parameters}
+\title{Setup kalis HMM parameters}
 \usage{
-Parameters(rho = 1e-16, mu = 1e-08, Pi = NULL)
+Parameters(rho = rep(0, get("L", envir = pkgVars) - 1), mu = 1e-08,
+  Pi = NULL)
 }
 \arguments{
+\item{rho}{recombination probability vector (must be L-1 long), see \code{CalcRho}}
+
 \item{mu}{a scalar (for uniform) or vector (for varying) mutation costs.}
 
 \item{Pi}{leaving the default of uniform copying probabilities is recommended for
@@ -14,15 +17,6 @@ computational efficiency.  If desired, a full matrix of background copying
 probabilities can be provided, such that the (i,j)-th element is the background
 probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
 the columns of Pi must sum to 1.}
-
-\item{morgan.dist}{a vector of recombination distances between loci, in Morgans.
-Note element i of this vector should be the distance between loci i and i+1
-(not i and i-1), and thus length one less than the haplotype length.}
-
-\item{Ne}{a scalar for the effective population size.  Can be autotuned, see ...}
-
-\item{gamma}{a scalar power to which the Morgan distances are raised.  Can be
-autotuned, see ...}
 }
 \value{
 A new parameters environment.
@@ -35,7 +29,7 @@ Detailed description
 }
 \examples{
 \dontrun{
-pars <- Parameters(CalcRho(Morgan.dist, 1, 1), rep(1e-08, L), Pi)
+pars <- Parameters(...)
 }
 
 }
