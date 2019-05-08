@@ -76,7 +76,7 @@
       <h1>Decoding a Single Locus</h1>
                         <h4 class="author">Louis Aslett &amp; Ryan Christ</h4>
             
-            <h4 class="date">2019-05-04</h4>
+            <h4 class="date">2019-05-07</h4>
       
       
       <div class="hidden name"><code>Decoding_a_Single_Locus.Rmd</code></div>
@@ -95,11 +95,11 @@
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="../reference/WriteIndividualHaplotypeH5.html">WriteIndividualHaplotypeH5</a></span>(<span class="st">"SmallHaps.h5"</span>,SmallHaps)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">#&gt; Creating HDF5 file ...</span></a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co">#&gt; Writing 100 haplotype(s) of size 500 ...</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw"><a href="../reference/CacheAllHaplotypesH5.html">CacheAllHaplotypesH5</a></span>(<span class="st">"SmallHaps.h5"</span>)</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw"><a href="../reference/CacheAllHaplotypes.html">CacheAllHaplotypes</a></span>(<span class="st">"SmallHaps.h5"</span>)</a>
 <a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co">#&gt; Cache loaded: 100 haplotypes of length 500 (consuming 0.000015 GB RAM)</span></a></code></pre></div>
 <p>From  we can inspect the haplotype cache to ensure that the data has loaded correctly using . With the haplotypes loaded, next we must specify our model parameters. First we supply a recombination map, <span class="math inline">\(m\)</span>, where <span class="math inline">\(m^\ell\)</span> is the distance between locus <span class="math inline">\(\ell\)</span> and <span class="math inline">\(\ell + 1\)</span> in Morgans. Here we randomly generate a recombination map and set the remaining parameters to their default values.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">m &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Beta">rbeta</a></span>(<span class="dv">500-1</span>,<span class="dv">1</span>,<span class="dv">10</span>)<span class="op">*</span><span class="fl">1e-6</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">pars &lt;-<span class="st"> </span><span class="kw"><a href="../reference/Parameters.html">Parameters</a></span>(<span class="dt">morgan.dist =</span> m, <span class="dt">Ne =</span> <span class="dv">1</span>, <span class="dt">gamma=</span><span class="dv">1</span>, <span class="dt">mu =</span> <span class="fl">1e-8</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb3-2" data-line-number="2">pars &lt;-<span class="st"> </span><span class="kw"><a href="../reference/Parameters.html">Parameters</a></span>(<span class="kw">CalcRho</span>(<span class="dt">morgan.dist =</span> m, <span class="dt">Ne =</span> <span class="dv">1</span>, <span class="dt">gamma =</span> <span class="dv">1</span>), <span class="dt">mu =</span> <span class="fl">1e-8</span>)</a></code></pre></div>
 <p>Next we must initialize a forward table object with our parameters that will start at locus <span class="math inline">\(0\)</span> and a backward table object that will start at the locus <span class="math inline">\(L+1\)</span>. We then use the function  to propagate the forward table  using parameters  to target locus <span class="math inline">\(250\)</span>. We do the same with the backward table using the  function. Note that  and  do not return anything, the tables  and  are updated in place.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">fwd &lt;-<span class="st"> </span><span class="kw"><a href="../reference/MakeForwardTable.html">MakeForwardTable</a></span>(pars)</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2">bck &lt;-<span class="st"> </span><span class="kw"><a href="../reference/MakeBackwardTable.html">MakeBackwardTable</a></span>(pars)</a>

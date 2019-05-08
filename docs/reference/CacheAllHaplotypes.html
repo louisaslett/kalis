@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Setup genetics parameters — Parameters • kalis</title>
+<title>Create memory cache of haplotypes — CacheAllHaplotypes • kalis</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Setup genetics parameters — Parameters" />
+<meta property="og:title" content="Create memory cache of haplotypes — CacheAllHaplotypes" />
 
-<meta property="og:description" content="Sets up the genetics parameters to be used for a problem." />
+<meta property="og:description" content="Load haplotypes from hard drive to memory." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -109,68 +109,77 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Setup genetics parameters</h1>
+    <h1>Create memory cache of haplotypes</h1>
     
-    <div class="hidden name"><code>Parameters.Rd</code></div>
+    <div class="hidden name"><code>CacheAllHaplotypes.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Sets up the genetics parameters to be used for a problem.</p>
+    <p>Load haplotypes from hard drive to memory.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>Parameters</span>(<span class='kw'>rho</span> <span class='kw'>=</span> <span class='fl'>1e-16</span>, <span class='kw'>mu</span> <span class='kw'>=</span> <span class='fl'>1e-08</span>, <span class='kw'>Pi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>CacheAllHaplotypes</span>(<span class='no'>file</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"auto"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>mu</th>
-      <td><p>a scalar (for uniform) or vector (for varying) mutation costs.</p></td>
+      <th>hdf5.file</th>
+      <td><p>the name of the file which the haplotypes are to be read from.</p></td>
     </tr>
     <tr>
-      <th>Pi</th>
-      <td><p>leaving the default of uniform copying probabilities is recommended for
-computational efficiency.  If desired, a full matrix of background copying
-probabilities can be provided, such that the (i,j)-th element is the background
-probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
-the columns of Pi must sum to 1.</p></td>
-    </tr>
-    <tr>
-      <th>morgan.dist</th>
-      <td><p>a vector of recombination distances between loci, in Morgans.
-Note element i of this vector should be the distance between loci i and i+1
-(not i and i-1), and thus length one less than the haplotype length.</p></td>
-    </tr>
-    <tr>
-      <th>Ne</th>
-      <td><p>a scalar for the effective population size.  Can be autotuned, see ...</p></td>
-    </tr>
-    <tr>
-      <th>gamma</th>
-      <td><p>a scalar power to which the Morgan distances are raised.  Can be
-autotuned, see ...</p></td>
+      <th>transpose</th>
+      <td><p>a logical value indicating whether to switch the
+interpretation of the slowest changing dimension (hence switching the
+number of haplotypes and the length)</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A new parameters environment.</p>
+    <p>Nothing is returned by the function.  However, a status message is
+  output indicating how the dimensions of the HDF5 <code>haps</code> object have
+  been interpreted.  If this message shows the dimensions incorrectly ordered,
+  call the function again with argument <code>transpose = TRUE</code>.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Detailed description</p>
+    <p>To achieve higher performance, kalis internally represents haplotypes
+in an efficient raw binary format in memory.  This function will load haplotypes
+from an HDF5 file and convert this into kalis' internal format ready for use
+by the other functions in this package.</p>
+<p>The package expects a 2-dimensional object named <code>haps</code> at the root
+level of the HDF5 file.  Haplotypes should be stored in the slowest changing
+dimension as defined in the HDF5 specification (note that different languages
+treat this as rows or columns).  If the haplotypes are stored in the other
+dimension then simply set the argument <code>transpose = TRUE</code>.
+If the user is unsure of the convention of
+the language they used to create the HDF5 file, then the simplest approach is
+to just load the data specifying only the HDF5 file name and then confirm
+that number of haplotypes and their length have not been exchanged.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='MakeForwardTable.html'>MakeForwardTable</a></code>, <code><a href='MakeForwardTable.html'>MakeForwardTable</a></code> which
-  construct table objects which internally reference a parameters environment.</p></div>
+    <div class='dont-index'><p><code><a href='ClearHaplotypeCache.html'>ClearHaplotypeCache</a></code> to remove the haplotypes from
+  the cache and free the memory.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='no'>pars</span> <span class='kw'>&lt;-</span> <span class='fu'>Parameters</span>(<span class='fu'>CalcRho</span>(<span class='no'>Morgan.dist</span>, <span class='fl'>1</span>, <span class='fl'>1</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1e-08</span>, <span class='no'>L</span>), <span class='no'>Pi</span>)
+    <pre class="examples"><div class='input'># Examples
+</div><span class='co'># NOT RUN {</span>
+<span class='co'># Load haplotypes to cache from an HDF5 file on disk</span>
+<span class='fu'>CacheAllHaplotypes</span>(<span class='st'>"myhaps.h5"</span>)
+
+<span class='co'># If the diagnostic message printed during the above indicates the numbers</span>
+<span class='co'># of haplotypes and their length are the wrong way around, reload with</span>
+<span class='co'># argument to transpose</span>
+<span class='fu'>CacheAllHaplotypes</span>(<span class='st'>"myhaps.h5"</span>, <span class='kw'>transpose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
+<span class='co'># When correct orientation is known, can avoid diagnostic messages for running</span>
+<span class='co'># in script files</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/message'>suppressMessages</a></span>(<span class='fu'>CacheAllHaplotypes</span>(<span class='st'>"myhaps.h5"</span>))
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>

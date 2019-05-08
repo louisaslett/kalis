@@ -27,7 +27,7 @@ data("SmallHaps")
 
 ```{r}
 WriteIndividualHaplotypeH5("SmallHaps.h5",SmallHaps)
-CacheAllHaplotypesH5("SmallHaps.h5")
+CacheAllHaplotypes("SmallHaps.h5")
 ```
 
 ```{r, echo = F, results = 'hide'}
@@ -38,7 +38,7 @@ From \code{R} we can inspect the haplotype cache to ensure that the data has loa
 
 ```{r}
 m <- rbeta(500-1,1,10)*1e-6
-pars <- Parameters(morgan.dist = m, Ne = 1, gamma=1, mu = 1e-8)
+pars <- Parameters(CalcRho(morgan.dist = m, Ne = 1, gamma = 1), mu = 1e-8)
 ```
 
 Next we must initialize a forward table object with our parameters that will start at locus $0$ and a backward table object that will start at the locus $L+1$.  We then use the function \code{Forward} to propagate the forward table \code{fwd} using parameters \code{pars} to target locus $250$.  We do the same with the backward table using the \code{Backward} function.  Note that \code{Forward} and \code{Backward} do not return anything, the tables \code{fwd} and \code{bck} are updated in place.
