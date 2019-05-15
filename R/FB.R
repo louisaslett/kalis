@@ -8,13 +8,12 @@
 #' @param fwd \code{kalisForwardTable} as returned by \code{\link{MakeForwardTable}}
 #' @param pars a \code{kalisParameters} object returned by \code{Parameters}
 #' @param t a locus position to move the forward table to.  Must be greater than
-#'   or equal to locus position of table provided in \code{fwd}.
+#'   or equal to \code{fwd$l}.
 #' @param nthreads the number of CPU cores to use
 #'
-#' @return There is nothing returned.  For performance reasons, the forward
-#'   table which was passed in is updated in-place.
+#' @return There is nothing returned.  For performance reasons, \code{fwd} is updated in-place.
 #'
-#' @seealso \code{\link{MakeForwardTable}} to generate forward table;
+#' @seealso \code{\link{MakeForwardTable}} to generate a forward table;
 #'   \code{\link{Backward}} for the analagous backward propagation function.
 #'
 #' @examples
@@ -70,18 +69,17 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
 #' Propagates a \code{kalisBackwardTable} to an upstream locus position (nothing is returned: the table is updated in-place).
 #'
 #' Backward implements the backward algorithm to advance the rescaled HMM backward probabilities stored in
-#' a \code{kalisBackwardTable} \code{bck} to a new target locus \code{t}.  Note that \code{t} must be less than or equal to the current locus, \code{bck$l}.
+#' \code{bck} to a new target locus \code{t}.  Note that \code{t} must be less than or equal to the current locus, \code{bck$l}.
 #'
 #' @param bck \code{kalisBackwardTable} as returned by \code{\link{MakeBackwardTable}}
 #' @param pars a \code{kalisParameters} object returned by \code{Parameters}
-#' @param t a locus position to move the forward table to.  Must be lessless than or equal to the current locus, \code{bck$l}.
+#' @param t a target locus position to move the backward table to.  Must be less than or equal to the current locus, \code{bck$l}.
 #' @param nthreads the number of CPU cores to use
 #'
-#' @return There is nothing returned.  For performance reasons, the forward
-#'   table which was passed in is updated in-place.
+#' @return There is nothing returned.  For performance reasons, \code{bck} is updated in-place.
 #'
 #' @seealso \code{\link{MakeBackwardTable}} to generate backward table;
-#'   \code{\link{Backward}} for analagous forward induction function.
+#'   \code{\link{Forward}} for the analagous forward propagation function.
 #'
 #' @examples
 #' \dontrun{

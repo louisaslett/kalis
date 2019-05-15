@@ -7,7 +7,7 @@ assign("L", NA, envir = pkgVars)
 # per the HDF5 spec definition.  This is "row-wise" in the C standard
 # spec, or "col-wise" in the rhdf5 spec.
 
-#' Create memory cache of haplotypes
+#' Load haplotypes
 #'
 #' Load haplotypes from hard drive to memory.
 #'
@@ -237,7 +237,7 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
 
 #' Remove all cached haplotypes and free memory
 #'
-#' Remove all the haplotypes that were cached by a previous caching call and
+#' Remove all the haplotypes that were cached by a previous call to \code{\link{CacheAllHaplotypes}} and
 #' free up the memory that was allocated for future use.
 #'
 #' To achieve higher performance, kalis internally represents haplotypes
@@ -249,8 +249,7 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
 #'
 #' @return Nothing is returned.
 #'
-#' @seealso \code{\link{CacheAllHaplotypesH5}} to propagate the newly created table forward
-#'   through the genome.
+#' @seealso \code{\link{CacheAllHaplotypes}} to create a haplotype cache.
 #'
 #' @examples
 #' # Examples
