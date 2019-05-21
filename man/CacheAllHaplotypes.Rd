@@ -2,7 +2,7 @@
 % Please edit documentation in R/CacheAllHaplotypes.R
 \name{CacheAllHaplotypes}
 \alias{CacheAllHaplotypes}
-\title{Create memory cache of haplotypes}
+\title{Load haplotypes}
 \usage{
 CacheAllHaplotypes(file, format = "auto", ...)
 }

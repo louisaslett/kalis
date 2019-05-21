@@ -45,60 +45,32 @@ Exact_ComputeTable_naive_cpp <- function(l, Pi, mu, rho) {
     .Call('_kalis_Exact_ComputeTable_naive_cpp', PACKAGE = 'kalis', l, Pi, mu, rho)
 }
 
-Dedip_min <- function(fwd, bck) {
-    .Call('_kalis_Dedip_min', PACKAGE = 'kalis', fwd, bck)
+Dedip_min <- function(fwd, bck, s) {
+    .Call('_kalis_Dedip_min', PACKAGE = 'kalis', fwd, bck, s)
 }
 
-Dedip_2nd_min <- function(fwd, bck) {
-    .Call('_kalis_Dedip_2nd_min', PACKAGE = 'kalis', fwd, bck)
+Dedip_2nd_min <- function(fwd, bck, s) {
+    .Call('_kalis_Dedip_2nd_min', PACKAGE = 'kalis', fwd, bck, s)
 }
 
-Dedip_max <- function(fwd, bck) {
-    .Call('_kalis_Dedip_max', PACKAGE = 'kalis', fwd, bck)
+Dedip_max <- function(fwd, bck, s) {
+    .Call('_kalis_Dedip_max', PACKAGE = 'kalis', fwd, bck, s)
 }
 
-Dedip_dom <- function(fwd, bck) {
-    .Call('_kalis_Dedip_dom', PACKAGE = 'kalis', fwd, bck)
+Dedip_dom <- function(fwd, bck, s) {
+    .Call('_kalis_Dedip_dom', PACKAGE = 'kalis', fwd, bck, s)
 }
 
-Dedip_add <- function(fwd, bck) {
-    .Call('_kalis_Dedip_add', PACKAGE = 'kalis', fwd, bck)
+Dedip_add <- function(fwd, bck, s) {
+    .Call('_kalis_Dedip_add', PACKAGE = 'kalis', fwd, bck, s)
 }
 
-Dedip_mean <- function(fwd, bck) {
-    .Call('_kalis_Dedip_mean', PACKAGE = 'kalis', fwd, bck)
+Dedip_mean <- function(fwd, bck, s) {
+    .Call('_kalis_Dedip_mean', PACKAGE = 'kalis', fwd, bck, s)
 }
 
-Dedip_all <- function(fwd, bck) {
-    .Call('_kalis_Dedip_all', PACKAGE = 'kalis', fwd, bck)
-}
-
-Dedip2_min <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip2_min', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip2_2nd_min <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip2_2nd_min', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip2_max <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip2_max', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip2_dom <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip2_dom', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip2_add <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip2_add', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip2_mean <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip2_mean', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip2_all <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip2_all', PACKAGE = 'kalis', fwd, bck, s)
+Dedip_all <- function(fwd, bck, s) {
+    .Call('_kalis_Dedip_all', PACKAGE = 'kalis', fwd, bck, s)
 }
 
 ExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {

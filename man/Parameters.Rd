@@ -2,27 +2,27 @@
 % Please edit documentation in R/Parameters.R
 \name{Parameters}
 \alias{Parameters}
-\title{Setup kalis HMM parameters}
+\title{Create rho from standard parameters}
 \usage{
 Parameters(rho = rep(0, get("L", envir = pkgVars) - 1), mu = 1e-08,
   Pi = NULL)
 }
 \arguments{
-\item{rho}{recombination probability vector (must be L-1 long), see \code{CalcRho}}
+\item{rho}{recombination probability vector (must be L-1 long), see \code{\link{CalcRho}}}
 
 \item{mu}{a scalar (for uniform) or vector (for varying) mutation costs.}
 
 \item{Pi}{leaving the default of uniform copying probabilities is recommended for
 computational efficiency.  If desired, a full matrix of background copying
-probabilities can be provided, such that the (i,j)-th element is the background
-probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
+probabilities can be provided, such that the (j,i)-th element is the background
+probability that j is copied by i.  Hence, (a) the diagonal must be zero; and (b)
 the columns of Pi must sum to 1.}
 }
 \value{
-A new parameters environment.
+A \code{kalisParameters} object.
 }
 \description{
-Sets up the genetics parameters to be used for a problem.
+Convenience function for calculating kalis recombination (renewal) probabilities from standard Pop. Gen. parameters.
 }
 \details{
 Detailed description
