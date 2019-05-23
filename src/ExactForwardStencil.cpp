@@ -114,6 +114,8 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 
 #if KALIS_PI == PI_MATRIX
       const double *__restrict__ PiRow = &(Pi[N*recipient]);
+#elif KALIS_PI == PI_SCALAR
+      const double Pirho  = Pi * rho[l-1];
 #endif
 
 #if KALIS_MU == MU_VECTOR && !defined(KALIS_1STEP)
@@ -160,7 +162,6 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
           _alpha3         = _mm256_fmadd_pd(_alpha3, _fratioMulOmRho, _pi3); // (Pi*rho + {(1-rho)*fratio} * alpha)
           _alpha4         = _mm256_fmadd_pd(_alpha4, _fratioMulOmRho, _pi4); // (Pi*rho + {(1-rho)*fratio} * alpha)
 #elif KALIS_PI == PI_SCALAR
-          double Pirho    = Pi * rho[l-1]
           __m256d _Pirho  = _mm256_set1_pd(Pirho);
 
           _alpha1         = _mm256_fmadd_pd(_alpha1, _fratioMulOmRho, _Pirho); // (Pi*rho + {(1-rho)*fratio} * alpha)
@@ -224,9 +225,9 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
       // Adjustments for scalar Pi
       alphaRow[recipient] = 0.0;
 #if KALIS_MU == MU_VECTOR
-      f[recipient-from_rec] -= (1.0-mu[l])*Pi;
+      f[recipient-from_rec] -= (1.0-mu[l])*Pirho;
 #else
-      f[recipient-from_rec] -= (1.0-mu)*Pi;
+      f[recipient-from_rec] -= (1.0-mu)*Pirho;
 #endif
 #endif
 
