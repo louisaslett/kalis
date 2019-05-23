@@ -75,15 +75,12 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 #endif
 #endif
 
-      fold[recipient_alpha] = -log(fold[recipient_alpha]*rho[0]);
+      fold[recipient_alpha] = -log(fold[recipient_alpha]);
     }
   }
 
   const int_fast32_t reset_l = l;
 
-#if KALIS_PI == PI_SCALAR
-  const __m256d _Pi = _mm256_set1_pd(Pi);
-#endif
 
 #if KALIS_MU == MU_SCALAR && !defined(KALIS_1STEP)
   // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
@@ -146,20 +143,30 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
           __m256d _alpha4 = _mm256_loadu_pd(alphaNow4);
 
 #if KALIS_PI == PI_MATRIX
+          __m256d _rho    = _mm256_set1_pd(rho[l-1]);
+
           __m256d _pi1    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4);
           __m256d _pi2    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 4);
           __m256d _pi3    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 8);
           __m256d _pi4    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 12);
 
-          _alpha1         = _mm256_fmadd_pd(_alpha1, _fratioMulOmRho, _pi1); // (Pi + {(1-rho)*fratio} * alpha)
-          _alpha2         = _mm256_fmadd_pd(_alpha2, _fratioMulOmRho, _pi2); // (Pi + {(1-rho)*fratio} * alpha)
-          _alpha3         = _mm256_fmadd_pd(_alpha3, _fratioMulOmRho, _pi3); // (Pi + {(1-rho)*fratio} * alpha)
-          _alpha4         = _mm256_fmadd_pd(_alpha4, _fratioMulOmRho, _pi4); // (Pi + {(1-rho)*fratio} * alpha)
+          _pi1            = _mm256_mul_pd(_pi1, _rho);
+          _pi2            = _mm256_mul_pd(_pi2, _rho);
+          _pi3            = _mm256_mul_pd(_pi3, _rho);
+          _pi4            = _mm256_mul_pd(_pi4, _rho);
+
+          _alpha1         = _mm256_fmadd_pd(_alpha1, _fratioMulOmRho, _pi1); // (Pi*rho + {(1-rho)*fratio} * alpha)
+          _alpha2         = _mm256_fmadd_pd(_alpha2, _fratioMulOmRho, _pi2); // (Pi*rho + {(1-rho)*fratio} * alpha)
+          _alpha3         = _mm256_fmadd_pd(_alpha3, _fratioMulOmRho, _pi3); // (Pi*rho + {(1-rho)*fratio} * alpha)
+          _alpha4         = _mm256_fmadd_pd(_alpha4, _fratioMulOmRho, _pi4); // (Pi*rho + {(1-rho)*fratio} * alpha)
 #elif KALIS_PI == PI_SCALAR
-          _alpha1         = _mm256_fmadd_pd(_alpha1, _fratioMulOmRho, _Pi); // (Pi + {(1-rho)*fratio} * alpha)
-          _alpha2         = _mm256_fmadd_pd(_alpha2, _fratioMulOmRho, _Pi); // (Pi + {(1-rho)*fratio} * alpha)
-          _alpha3         = _mm256_fmadd_pd(_alpha3, _fratioMulOmRho, _Pi); // (Pi + {(1-rho)*fratio} * alpha)
-          _alpha4         = _mm256_fmadd_pd(_alpha4, _fratioMulOmRho, _Pi); // (Pi + {(1-rho)*fratio} * alpha)
+          double Pirho    = Pi * rho[l-1]
+          __m256d _Pirho  = _mm256_set1_pd(Pirho);
+
+          _alpha1         = _mm256_fmadd_pd(_alpha1, _fratioMulOmRho, _Pirho); // (Pi*rho + {(1-rho)*fratio} * alpha)
+          _alpha2         = _mm256_fmadd_pd(_alpha2, _fratioMulOmRho, _Pirho); // (Pi*rho + {(1-rho)*fratio} * alpha)
+          _alpha3         = _mm256_fmadd_pd(_alpha3, _fratioMulOmRho, _Pirho); // (Pi*rho + {(1-rho)*fratio} * alpha)
+          _alpha4         = _mm256_fmadd_pd(_alpha4, _fratioMulOmRho, _Pirho); // (Pi*rho + {(1-rho)*fratio} * alpha)
 #endif
 
 #if !defined(KALIS_1STEP)
@@ -203,13 +210,13 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
         int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
 #if KALIS_PI == PI_SCALAR && !defined(KALIS_1STEP)
-        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (Pi + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
+        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (Pirho + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
 #elif KALIS_PI == PI_MATRIX && !defined(KALIS_1STEP)
-        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (PiRow[(N/(32*8))*32*8+donor] + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
+        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (PiRow[(N/(32*8))*32*8+donor] * rho[l-1] + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
 #elif KALIS_PI == PI_SCALAR && defined(KALIS_1STEP)
-        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = 1.0 * (Pi + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
+        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = 1.0 * (Pirho + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
 #elif KALIS_PI == PI_MATRIX && defined(KALIS_1STEP)
-        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = 1.0 * (PiRow[(N/(32*8))*32*8+donor] + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
+        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = 1.0 * (PiRow[(N/(32*8))*32*8+donor] * rho[l-1] + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
 #endif
       }
 
@@ -228,7 +235,7 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
       f[recipient-from_rec] += ((double*)&_f)[0] + ((double*)&_f)[2];
 
       foldold[recipient_alpha] = fold[recipient_alpha];
-      fold[recipient_alpha] = -(log(f[recipient-from_rec] * rho[l]) - fold[recipient_alpha]);
+      fold[recipient_alpha] = -(log(f[recipient-from_rec]) - fold[recipient_alpha]);
     }
   }
 
