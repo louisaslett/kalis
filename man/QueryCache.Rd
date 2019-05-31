@@ -38,6 +38,6 @@ QueryCache(...)
 
 }
 \seealso{
-\code{\link{CacheAllHaplotypes}} to fill the memory cache with
+\code{\link{CacheHaplotypes}} to fill the memory cache with
 haplotypes.
 }

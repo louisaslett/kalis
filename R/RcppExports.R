@@ -21,8 +21,12 @@ Backward_scalarPi_scalarmu_cpp <- function(bck, t, Pi, mu, rho, nthreads) {
     invisible(.Call('_kalis_Backward_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', bck, t, Pi, mu, rho, nthreads))
 }
 
-CacheAllHaplotypesH52 <- function(nexthaps, N, L) {
-    .Call('_kalis_CacheAllHaplotypesH52', PACKAGE = 'kalis', nexthaps, N, L)
+CacheHaplotypes_matrix_2 <- function(x, N, L, transpose) {
+    .Call('_kalis_CacheHaplotypes_matrix_2', PACKAGE = 'kalis', x, N, L, transpose)
+}
+
+CacheHaplotypes_hdf5_2 <- function(nexthaps, N, L) {
+    .Call('_kalis_CacheHaplotypes_hdf5_2', PACKAGE = 'kalis', nexthaps, N, L)
 }
 
 QueryCache2_ind <- function(idx) {

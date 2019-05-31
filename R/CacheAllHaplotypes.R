@@ -33,7 +33,8 @@ assign("L", NA, envir = pkgVars)
 #' that number of haplotypes and their length have not been exchanged in the diagnostic
 #' output which kalis prints.
 #'
-#' @param file the name of the file which the haplotypes are to be read from.
+#' @param haps can be the name of a file from which the haplotypes are to be read, or
+#'   can be a binary R matrix.
 #' @param format the file format which `file` is stored in, or `"auto"` to
 #'   detect format based on the file extension.  Recognised options are `"hdf5"`
 #'   and `"vcf"`
@@ -58,51 +59,82 @@ assign("L", NA, envir = pkgVars)
 #' # Examples
 #' \dontrun{
 #' # Load haplotypes to cache from an HDF5 file on disk
-#' CacheAllHaplotypes("myhaps.h5")
+#' CacheHaplotypes("myhaps.h5")
 #'
 #' # If the diagnostic message printed during the above indicates the numbers
 #' # of haplotypes and their length are the wrong way around, reload with
 #' # argument to transpose
-#' CacheAllHaplotypes("myhaps.h5", transpose = TRUE)
+#' CacheHaplotypes("myhaps.h5", transpose = TRUE)
 #'
 #' # When correct orientation is known, can avoid diagnostic messages for running
 #' # in script files
-#' suppressMessages(CacheAllHaplotypes("myhaps.h5"))
+#' suppressMessages(CacheHaplotypes("myhaps.h5"))
 #' }
 #'
 #' @export
-CacheAllHaplotypes <- function(file, format = "auto", ...) {
-  if(!file.exists(file)) {
-    if(!is.na(get("N", envir = pkgVars))) {
-      stop("Cannot find file to make new cache. Keeping existing cache.")
-    } else {
-      stop("Cannot find file.")
+CacheHaplotypes <- function(haps, format = "auto", ...) {
+  if(is.character(haps)) {
+    if(!file.exists(haps)) {
+      if(!is.na(get("N", envir = pkgVars))) {
+        stop("Cannot find file to make new cache. Keeping existing cache.")
+      } else {
+        stop("Cannot find file.")
+      }
     }
-  }
 
-  cached <- FALSE
-  ext <- stringr::str_to_lower(stringr::str_extract(file, stringr::regex("\\.[0-9a-z]+$")))
+    cached <- FALSE
+    ext <- stringr::str_to_lower(stringr::str_extract(haps, stringr::regex("\\.[0-9a-z]+$")))
 
-  if(format == "hdf5" ||
-     (format == "auto" && (ext == ".h5" ||
-                           ext == ".hdf5"))) {
-    CacheAllHaplotypesH5(file, ...)
-    cached <- TRUE
-  }
-  if(format == "vcf" ||
-     (format == "auto" && (ext == ".vcf" ||
-                           ext == ".gz" && stringr::str_to_lower(stringr::str_extract(file, stringr::regex("\\.[0-9a-z]\\.[0-9a-z]+$"))) == ".vcf.gz"))) {
-    message("Native import of VCF is currently not supported.  Please see the vignettes for a simple script to convert VCF to HDF5.")
-    cached <- TRUE
-  }
+    if(format == "hdf5" ||
+       (format == "auto" && (ext == ".h5" ||
+                             ext == ".hdf5"))) {
+      CacheHaplotypes.hdf5(haps, ...)
+      cached <- TRUE
+    }
+    if(format == "vcf" ||
+       (format == "auto" && (ext == ".vcf" ||
+                             ext == ".gz" && stringr::str_to_lower(stringr::str_extract(haps, stringr::regex("\\.[0-9a-z]\\.[0-9a-z]+$"))) == ".vcf.gz"))) {
+      message("Native import of VCF is currently not supported.  Please see the vignettes for a simple script to convert VCF to HDF5.")
+      cached <- TRUE
+    }
 
-  if(!cached) {
-    stop("Unable to identify file format.")
+    if(!cached) {
+      stop("Unable to identify file format.")
+    }
+  } else if(is.matrix(haps) || is.data.frame(haps)) {
+    if(!is.integer(haps)) {
+      stop("Haplotype matrix must be integer.")
+    }
+    if(any(!(haps == 1 || haps == 0))) {
+      stop("All entries in haplotype matrix must be zero or one.")
+    }
+    CacheHaplotypes.matrix(haps, ...)
+  } else {
+    stop("Unable to load haplotypes from the provided object.")
   }
 }
 
-CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
+CacheHaplotypes.matrix <- function(x, transpose = FALSE) {
+  if(!is.na(get("N", envir = pkgVars))) {
+    warning("haplotypes already cached ... overwriting existing cache.")
+    ClearHaplotypeCache()
+  }
 
+  # Get dimensions of haplotype data
+  if(!transpose) {
+    N <- dim(x)[2]
+    L <- dim(x)[1]
+  } else {
+    N <- dim(x)[1]
+    L <- dim(x)[2]
+  }
+  assign("N", N, envir = pkgVars)
+
+  # Cache it!
+  assign("L", CacheHaplotypes_matrix_2(x, N, L, transpose), envir = pkgVars)
+}
+
+CacheHaplotypes.hdf5 <- function(hdf5.file, transpose = FALSE) {
   # Check for file and dataset within file
   if(!file.exists(hdf5.file)) {
     if(!is.na(get("N", envir = pkgVars))) {
@@ -167,7 +199,7 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
   }
 
   # Cache it!
-  assign("L", CacheAllHaplotypesH52(make.hdf5.access(hdf5.file, N, L), N, L), envir = pkgVars)
+  assign("L", CacheHaplotypes_hdf5_2(make.hdf5.access(hdf5.file, N, L), N, L), envir = pkgVars)
 }
 
 #' Retrieve haplotypes from memory cache
@@ -190,7 +222,7 @@ CacheAllHaplotypesH5 <- function(hdf5.file, transpose = FALSE) {
 #' @return A matrix of 0/1 integers with `length` rows and
 #'   `length(ids)` columns, such that haplotypes appear in columns.
 #'
-#' @seealso \code{\link{CacheAllHaplotypes}} to fill the memory cache with
+#' @seealso \code{\link{CacheHaplotypes}} to fill the memory cache with
 #'   haplotypes.
 #'
 #' @examples
@@ -249,7 +281,7 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
 #'
 #' @return Nothing is returned.
 #'
-#' @seealso \code{\link{CacheAllHaplotypesH5}} to propagate the newly created table forward
+#' @seealso \code{\link{CacheHaplotypes}} to propagate the newly created table forward
 #'   through the genome.
 #'
 #' @examples
