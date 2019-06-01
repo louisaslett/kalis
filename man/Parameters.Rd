@@ -5,7 +5,7 @@
 \title{Setup kalis HMM parameters}
 \usage{
 Parameters(rho = rep(0, get("L", envir = pkgVars) - 1), mu = 1e-08,
-  Pi = NULL)
+  Pi = NULL, check.rho = TRUE)
 }
 \arguments{
 \item{rho}{recombination probability vector (must be L-1 long), see \code{CalcRho}}
@@ -17,6 +17,10 @@ computational efficiency.  If desired, a full matrix of background copying
 probabilities can be provided, such that the (i,j)-th element is the background
 probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
 the columns of Pi must sum to 1.}
+
+\item{check.rho}{if TRUE, a check that rho is within machine precision will be
+performed.  If you have created rho using \code{\link{CalcRho}} with \code{floor=TRUE}
+then this will be satisfied.}
 }
 \value{
 A new parameters environment.
