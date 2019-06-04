@@ -2,7 +2,10 @@
 #'
 #' Sets up the Li & Stephens HMM transition probabilities rho to be used for a problem.
 #'
-#' Detailed description
+#' See page 3 in Supplemental Information for the original ChromoPainter paper for motivation behind our parameterization:
+#' Lawson, Hellenthal, Myers, and Falush (2012), "Inference of population structure using dense haplotype data", PLoS Genetics, 8 (e1002453).
+#'
+#' [Insert link to paper for rho maths.]
 #'
 #' @param morgan.dist a vector specifying the recombination distance between loci in Morgans .
 #'   Note element i of this vector should be the distance between loci i and i+1
@@ -62,24 +65,24 @@ CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE) {
 }
 
 
-#' Setup kalis HMM parameters
+#' Create rho from standard parameters
 #'
-#' Sets up the genetics parameters to be used for a problem.
+#' Convenience function for calculating kalis recombination (renewal) probabilities from standard Pop. Gen. parameters.
 #'
 #' Detailed description
 #'
-#' @param rho recombination probability vector (must be L-1 long), see \code{CalcRho}
+#' @param rho recombination probability vector (must be L-1 long), see \code{\link{CalcRho}}
 #' @param mu a scalar (for uniform) or vector (for varying) mutation costs.
 #' @param Pi leaving the default of uniform copying probabilities is recommended for
 #'   computational efficiency.  If desired, a full matrix of background copying
-#'   probabilities can be provided, such that the (i,j)-th element is the background
-#'   probability that j copies i.  Hence, (a) the diagonal must be zero; and (b)
+#'   probabilities can be provided, such that the (j,i)-th element is the background
+#'   probability that j is copied by i.  Hence, (a) the diagonal must be zero; and (b)
 #'   the columns of Pi must sum to 1.
 #' @param check.rho if TRUE, a check that rho is within machine precision will be
 #'   performed.  If you have created rho using \code{\link{CalcRho}} with \code{floor=TRUE}
 #'   then this will be satisfied.
 #'
-#' @return A new parameters environment.
+#' @return A \code{kalisParameters} object.
 #'
 #' @seealso \code{\link{MakeForwardTable}}, \code{\link{MakeForwardTable}} which
 #'   construct table objects which internally reference a parameters environment.

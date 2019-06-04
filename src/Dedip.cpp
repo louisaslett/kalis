@@ -4,7 +4,7 @@ using namespace Rcpp;
 #include <algorithm>
 
 // [[Rcpp::export]]
-NumericVector Dedip_min(NumericMatrix fwd, NumericMatrix bck) {
+NumericVector Dedip_min(NumericMatrix fwd, NumericMatrix bck, NumericVector s) {
   int N = fwd.ncol();
   if(N%2!=0) {
     stop("Dimension not even.");
@@ -19,10 +19,10 @@ NumericVector Dedip_min(NumericMatrix fwd, NumericMatrix bck) {
         res[k++] = 0.0;
         continue;
       }
-      quad[0] = (fwd(2*i  ,2*j)   * bck(2*i,  2*j))   * (fwd(2*j  ,2*i)   * bck(2*j  ,2*i));
-      quad[1] = (fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i)   * bck(2*j+1,2*i));
-      quad[2] = (fwd(2*i+1,2*j)   * bck(2*i+1,2*j))   * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1));
-      quad[3] = (fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1));
+      quad[0] = ((fwd(2*i  ,2*j)   * bck(2*i,  2*j))   * (fwd(2*j  ,2*i)   * bck(2*j  ,2*i))) / (s[2*j] * s[2*i]) ;
+      quad[1] = ((fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i)   * bck(2*j+1,2*i))) / (s[2*j+1] * s[2*i]);
+      quad[2] = ((fwd(2*i+1,2*j)   * bck(2*i+1,2*j))   * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1))) / (s[2*j] * s[2*i+1]);
+      quad[3] = ((fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1))) / (s[2*j+1] * s[2*i+1]);
       res[k++] = -0.5*log(max(quad));
     }
   }
@@ -31,7 +31,7 @@ NumericVector Dedip_min(NumericMatrix fwd, NumericMatrix bck) {
 }
 
 // [[Rcpp::export]]
-NumericVector Dedip_2nd_min(NumericMatrix fwd, NumericMatrix bck) {
+NumericVector Dedip_2nd_min(NumericMatrix fwd, NumericMatrix bck, NumericVector s) {
   int N = fwd.ncol();
   if(N%2!=0) {
     stop("Dimension not even.");
@@ -46,10 +46,10 @@ NumericVector Dedip_2nd_min(NumericMatrix fwd, NumericMatrix bck) {
         res[k++] = 0.0;
         continue;
       }
-      quad[0] = (fwd(2*i  ,2*j)   * bck(2*i,  2*j))   * (fwd(2*j  ,2*i)   * bck(2*j  ,2*i));
-      quad[1] = (fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i)   * bck(2*j+1,2*i));
-      quad[2] = (fwd(2*i+1,2*j)   * bck(2*i+1,2*j))   * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1));
-      quad[3] = (fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1));
+      quad[0] = ((fwd(2*i  ,2*j)   * bck(2*i,  2*j))   * (fwd(2*j  ,2*i)   * bck(2*j  ,2*i))) / (s[2*j] * s[2*i]) ;
+      quad[1] = ((fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i)   * bck(2*j+1,2*i))) / (s[2*j+1] * s[2*i]);
+      quad[2] = ((fwd(2*i+1,2*j)   * bck(2*i+1,2*j))   * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1))) / (s[2*j] * s[2*i+1]);
+      quad[3] = ((fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1))) / (s[2*j+1] * s[2*i+1]);
       res[k++] = -0.5*log(quad.sort()[2]);
     }
   }
@@ -58,7 +58,7 @@ NumericVector Dedip_2nd_min(NumericMatrix fwd, NumericMatrix bck) {
 }
 
 // [[Rcpp::export]]
-NumericVector Dedip_max(NumericMatrix fwd, NumericMatrix bck) {
+NumericVector Dedip_max(NumericMatrix fwd, NumericMatrix bck, NumericVector s) {
   int N = fwd.ncol();
   if(N%2!=0) {
     stop("Dimension not even.");
@@ -73,10 +73,10 @@ NumericVector Dedip_max(NumericMatrix fwd, NumericMatrix bck) {
         res[k++] = 0.0;
         continue;
       }
-      quad[0] = (fwd(2*i  ,2*j)   * bck(2*i,  2*j))   * (fwd(2*j  ,2*i)   * bck(2*j  ,2*i));
-      quad[1] = (fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i)   * bck(2*j+1,2*i));
-      quad[2] = (fwd(2*i+1,2*j)   * bck(2*i+1,2*j))   * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1));
-      quad[3] = (fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1));
+      quad[0] = ((fwd(2*i  ,2*j)   * bck(2*i,  2*j))   * (fwd(2*j  ,2*i)   * bck(2*j  ,2*i))) / (s[2*j] * s[2*i]) ;
+      quad[1] = ((fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i)   * bck(2*j+1,2*i))) / (s[2*j+1] * s[2*i]);
+      quad[2] = ((fwd(2*i+1,2*j)   * bck(2*i+1,2*j))   * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1))) / (s[2*j] * s[2*i+1]);
+      quad[3] = ((fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1))) / (s[2*j+1] * s[2*i+1]);
       res[k++] = -0.5*log(min(quad));
     }
   }
@@ -85,7 +85,7 @@ NumericVector Dedip_max(NumericMatrix fwd, NumericMatrix bck) {
 }
 
 // [[Rcpp::export]]
-NumericVector Dedip_dom(NumericMatrix fwd, NumericMatrix bck) {
+NumericVector Dedip_dom(NumericMatrix fwd, NumericMatrix bck, NumericVector s) {
   int N = fwd.ncol();
   if(N%2!=0) {
     stop("Dimension not even.");
@@ -100,10 +100,10 @@ NumericVector Dedip_dom(NumericMatrix fwd, NumericMatrix bck) {
         res[k++] = 0.0;
         continue;
       }
-      quad[0] = (fwd(2*i  ,2*j)   * bck(2*i,  2*j))   * (fwd(2*j  ,2*i)   * bck(2*j  ,2*i));
-      quad[1] = (fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i)   * bck(2*j+1,2*i));
-      quad[2] = (fwd(2*i+1,2*j)   * bck(2*i+1,2*j))   * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1));
-      quad[3] = (fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1));
+      quad[0] = ((fwd(2*i  ,2*j)   * bck(2*i,  2*j))   * (fwd(2*j  ,2*i)   * bck(2*j  ,2*i))) / (s[2*j] * s[2*i]) ;
+      quad[1] = ((fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i)   * bck(2*j+1,2*i))) / (s[2*j+1] * s[2*i]);
+      quad[2] = ((fwd(2*i+1,2*j)   * bck(2*i+1,2*j))   * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1))) / (s[2*j] * s[2*i+1]);
+      quad[3] = ((fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1))) / (s[2*j+1] * s[2*i+1]);
       res[k++] = -0.5*log(std::max(std::min(quad[0], quad[3]), std::min(quad[1], quad[2])));
     }
   }
@@ -112,7 +112,7 @@ NumericVector Dedip_dom(NumericMatrix fwd, NumericMatrix bck) {
 }
 
 // [[Rcpp::export]]
-NumericVector Dedip_add(NumericMatrix fwd, NumericMatrix bck) {
+NumericVector Dedip_add(NumericMatrix fwd, NumericMatrix bck, NumericVector s) {
   int N = fwd.ncol();
   if(N%2!=0) {
     stop("Dimension not even.");
@@ -128,10 +128,10 @@ NumericVector Dedip_add(NumericMatrix fwd, NumericMatrix bck) {
         continue;
       }
       tot1 = (fwd(2*i  ,2*j) * bck(2*i,  2*j)) * (fwd(2*j  ,2*i) * bck(2*j  ,2*i))
-        * (fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1));
+      * (fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1));
       tot2 = (fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i) * bck(2*j+1,2*i))
-        * (fwd(2*i+1,2*j) * bck(2*i+1,2*j)) * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1));
-      res[k++] = -0.25*log(std::max(tot1, tot2));
+      * (fwd(2*i+1,2*j) * bck(2*i+1,2*j)) * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1));
+      res[k++] = -0.25*log(std::max(tot1, tot2) / ((s[2*i] * s[2*i+1])*(s[2*j]*s[2*j+1])));
     }
   }
 
@@ -139,7 +139,7 @@ NumericVector Dedip_add(NumericMatrix fwd, NumericMatrix bck) {
 }
 
 // [[Rcpp::export]]
-NumericVector Dedip_mean(NumericMatrix fwd, NumericMatrix bck) {
+NumericVector Dedip_mean(NumericMatrix fwd, NumericMatrix bck, NumericVector s) {
   int N = fwd.ncol();
   if(N%2!=0) {
     stop("Dimension not even.");
@@ -148,6 +148,7 @@ NumericVector Dedip_mean(NumericMatrix fwd, NumericMatrix bck) {
   NumericVector res(((N/2+1)*N/2)/2);
   int k=0;
   double tot;
+  double normconst;
   for(int i=0; i<N/2; i++) {
     for(int j=i; j<N/2; j++) {
       if(i==j) {
@@ -155,10 +156,11 @@ NumericVector Dedip_mean(NumericMatrix fwd, NumericMatrix bck) {
         continue;
       }
       tot = (fwd(2*i  ,2*j) * bck(2*i,  2*j)) * (fwd(2*j  ,2*i) * bck(2*j  ,2*i))
-        * (fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i) * bck(2*j+1,2*i))
-        * (fwd(2*i+1,2*j) * bck(2*i+1,2*j)) * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1))
-        * (fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1));
-      res[k++] = -0.125*log(tot);
+      * (fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i) * bck(2*j+1,2*i))
+      * (fwd(2*i+1,2*j) * bck(2*i+1,2*j)) * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1))
+      * (fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1));
+      normconst = (s[2*i] * s[2*i+1])*(s[2*j]*s[2*j+1]);
+      res[k++] = -0.125*log(tot / (normconst * normconst) );
     }
   }
 
@@ -166,7 +168,7 @@ NumericVector Dedip_mean(NumericMatrix fwd, NumericMatrix bck) {
 }
 
 // [[Rcpp::export]]
-List Dedip_all(NumericMatrix fwd, NumericMatrix bck) {
+List Dedip_all(NumericMatrix fwd, NumericMatrix bck, NumericVector s) {
   int N = fwd.ncol();
   if(N%2!=0) {
     stop("Dimension not even.");
@@ -187,10 +189,10 @@ List Dedip_all(NumericMatrix fwd, NumericMatrix bck) {
         k++;
         continue;
       }
-      quad[0] = (fwd(2*i  ,2*j)   * bck(2*i,  2*j))   * (fwd(2*j  ,2*i)   * bck(2*j  ,2*i));
-      quad[1] = (fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i)   * bck(2*j+1,2*i));
-      quad[2] = (fwd(2*i+1,2*j)   * bck(2*i+1,2*j))   * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1));
-      quad[3] = (fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1));
+      quad[0] = ((fwd(2*i  ,2*j)   * bck(2*i,  2*j))   * (fwd(2*j  ,2*i)   * bck(2*j  ,2*i))) / (s[2*j] * s[2*i]) ;
+      quad[1] = ((fwd(2*i  ,2*j+1) * bck(2*i,  2*j+1)) * (fwd(2*j+1,2*i)   * bck(2*j+1,2*i))) / (s[2*j+1] * s[2*i]);
+      quad[2] = ((fwd(2*i+1,2*j)   * bck(2*i+1,2*j))   * (fwd(2*j  ,2*i+1) * bck(2*j  ,2*i+1))) / (s[2*j] * s[2*i+1]);
+      quad[3] = ((fwd(2*i+1,2*j+1) * bck(2*i+1,2*j+1)) * (fwd(2*j+1,2*i+1) * bck(2*j+1,2*i+1))) / (s[2*j+1] * s[2*i+1]);
       res_min[k]    = -0.5*log(max(quad));
       res_min2nd[k] = -0.5*log(quad.sort()[2]);
       res_dom[k]    = -0.5*log(std::max(std::min(quad[0], quad[3]), std::min(quad[1], quad[2])));

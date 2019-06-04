@@ -25,7 +25,10 @@ A vector of transition probabilities
 Sets up the Li & Stephens HMM transition probabilities rho to be used for a problem.
 }
 \details{
-Detailed description
+See page 3 in Supplemental Information for the original ChromoPainter paper for motivation behind our parameterization:
+Lawson, Hellenthal, Myers, and Falush (2012), "Inference of population structure using dense haplotype data", PLoS Genetics, 8 (e1002453).
+
+\link{Insert link to paper for rho maths.}
 }
 \examples{
 \dontrun{

@@ -29,6 +29,5 @@ ClearHaplotypeCache()
 
 }
 \seealso{
-\code{\link{CacheHaplotypes}} to propagate the newly created table forward
-through the genome.
+\code{\link{CacheHaplotypes}} to create a haplotype cache.
 }

@@ -12,13 +12,12 @@ Forward(fwd, pars, t = fwd$l + 1, nthreads = 1)
 \item{pars}{a \code{kalisParameters} object returned by \code{Parameters}}
 
 \item{t}{a locus position to move the forward table to.  Must be greater than
-or equal to locus position of table provided in \code{fwd}.}
+or equal to \code{fwd$l}.}
 
 \item{nthreads}{the number of CPU cores to use}
 }
 \value{
-There is nothing returned.  For performance reasons, the forward
-table which was passed in is updated in-place.
+There is nothing returned.  For performance reasons, \code{fwd} is updated in-place.
 }
 \description{
 Propagates a \code{kalisForwardTable} to a downstream locus position (nothing is returned: the table is updated in-place).
@@ -35,6 +34,6 @@ Forward(fwd, 100, Pi, mu, rho)
 
 }
 \seealso{
-\code{\link{MakeForwardTable}} to generate forward table;
+\code{\link{MakeForwardTable}} to generate a forward table;
 \code{\link{Backward}} for the analagous backward propagation function.
 }

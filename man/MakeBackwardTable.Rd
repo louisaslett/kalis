@@ -19,7 +19,7 @@ table.  By default includes from the first recipient haplotype.}
 table.  By default includes to the last recipient haplotype.}
 }
 \value{
-a specialized list of class \code{kalisBackwardTable}.  For a given \code{kalisBackwardTable}, \code{bck},
+A specialized list of class \code{kalisBackwardTable}.  For a given \code{kalisBackwardTable}, \code{bck},
 \code{bck$l} denotes the current locus position of \code{fwd}.  \code{bck$beta} is a matrix of rescaled backward probabilities under the Li & Stephens HMM.
 Each column of \code{bck$beta} corresponds to an independent HMM such that \eqn{\beta^\ell_{ji}}
 is proportional to the probability of observing haplotype \eqn{i} from locus \eqn{l+1} up through locus \eqn{L} given that haplotype \eqn{j}
@@ -31,7 +31,7 @@ If a user attempts to interact a \code{kalisBackwardTable} with a \code{kalisFor
 parameters, an error will be thrown.
 }
 \description{
-Allocates the memory for and initializes up a backward table.
+Allocates the memory for and initializes a backward table.
 }
 \details{
 \code{MakeBackwardTable} returns a \code{kalisBackwardTable} object appropriate for

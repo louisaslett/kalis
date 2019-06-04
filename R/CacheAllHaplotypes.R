@@ -281,8 +281,7 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
 #'
 #' @return Nothing is returned.
 #'
-#' @seealso \code{\link{CacheHaplotypes}} to propagate the newly created table forward
-#'   through the genome.
+#' @seealso \code{\link{CacheHaplotypes}} to create a haplotype cache.
 #'
 #' @examples
 #' # Examples

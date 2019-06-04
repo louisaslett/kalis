@@ -11,20 +11,19 @@ Backward(bck, pars, t = bck$l - 1, nthreads = 1)
 
 \item{pars}{a \code{kalisParameters} object returned by \code{Parameters}}
 
-\item{t}{a locus position to move the forward table to.  Must be lessless than or equal to the current locus, \code{bck$l}.}
+\item{t}{a target locus position to move the backward table to.  Must be less than or equal to the current locus, \code{bck$l}.}
 
 \item{nthreads}{the number of CPU cores to use}
 }
 \value{
-There is nothing returned.  For performance reasons, the forward
-table which was passed in is updated in-place.
+There is nothing returned.  For performance reasons, \code{bck} is updated in-place.
 }
 \description{
 Propagates a \code{kalisBackwardTable} to an upstream locus position (nothing is returned: the table is updated in-place).
 }
 \details{
 Backward implements the backward algorithm to advance the rescaled HMM backward probabilities stored in
-a \code{kalisBackwardTable} \code{bck} to a new target locus \code{t}.  Note that \code{t} must be less than or equal to the current locus, \code{bck$l}.
+\code{bck} to a new target locus \code{t}.  Note that \code{t} must be less than or equal to the current locus, \code{bck$l}.
 }
 \examples{
 \dontrun{
@@ -35,5 +34,5 @@ Backward(bck, pars, 2500)
 }
 \seealso{
 \code{\link{MakeBackwardTable}} to generate backward table;
-\code{\link{Backward}} for analagous forward induction function.
+\code{\link{Forward}} for the analagous forward propagation function.
 }

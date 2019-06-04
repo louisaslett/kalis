@@ -8,7 +8,7 @@
 MakeForwardTable(pars, from_recipient = 1, to_recipient = Inf)
 }
 \arguments{
-\item{pars}{a \code{kalisParameters} environment specifying the genetics
+\item{pars}{a \code{kalisParameters} object specifying the genetics
 parameters to be associated with this forward table.  These parameters can
 be set up by using the \code{\link{Parameters}} function.}
 
@@ -19,7 +19,7 @@ table.  By default includes from the first recipient haplotype.}
 table.  By default includes to the last recipient haplotype.}
 }
 \value{
-a specialized list of class \code{kalisForwardTable}.  For a given \code{kalisForwardTable}, \code{fwd},
+A specialized list of class \code{kalisForwardTable}.  For a given \code{kalisForwardTable}, \code{fwd},
 \code{fwd$l} denotes the current locus position of \code{fwd}.  \code{fwd$alpha} is a matrix of rescaled forward probabilities under the Li & Stephens HMM.
 Each column of \code{fwd$alpha} corresponds to an independent HMM such that \eqn{\alpha^l_{ji}}
 is proportional to the probability that haplotype \eqn{j} is copied by haplotype \eqn{i} at locus \eqn{l} and
@@ -31,7 +31,7 @@ If a user attempts to interact a \code{kalisForwardTable} with a \code{kalisBack
 parameters, an error will be thrown.
 }
 \description{
-Allocates the memory for and initializes up a forward table.
+Allocates the memory for and initializes a forward table.
 }
 \details{
 \code{MakeForwardTable} returns a \code{kalisForwardTable} object appropriate for
