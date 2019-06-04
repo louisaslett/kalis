@@ -75,16 +75,30 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// CacheAllHaplotypesH52
-int CacheAllHaplotypesH52(Function nexthaps, int N, int L);
-RcppExport SEXP _kalis_CacheAllHaplotypesH52(SEXP nexthapsSEXP, SEXP NSEXP, SEXP LSEXP) {
+// CacheHaplotypes_matrix_2
+int CacheHaplotypes_matrix_2(IntegerMatrix x, int N, int L, int transpose);
+RcppExport SEXP _kalis_CacheHaplotypes_matrix_2(SEXP xSEXP, SEXP NSEXP, SEXP LSEXP, SEXP transposeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< int >::type transpose(transposeSEXP);
+    rcpp_result_gen = Rcpp::wrap(CacheHaplotypes_matrix_2(x, N, L, transpose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// CacheHaplotypes_hdf5_2
+int CacheHaplotypes_hdf5_2(Function nexthaps, int N, int L);
+RcppExport SEXP _kalis_CacheHaplotypes_hdf5_2(SEXP nexthapsSEXP, SEXP NSEXP, SEXP LSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Function >::type nexthaps(nexthapsSEXP);
     Rcpp::traits::input_parameter< int >::type N(NSEXP);
     Rcpp::traits::input_parameter< int >::type L(LSEXP);
-    rcpp_result_gen = Rcpp::wrap(CacheAllHaplotypesH52(nexthaps, N, L));
+    rcpp_result_gen = Rcpp::wrap(CacheHaplotypes_hdf5_2(nexthaps, N, L));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -442,7 +456,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_Backward_scalarPi_densemu_cpp", (DL_FUNC) &_kalis_Backward_scalarPi_densemu_cpp, 6},
     {"_kalis_Backward_densePi_scalarmu_cpp", (DL_FUNC) &_kalis_Backward_densePi_scalarmu_cpp, 6},
     {"_kalis_Backward_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Backward_scalarPi_scalarmu_cpp, 6},
-    {"_kalis_CacheAllHaplotypesH52", (DL_FUNC) &_kalis_CacheAllHaplotypesH52, 3},
+    {"_kalis_CacheHaplotypes_matrix_2", (DL_FUNC) &_kalis_CacheHaplotypes_matrix_2, 4},
+    {"_kalis_CacheHaplotypes_hdf5_2", (DL_FUNC) &_kalis_CacheHaplotypes_hdf5_2, 3},
     {"_kalis_QueryCache2_ind", (DL_FUNC) &_kalis_QueryCache2_ind, 1},
     {"_kalis_QueryCache2_loc", (DL_FUNC) &_kalis_QueryCache2_loc, 1},
     {"_kalis_ClearHaplotypeCache2", (DL_FUNC) &_kalis_ClearHaplotypeCache2, 0},

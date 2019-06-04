@@ -14,7 +14,53 @@ int32_t num_inds = 0;
 int32_t hap_size = 0;
 
 // [[Rcpp::export]]
-int CacheAllHaplotypesH52(Function nexthaps, int N, int L) {
+int CacheHaplotypes_matrix_2(IntegerMatrix x, int N, int L, int transpose) {
+  num_inds = N;
+  hap_size = L;
+
+  // Setup cache storage
+  // NB need 32-byte aligned for AVX.  Note also that *each* new locus must be on a 32-byte boundary!
+  //   int(ceil(num_inds/32.0)) ints are required per locus to store all individuals
+  //   int(ceil((num_inds/32.0)/8.0)) __m256i's are required per locus to store all individuals
+  if(posix_memalign((void**) &hap_data, 32, hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t)) != 0) {
+    Rcout << "Unable to assign enough aligned memory for cache storage\n";
+    return(0);
+  }
+  hap_locus = new uint32_t*[hap_size];
+  for(int l=0; l<hap_size; l++) {
+    hap_locus[l] = hap_data + l*int(ceil((num_inds/32.0)/8.0))*8;
+  }
+
+  // Process haplotypes in chunks from input function
+  int_fast32_t ind = 0;
+  for(int_fast32_t i=0; i<num_inds; i++) {
+    for(int_fast32_t l=0; l<hap_size; l++) {
+      if(transpose) {
+        hap_locus[l][ind/32] ^= (-(x(i,l)) ^ hap_locus[l][ind/32]) & (1 << ind%32);
+      } else {
+        hap_locus[l][ind/32] ^= (-(x(l,i)) ^ hap_locus[l][ind/32]) & (1 << ind%32);
+      }
+    }
+    ind++;
+  }
+
+  Rcpp::Function msg("message");
+  msg(std::string("Cache loaded: ") +
+    std::to_string(num_inds) +
+    std::string(" haplotypes of length ") +
+    std::to_string(hap_size) +
+    std::string(" (consuming ") +
+    std::to_string((hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0) +
+    std::string(" GB RAM)"));
+  // std::bitset<8> x(hap_ind[3][4]);
+  // Rcout << haps[3];
+  // Rcout << x;
+
+  return(hap_size);
+}
+
+// [[Rcpp::export]]
+int CacheHaplotypes_hdf5_2(Function nexthaps, int N, int L) {
   num_inds = N;
   hap_size = L;
 

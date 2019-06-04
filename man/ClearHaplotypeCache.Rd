@@ -10,7 +10,7 @@ ClearHaplotypeCache()
 Nothing is returned.
 }
 \description{
-Remove all the haplotypes that were cached by a previous call to \code{\link{CacheAllHaplotypes}} and
+Remove all the haplotypes that were cached by a previous caching call and
 free up the memory that was allocated for future use.
 }
 \details{
@@ -29,5 +29,5 @@ ClearHaplotypeCache()
 
 }
 \seealso{
-\code{\link{CacheAllHaplotypes}} to create a haplotype cache.
+\code{\link{CacheHaplotypes}} to create a haplotype cache.
 }

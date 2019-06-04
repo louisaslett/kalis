@@ -4,8 +4,7 @@
 \alias{CalcRho}
 \title{Calculate recombination parameter rho from more standard genetics parameters}
 \usage{
-CalcRho(morgan.dist = 0, Ne = 1, gamma = 1,
-  threshold.lower = 1e-16, threshold.upper = Inf)
+CalcRho(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE)
 }
 \arguments{
 \item{morgan.dist}{a vector specifying the recombination distance between loci in Morgans .
@@ -16,11 +15,8 @@ Note element i of this vector should be the distance between loci i and i+1
 
 \item{gamma}{a scalar power to which the Morgan distances are raised.}
 
-\item{threshold.lower}{sets the minimal threshold value for rho.  Any values initially
-calculated below this value are reset to the value specified here.}
-
-\item{threshold.upper}{sets the maximal threshold value for rho.  Any values initially
-calculated above this value are reset to the value specified here.}
+\item{floor}{if TRUE (default) any transition probabilities below machine precision (1e-16)
+will be zeroed out.  If FALSE raw transition probabilities will be preserved.}
 }
 \value{
 A vector of transition probabilities

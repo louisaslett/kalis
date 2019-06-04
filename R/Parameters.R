@@ -12,10 +12,8 @@
 #'   (not i and i-1), and thus length one less than the haplotype length.  Can be easily obtained by applying \code{diff} to a recombination map "CDF".
 #' @param Ne a scalar for the effective population size.
 #' @param gamma a scalar power to which the Morgan distances are raised.
-#' @param threshold.lower sets the minimal threshold value for rho.  Any values initially
-#'   calculated below this value are reset to the value specified here.
-#' @param threshold.upper sets the maximal threshold value for rho.  Any values initially
-#'   calculated above this value are reset to the value specified here.
+#' @param floor if TRUE (default) any transition probabilities below machine precision (1e-16)
+#'   will be zeroed out.  If FALSE raw transition probabilities will be preserved.
 #'
 #' @return A vector of transition probabilities
 #'
@@ -27,12 +25,15 @@
 #' }
 
 #' @export
-CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, threshold.lower = 1e-16, threshold.upper = Inf) {
+CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE) {
   L <- get("L", envir = pkgVars)
   if(anyNA(L)) {
     stop("No haplotypes cached ... cannot determine rho length until cache is loaded with CacheAllHaplotypes().")
   }
 
+  if(!is.vector(floor) || !is.logical(floor) || length(floor) != 1) {
+    stop("floor must be TRUE or FALSE.")
+  }
   if(!is.numeric(morgan.dist)) {
     stop("morgan.dist must be numeric vector type.")
   }
@@ -55,9 +56,10 @@ CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, threshold.lower = 1e-16,
   }
 
   # Compute rho
-  rho <- c(1 - exp(-Ne*morgan.dist^gamma), 1)
-  rho <- ifelse(rho < threshold.lower, threshold.lower, rho)
-  rho <- ifelse(rho > threshold.upper, threshold.upper, rho)
+  rho <- c(-(expm1(-Ne*morgan.dist^gamma)), 1)
+  if(floor) {
+    rho <- ifelse(rho < 1e-16, 0, rho)
+  }
 
   rho
 }
@@ -76,6 +78,9 @@ CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, threshold.lower = 1e-16,
 #'   probabilities can be provided, such that the (j,i)-th element is the background
 #'   probability that j is copied by i.  Hence, (a) the diagonal must be zero; and (b)
 #'   the columns of Pi must sum to 1.
+#' @param check.rho if TRUE, a check that rho is within machine precision will be
+#'   performed.  If you have created rho using \code{\link{CalcRho}} with \code{floor=TRUE}
+#'   then this will be satisfied.
 #'
 #' @return A \code{kalisParameters} object.
 #'
@@ -88,13 +93,23 @@ CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, threshold.lower = 1e-16,
 #' }
 #'
 #' @export Parameters
-Parameters <- function(rho = rep(0,get("L", envir = pkgVars)-1), mu = 1e-8, Pi = NULL) {
+Parameters <- function(rho = rep(0, get("L", envir = pkgVars)-1), mu = 1e-8, Pi = NULL, check.rho = TRUE) {
   N <- get("N", envir = pkgVars)
   if(anyNA(N)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
   }
 
   L <- get("L", envir = pkgVars)
+
+  if(!is.vector(rho) || length(rho) != L) {
+    stop("rho must be a vector of the same length as the sequences in the cache.")
+  }
+  if(!is.numeric(mu)) {
+    stop("rho must be numeric.")
+  }
+  if(check.rho && any(rho < 1e-16)) {
+    stop("some elements of rho are below machine precision.  To disable this check and continue anyway use check.rho=FALSE.")
+  }
 
   if(!is.vector(mu)) {
     stop("mu must be either a vector or a scalar.")
