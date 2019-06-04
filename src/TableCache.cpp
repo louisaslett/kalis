@@ -33,11 +33,11 @@ void FillTableCache(List cache,
   if(from > 1) {
     pos = 1.0;
   }
-  as<NumericVector>(as<List>(cache[0])["l"])[0] = -1;
+  as<IntegerVector>(as<List>(cache[0])["l"])[0] = -1;
   for(int_fast32_t i = 0; i < cache_size; i++) {
     int_fast32_t t = floor((1.0-pos)*chkpt_len)+from-1;
     if(t == as<int>(as<List>(cache[i])["l"])-1) {
-      as<NumericVector>(as<List>(cache[i])["l"])[0] = 0;
+      as<IntegerVector>(as<List>(cache[i])["l"])[0] = 0;
       break;
     }
     pos *= 0.5;
@@ -82,7 +82,7 @@ void FillTableCache(List cache,
                                 mu,
                                 rho);
     }
-    as<NumericVector>(as<List>(cache[i])["l"])[0] = t+1;
+    as<IntegerVector>(as<List>(cache[i])["l"])[0] = t+1;
 
     if(i < cache_size-1) { // Copy forward
       memcpy(&(as<NumericMatrix>(as<List>(cache[i+1])["alpha"])[0]),
@@ -94,7 +94,7 @@ void FillTableCache(List cache,
       memcpy(&(as<NumericVector>(as<List>(cache[i+1])["alpha.f2"])[0]),
              &(as<NumericVector>(as<List>(cache[i])["alpha.f2"])[0]),
              alpha_f2_size);
-      as<NumericVector>(as<List>(cache[i+1])["l"])[0] = as<NumericVector>(as<List>(cache[i])["l"])[0];
+      as<IntegerVector>(as<List>(cache[i+1])["l"])[0] = as<int>(as<List>(cache[i])["l"]);
     }
   }
 }
