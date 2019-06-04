@@ -107,8 +107,8 @@ Parameters <- function(rho = rep(0, get("L", envir = pkgVars)-1), mu = 1e-8, Pi 
   if(!is.numeric(mu)) {
     stop("rho must be numeric.")
   }
-  if(check.rho && any(rho < 1e-16)) {
-    stop("some elements of rho are below machine precision.  To disable this check and continue anyway use check.rho=FALSE.")
+  if(check.rho && any(rho < 1e-16 & rho != 0)) {
+    stop("some elements of rho are below machine precision but not zero.  To disable this check and continue anyway use check.rho=FALSE.")
   }
 
   if(!is.vector(mu)) {
