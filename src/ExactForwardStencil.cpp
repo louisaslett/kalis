@@ -32,8 +32,8 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 
   int_fast32_t l = alpha_t;
 
-  double *__restrict__ f, *__restrict__ fold, *__restrict__ foldold;
-  f       = (double*) malloc(sizeof(double)*(to_rec-from_rec));
+  double f;
+  double *__restrict__ fold, *__restrict__ foldold;
   fold    = &(alpha_f[0]);
   foldold = &(alpha_f2[0]);
 
@@ -105,7 +105,7 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
       __m256i _recipient_hap = _mm256_set1_epi32(recipient_hap);
 #endif
 
-      f[recipient-from_rec] = 0.0; // For accumulating scalar part in ragged end ...
+      f = 0.0; // For accumulating scalar part in ragged end ...
       __m256d _f = _mm256_set1_pd(0.0); // ... and for vector part.
 
       // TODO: for larger problems break this down into L1 cachable chunks of
@@ -211,13 +211,13 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
         int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
 #if KALIS_PI == PI_SCALAR && !defined(KALIS_1STEP)
-        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (Pirho + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
+        f += alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (Pirho + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
 #elif KALIS_PI == PI_MATRIX && !defined(KALIS_1STEP)
-        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (PiRow[(N/(32*8))*32*8+donor] * rho[l-1] + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
+        f += alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (PiRow[(N/(32*8))*32*8+donor] * rho[l-1] + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
 #elif KALIS_PI == PI_SCALAR && defined(KALIS_1STEP)
-        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = 1.0 * (Pirho + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
+        f += alphaRow[(N/(32*8))*32*8+donor] = 1.0 * (Pirho + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
 #elif KALIS_PI == PI_MATRIX && defined(KALIS_1STEP)
-        f[recipient-from_rec] += alphaRow[(N/(32*8))*32*8+donor] = 1.0 * (PiRow[(N/(32*8))*32*8+donor] * rho[l-1] + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
+        f += alphaRow[(N/(32*8))*32*8+donor] = 1.0 * (PiRow[(N/(32*8))*32*8+donor] * rho[l-1] + fratioMulOmRho * alphaRow[(N/(32*8))*32*8+donor]);
 #endif
       }
 
@@ -225,22 +225,20 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
       // Adjustments for scalar Pi
       alphaRow[recipient] = 0.0;
 #if KALIS_MU == MU_VECTOR
-      f[recipient-from_rec] -= (1.0-mu[l])*Pirho;
+      f -= (1.0-mu[l])*Pirho;
 #else
-      f[recipient-from_rec] -= (1.0-mu)*Pirho;
+      f -= (1.0-mu)*Pirho;
 #endif
 #endif
 
-      // Accumulate row sum into f[recipient-from_rec]
+      // Accumulate row sum into f
       _f = _mm256_hadd_pd(_f, _f);
-      f[recipient-from_rec] += ((double*)&_f)[0] + ((double*)&_f)[2];
+      f += ((double*)&_f)[0] + ((double*)&_f)[2];
 
       foldold[recipient_alpha] = fold[recipient_alpha];
-      fold[recipient_alpha] = -(log(f[recipient-from_rec]) - fold[recipient_alpha]);
+      fold[recipient_alpha] = -(log(f) - fold[recipient_alpha]);
     }
   }
-
-  free(f);
 
 #endif
 

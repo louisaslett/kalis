@@ -32,8 +32,8 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
   int_fast32_t l = beta_t;
 
-  double *__restrict__ g, *__restrict__ gold, *__restrict__ goldold;
-  g       = (double*) malloc(sizeof(double)*(to_rec-from_rec));
+  double g;
+  double *__restrict__ gold, *__restrict__ goldold;
   gold    = &(beta_g[0]);
   goldold = &(beta_g2[0]);
 
@@ -109,7 +109,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
       __m256i _recipient_hap_prev = _mm256_set1_epi32(recipient_hap_prev);
       __m256i _recipient_hap      = _mm256_set1_epi32(recipient_hap);
 
-      g[recipient-from_rec] = 0.0; // For accumulating scalar part in ragged end ...
+      g = 0.0; // For accumulating scalar part in ragged end ...
       __m256d _g = _mm256_set1_pd(0.0); // ... and for vector part.
 
       // TODO: for larger problems break this down into L1 cachable chunks of
@@ -240,21 +240,21 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
         H = (recipient_hap ^ donor_hap) & 1;
 #if KALIS_PI == PI_MATRIX && KALIS_MU == MU_VECTOR
-        g[recipient-from_rec] += PiRow[(N/(32*8))*32*8+donor] * (H * muTmp1b + muTmp2b) * betaRow[(N/(32*8))*32*8+donor];
+        g += PiRow[(N/(32*8))*32*8+donor] * (H * muTmp1b + muTmp2b) * betaRow[(N/(32*8))*32*8+donor];
 #elif KALIS_PI == PI_MATRIX && KALIS_MU == MU_SCALAR
-        g[recipient-from_rec] += PiRow[(N/(32*8))*32*8+donor] * (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor];
+        g += PiRow[(N/(32*8))*32*8+donor] * (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor];
 #elif KALIS_PI == PI_SCALAR && KALIS_MU == MU_VECTOR
-        g[recipient-from_rec] += Pi * (H * muTmp1b + muTmp2b) * betaRow[(N/(32*8))*32*8+donor];
+        g += Pi * (H * muTmp1b + muTmp2b) * betaRow[(N/(32*8))*32*8+donor];
 #elif KALIS_PI == PI_SCALAR && KALIS_MU == MU_SCALAR
-        g[recipient-from_rec] += Pi * (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor];
+        g += Pi * (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor];
 #endif
       }
 #if KALIS_PI == PI_SCALAR
       // Adjustments for scalar Pi
 #if KALIS_MU == MU_VECTOR
-      g[recipient-from_rec] -= Pi * muTmp2b * betaRow[recipient];
+      g -= Pi * muTmp2b * betaRow[recipient];
 #elif KALIS_MU == MU_SCALAR
-      g[recipient-from_rec] -= Pi * muTmp2 * betaRow[recipient];
+      g -= Pi * muTmp2 * betaRow[recipient];
 #endif
 #elif KALIS_PI == PI_MATRIX
       // Fix the diagonal of beta ... note that because we set the diagonal of Pi
@@ -262,16 +262,14 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #endif
       betaRow[recipient] = 0.0;
 
-      // Accumulate row sum into g[recipient-from_rec]
+      // Accumulate row sum into g
       _g = _mm256_hadd_pd(_g, _g);
-      g[recipient-from_rec] += ((double*)&_g)[0] + ((double*)&_g)[2];
+      g += ((double*)&_g)[0] + ((double*)&_g)[2];
 
       goldold[recipient_beta] = gold[recipient_beta];
-      gold[recipient_beta] = -(log(g[recipient-from_rec]) - gold[recipient_beta]);
+      gold[recipient_beta] = -(log(g) - gold[recipient_beta]);
     }
   }
-
-  free(g);
 
 #endif
 
