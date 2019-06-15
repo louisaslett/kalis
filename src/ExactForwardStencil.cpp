@@ -43,6 +43,7 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
     for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
       int_fast32_t recipient_alpha = recipient-alpha_from_rec;
       int32_t recipient_hap = (hap_locus[0][recipient/32] >> recipient%32) & 1;
+      recipient_hap = 1-recipient_hap; // So H below will now be 1-H
 
       fold[recipient_alpha]    = 0.0;
       foldold[recipient_alpha] = 0.0;
@@ -51,11 +52,9 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
         int32_t donor_hap = (hap_locus[0][donor/32] >> donor%32) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
 #if KALIS_MU == MU_SCALAR
-        double theta = (H * mu
-                          + (1-H) * (1.0 - mu));
+        double theta = (H * (1.0 - 2.0*mu) + mu);
 #elif KALIS_MU == MU_VECTOR
-        double theta = (H * mu[0]
-                          + (1-H) * (1.0 - mu[0]));
+        double theta = (H * (1.0 - 2.0*mu[0]) + mu[0]);
 #endif
 
 #if KALIS_PI == PI_SCALAR
@@ -84,7 +83,8 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 
 #if KALIS_MU == MU_SCALAR && !defined(KALIS_1STEP)
   // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
-  const double muTmp1 = 2.0 * mu - 1.0, muTmp2 = - mu + 1.0;
+  // ... now update to (1-H) * (1-2*mu) + mu
+  const double muTmp1 = 1.0 - 2.0 * mu, muTmp2 = mu;
   const __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
 #endif
 
@@ -102,6 +102,7 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
       // Load this recipient's bit into all 256-bits of an AVX register
       int32_t recipient_hap = 0;
       recipient_hap -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
+      recipient_hap = ~recipient_hap; // So H below will now be 1-H
       __m256i _recipient_hap = _mm256_set1_epi32(recipient_hap);
 #endif
 
@@ -120,7 +121,8 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 
 #if KALIS_MU == MU_VECTOR && !defined(KALIS_1STEP)
       // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
-      const double muTmp1 = 2.0 * mu[l] - 1.0, muTmp2 = - mu[l] + 1.0;
+      // ... now update to (1-H) * (1-2*mu) + mu
+      const double muTmp1 = 1.0 - 2.0 * mu[l], muTmp2 = mu[l];
       const __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
 #endif
 
@@ -224,10 +226,8 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 #if KALIS_PI == PI_SCALAR
       // Adjustments for scalar Pi
       alphaRow[recipient] = 0.0;
-#if KALIS_MU == MU_VECTOR
-      f -= (1.0-mu[l])*Pirho;
-#else
-      f -= (1.0-mu)*Pirho;
+#if !defined(KALIS_1STEP)
+      f -= (muTmp1+muTmp2)*Pirho;
 #endif
 #endif
 
