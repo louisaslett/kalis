@@ -247,6 +247,50 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Dedip2_min
+NumericVector Dedip2_min(NumericMatrix M);
+RcppExport SEXP _kalis_Dedip2_min(SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(Dedip2_min(M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Dedip2_2nd_min
+NumericVector Dedip2_2nd_min(NumericMatrix M);
+RcppExport SEXP _kalis_Dedip2_2nd_min(SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(Dedip2_2nd_min(M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Dedip2_dom
+NumericVector Dedip2_dom(NumericMatrix M);
+RcppExport SEXP _kalis_Dedip2_dom(SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(Dedip2_dom(M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Dedip2_all
+List Dedip2_all(NumericMatrix M);
+RcppExport SEXP _kalis_Dedip2_all(SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(Dedip2_all(M));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ExactBackwardNaiveC_cpp
 void ExactBackwardNaiveC_cpp(NumericMatrix beta, NumericVector beta_g, NumericVector beta_g2, const int beta_from_rec, const int beta_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
 RcppExport SEXP _kalis_ExactBackwardNaiveC_cpp(SEXP betaSEXP, SEXP beta_gSEXP, SEXP beta_g2SEXP, SEXP beta_from_recSEXP, SEXP beta_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
@@ -470,6 +514,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_Dedip_add", (DL_FUNC) &_kalis_Dedip_add, 3},
     {"_kalis_Dedip_mean", (DL_FUNC) &_kalis_Dedip_mean, 3},
     {"_kalis_Dedip_all", (DL_FUNC) &_kalis_Dedip_all, 3},
+    {"_kalis_Dedip2_min", (DL_FUNC) &_kalis_Dedip2_min, 1},
+    {"_kalis_Dedip2_2nd_min", (DL_FUNC) &_kalis_Dedip2_2nd_min, 1},
+    {"_kalis_Dedip2_dom", (DL_FUNC) &_kalis_Dedip2_dom, 1},
+    {"_kalis_Dedip2_all", (DL_FUNC) &_kalis_Dedip2_all, 1},
     {"_kalis_ExactBackwardNaiveC_cpp", (DL_FUNC) &_kalis_ExactBackwardNaiveC_cpp, 13},
     {"_kalis_ParExactBackwardNaiveC_cpp", (DL_FUNC) &_kalis_ParExactBackwardNaiveC_cpp, 14},
     {"_kalis_ExactForwardNaiveC_cpp", (DL_FUNC) &_kalis_ExactForwardNaiveC_cpp, 13},
