@@ -10,7 +10,7 @@ data("SmallHaps")
 
 ## ------------------------------------------------------------------------
 WriteIndividualHaplotypeH5("SmallHaps.h5",SmallHaps)
-CacheAllHaplotypes("SmallHaps.h5")
+CacheHaplotypes("SmallHaps.h5")
 
 ## ---- echo = F, results = 'hide'-----------------------------------------
 system2("rm","SmallHaps.h5")

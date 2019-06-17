@@ -27,7 +27,7 @@ data("SmallHaps")
 
 ```{r}
 WriteIndividualHaplotypeH5("SmallHaps.h5",SmallHaps)
-CacheAllHaplotypes("SmallHaps.h5")
+CacheHaplotypes("SmallHaps.h5")
 ```
 
 ```{r, echo = F, results = 'hide'}

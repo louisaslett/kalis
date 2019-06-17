@@ -77,6 +77,22 @@ Dedip_all <- function(fwd, bck, s) {
     .Call('_kalis_Dedip_all', PACKAGE = 'kalis', fwd, bck, s)
 }
 
+Dedip2_min <- function(M) {
+    .Call('_kalis_Dedip2_min', PACKAGE = 'kalis', M)
+}
+
+Dedip2_2nd_min <- function(M) {
+    .Call('_kalis_Dedip2_2nd_min', PACKAGE = 'kalis', M)
+}
+
+Dedip2_dom <- function(M) {
+    .Call('_kalis_Dedip2_dom', PACKAGE = 'kalis', M)
+}
+
+Dedip2_all <- function(M) {
+    .Call('_kalis_Dedip2_all', PACKAGE = 'kalis', M)
+}
+
 ExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
     invisible(.Call('_kalis_ExactBackwardNaiveC_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
 }
