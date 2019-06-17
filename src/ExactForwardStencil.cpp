@@ -117,6 +117,7 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
       const double *__restrict__ PiRow = &(Pi[N*recipient]);
 #elif KALIS_PI == PI_SCALAR
       const double Pirho  = Pi * rho[l-1];
+      __m256d _Pirho  = _mm256_set1_pd(Pirho);
 #endif
 
 #if KALIS_MU == MU_VECTOR && !defined(KALIS_1STEP)
@@ -164,8 +165,6 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
           _alpha3         = _mm256_fmadd_pd(_alpha3, _fratioMulOmRho, _pi3); // (Pi*rho + {(1-rho)*fratio} * alpha)
           _alpha4         = _mm256_fmadd_pd(_alpha4, _fratioMulOmRho, _pi4); // (Pi*rho + {(1-rho)*fratio} * alpha)
 #elif KALIS_PI == PI_SCALAR
-          __m256d _Pirho  = _mm256_set1_pd(Pirho);
-
           _alpha1         = _mm256_fmadd_pd(_alpha1, _fratioMulOmRho, _Pirho); // (Pi*rho + {(1-rho)*fratio} * alpha)
           _alpha2         = _mm256_fmadd_pd(_alpha2, _fratioMulOmRho, _Pirho); // (Pi*rho + {(1-rho)*fratio} * alpha)
           _alpha3         = _mm256_fmadd_pd(_alpha3, _fratioMulOmRho, _Pirho); // (Pi*rho + {(1-rho)*fratio} * alpha)
