@@ -33,9 +33,8 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
   int_fast32_t l = beta_t;
 
   double g;
-  double *__restrict__ gold, *__restrict__ goldold;
+  double *__restrict__ gold;
   gold    = &(beta_g[0]);
-  goldold = &(beta_g2[0]);
 
   // Locus L setup
   if(l>L-1) {
@@ -46,7 +45,6 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
       recipient_hap = 1-recipient_hap; // So H below will now be 1-H
 
       gold[recipient_beta] = 0.0;
-      goldold[recipient_beta] = 0.0;
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
         int32_t donor_hap = (hap_locus[l][donor/32] >> donor%32) & 1;
@@ -74,8 +72,6 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
       gold[recipient_beta] -= (1.0-mu[0])*Pi;
 #endif
 #endif
-
-      gold[recipient_beta] = -log(gold[recipient_beta]);
     }
   }
 
@@ -98,8 +94,8 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
     while(l>t) {
       --l;
       // (1.0-rho[l]) * gratio .... for all recipients we consider to get us going
-      double gratioMulOmRho = (1.0 - rho[l]) * exp(gold[recipient_beta] - goldold[recipient_beta]);
-      __m256d _gratioMulOmRho = _mm256_set1_pd(gratioMulOmRho);
+      double omRhoDivG = (1.0 - rho[l]) / gold[recipient_beta];
+      __m256d _omRhoDivG = _mm256_set1_pd(omRhoDivG);
 
       // Load this recipient's bit into all 256-bits of an AVX register
       int32_t recipient_hap = 0, recipient_hap_prev = 0;
@@ -131,6 +127,8 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
       const __m256d _muTmp1b = _mm256_broadcast_sd(&muTmp1b), _muTmp2b = _mm256_broadcast_sd(&muTmp2b);
 #endif
 
+      // Setup rho for AVX ops
+      __m256d _Rho = _mm256_set1_pd(rho[l]);
       for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
         // Load next 256 donors and XOR with recipients
         __m256i _HA = _mm256_xor_si256(_recipient_hap_prev, _mm256_load_si256((__m256i*) &(hap_locus[l+1][donoroff*8])));
@@ -145,8 +143,6 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           double *betaNow2 = betaRow + donoroff*32*8 + donor*4*4 + 4;
           double *betaNow3 = betaRow + donoroff*32*8 + donor*4*4 + 8;
           double *betaNow4 = betaRow + donoroff*32*8 + donor*4*4 + 12;
-
-          __m256d _Rho = _mm256_set1_pd(rho[l]);
 
           __m256d _beta1  = _mm256_loadu_pd(betaNow1);
           __m256d _beta2  = _mm256_loadu_pd(betaNow2);
@@ -175,10 +171,10 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           _beta3          = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
           _beta4          = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
 
-          _beta1          = _mm256_fmadd_pd(_beta1, _gratioMulOmRho, _Rho); // (rho + {theta*beta} * {(1-rho)gratio})
-          _beta2          = _mm256_fmadd_pd(_beta2, _gratioMulOmRho, _Rho); // (rho + {theta*beta} * {(1-rho)gratio})
-          _beta3          = _mm256_fmadd_pd(_beta3, _gratioMulOmRho, _Rho); // (rho + {theta*beta} * {(1-rho)gratio})
-          _beta4          = _mm256_fmadd_pd(_beta4, _gratioMulOmRho, _Rho); // (rho + {theta*beta} * {(1-rho)gratio})
+          _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
+          _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
+          _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
+          _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
 
 #if KALIS_PI == PI_MATRIX
           __m256d _pi1    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4);
@@ -233,9 +229,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         int32_t donor_hap = (hap_locus[l+1][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
         int32_t H = (recipient_hap_prev ^ donor_hap) & 1;
 #if KALIS_MU == MU_SCALAR
-        betaRow[(N/(32*8))*32*8+donor] = rho[l] + (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor] * gratioMulOmRho;
+        betaRow[(N/(32*8))*32*8+donor] = rho[l] + (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor] * omRhoDivG;
 #elif KALIS_MU == MU_VECTOR
-        betaRow[(N/(32*8))*32*8+donor] = rho[l] + (H * muTmp1a + muTmp2a) * betaRow[(N/(32*8))*32*8+donor] * gratioMulOmRho;
+        betaRow[(N/(32*8))*32*8+donor] = rho[l] + (H * muTmp1a + muTmp2a) * betaRow[(N/(32*8))*32*8+donor] * omRhoDivG;
 #endif
 
         donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
@@ -267,8 +263,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
       _g = _mm256_hadd_pd(_g, _g);
       g += ((double*)&_g)[0] + ((double*)&_g)[2];
 
-      goldold[recipient_beta] = gold[recipient_beta];
-      gold[recipient_beta] = -(log(g) - gold[recipient_beta]);
+      gold[recipient_beta] = g;
     }
   }
 
