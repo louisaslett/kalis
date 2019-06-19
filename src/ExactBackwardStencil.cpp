@@ -91,6 +91,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
   if(!(l-1>t)) {
     // If we do one step from entry point, then we have to use the slower code
     // which constructs two thetas
+    // ie we can't move into beta*theta space
+    //   beta = theta[l]*(beta*theta[l+1] / g...)
+    //   g += beta*pi
     for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
       int_fast32_t recipient_beta = recipient-beta_from_rec;
       l = reset_l;
@@ -273,6 +276,10 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
   } else {
     // If we do more than one step from entry point, then for the intermediate
     // steps we track theta*beta to avoid double theta computation
+    // ie on first step, move into theta*beta space at the same time as the
+    //   locus step; then march back staying in theta*beta space; then on
+    //   final step move back to beta space at the same time as the locus step
+    // See if clauses below for detail
     for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
       int_fast32_t recipient_beta = recipient-beta_from_rec;
       l = reset_l;
@@ -301,6 +308,10 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
         if(l<reset_l-1 && l>t) {
           // Mid beta*theta step
+          // Perform locus updates staying in beta*theta space
+          //   beta = theta[l-i]*(beta / g...)
+          //   g += beta*pi
+
 
           // Load this recipient's bit into all 256-bits of an AVX register
           int32_t recipient_hap = 0;
@@ -413,6 +424,10 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
         } else if(l==reset_l-1) {
           // Pre beta*theta step
+          // Move from beta space into beta*theta space simultaneously with a locus update
+          //   beta = theta[l-1]*(beta / g...)
+          //   g += beta*pi
+
 
           // Load this recipient's bit into all 256-bits of an AVX register
           int32_t recipient_hap = 0, recipient_hap_prev = 0;
@@ -556,6 +571,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
         } else {
           // Exiting beta*theta step
+          // Move from beta*theta space into beta space simultaneously with a locus update
+          //   beta = beta / g...
+          //   g += beta*theta[l-targ]*pi
 
           // Load this recipient's bit into all 256-bits of an AVX register
           int32_t recipient_hap = 0;
