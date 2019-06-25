@@ -86,6 +86,9 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 
   for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
     int_fast32_t recipient_alpha = recipient-alpha_from_rec;
+#if KALIS_PI == PI_SCALAR
+    __m256d _recipient = _mm256_set1_pd(recipient);
+#endif
     l = reset_l;
 
     while(l<t) {
@@ -134,6 +137,25 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 #endif
         for(int_fast32_t donor=0; donor<((32*8)/4)/4; ++donor) {
           // IACA_START
+#if KALIS_PI == PI_SCALAR
+          __m256d _donornum1 = _mm256_setr_pd((double) donoroff*32*8 + donor*4*4,
+                                              (double) donoroff*32*8 + donor*4*4 + 1,
+                                              (double) donoroff*32*8 + donor*4*4 + 2,
+                                              (double) donoroff*32*8 + donor*4*4 + 3);
+          __m256d _donornum2 = _mm256_setr_pd((double) donoroff*32*8 + donor*4*4 + 4,
+                                              (double) donoroff*32*8 + donor*4*4 + 5,
+                                              (double) donoroff*32*8 + donor*4*4 + 6,
+                                              (double) donoroff*32*8 + donor*4*4 + 7);
+          __m256d _donornum3 = _mm256_setr_pd((double) donoroff*32*8 + donor*4*4 + 8,
+                                              (double) donoroff*32*8 + donor*4*4 + 9,
+                                              (double) donoroff*32*8 + donor*4*4 + 10,
+                                              (double) donoroff*32*8 + donor*4*4 + 11);
+          __m256d _donornum4 = _mm256_setr_pd((double) donoroff*32*8 + donor*4*4 + 12,
+                                              (double) donoroff*32*8 + donor*4*4 + 13,
+                                              (double) donoroff*32*8 + donor*4*4 + 14,
+                                              (double) donoroff*32*8 + donor*4*4 + 15);
+#endif
+
           double *alphaNow1 = alphaRow + donoroff*32*8 + donor*4*4;
           double *alphaNow2 = alphaRow + donoroff*32*8 + donor*4*4 + 4;
           double *alphaNow3 = alphaRow + donoroff*32*8 + donor*4*4 + 8;
@@ -183,11 +205,17 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
           __m256d _theta4 = _mm256_set1_pd(1.0);
 #endif
 
+#if KALIS_PI == PI_MATRIX
           _alpha1         = _mm256_mul_pd(_theta1, _alpha1);
           _alpha2         = _mm256_mul_pd(_theta2, _alpha2);
           _alpha3         = _mm256_mul_pd(_theta3, _alpha3);
           _alpha4         = _mm256_mul_pd(_theta4, _alpha4);
-
+#elif KALIS_PI == PI_SCALAR
+          _alpha1         = _mm256_and_pd(_mm256_mul_pd(_theta1, _alpha1), _mm256_cmp_pd(_donornum1, _recipient, 4));
+          _alpha2         = _mm256_and_pd(_mm256_mul_pd(_theta2, _alpha2), _mm256_cmp_pd(_donornum2, _recipient, 4));
+          _alpha3         = _mm256_and_pd(_mm256_mul_pd(_theta3, _alpha3), _mm256_cmp_pd(_donornum3, _recipient, 4));
+          _alpha4         = _mm256_and_pd(_mm256_mul_pd(_theta4, _alpha4), _mm256_cmp_pd(_donornum4, _recipient, 4));
+#endif
           _f              = _mm256_add_pd(_f, _alpha1);
           _f              = _mm256_add_pd(_f, _alpha2);
           _f              = _mm256_add_pd(_f, _alpha3);
@@ -206,24 +234,18 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
         int32_t donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
         int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
+        const int32_t donornum = (N/(32*8))*32*8+donor;
+
 #if KALIS_PI == PI_SCALAR && !defined(KALIS_1STEP)
-        f += alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (Pirho + omRhoDivF * alphaRow[(N/(32*8))*32*8+donor]);
+        f += alphaRow[(N/(32*8))*32*8+donor] = (donornum != recipient) * (H * muTmp1 + muTmp2) * (Pirho + omRhoDivF * alphaRow[donornum]);
 #elif KALIS_PI == PI_MATRIX && !defined(KALIS_1STEP)
-        f += alphaRow[(N/(32*8))*32*8+donor] = (H * muTmp1 + muTmp2) * (PiRow[(N/(32*8))*32*8+donor] * rho[l-1] + omRhoDivF * alphaRow[(N/(32*8))*32*8+donor]);
+        f += alphaRow[(N/(32*8))*32*8+donor] =                           (H * muTmp1 + muTmp2) * (PiRow[donornum] * rho[l-1] + omRhoDivF * alphaRow[donornum]);
 #elif KALIS_PI == PI_SCALAR && defined(KALIS_1STEP)
-        f += alphaRow[(N/(32*8))*32*8+donor] = 1.0 * (Pirho + omRhoDivF * alphaRow[(N/(32*8))*32*8+donor]);
+        f += alphaRow[(N/(32*8))*32*8+donor] = (donornum != recipient) * 1.0 * (Pirho + omRhoDivF * alphaRow[donornum]);
 #elif KALIS_PI == PI_MATRIX && defined(KALIS_1STEP)
-        f += alphaRow[(N/(32*8))*32*8+donor] = 1.0 * (PiRow[(N/(32*8))*32*8+donor] * rho[l-1] + omRhoDivF * alphaRow[(N/(32*8))*32*8+donor]);
+        f += alphaRow[(N/(32*8))*32*8+donor] =                           1.0 * (PiRow[donornum] * rho[l-1] + omRhoDivF * alphaRow[donornum]);
 #endif
       }
-
-#if KALIS_PI == PI_SCALAR
-      // Adjustments for scalar Pi
-      alphaRow[recipient] = 0.0;
-#if !defined(KALIS_1STEP)
-      f -= (muTmp1+muTmp2)*Pirho;
-#endif
-#endif
 
       // Accumulate row sum into f
       _f = _mm256_hadd_pd(_f, _f);
