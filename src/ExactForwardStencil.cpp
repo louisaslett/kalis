@@ -155,15 +155,23 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
           _pi3            = _mm256_mul_pd(_pi3, _rho);
           _pi4            = _mm256_mul_pd(_pi4, _rho);
 
-          _alpha1         = _mm256_fmadd_pd(_alpha1, _omRhoDivF, _pi1); // (Pi*rho + {(1-rho)/f} * alpha)
-          _alpha2         = _mm256_fmadd_pd(_alpha2, _omRhoDivF, _pi2); // (Pi*rho + {(1-rho)/f} * alpha)
-          _alpha3         = _mm256_fmadd_pd(_alpha3, _omRhoDivF, _pi3); // (Pi*rho + {(1-rho)/f} * alpha)
-          _alpha4         = _mm256_fmadd_pd(_alpha4, _omRhoDivF, _pi4); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha1         = _mm256_mul_pd(_alpha1, _omRhoDivF); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha2         = _mm256_mul_pd(_alpha2, _omRhoDivF); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha3         = _mm256_mul_pd(_alpha3, _omRhoDivF); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha4         = _mm256_mul_pd(_alpha4, _omRhoDivF); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha1         = _mm256_add_pd(_alpha1, _pi1); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha2         = _mm256_add_pd(_alpha2, _pi2); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha3         = _mm256_add_pd(_alpha3, _pi3); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha4         = _mm256_add_pd(_alpha4, _pi4); // (Pi*rho + {(1-rho)/f} * alpha)
 #elif KALIS_PI == PI_SCALAR
-          _alpha1         = _mm256_fmadd_pd(_alpha1, _omRhoDivF, _Pirho); // (Pi*rho + {(1-rho)/f} * alpha)
-          _alpha2         = _mm256_fmadd_pd(_alpha2, _omRhoDivF, _Pirho); // (Pi*rho + {(1-rho)/f} * alpha)
-          _alpha3         = _mm256_fmadd_pd(_alpha3, _omRhoDivF, _Pirho); // (Pi*rho + {(1-rho)/f} * alpha)
-          _alpha4         = _mm256_fmadd_pd(_alpha4, _omRhoDivF, _Pirho); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha1         = _mm256_mul_pd(_alpha1, _omRhoDivF); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha2         = _mm256_mul_pd(_alpha2, _omRhoDivF); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha3         = _mm256_mul_pd(_alpha3, _omRhoDivF); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha4         = _mm256_mul_pd(_alpha4, _omRhoDivF); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha1         = _mm256_add_pd(_alpha1, _Pirho); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha2         = _mm256_add_pd(_alpha2, _Pirho); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha3         = _mm256_add_pd(_alpha3, _Pirho); // (Pi*rho + {(1-rho)/f} * alpha)
+          _alpha4         = _mm256_add_pd(_alpha4, _Pirho); // (Pi*rho + {(1-rho)/f} * alpha)
 #endif
 
 #if !defined(KALIS_1STEP)
@@ -172,10 +180,14 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
           __m256d _theta3 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4+2)/8]) >> (((donor*4+2)%8)*4), mask))));
           __m256d _theta4 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4+3)/8]) >> (((donor*4+3)%8)*4), mask))));
 
-          _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-          _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-          _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-          _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
+          _theta1         = _mm256_mul_pd(_theta1, _muTmp1); // theta = H * (2*mu - 1) - mu + 1
+          _theta2         = _mm256_mul_pd(_theta2, _muTmp1); // theta = H * (2*mu - 1) - mu + 1
+          _theta3         = _mm256_mul_pd(_theta3, _muTmp1); // theta = H * (2*mu - 1) - mu + 1
+          _theta4         = _mm256_mul_pd(_theta4, _muTmp1); // theta = H * (2*mu - 1) - mu + 1
+          _theta1         = _mm256_add_pd(_theta1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
+          _theta2         = _mm256_add_pd(_theta2, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
+          _theta3         = _mm256_add_pd(_theta3, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
+          _theta4         = _mm256_add_pd(_theta4, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
 #else
           __m256d _theta1 = _mm256_set1_pd(1.0);
           __m256d _theta2 = _mm256_set1_pd(1.0);
