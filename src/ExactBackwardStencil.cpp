@@ -36,6 +36,13 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
   double *__restrict__ gold;
   gold    = &(beta_g[0]);
 
+#if KALIS_PI == PI_SCALAR
+  double *__restrict__ const PiRow = (double*) malloc(sizeof(double)*N);
+  for(int_fast32_t i=0; i<N; i++) {
+    PiRow[i] = Pi;
+  }
+#endif
+
   // Locus L setup
   if(l>L-1) {
     l = L-1;
@@ -67,6 +74,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
 #if KALIS_PI == PI_SCALAR
       // Adjust due to scalar Pi for recipient/receipient locus
+      // We can do this at the first locus but not later due to
+      // numerical stability problems if (1-mu)*Pi is large
+      // compared to all other contributions
 #if KALIS_MU == MU_SCALAR
       gold[recipient_beta] -= (1.0-mu)*Pi;
 #elif KALIS_MU == MU_VECTOR
@@ -96,6 +106,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
     //   g += beta*pi
     for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
       int_fast32_t recipient_beta = recipient-beta_from_rec;
+#if KALIS_PI == PI_SCALAR
+      PiRow[recipient] = 0.0;
+#endif
       l = reset_l;
 
       while(l>t) {
@@ -118,9 +131,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
         // TODO: for larger problems break this down into L1 cachable chunks of
         //       donors at a time
-        double *__restrict__ betaRow = &(beta[N*recipient_beta]);
+        double *__restrict__ const betaRow = &(beta[N*recipient_beta]);
 #if KALIS_PI == PI_MATRIX
-        double *__restrict__ PiRow = &(Pi[N*recipient]);
+        double *__restrict__ const PiRow = &(Pi[N*recipient]);
         // The diagonal should be zero ... we can fix that after the loop, but in order to avoid accumulating
         // incorrectly in g, we want to force the diagonal of Pi to zero
         PiRow[recipient] = 0.0;
@@ -135,7 +148,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #endif
 
         // Setup rho for AVX ops
-        __m256d _Rho = _mm256_set1_pd(rho[l]);
+        __m256d _rho = _mm256_set1_pd(rho[l]);
         for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
           // Load next 256 donors and XOR with recipients
           __m256i _HA = _mm256_xor_si256(_recipient_hap_prev, _mm256_load_si256((__m256i*) &(hap_locus[l+1][donoroff*8])));
@@ -178,17 +191,15 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             _beta3          = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
             _beta4          = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
 
-            _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-            _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-            _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-            _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
+            _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+            _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+            _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+            _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
 
-#if KALIS_PI == PI_MATRIX
             __m256d _pi1    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4);
             __m256d _pi2    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 4);
             __m256d _pi3    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 8);
             __m256d _pi4    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 12);
-#endif
 
             _theta1         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4)/8]) >> (((donor*4)%8)*4), mask))));
             _theta2         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+1)/8]) >> (((donor*4+1)%8)*4), mask))));
@@ -212,17 +223,10 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             _theta3         = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
             _theta4         = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
 
-#if KALIS_PI == PI_MATRIX
             _g              = _mm256_fmadd_pd(_pi1, _theta1, _g); // g += Pi * {theta*beta}
             _g              = _mm256_fmadd_pd(_pi2, _theta2, _g); // g += Pi * {theta*beta}
             _g              = _mm256_fmadd_pd(_pi3, _theta3, _g); // g += Pi * {theta*beta}
             _g              = _mm256_fmadd_pd(_pi4, _theta4, _g); // g += Pi * {theta*beta}
-#elif KALIS_PI == PI_SCALAR
-            _g              = _mm256_fmadd_pd(_Pi, _theta1, _g); // g += Pi * {theta*beta}
-            _g              = _mm256_fmadd_pd(_Pi, _theta2, _g); // g += Pi * {theta*beta}
-            _g              = _mm256_fmadd_pd(_Pi, _theta3, _g); // g += Pi * {theta*beta}
-            _g              = _mm256_fmadd_pd(_Pi, _theta4, _g); // g += Pi * {theta*beta}
-#endif
 
             _mm256_storeu_pd(betaNow1, _beta1);
             _mm256_storeu_pd(betaNow2, _beta2);
@@ -243,27 +247,12 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
           donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
           H = (recipient_hap ^ donor_hap) & 1;
-#if KALIS_PI == PI_MATRIX && KALIS_MU == MU_VECTOR
+#if KALIS_MU == MU_VECTOR
           g += PiRow[(N/(32*8))*32*8+donor] * (H * muTmp1b + muTmp2b) * betaRow[(N/(32*8))*32*8+donor];
-#elif KALIS_PI == PI_MATRIX && KALIS_MU == MU_SCALAR
+#elif KALIS_MU == MU_SCALAR
           g += PiRow[(N/(32*8))*32*8+donor] * (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor];
-#elif KALIS_PI == PI_SCALAR && KALIS_MU == MU_VECTOR
-          g += Pi * (H * muTmp1b + muTmp2b) * betaRow[(N/(32*8))*32*8+donor];
-#elif KALIS_PI == PI_SCALAR && KALIS_MU == MU_SCALAR
-          g += Pi * (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor];
 #endif
         }
-#if KALIS_PI == PI_SCALAR
-        // Adjustments for scalar Pi
-#if KALIS_MU == MU_VECTOR
-        g -= Pi * (muTmp1b + muTmp2b) * betaRow[recipient];
-#elif KALIS_MU == MU_SCALAR
-        g -= Pi * (muTmp1 + muTmp2) * betaRow[recipient];
-#endif
-#elif KALIS_PI == PI_MATRIX
-        // Fix the diagonal of beta ... note that because we set the diagonal of Pi
-        // to zero we don't need to adjust g
-#endif
         betaRow[recipient] = 0.0;
 
         // Accumulate row sum into g
@@ -272,6 +261,10 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
         gold[recipient_beta] = g;
       }
+
+#if KALIS_PI == PI_SCALAR
+      PiRow[recipient] = Pi;
+#endif
     }
   } else {
     // If we do more than one step from entry point, then for the intermediate
@@ -282,6 +275,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
     // See if clauses below for detail
     for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
       int_fast32_t recipient_beta = recipient-beta_from_rec;
+#if KALIS_PI == PI_SCALAR
+      PiRow[recipient] = 0.0;
+#endif
       l = reset_l;
 
       while(l>t) {
@@ -295,16 +291,16 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
         // TODO: for larger problems break this down into L1 cachable chunks of
         //       donors at a time
-        double *__restrict__ betaRow = &(beta[N*recipient_beta]);
+        double *__restrict__ const betaRow = &(beta[N*recipient_beta]);
 #if KALIS_PI == PI_MATRIX
-        double *__restrict__ PiRow = &(Pi[N*recipient]);
+        double *__restrict__ const PiRow = &(Pi[N*recipient]);
         // The diagonal should be zero ... we can fix that after the loop, but in order to avoid accumulating
         // incorrectly in g, we want to force the diagonal of Pi to zero
         PiRow[recipient] = 0.0;
 #endif
 
         // Setup rho for AVX ops
-        __m256d _Rho = _mm256_set1_pd(rho[l]);
+        __m256d _rho = _mm256_set1_pd(rho[l]);
 
         if(l<reset_l-1 && l>t) {
           // Mid beta*theta step
@@ -348,17 +344,15 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
               __m256d _theta3         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+2)/8]) >> (((donor*4+2)%8)*4), mask))));
               __m256d _theta4         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+3)/8]) >> (((donor*4+3)%8)*4), mask))));
 
-#if KALIS_PI == PI_MATRIX
               __m256d _pi1    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4);
               __m256d _pi2    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 4);
               __m256d _pi3    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 8);
               __m256d _pi4    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 12);
-#endif
 
-              _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
 
 #if KALIS_MU == MU_SCALAR
               _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
@@ -377,17 +371,10 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
               _beta3          = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
               _beta4          = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
 
-#if KALIS_PI == PI_MATRIX
               _g              = _mm256_fmadd_pd(_pi1, _beta1, _g); // g += Pi * {theta*beta}
               _g              = _mm256_fmadd_pd(_pi2, _beta2, _g); // g += Pi * {theta*beta}
               _g              = _mm256_fmadd_pd(_pi3, _beta3, _g); // g += Pi * {theta*beta}
               _g              = _mm256_fmadd_pd(_pi4, _beta4, _g); // g += Pi * {theta*beta}
-#elif KALIS_PI == PI_SCALAR
-              _g              = _mm256_fmadd_pd(_Pi, _beta1, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_Pi, _beta2, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_Pi, _beta3, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_Pi, _beta4, _g); // g += Pi * {theta*beta}
-#endif
 
               _mm256_storeu_pd(betaNow1, _beta1);
               _mm256_storeu_pd(betaNow2, _beta2);
@@ -406,20 +393,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             betaRow[(N/(32*8))*32*8+donor] = (rho[l] + betaRow[(N/(32*8))*32*8+donor] * omRhoDivG) * (H * muTmp1b + muTmp2b);
 #endif
 
-#if KALIS_PI == PI_MATRIX
             g += PiRow[(N/(32*8))*32*8+donor] * betaRow[(N/(32*8))*32*8+donor];
-#elif KALIS_PI == PI_SCALAR
-            g += Pi * betaRow[(N/(32*8))*32*8+donor];
-#endif
           }
 
-#if KALIS_PI == PI_SCALAR
-          // Adjustments for scalar Pi
-          g -= Pi * betaRow[recipient];
-#elif KALIS_PI == PI_MATRIX
-          // Fix the diagonal of beta ... note that because we set the diagonal of Pi
-          // to zero we don't need to adjust g
-#endif
           betaRow[recipient] = 0.0;
 
         } else if(l==reset_l-1) {
@@ -488,17 +464,15 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
               _beta3          = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
               _beta4          = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
 
-              _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
 
-#if KALIS_PI == PI_MATRIX
               __m256d _pi1    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4);
               __m256d _pi2    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 4);
               __m256d _pi3    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 8);
               __m256d _pi4    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 12);
-#endif
 
               _theta1         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4)/8]) >> (((donor*4)%8)*4), mask))));
               _theta2         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+1)/8]) >> (((donor*4+1)%8)*4), mask))));
@@ -522,17 +496,10 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
               _beta3          = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
               _beta4          = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
 
-#if KALIS_PI == PI_MATRIX
               _g              = _mm256_fmadd_pd(_pi1, _beta1, _g); // g += Pi * {theta*beta}
               _g              = _mm256_fmadd_pd(_pi2, _beta2, _g); // g += Pi * {theta*beta}
               _g              = _mm256_fmadd_pd(_pi3, _beta3, _g); // g += Pi * {theta*beta}
               _g              = _mm256_fmadd_pd(_pi4, _beta4, _g); // g += Pi * {theta*beta}
-#elif KALIS_PI == PI_SCALAR
-              _g              = _mm256_fmadd_pd(_Pi, _beta1, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_Pi, _beta2, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_Pi, _beta3, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_Pi, _beta4, _g); // g += Pi * {theta*beta}
-#endif
 
               _mm256_storeu_pd(betaNow1, _beta1);
               _mm256_storeu_pd(betaNow2, _beta2);
@@ -553,20 +520,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             betaRow[(N/(32*8))*32*8+donor] = (rho[l] + (HA * muTmp1a + muTmp2a) * betaRow[(N/(32*8))*32*8+donor] * omRhoDivG) * (H * muTmp1b + muTmp2b);
 #endif
 
-#if KALIS_PI == PI_MATRIX
             g += PiRow[(N/(32*8))*32*8+donor] * betaRow[(N/(32*8))*32*8+donor];
-#elif KALIS_PI == PI_SCALAR
-            g += Pi * betaRow[(N/(32*8))*32*8+donor];
-#endif
           }
 
-#if KALIS_PI == PI_SCALAR
-          // Adjustments for scalar Pi
-          g -= Pi * betaRow[recipient];
-#elif KALIS_PI == PI_MATRIX
-          // Fix the diagonal of beta ... note that because we set the diagonal of Pi
-          // to zero we don't need to adjust g
-#endif
           betaRow[recipient] = 0.0;
 
         } else {
@@ -610,17 +566,15 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
               __m256d _theta3         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+2)/8]) >> (((donor*4+2)%8)*4), mask))));
               __m256d _theta4         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+3)/8]) >> (((donor*4+3)%8)*4), mask))));
 
-#if KALIS_PI == PI_MATRIX
               __m256d _pi1    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4);
               __m256d _pi2    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 4);
               __m256d _pi3    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 8);
               __m256d _pi4    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 12);
-#endif
 
-              _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _Rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
+              _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
 
 #if KALIS_MU == MU_SCALAR
               _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
@@ -639,17 +593,10 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
               _theta3          = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
               _theta4          = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
 
-#if KALIS_PI == PI_MATRIX
               _g              = _mm256_fmadd_pd(_pi1, _theta1, _g); // g += Pi * {theta*beta}
               _g              = _mm256_fmadd_pd(_pi2, _theta2, _g); // g += Pi * {theta*beta}
               _g              = _mm256_fmadd_pd(_pi3, _theta3, _g); // g += Pi * {theta*beta}
               _g              = _mm256_fmadd_pd(_pi4, _theta4, _g); // g += Pi * {theta*beta}
-#elif KALIS_PI == PI_SCALAR
-              _g              = _mm256_fmadd_pd(_Pi, _theta1, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_Pi, _theta2, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_Pi, _theta3, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_Pi, _theta4, _g); // g += Pi * {theta*beta}
-#endif
 
               _mm256_storeu_pd(betaNow1, _beta1);
               _mm256_storeu_pd(betaNow2, _beta2);
@@ -668,28 +615,13 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             betaRow[(N/(32*8))*32*8+donor] = (rho[l] + betaRow[(N/(32*8))*32*8+donor] * omRhoDivG);
 #endif
 
-#if KALIS_PI == PI_MATRIX && KALIS_MU == MU_VECTOR
+#if KALIS_MU == MU_VECTOR
             g += PiRow[(N/(32*8))*32*8+donor] * betaRow[(N/(32*8))*32*8+donor] * (H * muTmp1b + muTmp2b);
-#elif KALIS_PI == PI_MATRIX && KALIS_MU == MU_SCALAR
+#elif KALIS_MU == MU_SCALAR
             g += PiRow[(N/(32*8))*32*8+donor] * betaRow[(N/(32*8))*32*8+donor] * (H * muTmp1 + muTmp2);
-#elif KALIS_PI == PI_SCALAR && KALIS_MU == MU_VECTOR
-            g += Pi * betaRow[(N/(32*8))*32*8+donor] * (H * muTmp1b + muTmp2b);
-#elif KALIS_PI == PI_SCALAR && KALIS_MU == MU_SCALAR
-            g += Pi * betaRow[(N/(32*8))*32*8+donor] * (H * muTmp1 + muTmp2);
 #endif
           }
 
-#if KALIS_PI == PI_SCALAR
-          // Adjustments for scalar Pi
-#if KALIS_MU == MU_VECTOR
-          g -= Pi * (muTmp1b + muTmp2b) * betaRow[recipient];
-#elif KALIS_MU == MU_SCALAR
-          g -= Pi * (muTmp1 + muTmp2) * betaRow[recipient];
-#endif
-#elif KALIS_PI == PI_MATRIX
-          // Fix the diagonal of beta ... note that because we set the diagonal of Pi
-          // to zero we don't need to adjust g
-#endif
           betaRow[recipient] = 0.0;
 
         }
@@ -700,8 +632,16 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
         gold[recipient_beta] = g;
       }
+
+#if KALIS_PI == PI_SCALAR
+      PiRow[recipient] = Pi;
+#endif
     }
   }
+
+#if KALIS_PI == PI_SCALAR
+  free(PiRow);
+#endif
 
 #endif
 
