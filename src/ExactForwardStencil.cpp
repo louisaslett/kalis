@@ -64,6 +64,9 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 
 #if KALIS_PI == PI_SCALAR
       // Adjust due to scalar Pi for recipient/recipient locus
+      // We can do this at the first locus but not later due to
+      // numerical stability problems if (1-mu)*Pi is large
+      // compared to all other contributions
       alpha[recipient + N*recipient_alpha] = 0.0;
 #if KALIS_MU == MU_SCALAR
       fold[recipient_alpha] -= (1.0-mu)*Pi;
