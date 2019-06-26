@@ -87,7 +87,12 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
   for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
     int_fast32_t recipient_alpha = recipient-alpha_from_rec;
 #if KALIS_PI == PI_SCALAR
-    __m256d _recipient = _mm256_set1_pd(recipient);
+    const __m256d _recipient = _mm256_set1_pd(recipient);
+    const __m256d _donorinc = _mm256_set1_pd(16.0);
+    __m256d _donornum1 = _mm256_setr_pd(0.0, 1.0, 2.0, 3.0);
+    __m256d _donornum2 = _mm256_setr_pd(4.0, 5.0, 6.0, 7.0);
+    __m256d _donornum3 = _mm256_setr_pd(8.0, 9.0, 10.0, 11.0);
+    __m256d _donornum4 = _mm256_setr_pd(12.0, 13.0, 14.0, 15.0);
 #endif
     l = reset_l;
 
@@ -137,25 +142,6 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 #endif
         for(int_fast32_t donor=0; donor<((32*8)/4)/4; ++donor) {
           // IACA_START
-#if KALIS_PI == PI_SCALAR
-          __m256d _donornum1 = _mm256_setr_pd((double) donoroff*32*8 + donor*4*4,
-                                              (double) donoroff*32*8 + donor*4*4 + 1,
-                                              (double) donoroff*32*8 + donor*4*4 + 2,
-                                              (double) donoroff*32*8 + donor*4*4 + 3);
-          __m256d _donornum2 = _mm256_setr_pd((double) donoroff*32*8 + donor*4*4 + 4,
-                                              (double) donoroff*32*8 + donor*4*4 + 5,
-                                              (double) donoroff*32*8 + donor*4*4 + 6,
-                                              (double) donoroff*32*8 + donor*4*4 + 7);
-          __m256d _donornum3 = _mm256_setr_pd((double) donoroff*32*8 + donor*4*4 + 8,
-                                              (double) donoroff*32*8 + donor*4*4 + 9,
-                                              (double) donoroff*32*8 + donor*4*4 + 10,
-                                              (double) donoroff*32*8 + donor*4*4 + 11);
-          __m256d _donornum4 = _mm256_setr_pd((double) donoroff*32*8 + donor*4*4 + 12,
-                                              (double) donoroff*32*8 + donor*4*4 + 13,
-                                              (double) donoroff*32*8 + donor*4*4 + 14,
-                                              (double) donoroff*32*8 + donor*4*4 + 15);
-#endif
-
           double *alphaNow1 = alphaRow + donoroff*32*8 + donor*4*4;
           double *alphaNow2 = alphaRow + donoroff*32*8 + donor*4*4 + 4;
           double *alphaNow3 = alphaRow + donoroff*32*8 + donor*4*4 + 8;
@@ -211,10 +197,10 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
           _alpha3         = _mm256_mul_pd(_theta3, _alpha3);
           _alpha4         = _mm256_mul_pd(_theta4, _alpha4);
 #elif KALIS_PI == PI_SCALAR
-          _alpha1         = _mm256_and_pd(_mm256_mul_pd(_theta1, _alpha1), _mm256_cmp_pd(_donornum1, _recipient, 4));
-          _alpha2         = _mm256_and_pd(_mm256_mul_pd(_theta2, _alpha2), _mm256_cmp_pd(_donornum2, _recipient, 4));
-          _alpha3         = _mm256_and_pd(_mm256_mul_pd(_theta3, _alpha3), _mm256_cmp_pd(_donornum3, _recipient, 4));
-          _alpha4         = _mm256_and_pd(_mm256_mul_pd(_theta4, _alpha4), _mm256_cmp_pd(_donornum4, _recipient, 4));
+          _alpha1         = _mm256_and_pd(_mm256_mul_pd(_theta1, _alpha1), _mm256_cmp_pd(_donornum1, _recipient, _CMP_NEQ_UQ));
+          _alpha2         = _mm256_and_pd(_mm256_mul_pd(_theta2, _alpha2), _mm256_cmp_pd(_donornum2, _recipient, _CMP_NEQ_UQ));
+          _alpha3         = _mm256_and_pd(_mm256_mul_pd(_theta3, _alpha3), _mm256_cmp_pd(_donornum3, _recipient, _CMP_NEQ_UQ));
+          _alpha4         = _mm256_and_pd(_mm256_mul_pd(_theta4, _alpha4), _mm256_cmp_pd(_donornum4, _recipient, _CMP_NEQ_UQ));
 #endif
           _f              = _mm256_add_pd(_f, _alpha1);
           _f              = _mm256_add_pd(_f, _alpha2);
@@ -225,6 +211,13 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
           _mm256_storeu_pd(alphaNow2, _alpha2);
           _mm256_storeu_pd(alphaNow3, _alpha3);
           _mm256_storeu_pd(alphaNow4, _alpha4);
+
+#if KALIS_PI == PI_SCALAR
+          _donornum1 = _mm256_add_pd(_donornum1, _donorinc);
+          _donornum2 = _mm256_add_pd(_donornum2, _donorinc);
+          _donornum3 = _mm256_add_pd(_donornum3, _donorinc);
+          _donornum4 = _mm256_add_pd(_donornum4, _donorinc);
+#endif
         }
         // IACA_END
       }
