@@ -4,80 +4,105 @@ author: "Louis Aslett & Ryan Christ"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Auto-tuning HMM Parameters for Local Phylogeny Inference}
+%\VignetteIndexEntry{Auto-tuning HMM Parameters for Local Phylogeny Inference}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
----
-
-```{r setup, include = FALSE}
+  ---
+  
+  ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+collapse = TRUE,
+comment = "#>"
 )
 ```
-
-
-
-## Motivation
-
-
-The kalis Package is designed to obtain distance matrices that each coarsely approximate the local phylogeny underlying a given locus of the genome using the Li & Stephens Model.   
-
-As noted, there are three parameters...
-
-Those parameters do not have biological meaning for our purposes but are simply tunable to allow us to optimize for local phylogeny inference.
-
-motivating objective...but you should look at entire histogram
-
-What part of the genome to run this on?  Well, ideally just the chromosome you're working with.  
-
-You'd want to know if the different chromosomes were yielding different parameter estimates. 
-
-Here we provide the functionality for doing a single chromosome on a single machine.  You can send this out on your cluster to do two chromosomes separately and compare the results.
-
-We have here a suggested method for combining the parameter estimates from across chromosomes.Though in principle, we don't see immediately any reason why there'd be problems combining info for say population structure with slightly different parameters.
-
-If parameters are actually different between chromosomes, then we'd suggest using the parameters only on their respective chromosomes.  
-
-If you'd like to do the optimization jointly over all chromosomes, that's totally fine, but we'd suggest that you do it on a single chromosome first to give yourself a good initialization point then proceed.  Unfortunately the optimal way to do that depends on your cluster architecture.
-
-Below we'll give an example of how to do multi-chromosome comparison.  
-
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+### Provide a Working Directory
+```{r run.dir}
+run.dir <- "~/Desktop/autotuning_test_files/"
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+```{r load.data, results = "hide",message=FALSE}
+require(kalis)
+require(RSpectra)
+require(mlrMBO)
+require(future)
+require(pryr)
+require(QForm)
+require(plotly)
+require(akima)
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+source("../../AutoTune2_local.R")
 
-## More Examples
+data("SmallHaps")
+#haps <- SmallHaps[polymorphic.sites,]
+CacheHaplotypes(SmallHaps)
+m <- rbeta(nrow(SmallHaps)-1,1,10)*1e-6
+pars <- Parameters(CalcRho(morgan.dist = m, Ne = 1e-250, gamma = 1), mu = 1e-250)
 
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+polymorphic.sites <- rowSums(SmallHaps)!=0 & rowSums(SmallHaps)!=1
+G <- tcrossprod(scale(t(SmallHaps[polymorphic.sites,])))
+bg.vecs <- RSpectra::eigs(G,10)$vectors
 ```
 
-Also a quote using `>`:
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+
+### Define Target Loci for Tuning
+```{r autotuning_pars}
+nthreads <- 2
+num.target.loci <- 10
+targets <- InvRecombMap(m,num.target.loci = num.target.loci)
+```
+
+### Set Up Optimization Using mlrMBO
+```{r autotuning_targets, results="hide"}
+
+
+# Define Bounds on Parameters and Objective Function
+ps <- makeParamSet(
+  makeNumericParam("neg.log10.Ne", lower=0,upper=300),
+  makeNumericParam("gamma", lower=1,upper=1),
+  makeNumericParam("neg.log10.mu", lower=0,upper=300)
+)
+
+
+obj.fun <- makeSingleObjectiveFunction(name = "autotune", fn = AutoTuneTarget3, par.set = ps)
+
+# Define kernel for Gaussian Process to Use
+surr.km <- makeLearner("regr.bgp", predict.type = "se")#, control = list(trace = FALSE))
+
+# Set number of steps optimizer can take after grid evaluations
+control <- makeMBOControl() ;  control <- setMBOControlTermination(control, iters = 2)
+
+# Set Initial Grid of Points at which to evaluate objective
+des <- data.frame( y = c(-.2,-.6,-.2,-.6),
+                   neg.log10.Ne = rep(c(0,280),each = 2),
+                   gamma = rep(1,4),
+                   neg.log10.mu = rep(c(0,280),2)
+)
+
+start <- proc.time()
+res = mbo(fun=obj.fun, design=des, learner = surr.km, control = control,
+          more.args = list(morgan.dist = m, t = targets, bg.vecs = bg.vecs, nthreads = 2, k = 5, run.dir = run.dir))
+finish <- proc.time() -start
+#
+optimal.pars <- res$opt.path$env$path[res$best.ind,]
+print(res)
+print(finish)
+###
+
+
+```
+
+
+### Plot Autotuning Results
+
+```{r plot.autotune, eval = F, echo = F, results='asis'}
+PlotAutotuneSurf(x = res$opt.path$env$path$neg.log10.Ne,
+                 y = res$opt.path$env$path$neg.log10.mu, 
+                 z = - res$opt.path$env$path$y, 
+                 xlab = "-log10Ne", ylab = "-log10mu")
+```
+
+
+
+

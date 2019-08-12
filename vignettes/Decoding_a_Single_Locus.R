@@ -9,11 +9,7 @@ require(kalis)
 data("SmallHaps")
 
 ## ------------------------------------------------------------------------
-WriteIndividualHaplotypeH5("SmallHaps.h5",SmallHaps)
-CacheHaplotypes("SmallHaps.h5")
-
-## ---- echo = F, results = 'hide'-----------------------------------------
-system2("rm","SmallHaps.h5")
+CacheHaplotypes(SmallHaps)
 
 ## ------------------------------------------------------------------------
 m <- rbeta(500-1,1,10)*1e-6
