@@ -56,7 +56,7 @@ CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE) {
   }
 
   # Compute rho
-  rho <- c(-(expm1(-Ne*morgan.dist^gamma)), 1)
+  rho <- c(-(expm1(-Ne*morgan.dist^gamma)))
   if(floor) {
     rho <- ifelse(rho < 1e-16, 0, rho)
   }
@@ -101,8 +101,8 @@ Parameters <- function(rho = rep(0, get("L", envir = pkgVars)-1), mu = 1e-8, Pi 
 
   L <- get("L", envir = pkgVars)
 
-  if(!is.vector(rho) || length(rho) != L) {
-    stop("rho must be a vector of the same length as the sequences in the cache.")
+  if(!is.vector(rho) || length(rho) != L-1) {
+    stop("rho must be a vector of the length one less than the length of the sequences in the cache.")
   }
   if(!is.numeric(mu)) {
     stop("rho must be numeric.")
@@ -137,7 +137,7 @@ Parameters <- function(rho = rep(0, get("L", envir = pkgVars)-1), mu = 1e-8, Pi 
   # Create the new parameter environment
   res <- new.env(parent = emptyenv())
   res$pars <- new.env(parent = emptyenv())
-  res$pars$rho <- rho
+  res$pars$rho <- c(rho, 1)
   res$pars$mu  <- mu
   res$pars$Pi  <- Pi
 
