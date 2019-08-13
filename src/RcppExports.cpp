@@ -466,19 +466,13 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// FillTableCache
-void FillTableCache(List cache, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads, int from, int to);
-RcppExport SEXP _kalis_FillTableCache(SEXP cacheSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP, SEXP fromSEXP, SEXP toSEXP) {
+// ResetTable
+void ResetTable(List tbl);
+RcppExport SEXP _kalis_ResetTable(SEXP tblSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type cache(cacheSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
-    Rcpp::traits::input_parameter< int >::type from(fromSEXP);
-    Rcpp::traits::input_parameter< int >::type to(toSEXP);
-    FillTableCache(cache, Pi, mu, rho, nthreads, from, to);
+    Rcpp::traits::input_parameter< List >::type tbl(tblSEXP);
+    ResetTable(tbl);
     return R_NilValue;
 END_RCPP
 }
@@ -528,7 +522,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_Forward_densePi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward_densePi_scalarmu_cpp, 6},
     {"_kalis_Forward_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward_scalarPi_scalarmu_cpp, 6},
     {"_kalis_Forward1step_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward1step_scalarPi_scalarmu_cpp, 6},
-    {"_kalis_FillTableCache", (DL_FUNC) &_kalis_FillTableCache, 7},
+    {"_kalis_ResetTable", (DL_FUNC) &_kalis_ResetTable, 1},
     {"_kalis_CopyForwardTable", (DL_FUNC) &_kalis_CopyForwardTable, 2},
     {NULL, NULL, 0}
 };

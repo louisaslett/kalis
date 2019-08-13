@@ -6,97 +6,102 @@ using namespace Rcpp;
 #include "Cache.h"
 #include "ExactForward.h"
 
+// // [[Rcpp::export]]
+// void FillTableCache(List cache,
+//                     NumericMatrix Pi,
+//                     NumericVector mu,
+//                     NumericVector rho,
+//                     const int nthreads,
+//                     int from = 0,
+//                     int to = 0) {
+//
+//   const int_fast32_t L = hap_size;
+//   if(from <= 0) {
+//     from = 1;
+//   }
+//   if(to <= 0 || to <= from || to >= L+1) {
+//     to = L;
+//   }
+//   const int_fast32_t chkpt_len = to-from;
+//   const int_fast32_t N = num_inds;
+//   const int_fast32_t cache_size = cache.length();
+//   const int_fast32_t alpha_size = as<NumericMatrix>(as<List>(cache[0])["alpha"]).length() * sizeof(double);
+//   const int_fast32_t alpha_f_size = as<NumericVector>(as<List>(cache[0])["alpha.f"]).length() * sizeof(double);
+//   const int_fast32_t alpha_f2_size = as<NumericVector>(as<List>(cache[0])["alpha.f2"]).length() * sizeof(double);
+//
+//   double pos = 0.5;
+//   if(from > 1) {
+//     pos = 1.0;
+//   }
+//   as<IntegerVector>(as<List>(cache[0])["l"])[0] = -1;
+//   for(int_fast32_t i = 0; i < cache_size; i++) {
+//     int_fast32_t t = floor((1.0-pos)*chkpt_len)+from-1;
+//     if(t == as<int>(as<List>(cache[i])["l"])-1) {
+//       as<IntegerVector>(as<List>(cache[i])["l"])[0] = 0;
+//       break;
+//     }
+//     pos *= 0.5;
+//
+//     Rcout << "Computing cache entry " << i+1 << " up to locus " << t+1
+//           << " for recipients " << as<int>(as<List>(cache[i])["from_recipient"])
+//           << " to " << as<int>(as<List>(cache[i])["to_recipient"])
+//           << " from ";
+//     if(as<int>(as<List>(cache[i])["l"]) < 1) {
+//       Rcout << "start\n";
+//     } else {
+//       Rcout << "locus " << as<int>(as<List>(cache[i])["l"]) << "\n";
+//     }
+//
+//     if(nthreads>1) {
+//       ParExactForwardNoExpAVX3_cpp(as<NumericMatrix>(as<List>(cache[i])["alpha"]),
+//                                    as<NumericVector>(as<List>(cache[i])["alpha.f"]),
+//                                    as<NumericVector>(as<List>(cache[i])["alpha.f2"]),
+//                                    as<int>(as<List>(cache[i])["from_recipient"])-1,
+//                                    as<int>(as<List>(cache[i])["l"])-1,
+//                                    t,
+//                                    as<int>(as<List>(cache[i])["from_recipient"])-1,
+//                                    as<int>(as<List>(cache[i])["to_recipient"]),
+//                                    L,
+//                                    N,
+//                                    Pi,
+//                                    mu,
+//                                    rho,
+//                                    nthreads);
+//     } else {
+//       ExactForwardNoExpAVX3_cpp(as<NumericMatrix>(as<List>(cache[i])["alpha"]),
+//                                 as<NumericVector>(as<List>(cache[i])["alpha.f"]),
+//                                 as<NumericVector>(as<List>(cache[i])["alpha.f2"]),
+//                                 as<int>(as<List>(cache[i])["from_recipient"])-1,
+//                                 as<int>(as<List>(cache[i])["l"])-1,
+//                                 t,
+//                                 as<int>(as<List>(cache[i])["from_recipient"])-1,
+//                                 as<int>(as<List>(cache[i])["to_recipient"]),
+//                                 L,
+//                                 N,
+//                                 Pi,
+//                                 mu,
+//                                 rho);
+//     }
+//     as<IntegerVector>(as<List>(cache[i])["l"])[0] = t+1;
+//
+//     if(i < cache_size-1) { // Copy forward
+//       memcpy(&(as<NumericMatrix>(as<List>(cache[i+1])["alpha"])[0]),
+//              &(as<NumericMatrix>(as<List>(cache[i])["alpha"])[0]),
+//              alpha_size);
+//       memcpy(&(as<NumericVector>(as<List>(cache[i+1])["alpha.f"])[0]),
+//              &(as<NumericVector>(as<List>(cache[i])["alpha.f"])[0]),
+//              alpha_f_size);
+//       memcpy(&(as<NumericVector>(as<List>(cache[i+1])["alpha.f2"])[0]),
+//              &(as<NumericVector>(as<List>(cache[i])["alpha.f2"])[0]),
+//              alpha_f2_size);
+//       as<IntegerVector>(as<List>(cache[i+1])["l"])[0] = as<int>(as<List>(cache[i])["l"]);
+//     }
+//   }
+// }
+
 // [[Rcpp::export]]
-void FillTableCache(List cache,
-                    NumericMatrix Pi,
-                    NumericVector mu,
-                    NumericVector rho,
-                    const int nthreads,
-                    int from = 0,
-                    int to = 0) {
-
-  const int_fast32_t L = hap_size;
-  if(from <= 0) {
-    from = 1;
-  }
-  if(to <= 0 || to <= from || to >= L+1) {
-    to = L;
-  }
-  const int_fast32_t chkpt_len = to-from;
-  const int_fast32_t N = num_inds;
-  const int_fast32_t cache_size = cache.length();
-  const int_fast32_t alpha_size = as<NumericMatrix>(as<List>(cache[0])["alpha"]).length() * sizeof(double);
-  const int_fast32_t alpha_f_size = as<NumericVector>(as<List>(cache[0])["alpha.f"]).length() * sizeof(double);
-  const int_fast32_t alpha_f2_size = as<NumericVector>(as<List>(cache[0])["alpha.f2"]).length() * sizeof(double);
-
-  double pos = 0.5;
-  if(from > 1) {
-    pos = 1.0;
-  }
-  as<IntegerVector>(as<List>(cache[0])["l"])[0] = -1;
-  for(int_fast32_t i = 0; i < cache_size; i++) {
-    int_fast32_t t = floor((1.0-pos)*chkpt_len)+from-1;
-    if(t == as<int>(as<List>(cache[i])["l"])-1) {
-      as<IntegerVector>(as<List>(cache[i])["l"])[0] = 0;
-      break;
-    }
-    pos *= 0.5;
-
-    Rcout << "Computing cache entry " << i+1 << " up to locus " << t+1
-          << " for recipients " << as<int>(as<List>(cache[i])["from_recipient"])
-          << " to " << as<int>(as<List>(cache[i])["to_recipient"])
-          << " from ";
-    if(as<int>(as<List>(cache[i])["l"]) < 1) {
-      Rcout << "start\n";
-    } else {
-      Rcout << "locus " << as<int>(as<List>(cache[i])["l"]) << "\n";
-    }
-
-    if(nthreads>1) {
-      ParExactForwardNoExpAVX3_cpp(as<NumericMatrix>(as<List>(cache[i])["alpha"]),
-                                   as<NumericVector>(as<List>(cache[i])["alpha.f"]),
-                                   as<NumericVector>(as<List>(cache[i])["alpha.f2"]),
-                                   as<int>(as<List>(cache[i])["from_recipient"])-1,
-                                   as<int>(as<List>(cache[i])["l"])-1,
-                                   t,
-                                   as<int>(as<List>(cache[i])["from_recipient"])-1,
-                                   as<int>(as<List>(cache[i])["to_recipient"]),
-                                   L,
-                                   N,
-                                   Pi,
-                                   mu,
-                                   rho,
-                                   nthreads);
-    } else {
-      ExactForwardNoExpAVX3_cpp(as<NumericMatrix>(as<List>(cache[i])["alpha"]),
-                                as<NumericVector>(as<List>(cache[i])["alpha.f"]),
-                                as<NumericVector>(as<List>(cache[i])["alpha.f2"]),
-                                as<int>(as<List>(cache[i])["from_recipient"])-1,
-                                as<int>(as<List>(cache[i])["l"])-1,
-                                t,
-                                as<int>(as<List>(cache[i])["from_recipient"])-1,
-                                as<int>(as<List>(cache[i])["to_recipient"]),
-                                L,
-                                N,
-                                Pi,
-                                mu,
-                                rho);
-    }
-    as<IntegerVector>(as<List>(cache[i])["l"])[0] = t+1;
-
-    if(i < cache_size-1) { // Copy forward
-      memcpy(&(as<NumericMatrix>(as<List>(cache[i+1])["alpha"])[0]),
-             &(as<NumericMatrix>(as<List>(cache[i])["alpha"])[0]),
-             alpha_size);
-      memcpy(&(as<NumericVector>(as<List>(cache[i+1])["alpha.f"])[0]),
-             &(as<NumericVector>(as<List>(cache[i])["alpha.f"])[0]),
-             alpha_f_size);
-      memcpy(&(as<NumericVector>(as<List>(cache[i+1])["alpha.f2"])[0]),
-             &(as<NumericVector>(as<List>(cache[i])["alpha.f2"])[0]),
-             alpha_f2_size);
-      as<IntegerVector>(as<List>(cache[i+1])["l"])[0] = as<int>(as<List>(cache[i])["l"]);
-    }
-  }
+void ResetTable(List tbl) {
+  as<IntegerVector>(tbl["l"])[0] = 0;
 }
 
 // [[Rcpp::export]]

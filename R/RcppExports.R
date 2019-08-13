@@ -133,8 +133,8 @@ Forward1step_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
     invisible(.Call('_kalis_Forward1step_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
 }
 
-FillTableCache <- function(cache, Pi, mu, rho, nthreads, from = 0L, to = 0L) {
-    invisible(.Call('_kalis_FillTableCache', PACKAGE = 'kalis', cache, Pi, mu, rho, nthreads, from, to))
+ResetTable <- function(tbl) {
+    invisible(.Call('_kalis_ResetTable', PACKAGE = 'kalis', tbl))
 }
 
 CopyForwardTable <- function(to, from) {

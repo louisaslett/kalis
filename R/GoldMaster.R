@@ -106,3 +106,30 @@ Exact_Forward_GMmatLS_R <- function(t, L, N, H, Pi, mu, rho) {
 
   return(list(alpha=alpha, alphasum=f))
 }
+# Gold master forward algorithm, no sanity checks, matrix-wise, log-space
+Exact_Forward_GMmatLS_R_newH <- function(t, L, N, H, Pi, mu, rho) {
+  # Setup Pi & rho
+  diag(Pi) <- 0
+
+  l <- 1
+
+  indH <- outer(H[,l], H[,l], "==") * 1; diag(indH) <- 0
+  theta <- indH*(1-2*mu[l])+mu[l]
+
+  alpha <- log(Pi*theta)
+
+  f <- -log(rowSums(exp(alpha)*rho[l]))
+
+  while(l<t) {
+    l <- l+1
+
+    indH <- outer(H[,l], H[,l], "==") * 1; diag(indH) <- 0
+    theta <- indH*(1-2*mu[l])+mu[l]
+
+    alpha <- log(theta*Pi + theta*(1-rho[l-1])*exp(alpha+f)) - f
+
+    f <- -( log(rowSums(exp(alpha+f)*rho[l])) - f )
+  }
+
+  return(list(alpha=alpha, alphasum=f))
+}
