@@ -16,12 +16,12 @@ comment = "#>"
 )
 ```
 ### Provide a Working Directory
-```{r run.dir}
+```{r run.dir, eval=FALSE}
 run.dir <- "~/Desktop/autotuning_test_files/"
 ```
 
 
-```{r load.data, results = "hide",message=FALSE}
+```{r load.data, results = "hide", message=FALSE, eval=FALSE}
 require(kalis)
 require(RSpectra)
 require(mlrMBO)
@@ -47,14 +47,14 @@ bg.vecs <- RSpectra::eigs(G,10)$vectors
 
 
 ### Define Target Loci for Tuning
-```{r autotuning_pars}
+```{r autotuning_pars, eval=FALSE}
 nthreads <- 2
 num.target.loci <- 10
 targets <- InvRecombMap(m,num.target.loci = num.target.loci)
 ```
 
 ### Set Up Optimization Using mlrMBO
-```{r autotuning_targets, results="hide"}
+```{r autotuning_targets, results="hide", eval=FALSE}
 
 
 # Define Bounds on Parameters and Objective Function
@@ -96,7 +96,7 @@ print(finish)
 
 ### Plot Autotuning Results
 
-```{r plot.autotune, eval = F, echo = F, results='asis'}
+```{r plot.autotune, eval = F, echo = F, results='asis', eval=FALSE}
 PlotAutotuneSurf(x = res$opt.path$env$path$neg.log10.Ne,
                  y = res$opt.path$env$path$neg.log10.mu, 
                  z = - res$opt.path$env$path$y, 
