@@ -95,7 +95,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #if KALIS_MU == MU_SCALAR
   // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
   const double muTmp1 = 1.0 - 2.0 * mu, muTmp2 = mu;
-  const __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
+  const __m256d _muTmp1 = _mm256_set1_pd(muTmp1), _muTmp2 = _mm256_set1_pd(muTmp2);
 #endif
 
   if(!(l-1>t)) {
@@ -142,9 +142,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #if KALIS_MU == MU_VECTOR
         // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
         const double muTmp1a = 1.0 - 2.0 * mu[l+1], muTmp2a = mu[l+1];
-        const __m256d _muTmp1a = _mm256_broadcast_sd(&muTmp1a), _muTmp2a = _mm256_broadcast_sd(&muTmp2a);
+        const __m256d _muTmp1a = _mm256_set1_pd(muTmp1a), _muTmp2a = _mm256_set1_pd(muTmp2a);
         const double muTmp1b = 1.0 - 2.0 * mu[l], muTmp2b = mu[l];
-        const __m256d _muTmp1b = _mm256_broadcast_sd(&muTmp1b), _muTmp2b = _mm256_broadcast_sd(&muTmp2b);
+        const __m256d _muTmp1b = _mm256_set1_pd(muTmp1b), _muTmp2b = _mm256_set1_pd(muTmp2b);
 #endif
 
         // Setup rho for AVX ops
@@ -318,7 +318,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #if KALIS_MU == MU_VECTOR
           // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
           const double muTmp1b = 1.0 - 2.0 * mu[l], muTmp2b = mu[l];
-          const __m256d _muTmp1b = _mm256_broadcast_sd(&muTmp1b), _muTmp2b = _mm256_broadcast_sd(&muTmp2b);
+          const __m256d _muTmp1b = _mm256_set1_pd(muTmp1b), _muTmp2b = _mm256_set1_pd(muTmp2b);
 #endif
 
           for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
@@ -417,9 +417,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #if KALIS_MU == MU_VECTOR
           // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
           const double muTmp1a = 1.0 - 2.0 * mu[l+1], muTmp2a = mu[l+1];
-          const __m256d _muTmp1a = _mm256_broadcast_sd(&muTmp1a), _muTmp2a = _mm256_broadcast_sd(&muTmp2a);
+          const __m256d _muTmp1a = _mm256_set1_pd(muTmp1a), _muTmp2a = _mm256_set1_pd(muTmp2a);
           const double muTmp1b = 1.0 - 2.0 * mu[l], muTmp2b = mu[l];
-          const __m256d _muTmp1b = _mm256_broadcast_sd(&muTmp1b), _muTmp2b = _mm256_broadcast_sd(&muTmp2b);
+          const __m256d _muTmp1b = _mm256_set1_pd(muTmp1b), _muTmp2b = _mm256_set1_pd(muTmp2b);
 #endif
 
           for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
@@ -540,7 +540,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #if KALIS_MU == MU_VECTOR
           // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
           const double muTmp1b = 1.0 - 2.0 * mu[l], muTmp2b = mu[l];
-          const __m256d _muTmp1b = _mm256_broadcast_sd(&muTmp1b), _muTmp2b = _mm256_broadcast_sd(&muTmp2b);
+          const __m256d _muTmp1b = _mm256_set1_pd(muTmp1b), _muTmp2b = _mm256_set1_pd(muTmp2b);
 #endif
 
           for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {

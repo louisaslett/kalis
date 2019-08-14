@@ -91,7 +91,7 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
   // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
   // ... now update to (1-H) * (1-2*mu) + mu
   const double muTmp1 = 1.0 - 2.0 * mu, muTmp2 = mu;
-  const __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
+  const __m256d _muTmp1 = _mm256_set1_pd(muTmp1), _muTmp2 = _mm256_set1_pd(muTmp2);
 #endif
 
   for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
@@ -131,7 +131,7 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
       // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
       // ... now update to (1-H) * (1-2*mu) + mu
       const double muTmp1 = 1.0 - 2.0 * mu[l], muTmp2 = mu[l];
-      const __m256d _muTmp1 = _mm256_broadcast_sd(&muTmp1), _muTmp2 = _mm256_broadcast_sd(&muTmp2);
+      const __m256d _muTmp1 = _mm256_set1_pd(muTmp1), _muTmp2 = _mm256_set1_pd(muTmp2);
 #endif
 
       for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
