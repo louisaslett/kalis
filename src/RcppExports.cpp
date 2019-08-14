@@ -142,20 +142,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// Exact_ComputeTable_naive_cpp
-NumericMatrix Exact_ComputeTable_naive_cpp(int l, NumericMatrix Pi, NumericVector mu, NumericVector rho);
-RcppExport SEXP _kalis_Exact_ComputeTable_naive_cpp(SEXP lSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type l(lSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
-    rcpp_result_gen = Rcpp::wrap(Exact_ComputeTable_naive_cpp(l, Pi, mu, rho));
-    return rcpp_result_gen;
-END_RCPP
-}
 // Dedip_min
 NumericVector Dedip_min(NumericMatrix fwd, NumericMatrix bck, NumericVector s);
 RcppExport SEXP _kalis_Dedip_min(SEXP fwdSEXP, SEXP bckSEXP, SEXP sSEXP) {
@@ -500,7 +486,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_QueryCache2_loc", (DL_FUNC) &_kalis_QueryCache2_loc, 1},
     {"_kalis_ClearHaplotypeCache2", (DL_FUNC) &_kalis_ClearHaplotypeCache2, 0},
     {"_kalis_ComputeStatus", (DL_FUNC) &_kalis_ComputeStatus, 0},
-    {"_kalis_Exact_ComputeTable_naive_cpp", (DL_FUNC) &_kalis_Exact_ComputeTable_naive_cpp, 4},
     {"_kalis_Dedip_min", (DL_FUNC) &_kalis_Dedip_min, 3},
     {"_kalis_Dedip_2nd_min", (DL_FUNC) &_kalis_Dedip_2nd_min, 3},
     {"_kalis_Dedip_max", (DL_FUNC) &_kalis_Dedip_max, 3},

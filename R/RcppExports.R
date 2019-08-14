@@ -45,10 +45,6 @@ ComputeStatus <- function() {
     invisible(.Call('_kalis_ComputeStatus', PACKAGE = 'kalis'))
 }
 
-Exact_ComputeTable_naive_cpp <- function(l, Pi, mu, rho) {
-    .Call('_kalis_Exact_ComputeTable_naive_cpp', PACKAGE = 'kalis', l, Pi, mu, rho)
-}
-
 Dedip_min <- function(fwd, bck, s) {
     .Call('_kalis_Dedip_min', PACKAGE = 'kalis', fwd, bck, s)
 }
