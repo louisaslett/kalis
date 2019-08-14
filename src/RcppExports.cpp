@@ -322,51 +322,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// ExactForwardNaiveC_cpp
-void ExactForwardNaiveC_cpp(NumericMatrix alpha, NumericVector alpha_f, NumericVector alpha_f2, const int alpha_from_rec, const int alpha_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho);
-RcppExport SEXP _kalis_ExactForwardNaiveC_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type alpha_f(alpha_fSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type alpha_f2(alpha_f2SEXP);
-    Rcpp::traits::input_parameter< const int >::type alpha_from_rec(alpha_from_recSEXP);
-    Rcpp::traits::input_parameter< const int >::type alpha_t(alpha_tSEXP);
-    Rcpp::traits::input_parameter< const int >::type t(tSEXP);
-    Rcpp::traits::input_parameter< const int >::type from_rec(from_recSEXP);
-    Rcpp::traits::input_parameter< const int >::type to_rec(to_recSEXP);
-    Rcpp::traits::input_parameter< const int >::type L(LSEXP);
-    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
-    ExactForwardNaiveC_cpp(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho);
-    return R_NilValue;
-END_RCPP
-}
-// ParExactForwardNaiveC_cpp
-void ParExactForwardNaiveC_cpp(NumericMatrix alpha, NumericVector alpha_f, NumericVector alpha_f2, const int alpha_from_rec, const int alpha_t, const int t, const int from_rec, const int to_rec, const int L, const int N, NumericMatrix Pi, NumericVector mu, NumericVector rho, const int nthreads);
-RcppExport SEXP _kalis_ParExactForwardNaiveC_cpp(SEXP alphaSEXP, SEXP alpha_fSEXP, SEXP alpha_f2SEXP, SEXP alpha_from_recSEXP, SEXP alpha_tSEXP, SEXP tSEXP, SEXP from_recSEXP, SEXP to_recSEXP, SEXP LSEXP, SEXP NSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP nthreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type alpha_f(alpha_fSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type alpha_f2(alpha_f2SEXP);
-    Rcpp::traits::input_parameter< const int >::type alpha_from_rec(alpha_from_recSEXP);
-    Rcpp::traits::input_parameter< const int >::type alpha_t(alpha_tSEXP);
-    Rcpp::traits::input_parameter< const int >::type t(tSEXP);
-    Rcpp::traits::input_parameter< const int >::type from_rec(from_recSEXP);
-    Rcpp::traits::input_parameter< const int >::type to_rec(to_recSEXP);
-    Rcpp::traits::input_parameter< const int >::type L(LSEXP);
-    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Pi(PiSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
-    ParExactForwardNaiveC_cpp(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads);
-    return R_NilValue;
-END_RCPP
-}
 // ResetForwardTable
 void ResetForwardTable(List fwd);
 RcppExport SEXP _kalis_ResetForwardTable(SEXP fwdSEXP) {
@@ -499,8 +454,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_Dedip2_all", (DL_FUNC) &_kalis_Dedip2_all, 1},
     {"_kalis_ExactBackwardNaiveC_cpp", (DL_FUNC) &_kalis_ExactBackwardNaiveC_cpp, 13},
     {"_kalis_ParExactBackwardNaiveC_cpp", (DL_FUNC) &_kalis_ParExactBackwardNaiveC_cpp, 14},
-    {"_kalis_ExactForwardNaiveC_cpp", (DL_FUNC) &_kalis_ExactForwardNaiveC_cpp, 13},
-    {"_kalis_ParExactForwardNaiveC_cpp", (DL_FUNC) &_kalis_ParExactForwardNaiveC_cpp, 14},
     {"_kalis_ResetForwardTable", (DL_FUNC) &_kalis_ResetForwardTable, 1},
     {"_kalis_Forward_densePi_densemu_cpp", (DL_FUNC) &_kalis_Forward_densePi_densemu_cpp, 6},
     {"_kalis_Forward_scalarPi_densemu_cpp", (DL_FUNC) &_kalis_Forward_scalarPi_densemu_cpp, 6},
