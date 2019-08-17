@@ -1,6 +1,8 @@
 #ifndef STENCIL2_H
 #define STENCIL2_H
 
+#include "Stencil.h"
+
 // Mu definitions
 
 #ifndef KALIS_MU
@@ -37,6 +39,16 @@
 
 // Architecture definitions
 // Only first set commented, apply to all
+
+#define STRINGIFY_MACRO(x) STR(x)
+#define STR(x) #x
+#define EXPAND(x) x
+#define CONCAT(n1, n2) STRINGIFY_MACRO(EXPAND(n1)EXPAND(n2))
+#define KALIS_FORWARD_INNER_UNROLLED(N) STRINGIFY_MACRO(EXPAND(unrolls/ExactForwardStencil_inner_unroll_)EXPAND(N)EXPAND(.h))
+
+#ifndef KALIS_UNROLL
+#define KALIS_UNROLL 4
+#endif
 
 #if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
 

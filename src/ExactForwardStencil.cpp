@@ -138,65 +138,12 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
         uint32_t *HA = (uint32_t*) &_HA;
 #endif
 
-        for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/4; ++donor) {
+        // __asm volatile("# LLVM-MCA-BEGIN");
+        for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
           // IACA_START
-          double *alphaNow1    = alphaRow + donoroff*(32*KALIS_INTVEC_SIZE) + donor*(KALIS_DOUBLEVEC_SIZE*4);
-          double *alphaNow2    = alphaRow + donoroff*(32*KALIS_INTVEC_SIZE) + donor*(KALIS_DOUBLEVEC_SIZE*4) + (  KALIS_DOUBLEVEC_SIZE);
-          double *alphaNow3    = alphaRow + donoroff*(32*KALIS_INTVEC_SIZE) + donor*(KALIS_DOUBLEVEC_SIZE*4) + (2*KALIS_DOUBLEVEC_SIZE);
-          double *alphaNow4    = alphaRow + donoroff*(32*KALIS_INTVEC_SIZE) + donor*(KALIS_DOUBLEVEC_SIZE*4) + (3*KALIS_DOUBLEVEC_SIZE);
-
-          KALIS_DOUBLE _alpha1 = KALIS_LOADU_DOUBLE(alphaNow1);
-          KALIS_DOUBLE _alpha2 = KALIS_LOADU_DOUBLE(alphaNow2);
-          KALIS_DOUBLE _alpha3 = KALIS_LOADU_DOUBLE(alphaNow3);
-          KALIS_DOUBLE _alpha4 = KALIS_LOADU_DOUBLE(alphaNow4);
-
-          KALIS_DOUBLE _pi1    = KALIS_LOADU_DOUBLE(PiRow + donoroff*(32*KALIS_INTVEC_SIZE) + donor*(KALIS_DOUBLEVEC_SIZE*4)                           );
-          KALIS_DOUBLE _pi2    = KALIS_LOADU_DOUBLE(PiRow + donoroff*(32*KALIS_INTVEC_SIZE) + donor*(KALIS_DOUBLEVEC_SIZE*4) + (  KALIS_DOUBLEVEC_SIZE));
-          KALIS_DOUBLE _pi3    = KALIS_LOADU_DOUBLE(PiRow + donoroff*(32*KALIS_INTVEC_SIZE) + donor*(KALIS_DOUBLEVEC_SIZE*4) + (2*KALIS_DOUBLEVEC_SIZE));
-          KALIS_DOUBLE _pi4    = KALIS_LOADU_DOUBLE(PiRow + donoroff*(32*KALIS_INTVEC_SIZE) + donor*(KALIS_DOUBLEVEC_SIZE*4) + (3*KALIS_DOUBLEVEC_SIZE));
-
-          _pi1                 = KALIS_MUL_DOUBLE(_pi1, _rho);
-          _pi2                 = KALIS_MUL_DOUBLE(_pi2, _rho);
-          _pi3                 = KALIS_MUL_DOUBLE(_pi3, _rho);
-          _pi4                 = KALIS_MUL_DOUBLE(_pi4, _rho);
-
-          _alpha1              = KALIS_FMA_DOUBLE(_alpha1, _omRhoDivF, _pi1); // (Pi*rho + {(1-rho)/f} * alpha)
-          _alpha2              = KALIS_FMA_DOUBLE(_alpha2, _omRhoDivF, _pi2); // (Pi*rho + {(1-rho)/f} * alpha)
-          _alpha3              = KALIS_FMA_DOUBLE(_alpha3, _omRhoDivF, _pi3); // (Pi*rho + {(1-rho)/f} * alpha)
-          _alpha4              = KALIS_FMA_DOUBLE(_alpha4, _omRhoDivF, _pi4); // (Pi*rho + {(1-rho)/f} * alpha)
-
-#if !defined(KALIS_1STEP)
-          KALIS_DOUBLE _theta1 = KALIS_SPREADBITSTO_DOUBLE((HA[(donor*(KALIS_DOUBLEVEC_SIZE*4))/32])                          >> ((donor*(KALIS_DOUBLEVEC_SIZE*4))%32));
-          KALIS_DOUBLE _theta2 = KALIS_SPREADBITSTO_DOUBLE((HA[(donor*(KALIS_DOUBLEVEC_SIZE*4)+(  KALIS_DOUBLEVEC_SIZE))/32]) >> ((donor*(KALIS_DOUBLEVEC_SIZE*4)+(  KALIS_DOUBLEVEC_SIZE))%32));
-          KALIS_DOUBLE _theta3 = KALIS_SPREADBITSTO_DOUBLE((HA[(donor*(KALIS_DOUBLEVEC_SIZE*4)+(2*KALIS_DOUBLEVEC_SIZE))/32]) >> ((donor*(KALIS_DOUBLEVEC_SIZE*4)+(2*KALIS_DOUBLEVEC_SIZE))%32));
-          KALIS_DOUBLE _theta4 = KALIS_SPREADBITSTO_DOUBLE((HA[(donor*(KALIS_DOUBLEVEC_SIZE*4)+(3*KALIS_DOUBLEVEC_SIZE))/32]) >> ((donor*(KALIS_DOUBLEVEC_SIZE*4)+(3*KALIS_DOUBLEVEC_SIZE))%32));
-
-          _theta1              = KALIS_FMA_DOUBLE(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-          _theta2              = KALIS_FMA_DOUBLE(_theta2, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-          _theta3              = KALIS_FMA_DOUBLE(_theta3, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-          _theta4              = KALIS_FMA_DOUBLE(_theta4, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-#else
-          KALIS_DOUBLE _theta1 = KALIS_SET_DOUBLE(1.0);
-          KALIS_DOUBLE _theta2 = KALIS_SET_DOUBLE(1.0);
-          KALIS_DOUBLE _theta3 = KALIS_SET_DOUBLE(1.0);
-          KALIS_DOUBLE _theta4 = KALIS_SET_DOUBLE(1.0);
-#endif
-
-          _alpha1              = KALIS_MUL_DOUBLE(_theta1, _alpha1);
-          _alpha2              = KALIS_MUL_DOUBLE(_theta2, _alpha2);
-          _alpha3              = KALIS_MUL_DOUBLE(_theta3, _alpha3);
-          _alpha4              = KALIS_MUL_DOUBLE(_theta4, _alpha4);
-
-          _f                   = KALIS_ADD_DOUBLE(_f, _alpha1);
-          _f                   = KALIS_ADD_DOUBLE(_f, _alpha2);
-          _f                   = KALIS_ADD_DOUBLE(_f, _alpha3);
-          _f                   = KALIS_ADD_DOUBLE(_f, _alpha4);
-
-          KALIS_STOREU_DOUBLE(alphaNow1, _alpha1);
-          KALIS_STOREU_DOUBLE(alphaNow2, _alpha2);
-          KALIS_STOREU_DOUBLE(alphaNow3, _alpha3);
-          KALIS_STOREU_DOUBLE(alphaNow4, _alpha4);
+#include KALIS_FORWARD_INNER_UNROLLED(KALIS_UNROLL)
         }
+        // __asm volatile("# LLVM-MCA-END");
         // IACA_END
       }
       // Tidy up any ragged end past a multiple of 256 ...
