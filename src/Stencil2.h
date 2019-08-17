@@ -45,6 +45,7 @@
 #define EXPAND(x) x
 #define CONCAT(n1, n2) STRINGIFY_MACRO(EXPAND(n1)EXPAND(n2))
 #define KALIS_FORWARD_INNER_UNROLLED(N) STRINGIFY_MACRO(EXPAND(unrolls/ExactForwardStencil_inner_unroll_)EXPAND(N)EXPAND(.h))
+#define KALIS_BACKWARD_INNER_UNROLLED(N, V) STRINGIFY_MACRO(EXPAND(unrolls/ExactBackwardStencil_inner_unroll_)EXPAND(V)EXPAND(_)EXPAND(N)EXPAND(.h))
 
 #ifndef KALIS_UNROLL
 #define KALIS_UNROLL 4

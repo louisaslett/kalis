@@ -34,7 +34,6 @@ void Backward_densePi_densemu_cpp(List bck,
   if(l==t) {
     return;
   }
-#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_cpp(beta,
                                   beta_g,
@@ -65,38 +64,6 @@ void Backward_densePi_densemu_cpp(List bck,
                                mu,
                                rho);
   }
-#else
-  if(nthreads>1) {
-    ParExactBackwardNaiveC_cpp(beta,
-                               beta_g,
-                               beta_g2,
-                               from_rec-1,
-                               l-1,
-                               t-1,
-                               from_rec-1,
-                               to_rec,
-                               L,
-                               N,
-                               Pi,
-                               mu,
-                               rho,
-                               nthreads);
-  } else {
-    ExactBackwardNaiveC_cpp(beta,
-                            beta_g,
-                            beta_g2,
-                            from_rec-1,
-                            l-1,
-                            t-1,
-                            from_rec-1,
-                            to_rec,
-                            L,
-                            N,
-                            Pi,
-                            mu,
-                            rho);
-  }
-#endif
   IntegerVector newl(1);
   newl[0] = t;
   bck["l"] = newl;
@@ -125,7 +92,6 @@ void Backward_scalarPi_densemu_cpp(List bck,
   if(l==t) {
     return;
   }
-#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_scPi_cpp(beta,
                                        beta_g,
@@ -156,42 +122,6 @@ void Backward_scalarPi_densemu_cpp(List bck,
                                     mu,
                                     rho);
   }
-#else
-  NumericMatrix Pimat(N, N);
-  Pimat.fill(Pi);
-  Pimat.fill_diag(0.0);
-
-  if(nthreads>1) {
-    ParExactBackwardNaiveC_cpp(beta,
-                               beta_g,
-                               beta_g2,
-                               from_rec-1,
-                               l-1,
-                               t-1,
-                               from_rec-1,
-                               to_rec,
-                               L,
-                               N,
-                               Pimat,
-                               mu,
-                               rho,
-                               nthreads);
-  } else {
-    ExactBackwardNaiveC_cpp(beta,
-                            beta_g,
-                            beta_g2,
-                            from_rec-1,
-                            l-1,
-                            t-1,
-                            from_rec-1,
-                            to_rec,
-                            L,
-                            N,
-                            Pimat,
-                            mu,
-                            rho);
-  }
-#endif
   IntegerVector newl(1);
   newl[0] = t;
   bck["l"] = newl;
@@ -220,7 +150,6 @@ void Backward_densePi_scalarmu_cpp(List bck,
   if(l==t) {
     return;
   }
-#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_scmu_cpp(beta,
                                        beta_g,
@@ -251,41 +180,6 @@ void Backward_densePi_scalarmu_cpp(List bck,
                                     mu,
                                     rho);
   }
-#else
-  NumericVector muvec(N);
-  muvec.fill(mu);
-
-  if(nthreads>1) {
-    ParExactBackwardNaiveC_cpp(beta,
-                               beta_g,
-                               beta_g2,
-                               from_rec-1,
-                               l-1,
-                               t-1,
-                               from_rec-1,
-                               to_rec,
-                               L,
-                               N,
-                               Pi,
-                               muvec,
-                               rho,
-                               nthreads);
-  } else {
-    ExactBackwardNaiveC_cpp(beta,
-                            beta_g,
-                            beta_g2,
-                            from_rec-1,
-                            l-1,
-                            t-1,
-                            from_rec-1,
-                            to_rec,
-                            L,
-                            N,
-                            Pi,
-                            muvec,
-                            rho);
-  }
-#endif
   IntegerVector newl(1);
   newl[0] = t;
   bck["l"] = newl;
@@ -314,7 +208,6 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
   if(l==t) {
     return;
   }
-#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_scmuPi_cpp(beta,
                                          beta_g,
@@ -345,44 +238,6 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
                                       mu,
                                       rho);
   }
-#else
-  NumericMatrix Pimat(N, N);
-  Pimat.fill(Pi);
-  Pimat.fill_diag(0.0);
-  NumericVector muvec(N);
-  muvec.fill(mu);
-
-  if(nthreads>1) {
-    ParExactBackwardNaiveC_cpp(beta,
-                               beta_g,
-                               beta_g2,
-                               from_rec-1,
-                               l-1,
-                               t-1,
-                               from_rec-1,
-                               to_rec,
-                               L,
-                               N,
-                               Pimat,
-                               muvec,
-                               rho,
-                               nthreads);
-  } else {
-    ExactBackwardNaiveC_cpp(beta,
-                            beta_g,
-                            beta_g2,
-                            from_rec-1,
-                            l-1,
-                            t-1,
-                            from_rec-1,
-                            to_rec,
-                            L,
-                            N,
-                            Pimat,
-                            muvec,
-                            rho);
-  }
-#endif
   IntegerVector newl(1);
   newl[0] = t;
   bck["l"] = newl;

@@ -27,9 +27,6 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
                 PI_TYPE_C Pi,
                 const MU_TYPE_C mu,
                 const double *const __restrict__ rho) {
-
-#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
-
   int_fast32_t l = beta_t;
 
   double g;
@@ -89,13 +86,13 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
   const int_fast32_t reset_l = l;
 
 #if KALIS_PI == PI_SCALAR
-  const __m256d _Pi = _mm256_set1_pd(Pi);
+  const KALIS_DOUBLE _Pi = KALIS_SET_DOUBLE(Pi);
 #endif
 
 #if KALIS_MU == MU_SCALAR
   // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
   const double muTmp1 = 1.0 - 2.0 * mu, muTmp2 = mu;
-  const __m256d _muTmp1 = _mm256_set1_pd(muTmp1), _muTmp2 = _mm256_set1_pd(muTmp2);
+  const KALIS_DOUBLE _muTmp1 = KALIS_SET_DOUBLE(muTmp1), _muTmp2 = KALIS_SET_DOUBLE(muTmp2);
 #endif
 
   if(!(l-1>t)) {
@@ -115,7 +112,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         --l;
         // (1.0-rho[l]) * gratio .... for all recipients we consider to get us going
         double omRhoDivG = (1.0 - rho[l]) / gold[recipient_beta];
-        __m256d _omRhoDivG = _mm256_set1_pd(omRhoDivG);
+        KALIS_DOUBLE _omRhoDivG = KALIS_SET_DOUBLE(omRhoDivG);
 
         // Load this recipient's bit into all 256-bits of an AVX register
         int32_t recipient_hap = 0, recipient_hap_prev = 0;
@@ -123,11 +120,11 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         recipient_hap_prev  = ~recipient_hap_prev; // So H below will now be 1-H
         recipient_hap      -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
         recipient_hap       = ~recipient_hap; // So H below will now be 1-H
-        __m256i _recipient_hap_prev = _mm256_set1_epi32(recipient_hap_prev);
-        __m256i _recipient_hap      = _mm256_set1_epi32(recipient_hap);
+        KALIS_INT32 _recipient_hap_prev = KALIS_SET_INT32(recipient_hap_prev);
+        KALIS_INT32 _recipient_hap      = KALIS_SET_INT32(recipient_hap);
 
         g = 0.0; // For accumulating scalar part in ragged end ...
-        __m256d _g = _mm256_set1_pd(0.0); // ... and for vector part.
+        KALIS_DOUBLE _g = KALIS_SET_DOUBLE(0.0); // ... and for vector part.
 
         // TODO: for larger problems break this down into L1 cachable chunks of
         //       donors at a time
@@ -142,96 +139,23 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #if KALIS_MU == MU_VECTOR
         // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
         const double muTmp1a = 1.0 - 2.0 * mu[l+1], muTmp2a = mu[l+1];
-        const __m256d _muTmp1a = _mm256_set1_pd(muTmp1a), _muTmp2a = _mm256_set1_pd(muTmp2a);
+        const KALIS_DOUBLE _muTmp1a = KALIS_SET_DOUBLE(muTmp1a), _muTmp2a = KALIS_SET_DOUBLE(muTmp2a);
         const double muTmp1b = 1.0 - 2.0 * mu[l], muTmp2b = mu[l];
-        const __m256d _muTmp1b = _mm256_set1_pd(muTmp1b), _muTmp2b = _mm256_set1_pd(muTmp2b);
+        const KALIS_DOUBLE _muTmp1b = KALIS_SET_DOUBLE(muTmp1b), _muTmp2b = KALIS_SET_DOUBLE(muTmp2b);
 #endif
 
         // Setup rho for AVX ops
-        __m256d _rho = _mm256_set1_pd(rho[l]);
-        for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
+        KALIS_DOUBLE _rho = KALIS_SET_DOUBLE(rho[l]);
+        for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
           // Load next 256 donors and XOR with recipients
-          __m256i _HA = _mm256_xor_si256(_recipient_hap_prev, _mm256_load_si256((__m256i*) &(hap_locus[l+1][donoroff*8])));
+          KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
           uint32_t *HA = (uint32_t*) &_HA;
-          __m256i _HB = _mm256_xor_si256(_recipient_hap,      _mm256_load_si256((__m256i*) &(hap_locus[l][donoroff*8])));
+          KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
           uint32_t *HB = (uint32_t*) &_HB;
 
-          const uint32_t mask = 16843009;
-          for(int_fast32_t donor=0; donor<((32*8)/4)/4; ++donor) {
+          for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
             // IACA_START
-            double *betaNow1 = betaRow + donoroff*32*8 + donor*4*4;
-            double *betaNow2 = betaRow + donoroff*32*8 + donor*4*4 + 4;
-            double *betaNow3 = betaRow + donoroff*32*8 + donor*4*4 + 8;
-            double *betaNow4 = betaRow + donoroff*32*8 + donor*4*4 + 12;
-
-            __m256d _beta1  = _mm256_loadu_pd(betaNow1);
-            __m256d _beta2  = _mm256_loadu_pd(betaNow2);
-            __m256d _beta3  = _mm256_loadu_pd(betaNow3);
-            __m256d _beta4  = _mm256_loadu_pd(betaNow4);
-
-            __m256d _theta1 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4)/8]) >> (((donor*4)%8)*4), mask))));
-            __m256d _theta2 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4+1)/8]) >> (((donor*4+1)%8)*4), mask))));
-            __m256d _theta3 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4+2)/8]) >> (((donor*4+2)%8)*4), mask))));
-            __m256d _theta4 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4+3)/8]) >> (((donor*4+3)%8)*4), mask))));
-
-#if KALIS_MU == MU_SCALAR
-            _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-            _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-            _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-            _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-#elif KALIS_MU == MU_VECTOR
-            _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
-            _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
-            _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
-            _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
-#endif
-
-            _beta1          = _mm256_mul_pd(_beta1, _theta1); // (theta*beta)
-            _beta2          = _mm256_mul_pd(_beta2, _theta2); // (theta*beta)
-            _beta3          = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
-            _beta4          = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
-
-            _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-            _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-            _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-            _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-
-            __m256d _pi1    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4);
-            __m256d _pi2    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 4);
-            __m256d _pi3    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 8);
-            __m256d _pi4    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 12);
-
-            _theta1         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4)/8]) >> (((donor*4)%8)*4), mask))));
-            _theta2         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+1)/8]) >> (((donor*4+1)%8)*4), mask))));
-            _theta3         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+2)/8]) >> (((donor*4+2)%8)*4), mask))));
-            _theta4         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+3)/8]) >> (((donor*4+3)%8)*4), mask))));
-
-#if KALIS_MU == MU_SCALAR
-            _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-            _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-            _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-            _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-#elif KALIS_MU == MU_VECTOR
-            _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-            _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-            _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-            _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-#endif
-
-            _theta1         = _mm256_mul_pd(_beta1, _theta1); // (theta*beta)
-            _theta2         = _mm256_mul_pd(_beta2, _theta2); // (theta*beta)
-            _theta3         = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
-            _theta4         = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
-
-            _g              = _mm256_fmadd_pd(_pi1, _theta1, _g); // g += Pi * {theta*beta}
-            _g              = _mm256_fmadd_pd(_pi2, _theta2, _g); // g += Pi * {theta*beta}
-            _g              = _mm256_fmadd_pd(_pi3, _theta3, _g); // g += Pi * {theta*beta}
-            _g              = _mm256_fmadd_pd(_pi4, _theta4, _g); // g += Pi * {theta*beta}
-
-            _mm256_storeu_pd(betaNow1, _beta1);
-            _mm256_storeu_pd(betaNow2, _beta2);
-            _mm256_storeu_pd(betaNow3, _beta3);
-            _mm256_storeu_pd(betaNow4, _beta4);
+#include KALIS_BACKWARD_INNER_UNROLLED(KALIS_UNROLL,A)
           }
           // IACA_END
         }
@@ -256,8 +180,8 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         betaRow[recipient] = 0.0;
 
         // Accumulate row sum into g
-        _g = _mm256_hadd_pd(_g, _g);
-        g += ((double*)&_g)[0] + ((double*)&_g)[2];
+        KALIS_HSUM_DOUBLE(_g);
+        g += ((double*)&_g)[0];
 
         gold[recipient_beta] = g;
       }
@@ -284,10 +208,10 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         --l;
         // (1.0-rho[l]) * gratio .... for all recipients we consider to get us going
         double omRhoDivG = (1.0 - rho[l]) / gold[recipient_beta];
-        __m256d _omRhoDivG = _mm256_set1_pd(omRhoDivG);
+        KALIS_DOUBLE _omRhoDivG = KALIS_SET_DOUBLE(omRhoDivG);
 
         g = 0.0; // For accumulating scalar part in ragged end ...
-        __m256d _g = _mm256_set1_pd(0.0); // ... and for vector part.
+        KALIS_DOUBLE _g = KALIS_SET_DOUBLE(0.0); // ... and for vector part.
 
         // TODO: for larger problems break this down into L1 cachable chunks of
         //       donors at a time
@@ -300,7 +224,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #endif
 
         // Setup rho for AVX ops
-        __m256d _rho = _mm256_set1_pd(rho[l]);
+        KALIS_DOUBLE _rho = KALIS_SET_DOUBLE(rho[l]);
 
         if(l<reset_l-1 && l>t) {
           // Mid beta*theta step
@@ -313,73 +237,22 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           int32_t recipient_hap = 0;
           recipient_hap -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
           recipient_hap  = ~recipient_hap; // So H below will now be 1-H
-          __m256i _recipient_hap = _mm256_set1_epi32(recipient_hap);
+          KALIS_INT32 _recipient_hap = KALIS_SET_INT32(recipient_hap);
 
 #if KALIS_MU == MU_VECTOR
           // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
           const double muTmp1b = 1.0 - 2.0 * mu[l], muTmp2b = mu[l];
-          const __m256d _muTmp1b = _mm256_set1_pd(muTmp1b), _muTmp2b = _mm256_set1_pd(muTmp2b);
+          const KALIS_DOUBLE _muTmp1b = KALIS_SET_DOUBLE(muTmp1b), _muTmp2b = KALIS_SET_DOUBLE(muTmp2b);
 #endif
 
-          for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
+          for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
             // Load next 256 donors and XOR with recipients
-            __m256i _HB = _mm256_xor_si256(_recipient_hap, _mm256_load_si256((__m256i*) &(hap_locus[l][donoroff*8])));
+            KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
             uint32_t *HB = (uint32_t*) &_HB;
 
-            const uint32_t mask = 16843009;
-            for(int_fast32_t donor=0; donor<((32*8)/4)/4; ++donor) {
+            for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
               // IACA_START
-              double *betaNow1 = betaRow + donoroff*32*8 + donor*4*4;
-              double *betaNow2 = betaRow + donoroff*32*8 + donor*4*4 + 4;
-              double *betaNow3 = betaRow + donoroff*32*8 + donor*4*4 + 8;
-              double *betaNow4 = betaRow + donoroff*32*8 + donor*4*4 + 12;
-
-              __m256d _beta1  = _mm256_loadu_pd(betaNow1);
-              __m256d _beta2  = _mm256_loadu_pd(betaNow2);
-              __m256d _beta3  = _mm256_loadu_pd(betaNow3);
-              __m256d _beta4  = _mm256_loadu_pd(betaNow4);
-
-              __m256d _theta1         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4)/8]) >> (((donor*4)%8)*4), mask))));
-              __m256d _theta2         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+1)/8]) >> (((donor*4+1)%8)*4), mask))));
-              __m256d _theta3         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+2)/8]) >> (((donor*4+2)%8)*4), mask))));
-              __m256d _theta4         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+3)/8]) >> (((donor*4+3)%8)*4), mask))));
-
-              __m256d _pi1    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4);
-              __m256d _pi2    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 4);
-              __m256d _pi3    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 8);
-              __m256d _pi4    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 12);
-
-              _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-
-#if KALIS_MU == MU_SCALAR
-              _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-#elif KALIS_MU == MU_VECTOR
-              _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-              _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-              _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-              _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-#endif
-
-              _beta1          = _mm256_mul_pd(_beta1, _theta1); // (theta*beta)
-              _beta2          = _mm256_mul_pd(_beta2, _theta2); // (theta*beta)
-              _beta3          = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
-              _beta4          = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
-
-              _g              = _mm256_fmadd_pd(_pi1, _beta1, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_pi2, _beta2, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_pi3, _beta3, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_pi4, _beta4, _g); // g += Pi * {theta*beta}
-
-              _mm256_storeu_pd(betaNow1, _beta1);
-              _mm256_storeu_pd(betaNow2, _beta2);
-              _mm256_storeu_pd(betaNow3, _beta3);
-              _mm256_storeu_pd(betaNow4, _beta4);
+#include KALIS_BACKWARD_INNER_UNROLLED(KALIS_UNROLL,B)
             }
             // IACA_END
           }
@@ -411,100 +284,27 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           recipient_hap_prev  = ~recipient_hap_prev; // So H below will now be 1-H
           recipient_hap      -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
           recipient_hap       = ~recipient_hap; // So H below will now be 1-H
-          __m256i _recipient_hap_prev = _mm256_set1_epi32(recipient_hap_prev);
-          __m256i _recipient_hap      = _mm256_set1_epi32(recipient_hap);
+          KALIS_INT32 _recipient_hap_prev = KALIS_SET_INT32(recipient_hap_prev);
+          KALIS_INT32 _recipient_hap      = KALIS_SET_INT32(recipient_hap);
 
 #if KALIS_MU == MU_VECTOR
           // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
           const double muTmp1a = 1.0 - 2.0 * mu[l+1], muTmp2a = mu[l+1];
-          const __m256d _muTmp1a = _mm256_set1_pd(muTmp1a), _muTmp2a = _mm256_set1_pd(muTmp2a);
+          const KALIS_DOUBLE _muTmp1a = KALIS_SET_DOUBLE(muTmp1a), _muTmp2a = KALIS_SET_DOUBLE(muTmp2a);
           const double muTmp1b = 1.0 - 2.0 * mu[l], muTmp2b = mu[l];
-          const __m256d _muTmp1b = _mm256_set1_pd(muTmp1b), _muTmp2b = _mm256_set1_pd(muTmp2b);
+          const KALIS_DOUBLE _muTmp1b = KALIS_SET_DOUBLE(muTmp1b), _muTmp2b = KALIS_SET_DOUBLE(muTmp2b);
 #endif
 
-          for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
+          for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
             // Load next 256 donors and XOR with recipients
-            __m256i _HA = _mm256_xor_si256(_recipient_hap_prev, _mm256_load_si256((__m256i*) &(hap_locus[l+1][donoroff*8])));
+            KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
             uint32_t *HA = (uint32_t*) &_HA;
-            __m256i _HB = _mm256_xor_si256(_recipient_hap,      _mm256_load_si256((__m256i*) &(hap_locus[l][donoroff*8])));
+            KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
             uint32_t *HB = (uint32_t*) &_HB;
 
-            const uint32_t mask = 16843009;
-            for(int_fast32_t donor=0; donor<((32*8)/4)/4; ++donor) {
+            for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
               // IACA_START
-              double *betaNow1 = betaRow + donoroff*32*8 + donor*4*4;
-              double *betaNow2 = betaRow + donoroff*32*8 + donor*4*4 + 4;
-              double *betaNow3 = betaRow + donoroff*32*8 + donor*4*4 + 8;
-              double *betaNow4 = betaRow + donoroff*32*8 + donor*4*4 + 12;
-
-              __m256d _beta1  = _mm256_loadu_pd(betaNow1);
-              __m256d _beta2  = _mm256_loadu_pd(betaNow2);
-              __m256d _beta3  = _mm256_loadu_pd(betaNow3);
-              __m256d _beta4  = _mm256_loadu_pd(betaNow4);
-
-              __m256d _theta1 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4)/8]) >> (((donor*4)%8)*4), mask))));
-              __m256d _theta2 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4+1)/8]) >> (((donor*4+1)%8)*4), mask))));
-              __m256d _theta3 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4+2)/8]) >> (((donor*4+2)%8)*4), mask))));
-              __m256d _theta4 = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HA[(donor*4+3)/8]) >> (((donor*4+3)%8)*4), mask))));
-
-#if KALIS_MU == MU_SCALAR
-              _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-#elif KALIS_MU == MU_VECTOR
-              _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
-              _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
-              _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
-              _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1a, _muTmp2a); // theta = H * (2*mu - 1) - mu + 1
-#endif
-
-              _beta1          = _mm256_mul_pd(_beta1, _theta1); // (theta*beta)
-              _beta2          = _mm256_mul_pd(_beta2, _theta2); // (theta*beta)
-              _beta3          = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
-              _beta4          = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
-
-              _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-
-              __m256d _pi1    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4);
-              __m256d _pi2    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 4);
-              __m256d _pi3    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 8);
-              __m256d _pi4    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 12);
-
-              _theta1         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4)/8]) >> (((donor*4)%8)*4), mask))));
-              _theta2         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+1)/8]) >> (((donor*4+1)%8)*4), mask))));
-              _theta3         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+2)/8]) >> (((donor*4+2)%8)*4), mask))));
-              _theta4         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+3)/8]) >> (((donor*4+3)%8)*4), mask))));
-
-#if KALIS_MU == MU_SCALAR
-              _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-#elif KALIS_MU == MU_VECTOR
-              _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-              _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-              _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-              _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-#endif
-
-              _beta1          = _mm256_mul_pd(_beta1, _theta1); // (theta*beta)
-              _beta2          = _mm256_mul_pd(_beta2, _theta2); // (theta*beta)
-              _beta3          = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
-              _beta4          = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
-
-              _g              = _mm256_fmadd_pd(_pi1, _beta1, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_pi2, _beta2, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_pi3, _beta3, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_pi4, _beta4, _g); // g += Pi * {theta*beta}
-
-              _mm256_storeu_pd(betaNow1, _beta1);
-              _mm256_storeu_pd(betaNow2, _beta2);
-              _mm256_storeu_pd(betaNow3, _beta3);
-              _mm256_storeu_pd(betaNow4, _beta4);
+#include KALIS_BACKWARD_INNER_UNROLLED(KALIS_UNROLL,C)
             }
             // IACA_END
           }
@@ -535,73 +335,22 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           int32_t recipient_hap = 0;
           recipient_hap -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
           recipient_hap  = ~recipient_hap; // So H below will now be 1-H
-          __m256i _recipient_hap = _mm256_set1_epi32(recipient_hap);
+          KALIS_INT32 _recipient_hap = KALIS_SET_INT32(recipient_hap);
 
 #if KALIS_MU == MU_VECTOR
           // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
           const double muTmp1b = 1.0 - 2.0 * mu[l], muTmp2b = mu[l];
-          const __m256d _muTmp1b = _mm256_set1_pd(muTmp1b), _muTmp2b = _mm256_set1_pd(muTmp2b);
+          const KALIS_DOUBLE _muTmp1b = KALIS_SET_DOUBLE(muTmp1b), _muTmp2b = KALIS_SET_DOUBLE(muTmp2b);
 #endif
 
-          for(int_fast32_t donoroff=0; donoroff<N/(32*8); ++donoroff) {
+          for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
             // Load next 256 donors and XOR with recipients
-            __m256i _HB = _mm256_xor_si256(_recipient_hap, _mm256_load_si256((__m256i*) &(hap_locus[l][donoroff*8])));
+            KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
             uint32_t *HB = (uint32_t*) &_HB;
 
-            const uint32_t mask = 16843009;
-            for(int_fast32_t donor=0; donor<((32*8)/4)/4; ++donor) {
+            for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
               // IACA_START
-              double *betaNow1 = betaRow + donoroff*32*8 + donor*4*4;
-              double *betaNow2 = betaRow + donoroff*32*8 + donor*4*4 + 4;
-              double *betaNow3 = betaRow + donoroff*32*8 + donor*4*4 + 8;
-              double *betaNow4 = betaRow + donoroff*32*8 + donor*4*4 + 12;
-
-              __m256d _beta1  = _mm256_loadu_pd(betaNow1);
-              __m256d _beta2  = _mm256_loadu_pd(betaNow2);
-              __m256d _beta3  = _mm256_loadu_pd(betaNow3);
-              __m256d _beta4  = _mm256_loadu_pd(betaNow4);
-
-              __m256d _theta1         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4)/8]) >> (((donor*4)%8)*4), mask))));
-              __m256d _theta2         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+1)/8]) >> (((donor*4+1)%8)*4), mask))));
-              __m256d _theta3         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+2)/8]) >> (((donor*4+2)%8)*4), mask))));
-              __m256d _theta4         = _mm256_cvtepi32_pd(_mm_cvtepi8_epi32(_mm_set_epi32(0, 0, 0, _pdep_u32((HB[(donor*4+3)/8]) >> (((donor*4+3)%8)*4), mask))));
-
-              __m256d _pi1    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4);
-              __m256d _pi2    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 4);
-              __m256d _pi3    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 8);
-              __m256d _pi4    = _mm256_loadu_pd(PiRow    + donoroff*32*8 + donor*4*4 + 12);
-
-              _beta1          = _mm256_fmadd_pd(_beta1, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta2          = _mm256_fmadd_pd(_beta2, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta3          = _mm256_fmadd_pd(_beta3, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-              _beta4          = _mm256_fmadd_pd(_beta4, _omRhoDivG, _rho); // (rho + {theta*beta} * {(1-rho)/g})
-
-#if KALIS_MU == MU_SCALAR
-              _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-              _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1
-#elif KALIS_MU == MU_VECTOR
-              _theta1         = _mm256_fmadd_pd(_theta1, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-              _theta2         = _mm256_fmadd_pd(_theta2, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-              _theta3         = _mm256_fmadd_pd(_theta3, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-              _theta4         = _mm256_fmadd_pd(_theta4, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1
-#endif
-
-              _theta1          = _mm256_mul_pd(_beta1, _theta1); // (theta*beta)
-              _theta2          = _mm256_mul_pd(_beta2, _theta2); // (theta*beta)
-              _theta3          = _mm256_mul_pd(_beta3, _theta3); // (theta*beta)
-              _theta4          = _mm256_mul_pd(_beta4, _theta4); // (theta*beta)
-
-              _g              = _mm256_fmadd_pd(_pi1, _theta1, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_pi2, _theta2, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_pi3, _theta3, _g); // g += Pi * {theta*beta}
-              _g              = _mm256_fmadd_pd(_pi4, _theta4, _g); // g += Pi * {theta*beta}
-
-              _mm256_storeu_pd(betaNow1, _beta1);
-              _mm256_storeu_pd(betaNow2, _beta2);
-              _mm256_storeu_pd(betaNow3, _beta3);
-              _mm256_storeu_pd(betaNow4, _beta4);
+#include KALIS_BACKWARD_INNER_UNROLLED(KALIS_UNROLL,D)
             }
             // IACA_END
           }
@@ -627,8 +376,8 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         }
 
         // Accumulate row sum into g
-        _g = _mm256_hadd_pd(_g, _g);
-        g += ((double*)&_g)[0] + ((double*)&_g)[2];
+        KALIS_HSUM_DOUBLE(_g);
+        g += ((double*)&_g)[0];
 
         gold[recipient_beta] = g;
       }
@@ -641,8 +390,6 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
 #if KALIS_PI == PI_SCALAR
   free(PiRow);
-#endif
-
 #endif
 
 }

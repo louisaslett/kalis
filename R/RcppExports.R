@@ -89,14 +89,6 @@ Dedip2_all <- function(M) {
     .Call('_kalis_Dedip2_all', PACKAGE = 'kalis', M)
 }
 
-ExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_kalis_ExactBackwardNaiveC_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
-}
-
-ParExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_ParExactBackwardNaiveC_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
-}
-
 ResetForwardTable <- function(fwd) {
     invisible(.Call('_kalis_ResetForwardTable', PACKAGE = 'kalis', fwd))
 }
