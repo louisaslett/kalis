@@ -89,6 +89,14 @@ Dedip2_all <- function(M) {
     .Call('_kalis_Dedip2_all', PACKAGE = 'kalis', M)
 }
 
+DedipAndMul <- function(M, alpha, beta, x, from_recipient, nthreads) {
+    .Call('_kalis_DedipAndMul', PACKAGE = 'kalis', M, alpha, beta, x, from_recipient, nthreads)
+}
+
+DedipOnlyMul <- function(M, x, from_recipient, nthreads) {
+    .Call('_kalis_DedipOnlyMul', PACKAGE = 'kalis', M, x, from_recipient, nthreads)
+}
+
 ResetForwardTable <- function(fwd) {
     invisible(.Call('_kalis_ResetForwardTable', PACKAGE = 'kalis', fwd))
 }

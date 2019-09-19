@@ -277,6 +277,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// DedipAndMul
+NumericVector DedipAndMul(NumericMatrix M, NumericMatrix alpha, NumericMatrix beta, NumericVector x, int from_recipient, int nthreads);
+RcppExport SEXP _kalis_DedipAndMul(SEXP MSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(DedipAndMul(M, alpha, beta, x, from_recipient, nthreads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DedipOnlyMul
+NumericVector DedipOnlyMul(NumericMatrix M, NumericVector x, size_t from_recipient, size_t nthreads);
+RcppExport SEXP _kalis_DedipOnlyMul(SEXP MSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< size_t >::type from_recipient(from_recipientSEXP);
+    Rcpp::traits::input_parameter< size_t >::type nthreads(nthreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(DedipOnlyMul(M, x, from_recipient, nthreads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ResetForwardTable
 void ResetForwardTable(List fwd);
 RcppExport SEXP _kalis_ResetForwardTable(SEXP fwdSEXP) {
@@ -407,6 +437,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_Dedip2_2nd_min", (DL_FUNC) &_kalis_Dedip2_2nd_min, 1},
     {"_kalis_Dedip2_dom", (DL_FUNC) &_kalis_Dedip2_dom, 1},
     {"_kalis_Dedip2_all", (DL_FUNC) &_kalis_Dedip2_all, 1},
+    {"_kalis_DedipAndMul", (DL_FUNC) &_kalis_DedipAndMul, 6},
+    {"_kalis_DedipOnlyMul", (DL_FUNC) &_kalis_DedipOnlyMul, 4},
     {"_kalis_ResetForwardTable", (DL_FUNC) &_kalis_ResetForwardTable, 1},
     {"_kalis_Forward_densePi_densemu_cpp", (DL_FUNC) &_kalis_Forward_densePi_densemu_cpp, 6},
     {"_kalis_Forward_scalarPi_densemu_cpp", (DL_FUNC) &_kalis_Forward_scalarPi_densemu_cpp, 6},
