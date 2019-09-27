@@ -22,7 +22,6 @@ void Forward_densePi_densemu_cpp(List fwd,
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
-  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
   int l        = as<int>(fwd["l"]);
   int from_rec = as<int>(fwd["from_recipient"]);
   int to_rec   = as<int>(fwd["to_recipient"]);
@@ -37,7 +36,6 @@ void Forward_densePi_densemu_cpp(List fwd,
   if(nthreads>1) {
     ParExactForwardNoExpAVX3_cpp(alpha,
                                  alpha_f,
-                                 alpha_f2,
                                  from_rec-1,
                                  l-1,
                                  t-1,
@@ -52,7 +50,6 @@ void Forward_densePi_densemu_cpp(List fwd,
   } else {
     ExactForwardNoExpAVX3_cpp(alpha,
                               alpha_f,
-                              alpha_f2,
                               from_rec-1,
                               l-1,
                               t-1,
@@ -81,7 +78,6 @@ void Forward_scalarPi_densemu_cpp(List fwd,
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
-  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
   int l        = as<int>(fwd["l"]);
   int from_rec = as<int>(fwd["from_recipient"]);
   int to_rec   = as<int>(fwd["to_recipient"]);
@@ -96,7 +92,6 @@ void Forward_scalarPi_densemu_cpp(List fwd,
   if(nthreads>1) {
     ParExactForwardNoExpAVX3_scPi_cpp(alpha,
                                       alpha_f,
-                                      alpha_f2,
                                       from_rec-1,
                                       l-1,
                                       t-1,
@@ -111,7 +106,6 @@ void Forward_scalarPi_densemu_cpp(List fwd,
   } else {
     ExactForwardNoExpAVX3_scPi_cpp(alpha,
                                    alpha_f,
-                                   alpha_f2,
                                    from_rec-1,
                                    l-1,
                                    t-1,
@@ -140,7 +134,6 @@ void Forward_densePi_scalarmu_cpp(List fwd,
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
-  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
   int l        = as<int>(fwd["l"]);
   int from_rec = as<int>(fwd["from_recipient"]);
   int to_rec   = as<int>(fwd["to_recipient"]);
@@ -155,7 +148,6 @@ void Forward_densePi_scalarmu_cpp(List fwd,
   if(nthreads>1) {
     ParExactForwardNoExpAVX3_scmu_cpp(alpha,
                                       alpha_f,
-                                      alpha_f2,
                                       from_rec-1,
                                       l-1,
                                       t-1,
@@ -170,7 +162,6 @@ void Forward_densePi_scalarmu_cpp(List fwd,
   } else {
     ExactForwardNoExpAVX3_scmu_cpp(alpha,
                                    alpha_f,
-                                   alpha_f2,
                                    from_rec-1,
                                    l-1,
                                    t-1,
@@ -199,7 +190,6 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
-  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
   int l        = as<int>(fwd["l"]);
   int from_rec = as<int>(fwd["from_recipient"]);
   int to_rec   = as<int>(fwd["to_recipient"]);
@@ -214,7 +204,6 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
   if(nthreads>1) {
     ParExactForwardNoExpAVX3_scmuPi_cpp(alpha,
                                         alpha_f,
-                                        alpha_f2,
                                         from_rec-1,
                                         l-1,
                                         t-1,
@@ -229,7 +218,6 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
   } else {
     ExactForwardNoExpAVX3_scmuPi_cpp(alpha,
                                      alpha_f,
-                                     alpha_f2,
                                      from_rec-1,
                                      l-1,
                                      t-1,
@@ -258,7 +246,6 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
-  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
   int l        = as<int>(fwd["l"]);
   int from_rec = as<int>(fwd["from_recipient"]);
   int to_rec   = as<int>(fwd["to_recipient"]);
@@ -273,7 +260,6 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
   if(nthreads>1) {
     ParExactForward1stepNoExpAVX3_scmuPi_cpp(alpha,
                                              alpha_f,
-                                             alpha_f2,
                                              from_rec-1,
                                              l-1,
                                              t-1,
@@ -288,7 +274,6 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
   } else {
     ExactForward1stepNoExpAVX3_scmuPi_cpp(alpha,
                                           alpha_f,
-                                          alpha_f2,
                                           from_rec-1,
                                           l-1,
                                           t-1,
