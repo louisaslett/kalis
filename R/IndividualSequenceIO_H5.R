@@ -62,7 +62,7 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype, append = FALSE)
                       dataset = "haps",
                       dims = c(L, 0),
                       maxdims = c(L, 10e9),
-                      storage.mode = "integer",
+                      H5type = "H5T_STD_U8LE",
                       chunk = c(L, 1),
                       level = 7)
       hdf5.dim <- c(L, 0)
@@ -80,7 +80,7 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype, append = FALSE)
                         dataset = "haps",
                         dims = c(L, 0),
                         maxdims = c(L, 10e9),
-                        storage.mode = "integer",
+                        H5type = "H5T_STD_U8LE",
                         chunk = c(L, 1),
                         level = 7)
         hdf5.dim <- c(L, 0)
@@ -95,7 +95,7 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype, append = FALSE)
                     dataset = "haps",
                     dims = c(L, 0),
                     maxdims = c(L, 10e9),
-                    storage.mode = "integer",
+                    H5type = "H5T_STD_U8LE",
                     chunk = c(L, 1),
                     level = 7)
     hdf5.dim <- c(L, 0)

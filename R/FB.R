@@ -38,7 +38,7 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
   if(!is.vector(t) || !is.numeric(t) || length(t) != 1 || is.na(t)) {
     stop("t must be a scalar.")
   }
-  if(t > L) {
+  if(t < 1 || t > L) {
     stop(glue("Valid target loci range from 1 to {L} ... cannot move forward to locus {t}."))
   }
   if(fwd$l > t) {
@@ -100,7 +100,7 @@ Backward <- function(bck, pars, t = bck$l-1, nthreads = 1) {
   if(!is.vector(t) || !is.numeric(t) || length(t) != 1 || is.na(t)) {
     stop("t must be a scalar.")
   }
-  if(t < 1) {
+  if(t < 1 || t > L) {
     stop(glue("Valid target loci range from 1 to {L} ... cannot move backward to locus {t}."))
   }
   if(bck$l < t) {

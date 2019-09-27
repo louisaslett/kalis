@@ -22,7 +22,6 @@ void Forward_densePi_densemu_cpp(List fwd,
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
-  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
   int l        = as<int>(fwd["l"]);
   int from_rec = as<int>(fwd["from_recipient"]);
   int to_rec   = as<int>(fwd["to_recipient"]);
@@ -34,11 +33,9 @@ void Forward_densePi_densemu_cpp(List fwd,
   if(l==t) {
     return;
   }
-#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
   if(nthreads>1) {
     ParExactForwardNoExpAVX3_cpp(alpha,
                                  alpha_f,
-                                 alpha_f2,
                                  from_rec-1,
                                  l-1,
                                  t-1,
@@ -53,7 +50,6 @@ void Forward_densePi_densemu_cpp(List fwd,
   } else {
     ExactForwardNoExpAVX3_cpp(alpha,
                               alpha_f,
-                              alpha_f2,
                               from_rec-1,
                               l-1,
                               t-1,
@@ -65,38 +61,6 @@ void Forward_densePi_densemu_cpp(List fwd,
                               mu,
                               rho);
   }
-#else
-  if(nthreads>1) {
-    ParExactForwardNaiveC_cpp(alpha,
-                              alpha_f,
-                              alpha_f2,
-                              from_rec-1,
-                              l-1,
-                              t-1,
-                              from_rec-1,
-                              to_rec,
-                              L,
-                              N,
-                              Pi,
-                              mu,
-                              rho,
-                              nthreads);
-  } else {
-    ExactForwardNaiveC_cpp(alpha,
-                           alpha_f,
-                           alpha_f2,
-                           from_rec-1,
-                           l-1,
-                           t-1,
-                           from_rec-1,
-                           to_rec,
-                           L,
-                           N,
-                           Pi,
-                           mu,
-                           rho);
-  }
-#endif
 
   IntegerVector newl(1);
   newl[0] = t;
@@ -114,7 +78,6 @@ void Forward_scalarPi_densemu_cpp(List fwd,
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
-  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
   int l        = as<int>(fwd["l"]);
   int from_rec = as<int>(fwd["from_recipient"]);
   int to_rec   = as<int>(fwd["to_recipient"]);
@@ -126,11 +89,9 @@ void Forward_scalarPi_densemu_cpp(List fwd,
   if(l==t) {
     return;
   }
-#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
   if(nthreads>1) {
     ParExactForwardNoExpAVX3_scPi_cpp(alpha,
                                       alpha_f,
-                                      alpha_f2,
                                       from_rec-1,
                                       l-1,
                                       t-1,
@@ -145,7 +106,6 @@ void Forward_scalarPi_densemu_cpp(List fwd,
   } else {
     ExactForwardNoExpAVX3_scPi_cpp(alpha,
                                    alpha_f,
-                                   alpha_f2,
                                    from_rec-1,
                                    l-1,
                                    t-1,
@@ -157,42 +117,6 @@ void Forward_scalarPi_densemu_cpp(List fwd,
                                    mu,
                                    rho);
   }
-#else
-  NumericMatrix Pimat(N, N);
-  Pimat.fill(Pi);
-  Pimat.fill_diag(0.0);
-
-  if(nthreads>1) {
-    ParExactForwardNaiveC_cpp(alpha,
-                              alpha_f,
-                              alpha_f2,
-                              from_rec-1,
-                              l-1,
-                              t-1,
-                              from_rec-1,
-                              to_rec,
-                              L,
-                              N,
-                              Pimat,
-                              mu,
-                              rho,
-                              nthreads);
-  } else {
-    ExactForwardNaiveC_cpp(alpha,
-                           alpha_f,
-                           alpha_f2,
-                           from_rec-1,
-                           l-1,
-                           t-1,
-                           from_rec-1,
-                           to_rec,
-                           L,
-                           N,
-                           Pimat,
-                           mu,
-                           rho);
-  }
-#endif
 
   IntegerVector newl(1);
   newl[0] = t;
@@ -210,7 +134,6 @@ void Forward_densePi_scalarmu_cpp(List fwd,
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
-  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
   int l        = as<int>(fwd["l"]);
   int from_rec = as<int>(fwd["from_recipient"]);
   int to_rec   = as<int>(fwd["to_recipient"]);
@@ -222,11 +145,9 @@ void Forward_densePi_scalarmu_cpp(List fwd,
   if(l==t) {
     return;
   }
-#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
   if(nthreads>1) {
     ParExactForwardNoExpAVX3_scmu_cpp(alpha,
                                       alpha_f,
-                                      alpha_f2,
                                       from_rec-1,
                                       l-1,
                                       t-1,
@@ -241,7 +162,6 @@ void Forward_densePi_scalarmu_cpp(List fwd,
   } else {
     ExactForwardNoExpAVX3_scmu_cpp(alpha,
                                    alpha_f,
-                                   alpha_f2,
                                    from_rec-1,
                                    l-1,
                                    t-1,
@@ -253,41 +173,6 @@ void Forward_densePi_scalarmu_cpp(List fwd,
                                    mu,
                                    rho);
   }
-#else
-  NumericVector muvec(N);
-  muvec.fill(mu);
-
-  if(nthreads>1) {
-    ParExactForwardNaiveC_cpp(alpha,
-                              alpha_f,
-                              alpha_f2,
-                              from_rec-1,
-                              l-1,
-                              t-1,
-                              from_rec-1,
-                              to_rec,
-                              L,
-                              N,
-                              Pi,
-                              muvec,
-                              rho,
-                              nthreads);
-  } else {
-    ExactForwardNaiveC_cpp(alpha,
-                           alpha_f,
-                           alpha_f2,
-                           from_rec-1,
-                           l-1,
-                           t-1,
-                           from_rec-1,
-                           to_rec,
-                           L,
-                           N,
-                           Pi,
-                           muvec,
-                           rho);
-  }
-#endif
 
   IntegerVector newl(1);
   newl[0] = t;
@@ -305,7 +190,6 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
-  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
   int l        = as<int>(fwd["l"]);
   int from_rec = as<int>(fwd["from_recipient"]);
   int to_rec   = as<int>(fwd["to_recipient"]);
@@ -317,11 +201,9 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
   if(l==t) {
     return;
   }
-#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
   if(nthreads>1) {
     ParExactForwardNoExpAVX3_scmuPi_cpp(alpha,
                                         alpha_f,
-                                        alpha_f2,
                                         from_rec-1,
                                         l-1,
                                         t-1,
@@ -336,7 +218,6 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
   } else {
     ExactForwardNoExpAVX3_scmuPi_cpp(alpha,
                                      alpha_f,
-                                     alpha_f2,
                                      from_rec-1,
                                      l-1,
                                      t-1,
@@ -348,44 +229,6 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
                                      mu,
                                      rho);
   }
-#else
-  NumericMatrix Pimat(N, N);
-  Pimat.fill(Pi);
-  Pimat.fill_diag(0.0);
-  NumericVector muvec(N);
-  muvec.fill(mu);
-
-  if(nthreads>1) {
-    ParExactForwardNaiveC_cpp(alpha,
-                              alpha_f,
-                              alpha_f2,
-                              from_rec-1,
-                              l-1,
-                              t-1,
-                              from_rec-1,
-                              to_rec,
-                              L,
-                              N,
-                              Pimat,
-                              muvec,
-                              rho,
-                              nthreads);
-  } else {
-    ExactForwardNaiveC_cpp(alpha,
-                           alpha_f,
-                           alpha_f2,
-                           from_rec-1,
-                           l-1,
-                           t-1,
-                           from_rec-1,
-                           to_rec,
-                           L,
-                           N,
-                           Pimat,
-                           muvec,
-                           rho);
-  }
-#endif
 
   IntegerVector newl(1);
   newl[0] = t;
@@ -403,7 +246,6 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
   const int N = num_inds;
   NumericMatrix alpha    = as<NumericMatrix>(fwd["alpha"]);
   NumericVector alpha_f  = as<NumericVector>(fwd["alpha.f"]);
-  NumericVector alpha_f2 = as<NumericVector>(fwd["alpha.f2"]);
   int l        = as<int>(fwd["l"]);
   int from_rec = as<int>(fwd["from_recipient"]);
   int to_rec   = as<int>(fwd["to_recipient"]);
@@ -415,11 +257,9 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
   if(l==t) {
     return;
   }
-#if defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
   if(nthreads>1) {
     ParExactForward1stepNoExpAVX3_scmuPi_cpp(alpha,
                                              alpha_f,
-                                             alpha_f2,
                                              from_rec-1,
                                              l-1,
                                              t-1,
@@ -434,7 +274,6 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
   } else {
     ExactForward1stepNoExpAVX3_scmuPi_cpp(alpha,
                                           alpha_f,
-                                          alpha_f2,
                                           from_rec-1,
                                           l-1,
                                           t-1,
@@ -446,47 +285,6 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
                                           mu,
                                           rho);
   }
-#else
-  NumericMatrix Pimat(N, N);
-  Pimat.fill(Pi);
-  Pimat.fill_diag(0.0);
-  NumericVector muvec(N);
-  muvec.fill(mu);
-
-  Rcout << "Auto-tuning requires AVX2 support\n";
-  return;
-
-  // if(nthreads>1) {
-  //   ParExactForwardNaiveC_cpp(alpha,
-  //                             alpha_f,
-  //                             alpha_f2,
-  //                             from_rec-1,
-  //                             l-1,
-  //                             t-1,
-  //                             from_rec-1,
-  //                             to_rec,
-  //                             L,
-  //                             N,
-  //                             Pimat,
-  //                             muvec,
-  //                             rho,
-  //                             nthreads);
-  // } else {
-  //   ExactForwardNaiveC_cpp(alpha,
-  //                          alpha_f,
-  //                          alpha_f2,
-  //                          from_rec-1,
-  //                          l-1,
-  //                          t-1,
-  //                          from_rec-1,
-  //                          to_rec,
-  //                          L,
-  //                          N,
-  //                          Pimat,
-  //                          muvec,
-  //                          rho);
-  // }
-#endif
 
   IntegerVector newl(1);
   newl[0] = t;

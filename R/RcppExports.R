@@ -89,20 +89,12 @@ Dedip2_all <- function(M) {
     .Call('_kalis_Dedip2_all', PACKAGE = 'kalis', M)
 }
 
-ExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_kalis_ExactBackwardNaiveC_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
+DedipAndMul <- function(M, alpha, beta, x, from_recipient, nthreads) {
+    .Call('_kalis_DedipAndMul', PACKAGE = 'kalis', M, alpha, beta, x, from_recipient, nthreads)
 }
 
-ParExactBackwardNaiveC_cpp <- function(beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_ParExactBackwardNaiveC_cpp', PACKAGE = 'kalis', beta, beta_g, beta_g2, beta_from_rec, beta_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
-}
-
-ExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho) {
-    invisible(.Call('_kalis_ExactForwardNaiveC_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho))
-}
-
-ParExactForwardNaiveC_cpp <- function(alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_ParExactForwardNaiveC_cpp', PACKAGE = 'kalis', alpha, alpha_f, alpha_f2, alpha_from_rec, alpha_t, t, from_rec, to_rec, L, N, Pi, mu, rho, nthreads))
+DedipOnlyMul <- function(M, x, from_recipient, nthreads) {
+    .Call('_kalis_DedipOnlyMul', PACKAGE = 'kalis', M, x, from_recipient, nthreads)
 }
 
 ResetForwardTable <- function(fwd) {
