@@ -27,20 +27,29 @@ void DedipAndMul_C(const double* __restrict__ alpha_c1,
   double c11, c21, c12, c22, z1, z2;
   z1 = 0.0; z2 = 0.0;
   for(size_t i = 0; i < r/2; i++) {
-    z1 += c11 = *(alpha_c1++) * *(beta_c1++);
-    z2 += c12 = *(alpha_c2++) * *(beta_c2++);
-    z1 += c21 = *(alpha_c1++) * *(beta_c1++);
-    z2 += c22 = *(alpha_c2++) * *(beta_c2++);
+    if(i!=j) {
+      z1 += c11 = *(alpha_c1++) * *(beta_c1++);
+      z2 += c12 = *(alpha_c2++) * *(beta_c2++);
+      z1 += c21 = *(alpha_c1++) * *(beta_c1++);
+      z2 += c22 = *(alpha_c2++) * *(beta_c2++);
 
-    c_1[i] = fmax(c11, c21);
-    c_2[i] = fmax(c12, c22);
+      c_1[i] = fmax(c11, c21);
+      c_2[i] = fmax(c12, c22);
+    } else {
+      alpha_c1 += 2;
+      alpha_c2 += 2;
+      beta_c1 += 2;
+      beta_c2 += 2;
+    }
   }
 
   for(size_t i = 0; i < r/2; i++) {
-    c_1[i] = -log(fmax(c_1[i]/z1, c_2[i]/z2)); // this is the final value for M[i,j]
+    if(i!=j) {
+      c_1[i] = -log(fmax(c_1[i]/z1, c_2[i]/z2)); // this is the final value for M[i,j]
 
-    res[j+from_off] += c_1[i]*x[i];
-    res[i]          += c_1[i]*x[j+from_off];
+      res[j+from_off] += c_1[i]*x[i];
+      res[i]          += c_1[i]*x[j+from_off];
+    }
   }
 }
 
@@ -131,7 +140,7 @@ void DedipAndMul_A(double* __restrict__ res,
     DedipAndMul_B(M, alpha, beta, x, res, tmp, r, from_off, 0, c2);
 
     for(size_t i = 0; i < p; i++) {
-     res[i] *= 0.5;
+      res[i] *= 0.5;
     }
 
     free(tmp);
