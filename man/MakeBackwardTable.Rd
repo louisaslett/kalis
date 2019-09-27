@@ -23,8 +23,8 @@ A specialized list of class \code{kalisBackwardTable}.  For a given \code{kalisB
 \code{bck$l} denotes the current locus position of \code{fwd}.  \code{bck$beta} is a matrix of rescaled backward probabilities under the Li & Stephens HMM.
 Each column of \code{bck$beta} corresponds to an independent HMM such that \eqn{\beta^\ell_{ji}}
 is proportional to the probability of observing haplotype \eqn{i} from locus \eqn{l+1} up through locus \eqn{L} given that haplotype \eqn{j}
-is copied by haplotype \eqn{i} at locus \eqn{\ell}.  \code{bck$beta.g} and \code{bck$beta.g2}
-are both vectors containing scaling constants needed to continue propagating the HMM (please see kalis paper for details).
+is copied by haplotype \eqn{i} at locus \eqn{\ell}.  \code{bck$beta.g}
+is a vector containing scaling constants needed to continue propagating the HMM (please see kalis paper for details).
 
 \code{kalisBackwardTable} also carries with it a checksum key for the parameters \code{pars} it was provided.
 If a user attempts to interact a \code{kalisBackwardTable} with a \code{kalisForwardTable} with mismatched

@@ -22,7 +22,6 @@ void Backward_densePi_densemu_cpp(List bck,
   const int N = num_inds;
   NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
   NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);
-  NumericVector beta_g2 = as<NumericVector>(bck["beta.g2"]);
   int l        = as<int>(bck["l"]);
   int from_rec = as<int>(bck["from_recipient"]);
   int to_rec   = as<int>(bck["to_recipient"]);
@@ -37,7 +36,6 @@ void Backward_densePi_densemu_cpp(List bck,
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_cpp(beta,
                                   beta_g,
-                                  beta_g2,
                                   from_rec-1,
                                   l-1,
                                   t-1,
@@ -52,7 +50,6 @@ void Backward_densePi_densemu_cpp(List bck,
   } else {
     ExactBackwardNoExpAVX3_cpp(beta,
                                beta_g,
-                               beta_g2,
                                from_rec-1,
                                l-1,
                                t-1,
@@ -80,7 +77,6 @@ void Backward_scalarPi_densemu_cpp(List bck,
   const int N = num_inds;
   NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
   NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);
-  NumericVector beta_g2 = as<NumericVector>(bck["beta.g2"]);
   int l        = as<int>(bck["l"]);
   int from_rec = as<int>(bck["from_recipient"]);
   int to_rec   = as<int>(bck["to_recipient"]);
@@ -95,7 +91,6 @@ void Backward_scalarPi_densemu_cpp(List bck,
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_scPi_cpp(beta,
                                        beta_g,
-                                       beta_g2,
                                        from_rec-1,
                                        l-1,
                                        t-1,
@@ -110,7 +105,6 @@ void Backward_scalarPi_densemu_cpp(List bck,
   } else {
     ExactBackwardNoExpAVX3_scPi_cpp(beta,
                                     beta_g,
-                                    beta_g2,
                                     from_rec-1,
                                     l-1,
                                     t-1,
@@ -138,7 +132,6 @@ void Backward_densePi_scalarmu_cpp(List bck,
   const int N = num_inds;
   NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
   NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);
-  NumericVector beta_g2 = as<NumericVector>(bck["beta.g2"]);
   int l        = as<int>(bck["l"]);
   int from_rec = as<int>(bck["from_recipient"]);
   int to_rec   = as<int>(bck["to_recipient"]);
@@ -153,7 +146,6 @@ void Backward_densePi_scalarmu_cpp(List bck,
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_scmu_cpp(beta,
                                        beta_g,
-                                       beta_g2,
                                        from_rec-1,
                                        l-1,
                                        t-1,
@@ -168,7 +160,6 @@ void Backward_densePi_scalarmu_cpp(List bck,
   } else {
     ExactBackwardNoExpAVX3_scmu_cpp(beta,
                                     beta_g,
-                                    beta_g2,
                                     from_rec-1,
                                     l-1,
                                     t-1,
@@ -196,7 +187,6 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
   const int N = num_inds;
   NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
   NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);
-  NumericVector beta_g2 = as<NumericVector>(bck["beta.g2"]);
   int l        = as<int>(bck["l"]);
   int from_rec = as<int>(bck["from_recipient"]);
   int to_rec   = as<int>(bck["to_recipient"]);
@@ -211,7 +201,6 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_scmuPi_cpp(beta,
                                          beta_g,
-                                         beta_g2,
                                          from_rec-1,
                                          l-1,
                                          t-1,
@@ -226,7 +215,6 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
   } else {
     ExactBackwardNoExpAVX3_scmuPi_cpp(beta,
                                       beta_g,
-                                      beta_g2,
                                       from_rec-1,
                                       l-1,
                                       t-1,

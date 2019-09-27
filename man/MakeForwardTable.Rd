@@ -23,8 +23,8 @@ A specialized list of class \code{kalisForwardTable}.  For a given \code{kalisFo
 \code{fwd$l} denotes the current locus position of \code{fwd}.  \code{fwd$alpha} is a matrix of rescaled forward probabilities under the Li & Stephens HMM.
 Each column of \code{fwd$alpha} corresponds to an independent HMM such that \eqn{\alpha^l_{ji}}
 is proportional to the probability that haplotype \eqn{j} is copied by haplotype \eqn{i} at locus \eqn{l} and
-observing haplotype \eqn{i} from locus 1 up through locus \eqn{l}.  \code{fwd$alpha.f} and \code{fwd$alpha.f2}
-are both vectors containing scaling constants needed to continue propagating the HMM (please see kalis paper for details).
+observing haplotype \eqn{i} from locus 1 up through locus \eqn{l}.  \code{fwd$alpha.f}
+is a vector containing scaling constants needed to continue propagating the HMM (please see kalis paper for details).
 
 \code{kalisForwardTable} also carries with it a checksum key for the parameters \code{pars} it was provided.
 If a user attempts to interact a \code{kalisForwardTable} with a \code{kalisBackwardTable} with mismatched
