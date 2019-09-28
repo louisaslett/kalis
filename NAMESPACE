@@ -2,6 +2,7 @@
 
 S3method(plot,kalisDistanceMatrix)
 S3method(print,kalisBackwardTable)
+S3method(print,kalisCheckpointTable)
 S3method(print,kalisForwardTable)
 S3method(print,kalisParameters)
 export(Backward)
