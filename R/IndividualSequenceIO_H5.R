@@ -1,57 +1,74 @@
-#' Write haplotype matrix to HDF5 formatted cache-friendly file
+#' Write haplotype matrix to HDF5 file
 #'
 #' Writes an R matrix of 0/1s to the HDF5 format which is used for reading to
 #' optimised in memory cache.  If you're working with a large haplotype dataset,
-#' we recommend that you convert it directly to our HDF5 format (see vignette)
+#' we recommend that you convert it directly to this HDF5 format (see vignette)
 #' rather than read it into R.
 #'
 #' The primary method to load data into kalis' internal optimised cache is from
 #' an HDF5 storage file.  If the user has a collection of haplotypes already
 #' represented as a matrix of 0's and 1's in R, this function can be used to
-#' write to HDF5 the format required to load into cache.
+#' write to HDF5 in the format required to load into cache.
 #'
-#' The package expects a 2-dimensional object named \code{haps} at the root
+#' kalis expects a 2-dimensional object named \code{haps} at the root
 #' level of the HDF5 file.  Haplotypes should be stored in the slowest changing
 #' dimension as defined in the HDF5 specification (note that different languages
-#' treat this as rows or columns).  If the haplotypes are stored in the other
-#' dimension then simply set the argument \code{transpose = TRUE}.
-#' If the user is unsure of the convention of
-#' the language they used to create the HDF5 file, then the simplest approach is
-#' to just load the data specifying only the HDF5 file name and then confirm
-#' that number of haplotypes and their length have not been exchanged.
+#' treat this as rows or columns).
 #'
-#' Note that if hdf5.file exists but does not contain a dataset named "haps", \code{WriteIndividualHaplotypeH5} will simply create a "haps" dataset within the existing file.
+#' Note that if \code{hdf5.file} exists but does not contain a dataset named
+#' \code{haps}, then \code{WriteIndividualHaplotypeH5} will simply create a
+#' \code{haps} dataset within the existing file.
 #'
+#' @param hdf5.file the name of the file which the haplotypes are to be
+#'   written to.
+#' @param haps a vector or a matrix where each column is a haplotype to be
+#'   stored in the file \code{hdf5.file}.
+#' @param ids a vector of the indices of which haplotypes are to be read.
+#' @param append a logical indicating whether overwrite (default) or append to
+#'   an existing \code{haps} dataset if it already exists in \code{hdf5.file}.
 #'
-#' @param hdf5.file the name of the file which the haplotypes are to be written to.
-#' @param ind.haplotype a vector or a matrix where each column is a haplotype to be stored
-#' @param append a logical indicating whether overwrite (default) or append an existing "haps" dataset if it already exists in hdf5.file
+#' @return
+#' \code{WriteIndividualHaplotypeH5} does not return anything.
 #'
-#' @return Nothing is returned.
+#' \code{ReadIndividualHaplotypeH5} returns a binary matrix containing the
+#' haplotypes that were specified in \code{ids}.
 #'
-#' @seealso \code{\link{ReadIndividualHaplotypeH5}} to read haplotypes from HDF5 file into an R matrix
-#' \code{\link{CacheAllHaplotypes}} to fill the kalis cache with haplotypes
+#' @seealso
+#' \code{\link{CacheHaplotypes}} to fill the kalis cache with haplotypes
 #'
 #' @examples
 #' # Examples
 #' \dontrun{
-#' WriteIndividualHaplotypeH5(...)
+#' # For the purposes of an example, generate random haplotypes ...
+#' n.haps <- 100
+#' n.loci <- 20000
+#' haps <- matrix(sample(0:1, n.haps*n.loci, replace = TRUE),
+#'                nrow = n.loci,
+#'                ncol = n.haps)
+#'
+#' # ... write them to a file ...
+#' WriteIndividualHaplotypeH5("myhaps.h5", haps)
+#'
+#' # ... and confirm we can read a chosen portion back.  Try to read back
+#' # the 10th and 11th haplotypes
+#' res <- ReadIndividualHaplotypeH5("myhaps.h5", 10:11)
+#' all(res == haps[, 10:11])
 #' }
 #'
 #' @export WriteIndividualHaplotypeH5
-WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype, append = FALSE) {
-  if(any(!(ind.haplotype == 1 | ind.haplotype == 0))) {
+WriteIndividualHaplotypeH5 <- function(hdf5.file, haps, append = FALSE) {
+  if(any(!(haps == 1 | haps == 0))) {
     stop("haplotype is not binary.")
   }
-  if(!is.matrix(ind.haplotype) && !is.vector(ind.haplotype, mode = "numeric")) {
-    stop("ind.haplotype must be a vector (for one haplotype) or a matrix (hap length x num hap).")
+  if(!is.matrix(haps) && !is.vector(haps, mode = "numeric")) {
+    stop("haps must be a vector (for one haplotype) or a matrix (hap length x num hap).")
   }
-  if(is.matrix(ind.haplotype)) {
-    N <- ncol(ind.haplotype)
-    L <- nrow(ind.haplotype)
+  if(is.matrix(haps)) {
+    N <- ncol(haps)
+    L <- nrow(haps)
   } else {
     N <- 1
-    L <- length(ind.haplotype)
+    L <- length(haps)
   }
 
   if(file.exists(hdf5.file)) {
@@ -70,7 +87,7 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype, append = FALSE)
       if(append) {
         hdf5.dim <- as.integer(str_split_fixed(h5content[h5content$name=="haps","dim"], "x", n = Inf))
         if(hdf5.dim[1] != L) {
-          stop(glue("HDF5 file contains haplotypes of length {hdf5.dim[1]}, but ind.haplotype contains haplotypes of length {L}."))
+          stop(glue("HDF5 file contains haplotypes of length {hdf5.dim[1]}, but haps contains haplotypes of length {L}."))
         }
         message("HDF5 file already exists, appending haplotypes ...\n")
       } else {
@@ -109,15 +126,15 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, ind.haplotype, append = FALSE)
 
   # Write
   message(glue("Writing {N} haplotype(s) of size {L} ...\n"))
-  h5write(ind.haplotype, hdf5.file, "haps", index = list(NULL, from:to))
+  h5write(haps, hdf5.file, "haps", index = list(NULL, from:to))
 }
 
 
-#' @describeIn WriteIndividualHaplotypeH5 Read haplotype matrix from HDF5 formatted cache-friendly file
+#' @describeIn WriteIndividualHaplotypeH5 Read haplotype matrix from HDF5 file
 #' @export ReadIndividualHaplotypeH5
-ReadIndividualHaplotypeH5 <- function(hdf5.file, inds) {
-  if(!is.vector(inds, mode = "numeric")) {
-    stop("inds must be a vector of haplotype indices.")
+ReadIndividualHaplotypeH5 <- function(hdf5.file, ids) {
+  if(!is.vector(ids, mode = "numeric")) {
+    stop("ids must be a vector of haplotype indices.")
   }
 
   # Check for file
@@ -135,14 +152,14 @@ ReadIndividualHaplotypeH5 <- function(hdf5.file, inds) {
   L <- hdf5.dim[1]
 
   # Check index set range
-  if(any(inds < 1) || any(inds > N)) {
+  if(any(ids < 1) || any(ids > N)) {
     stop(glue("HDF5 file contains {N} haplotypes, some requested indices out of range."))
   }
 
   # Read
-  ind.haplotype <- h5read(hdf5.file, "haps", index = list(NULL, inds))
+  haps <- h5read(hdf5.file, "haps", index = list(NULL, ids))
 
   H5close()
 
-  ind.haplotype
+  haps
 }
