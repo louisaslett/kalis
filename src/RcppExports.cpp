@@ -134,12 +134,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // ComputeStatus
-void ComputeStatus();
+std::string ComputeStatus();
 RcppExport SEXP _kalis_ComputeStatus() {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    ComputeStatus();
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(ComputeStatus());
+    return rcpp_result_gen;
 END_RCPP
 }
 // Dedip_min

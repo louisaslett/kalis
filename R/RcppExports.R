@@ -42,7 +42,7 @@ ClearHaplotypeCache2 <- function() {
 }
 
 ComputeStatus <- function() {
-    invisible(.Call('_kalis_ComputeStatus', PACKAGE = 'kalis'))
+    .Call('_kalis_ComputeStatus', PACKAGE = 'kalis')
 }
 
 Dedip_min <- function(fwd, bck, s) {
