@@ -2,39 +2,57 @@
 % Please edit documentation in R/Parameters.R
 \name{CalcRho}
 \alias{CalcRho}
-\title{Calculate recombination parameter rho from more standard genetics parameters}
+\title{Calculate recombination parameter}
 \usage{
 CalcRho(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE)
 }
 \arguments{
-\item{morgan.dist}{a vector specifying the recombination distance between loci in Morgans .
+\item{morgan.dist}{a vector specifying the recombination distance between
+loci in Morgans.
 Note element i of this vector should be the distance between loci i and i+1
-(not i and i-1), and thus length one less than the haplotype length.  Can be easily obtained by applying \code{diff} to a recombination map "CDF".}
+(not i and i-1), and thus length one less than the haplotype length.
+This can be easily obtained by applying \code{\link{diff}} to a
+recombination map 'CDF'.}
 
 \item{Ne}{a scalar for the effective population size.}
 
 \item{gamma}{a scalar power to which the Morgan distances are raised.}
 
-\item{floor}{if TRUE (default) any transition probabilities below machine precision (1e-16)
-will be zeroed out.  If FALSE raw transition probabilities will be preserved.}
+\item{floor}{if TRUE (default) any transition probabilities below machine
+precision (1e-16) will be zeroed out.
+If \code{FALSE} raw transition probabilities will be preserved.}
 }
 \value{
-A vector of transition probabilities
+A vector of transition probabilities which can be used at the
+\code{rho} argument to the \code{\link{Parameters}} function when creating
+a parameter set.
 }
 \description{
-Sets up the Li & Stephens HMM transition probabilities rho to be used for a problem.
+A convenient function to calculate the recombination parameter rho from more
+standard genetics parameters.
 }
 \details{
-See page 3 in Supplemental Information for the original ChromoPainter paper for motivation behind our parameterization:
-Lawson, Hellenthal, Myers, and Falush (2012), "Inference of population structure using dense haplotype data", PLoS Genetics, 8 (e1002453).
+This convenient function to calculate the recombination parameter rho from
+other more standard genetics parameters is intended to assist in setting up
+the Li and Stephens hidden Markov model transition probabilities.
 
-\link{Insert link to paper for rho maths.}
+See page 3 in Supplemental Information for the original ChromoPainter paper
+(Lawson et al., 2012) for motivation behind our parameterization, which is as
+follow:
+
+\deqn{\rho = \exp(-N_e \times morgan.dist^\gamma) - 1}{\rho = exp(-Ne * morgan.dist^\gamma) - 1}
 }
 \examples{
 \dontrun{
 pars <- CalcRho(...)
 }
+
+}
+\references{
+Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
+population structure using dense haplotype data. \emph{PLoS genetics}, \strong{8}(1).
 }
 \seealso{
-\code{\link{Parameters}} to use the resulting transition probabilities to construct a kalisParameters object
+\code{\link{Parameters}} to use the resulting transition
+probabilities to construct a \code{kalisParameters} object.
 }

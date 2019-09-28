@@ -1,29 +1,47 @@
-#' Calculate recombination parameter rho from more standard genetics parameters
+#' Calculate recombination parameter
 #'
-#' Sets up the Li & Stephens HMM transition probabilities rho to be used for a problem.
+#' A convenient function to calculate the recombination parameter rho from more
+#' standard genetics parameters.
 #'
-#' See page 3 in Supplemental Information for the original ChromoPainter paper for motivation behind our parameterization:
-#' Lawson, Hellenthal, Myers, and Falush (2012), "Inference of population structure using dense haplotype data", PLoS Genetics, 8 (e1002453).
+#' This convenient function to calculate the recombination parameter rho from
+#' other more standard genetics parameters is intended to assist in setting up
+#' the Li and Stephens hidden Markov model transition probabilities.
 #'
-#' [Insert link to paper for rho maths.]
+#' See page 3 in Supplemental Information for the original ChromoPainter paper
+#' (Lawson et al., 2012) for motivation behind our parameterization, which is as
+#' follow:
 #'
-#' @param morgan.dist a vector specifying the recombination distance between loci in Morgans .
+#' \deqn{\rho = \exp(-N_e \times morgan.dist^\gamma) - 1}{\rho = exp(-Ne * morgan.dist^\gamma) - 1}
+#'
+#'
+#' @param morgan.dist a vector specifying the recombination distance between
+#'   loci in Morgans.
 #'   Note element i of this vector should be the distance between loci i and i+1
-#'   (not i and i-1), and thus length one less than the haplotype length.  Can be easily obtained by applying \code{diff} to a recombination map "CDF".
+#'   (not i and i-1), and thus length one less than the haplotype length.
+#'   This can be easily obtained by applying \code{\link{diff}} to a
+#'   recombination map 'CDF'.
 #' @param Ne a scalar for the effective population size.
 #' @param gamma a scalar power to which the Morgan distances are raised.
-#' @param floor if TRUE (default) any transition probabilities below machine precision (1e-16)
-#'   will be zeroed out.  If FALSE raw transition probabilities will be preserved.
+#' @param floor if TRUE (default) any transition probabilities below machine
+#'   precision (1e-16) will be zeroed out.
+#'   If \code{FALSE} raw transition probabilities will be preserved.
 #'
-#' @return A vector of transition probabilities
+#' @return A vector of transition probabilities which can be used at the
+#'   \code{rho} argument to the \code{\link{Parameters}} function when creating
+#'   a parameter set.
 #'
-#' @seealso \code{\link{Parameters}} to use the resulting transition probabilities to construct a kalisParameters object
+#' @seealso \code{\link{Parameters}} to use the resulting transition
+#'   probabilities to construct a \code{kalisParameters} object.
+#'
+#' @references
+#'   Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
+#'   population structure using dense haplotype data. *PLoS genetics*, **8**(1).
 #'
 #' @examples
 #' \dontrun{
 #' pars <- CalcRho(...)
 #' }
-
+#'
 #' @export
 CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE) {
   L <- get("L", envir = pkgVars)
@@ -65,34 +83,107 @@ CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE) {
 }
 
 
-#' Create rho from standard parameters
+#' Construct parameter specification
 #'
-#' Convenience function for calculating kalis recombination (renewal) probabilities from standard Pop. Gen. parameters.
+#' Specify a parameter set to be used for a particular Li and Stephens hidden
+#' Markov model run.
 #'
-#' Detailed description
+#' There are 3 parameters which must be specified before the forward or backward
+#' equations in the Li and Stephens hidden Markov model can be run.  These are
+#' the vector of recombination probabilities, the mutation costs, and the
+#' prior copying probabilities.
 #'
-#' @param rho recombination probability vector (must be L-1 long), see \code{\link{CalcRho}}
+#' **Recombination probabilities, \code{rho}**
+#'
+#' This is a vector parameter which must have length \code{L-1}, where \code{L}
+#' is the length (number of loci) of the haplotype sequences which have been
+#' loaded into the memory cache (using \code{\link{CacheHaplotypes}}).
+#' Note that element i of this vector should be the recombination probability
+#' between locus \code{i} and \code{i+1}.
+#'
+#' There is a utility function, \code{\link{CalcRho}}, to assist with creating
+#' this recombination vector based on the more standard genetic parameters of
+#' Morgan distances, effective population size and a scalar power.
+#'
+#' By default, the recombination probabilities are set to zero everywhere.
+#'
+#' **Mutation costs, \code{mu}**
+#'
+#' The mutation costs may be specified either as uniform across the whole length
+#' of the haplotypes (by providing a single scalar value), or may be varying
+#' at each locus (by providing a vector of length equal to the length of the
+#' haplotype sequences which have been loaded into the memory cache).
+#'
+#' By default, mutation costs are set to \eqn{10^{-8}}{10^-8}.
+#'
+#' **Copying probabilities, \code{Pi}**
+#'
+#' The original Li and Stephens model assumed that each haplotype has an equal
+#' prior probability of copying from any other.
+#' However, in the spirit of ChromoPainter (Lawson et al., 2012) we allow a
+#' matrix of prior copying probabilities.
+#'
+#' The copying probabilities may be specified as a matrix of size \eqn{N \times N}{N * N}
+#' (where \eqn{N} is the number of haplotypes which have been loaded into the
+#' memory cache), or for uniform copying probabilities need not be specified
+#' (resulting in copying probability \eqn{\frac{1}{N-1}}{1/(N-1)} everywhere).
+#' Note that the diagonal must by definition be zero and columns must sum to
+#' one.
+#'
+#' Note that there is a computational cost associated with non-uniform copying
+#' probabilities, so absent a strong motivation it is recommended to leave the
+#' default of uniform probabilities (NB *do not* specify a uniform matrix which
+#' would incur a computation cost too).
+#'
+#' @param rho recombination probability vector (must be L-1 long).
+#'   See \code{\link{CalcRho}} for assistance constructing this from standard
+#'   genetics parameters.
 #' @param mu a scalar (for uniform) or vector (for varying) mutation costs.
-#' @param Pi leaving the default of uniform copying probabilities is recommended for
-#'   computational efficiency.  If desired, a full matrix of background copying
-#'   probabilities can be provided, such that the (j,i)-th element is the background
-#'   probability that j is copied by i.  Hence, (a) the diagonal must be zero; and (b)
-#'   the columns of Pi must sum to 1.
-#' @param check.rho if TRUE, a check that rho is within machine precision will be
-#'   performed.  If you have created rho using \code{\link{CalcRho}} with \code{floor=TRUE}
-#'   then this will be satisfied.
+#' @param Pi leaving the default of uniform copying probabilities is recommended
+#'   for computational efficiency.
+#'   If desired, a full matrix of background copying probabilities can be
+#'   provided, such that the (j,i)-th element is the background probability that
+#'   j is copied by i.
+#'   Hence, (a) the diagonal must be zero; and (b) the columns of Pi must sum to
+#'   1.
+#' @param check.rho if \code{TRUE}, a check that rho is within machine precision
+#'   will be performed.
+#'   If you have created rho using \code{\link{CalcRho}} with \code{floor=TRUE}
+#'   then this will be satisfied automatically.
 #'
-#' @return A \code{kalisParameters} object.
+#' @return A \code{kalisParameters} object, suitable for use to create the
+#'   standard forward and backward recursion tables with
+#'   \code{\link{MakeForwardTable}} and \code{\link{MakeBackwardTable}}.
+#'   Note you will also need to provide this parameters object when propagating
+#'   those tables using either \code{\link{Forward}} or \code{\link{Backward}}.
 #'
-#' @seealso \code{\link{MakeForwardTable}}, \code{\link{MakeForwardTable}} which
-#'   construct table objects which internally reference a parameters environment.
+#' @seealso \code{\link{MakeForwardTable}} and \code{\link{MakeForwardTable}}
+#'   which construct table objects which internally reference a parameters
+#'   environment.
+#'   \code{\link{Forward}} and \code{\link{Backward}} which propagate those
+#'   tables according to the Li and Stephens model.
+#'
+#' @references
+#'   Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
+#'   population structure using dense haplotype data. *PLoS genetics*, **8**(1).
 #'
 #' @examples
 #' \dontrun{
-#' pars <- Parameters(...)
+#' # To use all the defaults
+#' pars <- Parameters()
+#'
+#' # To use indirect genetics parameters which you have already specified in
+#' # morgan.dist, Ne and gamma variables to specify rho, leaving mu and Pi as
+#' # defaults
+#' pars <- Parameters(CalcRho(morgan.dist, Ne, gamma))
+#'
+#' # Then use to create a table (eg for forward) ...
+#' fwd <- MakeForwardTable(pars)
+#' # ... and to propagate it
+#' Forward(fwd, pars, 10, nthreads = 8)
 #' }
 #'
-#' @export Parameters
+#' @export
 Parameters <- function(rho = rep(0, get("L", envir = pkgVars)-1), mu = 1e-8, Pi = NULL, check.rho = TRUE) {
   N <- get("N", envir = pkgVars)
   if(anyNA(N)) {
