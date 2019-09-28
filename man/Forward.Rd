@@ -2,38 +2,48 @@
 % Please edit documentation in R/FB.R
 \name{Forward}
 \alias{Forward}
-\title{Propagate a Forward Table}
+\title{Propagate a forward table}
 \usage{
 Forward(fwd, pars, t = fwd$l + 1, nthreads = 1)
 }
 \arguments{
-\item{fwd}{\code{kalisForwardTable} as returned by \code{\link{MakeForwardTable}}}
+\item{fwd}{a \code{kalisForwardTable} object, as returned by
+\code{\link{MakeForwardTable}}.}
 
-\item{pars}{a \code{kalisParameters} object returned by \code{Parameters}}
+\item{pars}{a \code{kalisParameters} object, as returned by
+\code{Parameters}.}
 
-\item{t}{a locus position to move the forward table to.  Must be greater than
-or equal to \code{fwd$l}.}
+\item{t}{a locus position to move the forward table to.
+Must be greater than or equal to current locus position of \code{fwd}.
+By default, it simply advances to the next locus.}
 
-\item{nthreads}{the number of CPU cores to use}
+\item{nthreads}{the number of CPU cores to use.
+By default no parallelism is used.}
 }
 \value{
-There is nothing returned.  For performance reasons, \code{fwd} is updated in-place.
+There is nothing returned.
+For performance reasons, \code{fwd} is updated in-place.
 }
 \description{
-Propagates a \code{kalisForwardTable} to a downstream locus position (nothing is returned: the table is updated in-place).
+Propagates a \code{kalisForwardTable} to a downstream locus position.
+The table is updated in-place.
 }
 \details{
-Forward implements the forward algorithm to advance the rescaled HMM forward probabilities stored in
-a \code{kalisForwardTable} \code{fwd} to a new target locus \code{t}.  Note that \code{t} must be greater than the current locus, \code{fwd$l}.
+\code{Forward} implements the forward algorithm to advance the Li and
+Stephens rescaled hidden Markov model forward probabilities to a new target
+locus.
 }
 \examples{
 \dontrun{
+# Assuming that pars already contains a Parameters object, we can create a
+# new forward table and propagate to locus 100 using 8-core parallelsim:
 fwd <- MakeForwardTable()
-Forward(fwd, 100, Pi, mu, rho)
+Forward(fwd, pars, 100, nthreads = 8)
 }
 
 }
 \seealso{
 \code{\link{MakeForwardTable}} to generate a forward table;
-\code{\link{Backward}} for the analagous backward propagation function.
+\code{\link{Backward}} for the analagous backward propagation function;
+\code{\link{CopyTable}} to create a copy of table.
 }

@@ -2,37 +2,48 @@
 % Please edit documentation in R/FB.R
 \name{Backward}
 \alias{Backward}
-\title{Propagate a Backward Table}
+\title{Propagate a backward table}
 \usage{
 Backward(bck, pars, t = bck$l - 1, nthreads = 1)
 }
 \arguments{
-\item{bck}{\code{kalisBackwardTable} as returned by \code{\link{MakeBackwardTable}}}
+\item{bck}{a \code{kalisBackwardTable} object, as returned by
+\code{\link{MakeBackwardTable}}.}
 
-\item{pars}{a \code{kalisParameters} object returned by \code{Parameters}}
+\item{pars}{a \code{kalisParameters} object, as returned by
+\code{Parameters}.}
 
-\item{t}{a target locus position to move the backward table to.  Must be less than or equal to the current locus, \code{bck$l}.}
+\item{t}{a locus position to move the backward table to.
+Must be less than or equal to current locus position of \code{bck}.
+By default, it simply advances to the locus immediately before.}
 
-\item{nthreads}{the number of CPU cores to use}
+\item{nthreads}{the number of CPU cores to use.
+By default no parallelism is used.}
 }
 \value{
-There is nothing returned.  For performance reasons, \code{bck} is updated in-place.
+There is nothing returned.
+For performance reasons, \code{bck} is updated in-place.
 }
 \description{
-Propagates a \code{kalisBackwardTable} to an upstream locus position (nothing is returned: the table is updated in-place).
+Propagates a \code{kalisBackwardTable} to an upstream locus position.
+The table is updated in-place.
 }
 \details{
-Backward implements the backward algorithm to advance the rescaled HMM backward probabilities stored in
-\code{bck} to a new target locus \code{t}.  Note that \code{t} must be less than or equal to the current locus, \code{bck$l}.
+\code{Backward} implements the backward algorithm to advance the Li and
+Stephens rescaled hidden Markov model backward probabilities to a new target
+locus.
 }
 \examples{
 \dontrun{
+# Assuming that pars already contains a Parameters object, we can create a
+# new backward table and propagate to locus 100 using 8-core parallelsim:
 bck <- MakeBackwardTable()
-Backward(bck, pars, 2500)
+Backward(bck, pars, 100, nthreads = 8)
 }
 
 }
 \seealso{
-\code{\link{MakeBackwardTable}} to generate backward table;
-\code{\link{Forward}} for the analagous forward propagation function.
+\code{\link{MakeBackwardTable}} to generate a backward table;
+\code{\link{Forward}} for the analagous forward propagation function;
+\code{\link{CopyTable}} to create a copy of table.
 }

@@ -1,28 +1,39 @@
-#' Propagate a Forward Table
+#' Propagate a forward table
 #'
-#' Propagates a \code{kalisForwardTable} to a downstream locus position (nothing is returned: the table is updated in-place).
+#' Propagates a \code{kalisForwardTable} to a downstream locus position.
+#' The table is updated in-place.
 #'
-#' Forward implements the forward algorithm to advance the rescaled HMM forward probabilities stored in
-#' a \code{kalisForwardTable} \code{fwd} to a new target locus \code{t}.  Note that \code{t} must be greater than the current locus, \code{fwd$l}.
+#' \code{Forward} implements the forward algorithm to advance the Li and
+#' Stephens rescaled hidden Markov model forward probabilities to a new target
+#' locus.
 #'
-#' @param fwd \code{kalisForwardTable} as returned by \code{\link{MakeForwardTable}}
-#' @param pars a \code{kalisParameters} object returned by \code{Parameters}
-#' @param t a locus position to move the forward table to.  Must be greater than
-#'   or equal to \code{fwd$l}.
-#' @param nthreads the number of CPU cores to use
+#' @param fwd a \code{kalisForwardTable} object, as returned by
+#'   \code{\link{MakeForwardTable}}.
+#' @param pars a \code{kalisParameters} object, as returned by
+#'   \code{Parameters}.
+#' @param t a locus position to move the forward table to.
+#'   Must be greater than or equal to current locus position of \code{fwd}.
+#'   By default, it simply advances to the next locus.
+#' @param nthreads the number of CPU cores to use.
+#'   By default no parallelism is used.
 #'
-#' @return There is nothing returned.  For performance reasons, \code{fwd} is updated in-place.
+#' @return
+#' There is nothing returned.
+#' For performance reasons, \code{fwd} is updated in-place.
 #'
 #' @seealso \code{\link{MakeForwardTable}} to generate a forward table;
-#'   \code{\link{Backward}} for the analagous backward propagation function.
+#'   \code{\link{Backward}} for the analagous backward propagation function;
+#'   \code{\link{CopyTable}} to create a copy of table.
 #'
 #' @examples
 #' \dontrun{
+#' # Assuming that pars already contains a Parameters object, we can create a
+#' # new forward table and propagate to locus 100 using 8-core parallelsim:
 #' fwd <- MakeForwardTable()
-#' Forward(fwd, 100, Pi, mu, rho)
+#' Forward(fwd, pars, 100, nthreads = 8)
 #' }
 #'
-#' @export Forward
+#' @export
 Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
   if(!("kalisForwardTable" %in% class(fwd))) {
     stop("The fwd argument is not a valid forward table.")
@@ -64,27 +75,39 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
 }
 
 
-#' Propagate a Backward Table
+#' Propagate a backward table
 #'
-#' Propagates a \code{kalisBackwardTable} to an upstream locus position (nothing is returned: the table is updated in-place).
+#' Propagates a \code{kalisBackwardTable} to an upstream locus position.
+#' The table is updated in-place.
 #'
-#' Backward implements the backward algorithm to advance the rescaled HMM backward probabilities stored in
-#' \code{bck} to a new target locus \code{t}.  Note that \code{t} must be less than or equal to the current locus, \code{bck$l}.
+#' \code{Backward} implements the backward algorithm to advance the Li and
+#' Stephens rescaled hidden Markov model backward probabilities to a new target
+#' locus.
 #'
-#' @param bck \code{kalisBackwardTable} as returned by \code{\link{MakeBackwardTable}}
-#' @param pars a \code{kalisParameters} object returned by \code{Parameters}
-#' @param t a target locus position to move the backward table to.  Must be less than or equal to the current locus, \code{bck$l}.
-#' @param nthreads the number of CPU cores to use
+#' @param bck a \code{kalisBackwardTable} object, as returned by
+#'   \code{\link{MakeBackwardTable}}.
+#' @param pars a \code{kalisParameters} object, as returned by
+#'   \code{Parameters}.
+#' @param t a locus position to move the backward table to.
+#'   Must be less than or equal to current locus position of \code{bck}.
+#'   By default, it simply advances to the locus immediately before.
+#' @param nthreads the number of CPU cores to use.
+#'   By default no parallelism is used.
 #'
-#' @return There is nothing returned.  For performance reasons, \code{bck} is updated in-place.
+#' @return
+#' There is nothing returned.
+#' For performance reasons, \code{bck} is updated in-place.
 #'
-#' @seealso \code{\link{MakeBackwardTable}} to generate backward table;
-#'   \code{\link{Forward}} for the analagous forward propagation function.
+#' @seealso \code{\link{MakeBackwardTable}} to generate a backward table;
+#'   \code{\link{Forward}} for the analagous forward propagation function;
+#'   \code{\link{CopyTable}} to create a copy of table.
 #'
 #' @examples
 #' \dontrun{
+#' # Assuming that pars already contains a Parameters object, we can create a
+#' # new backward table and propagate to locus 100 using 8-core parallelsim:
 #' bck <- MakeBackwardTable()
-#' Backward(bck, pars, 2500)
+#' Backward(bck, pars, 100, nthreads = 8)
 #' }
 #'
 #' @export Backward
