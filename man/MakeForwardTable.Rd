@@ -19,25 +19,39 @@ table.  By default includes from the first recipient haplotype.}
 table.  By default includes to the last recipient haplotype.}
 }
 \value{
-A specialized list of class \code{kalisForwardTable}.  For a given \code{kalisForwardTable}, \code{fwd},
-\code{fwd$l} denotes the current locus position of \code{fwd}.  \code{fwd$alpha} is a matrix of rescaled forward probabilities under the Li & Stephens HMM.
-Each column of \code{fwd$alpha} corresponds to an independent HMM such that \eqn{\alpha^l_{ji}}
-is proportional to the probability that haplotype \eqn{j} is copied by haplotype \eqn{i} at locus \eqn{l} and
-observing haplotype \eqn{i} from locus 1 up through locus \eqn{l}.  \code{fwd$alpha.f}
-is a vector containing scaling constants needed to continue propagating the HMM (please see kalis paper for details).
+A specialized list of class \code{kalisForwardTable}.
+The elements of the forward table list are:
+\describe{
+\item{\code{l}}{denotes the current locus position.}
+\item{\code{alpha}}{is a matrix of rescaled forward probabilities under
+the Li & Stephens HMM.
+Each column of \code{alpha} corresponds to an independent HMM such
+that \eqn{\alpha^l_{ji}} is proportional to the probability that
+haplotype \eqn{j} is copied by haplotype \eqn{i} at locus \eqn{l} and
+observing haplotype \eqn{i} from locus 1 up through locus \eqn{l}.}
+\item{\code{alpha.f}}{is a vector containing scaling constants needed to
+continue propagating the HMM (please see kalis paper for details).}
+}
 
-\code{kalisForwardTable} also carries with it a checksum key for the parameters \code{pars} it was provided.
-If a user attempts to interact a \code{kalisForwardTable} with a \code{kalisBackwardTable} with mismatched
-parameters, an error will be thrown.
+A \code{kalisForwardTable} also carries with it a checksum key for the
+parameters \code{pars} it was provided.
+If one attempts to interact a \code{kalisForwardTable} with a
+\code{kalisBackwardTable} with mismatched parameters, an error will be
+thrown.
 }
 \description{
 Allocates the memory for and initializes a forward table.
 }
 \details{
-\code{MakeForwardTable} returns a \code{kalisForwardTable} object appropriate for
-a given set of haplotypes (that must have already been cached by \code{CacheAllHaplotypes}) and
-a given set of HMM parameters specified by \code{pars}.  The returned \code{kalisForwardTable} is
-initialized at locus 0 and is ready to be propagated to a given target locus with the function \code{\link{Forward}}.
+\code{MakeForwardTable} returns a \code{kalisForwardTable} object appropriate
+for a given set of haplotypes (that must have already been cached by
+\code{\link{CacheHaplotypes}}) and a given set of Li and Stephens hidden
+Markov model parameters created by \code{\link{Parameters}}.
+The returned \code{kalisForwardTable} is initialized at locus 0 and is ready
+to be propagated to a given target locus with the function
+\code{\link{Forward}}, or by using a cache (see
+\code{\link{CreateForwardTableCache}}, \code{\link{FillTableCache}} and
+\code{\link{ForwardUsingTableCache}}).
 
 Since there is an independent hidden Markov model run for each recipient
 haplotype, it is possible to create a partial forward table object which
@@ -47,21 +61,28 @@ corresponds to a subset of recipients using the \code{from_recipient} and
 \examples{
 # Examples
 \dontrun{
+# This code assumes you have already created the parameter set in a variable
+# called pars
+
 # Create a forward table for the hidden Markov model incorporating all
 # recipient and donor haplotypes
-fwd <- MakeForwardTable()
+fwd <- MakeForwardTable(pars)
 
 # Create a forward table for the hidden Markov model incorporating only
 # recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.
-fwd <- MakeForwardTable(100, 200)
+fwd <- MakeForwardTable(pars, 100, 200)
 
 # This table is uninitialised, but ready to pass to the Forward function
 # which will trigger initialisation and propagation from the first locus.
 # For example, initialise and propagate forward to locus 10:
-Forward(fwd, 10, morgan.dist, Ne, gamma, mu, nthreads = 8)
+Forward(fwd, pars, 10, nthreads = 8)
 }
 
 }
 \seealso{
-\code{\link{Forward}} to propagate the newly created \code{kalisForwardTable}.
+\code{\link{Forward}} to propagate the newly created
+\code{kalisForwardTable};
+\code{\link{CreateForwardTableCache}}, \code{\link{FillTableCache}} and
+\code{\link{ForwardUsingTableCache}} for information of caching to enable
+rapid scanning backwards through the haplotype sequences.
 }
