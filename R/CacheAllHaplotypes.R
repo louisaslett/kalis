@@ -9,16 +9,29 @@ assign("L", NA, envir = pkgVars)
 
 #' Create memory cache of haplotypes
 #'
-#' Load haplotypes from hard drive to memory.
+#' Load haplotypes from hard drive or an R matrix to memory.
 #'
 #' To achieve higher performance, kalis internally represents haplotypes
-#' in an efficient raw binary format in memory.  This function will load haplotypes
-#' from a file and convert this into kalis' internal format ready for use
-#' by the other functions in this package.
+#' in an efficient raw binary format in memory.  This function will load
+#' haplotypes from a file or from a binary R matrix and convert this into kalis'
+#' internal format ready for use by the other functions in this package.  Note
+#' that only one set of haplotypes can be cached at a time and calling this
+#' function twice overwrites cache of haplotypes created by the first function
+#' call.
 #'
-#' At present, only HDF5 is supported natively and there is a vignette giving a simple
-#' script to convert from VCF to HDF5.  If there is sufficient demand other formats
-#' may be added in future
+#' At present, only HDF5 is supported natively and there is a vignette giving a
+#' simple script to convert from VCF to HDF5.  If there is sufficient demand
+#' other formats may be added in future.
+#'
+#' **R matrix**
+#'
+#' If supplying an R matrix, it must consist of only 0's or 1's.  The haplotypes
+#' should be stored in columns, with loci in rows.  That is, the dimensions
+#' should be:
+#'
+#' (num rows)x(num cols) = (num loci)x(num haplotypes).
+#'
+#' It is fine to delete this matrix after calling \code{CacheHaplotypes}.
 #'
 #' **HDF5 format**
 #'
@@ -27,30 +40,32 @@ assign("L", NA, envir = pkgVars)
 #' dimension as defined in the HDF5 specification (note that different languages
 #' treat this as rows or columns).  If the haplotypes are stored in the other
 #' dimension then simply set the argument `transpose = TRUE`.
-#' If the user is unsure of the convention of
-#' the language they used to create the HDF5 file, then the simplest approach is
-#' to simply load the data specifying only the HDF5 file name and then confirm
-#' that number of haplotypes and their length have not been exchanged in the diagnostic
-#' output which kalis prints.
+#' If the user is unsure of the convention of the language they used to create
+#' the HDF5 file, then the simplest approach is to simply load the data
+#' specifying only the HDF5 file name and then confirm that number of haplotypes
+#' and their length have not been exchanged in the diagnostic output which kalis
+#' prints.
 #'
-#' @param haps can be the name of a file from which the haplotypes are to be read, or
-#'   can be a binary R matrix.
+#' @param haps can be the name of a file from which the haplotypes are to be
+#'   read, or can be a binary R matrix.
 #' @param format the file format which `file` is stored in, or `"auto"` to
 #'   detect format based on the file extension.  Recognised options are `"hdf5"`
 #'   and `"vcf"`
-#' @param ... options passed on to the specific format transcoding engine.  The following
-#'   additional arguments are supported:
+#' @param ... options passed on to the specific format transcoding engine.  The
+#'   following additional arguments are supported:
 #'
 #'   1. HDF5
 #'       - `transpose` a logical value indicating whether to switch the
 #'   interpretation of the slowest changing dimension (hence switching the
 #'   number of haplotypes and the length)
 #'
-#' @return Nothing is returned by the function.  However, a status message is
-#'   output indicating the dimensions of the loaded data.  This can be useful for
-#'   HDF5 input when you are uncertain about the orientation of the `haps` object.
-#'   If this message shows the dimensions incorrectly ordered,
-#'   call the function again with the extra argument `transpose = TRUE`.
+#' @return Nothing is returned by the function.
+#'   However, a status message is output indicating the dimensions of the loaded
+#'   data.
+#'   This can be useful for HDF5 input when you are uncertain about the
+#'   orientation of the `haps` object.
+#'   If this message shows the dimensions incorrectly ordered, call the function
+#'   again with the extra argument `transpose = TRUE`.
 #'
 #' @seealso \code{\link{ClearHaplotypeCache}} to remove the haplotypes from
 #'   the cache and free the memory.
@@ -66,9 +81,20 @@ assign("L", NA, envir = pkgVars)
 #' # argument to transpose
 #' CacheHaplotypes("myhaps.h5", transpose = TRUE)
 #'
-#' # When correct orientation is known, can avoid diagnostic messages for running
-#' # in script files
+#' # When correct orientation is known, you can avoid diagnostic messages for
+#' # running in script files
 #' suppressMessages(CacheHaplotypes("myhaps.h5"))
+#'
+#' # Alternatively, if you have an exotic file format that can be loaded in to
+#' # R by other means, then a binary matrix can be supplied.  This example
+#' # randomly simulated a binary matrix to illustrate (in reality load from
+#' # disk):
+#' n.haps <- 100
+#' n.loci <- 20000
+#' haps <- matrix(sample(0:1, n.haps*n.loci, replace = TRUE),
+#'                nrow = n.loci,
+#'                ncol = n.haps)
+#' CacheHaplotypes(haps)
 #' }
 #'
 #' @export
@@ -205,18 +231,20 @@ CacheHaplotypes.hdf5 <- function(hdf5.file, transpose = FALSE) {
 #' Retrieve haplotypes from memory cache
 #'
 #' Retrieve haplotypes from the memory cache, converting the raw binary into
-#' a simple integer 0/1 vector for use in R.
+#' a simple integer 0/1 for inspection and use in R.
 #'
 #' To achieve higher performance, kalis internally represents haplotypes
 #' in an efficient raw binary format in memory which cannot be directly viewed
-#' or manipulated in R.  This function enables users to copy whole or partial
+#' or manipulated in R.  This function enables you to copy whole or partial
 #' haplotypes out of this low-level format and into a standard R
-#' vector of 0's and 1's.
+#' matrix of 0's and 1's.
 #'
-#' @param ids which haplotypes to retrieve from the cache
-#' @param start the first locus position to retrieve for the specified haplotypes.
+#' @param ids which haplotypes to retrieve from the cache, indexed from 1.
+#' @param start the first locus position to retrieve for the specified
+#'   haplotypes.
 #'   Defaults to the beginning of the haplotype.
-#' @param length the number of consecutive loci to return from the start position.
+#' @param length the number of consecutive loci to return from the start
+#'   position.
 #'   Defaults to length of entire haplotype from `start` argument to end.
 #'
 #' @return A matrix of 0/1 integers with `length` rows and
@@ -228,7 +256,18 @@ CacheHaplotypes.hdf5 <- function(hdf5.file, transpose = FALSE) {
 #' @examples
 #' # Examples
 #' \dontrun{
-#' QueryCache(...)
+#' # For the purposes of an example, fill the cache with random haplotypes ...
+#' n.haps <- 100
+#' n.loci <- 20000
+#' haps <- matrix(sample(0:1, n.haps*n.loci, replace = TRUE),
+#'                nrow = n.loci,
+#'                ncol = n.haps)
+#' CacheHaplotypes(haps)
+#'
+#' # ... and confirm we can read a chosen portion back.  Try to read back
+#' # the 10th and 11th haplotypes from loci 50 to 250 inclusive
+#' res <- QueryCache(10:11, 50, 201)
+#' all(res == haps[50:250, 10:11])
 #' }
 #'
 #' @export QueryCache

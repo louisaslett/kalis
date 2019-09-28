@@ -7,12 +7,14 @@
 QueryCache(ids = NA, start = 1, length = NA)
 }
 \arguments{
-\item{ids}{which haplotypes to retrieve from the cache}
+\item{ids}{which haplotypes to retrieve from the cache, indexed from 1.}
 
-\item{start}{the first locus position to retrieve for the specified haplotypes.
+\item{start}{the first locus position to retrieve for the specified
+haplotypes.
 Defaults to the beginning of the haplotype.}
 
-\item{length}{the number of consecutive loci to return from the start position.
+\item{length}{the number of consecutive loci to return from the start
+position.
 Defaults to length of entire haplotype from \code{start} argument to end.}
 }
 \value{
@@ -21,19 +23,30 @@ A matrix of 0/1 integers with \code{length} rows and
 }
 \description{
 Retrieve haplotypes from the memory cache, converting the raw binary into
-a simple integer 0/1 vector for use in R.
+a simple integer 0/1 for inspection and use in R.
 }
 \details{
 To achieve higher performance, kalis internally represents haplotypes
 in an efficient raw binary format in memory which cannot be directly viewed
-or manipulated in R.  This function enables users to copy whole or partial
+or manipulated in R.  This function enables you to copy whole or partial
 haplotypes out of this low-level format and into a standard R
-vector of 0's and 1's.
+matrix of 0's and 1's.
 }
 \examples{
 # Examples
 \dontrun{
-QueryCache(...)
+# For the purposes of an example, fill the cache with random haplotypes ...
+n.haps <- 100
+n.loci <- 20000
+haps <- matrix(sample(0:1, n.haps*n.loci, replace = TRUE),
+               nrow = n.loci,
+               ncol = n.haps)
+CacheHaplotypes(haps)
+
+# ... and confirm we can read a chosen portion back.  Try to read back
+# the 10th and 11th haplotypes from loci 50 to 250 inclusive
+res <- QueryCache(10:11, 50, 201)
+all(res == haps[50:250, 10:11])
 }
 
 }

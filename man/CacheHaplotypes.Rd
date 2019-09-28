@@ -7,15 +7,15 @@
 CacheHaplotypes(haps, format = "auto", ...)
 }
 \arguments{
-\item{haps}{can be the name of a file from which the haplotypes are to be read, or
-can be a binary R matrix.}
+\item{haps}{can be the name of a file from which the haplotypes are to be
+read, or can be a binary R matrix.}
 
 \item{format}{the file format which \code{file} is stored in, or \code{"auto"} to
 detect format based on the file extension.  Recognised options are \code{"hdf5"}
 and \code{"vcf"}}
 
-\item{...}{options passed on to the specific format transcoding engine.  The following
-additional arguments are supported:
+\item{...}{options passed on to the specific format transcoding engine.  The
+following additional arguments are supported:
 \enumerate{
 \item HDF5
 \itemize{
@@ -26,24 +26,39 @@ number of haplotypes and the length)
 }}
 }
 \value{
-Nothing is returned by the function.  However, a status message is
-output indicating the dimensions of the loaded data.  This can be useful for
-HDF5 input when you are uncertain about the orientation of the \code{haps} object.
-If this message shows the dimensions incorrectly ordered,
-call the function again with the extra argument \code{transpose = TRUE}.
+Nothing is returned by the function.
+However, a status message is output indicating the dimensions of the loaded
+data.
+This can be useful for HDF5 input when you are uncertain about the
+orientation of the \code{haps} object.
+If this message shows the dimensions incorrectly ordered, call the function
+again with the extra argument \code{transpose = TRUE}.
 }
 \description{
-Load haplotypes from hard drive to memory.
+Load haplotypes from hard drive or an R matrix to memory.
 }
 \details{
 To achieve higher performance, kalis internally represents haplotypes
-in an efficient raw binary format in memory.  This function will load haplotypes
-from a file and convert this into kalis' internal format ready for use
-by the other functions in this package.
+in an efficient raw binary format in memory.  This function will load
+haplotypes from a file or from a binary R matrix and convert this into kalis'
+internal format ready for use by the other functions in this package.  Note
+that only one set of haplotypes can be cached at a time and calling this
+function twice overwrites cache of haplotypes created by the first function
+call.
 
-At present, only HDF5 is supported natively and there is a vignette giving a simple
-script to convert from VCF to HDF5.  If there is sufficient demand other formats
-may be added in future
+At present, only HDF5 is supported natively and there is a vignette giving a
+simple script to convert from VCF to HDF5.  If there is sufficient demand
+other formats may be added in future.
+
+\strong{R matrix}
+
+If supplying an R matrix, it must consist of only 0's or 1's.  The haplotypes
+should be stored in columns, with loci in rows.  That is, the dimensions
+should be:
+
+(num rows)x(num cols) = (num loci)x(num haplotypes).
+
+It is fine to delete this matrix after calling \code{CacheHaplotypes}.
 
 \strong{HDF5 format}
 
@@ -52,11 +67,11 @@ level of the HDF5 file.  Haplotypes should be stored in the slowest changing
 dimension as defined in the HDF5 specification (note that different languages
 treat this as rows or columns).  If the haplotypes are stored in the other
 dimension then simply set the argument \code{transpose = TRUE}.
-If the user is unsure of the convention of
-the language they used to create the HDF5 file, then the simplest approach is
-to simply load the data specifying only the HDF5 file name and then confirm
-that number of haplotypes and their length have not been exchanged in the diagnostic
-output which kalis prints.
+If the user is unsure of the convention of the language they used to create
+the HDF5 file, then the simplest approach is to simply load the data
+specifying only the HDF5 file name and then confirm that number of haplotypes
+and their length have not been exchanged in the diagnostic output which kalis
+prints.
 }
 \examples{
 # Examples
@@ -69,9 +84,20 @@ CacheHaplotypes("myhaps.h5")
 # argument to transpose
 CacheHaplotypes("myhaps.h5", transpose = TRUE)
 
-# When correct orientation is known, can avoid diagnostic messages for running
-# in script files
+# When correct orientation is known, you can avoid diagnostic messages for
+# running in script files
 suppressMessages(CacheHaplotypes("myhaps.h5"))
+
+# Alternatively, if you have an exotic file format that can be loaded in to
+# R by other means, then a binary matrix can be supplied.  This example
+# randomly simulated a binary matrix to illustrate (in reality load from
+# disk):
+n.haps <- 100
+n.loci <- 20000
+haps <- matrix(sample(0:1, n.haps*n.loci, replace = TRUE),
+               nrow = n.loci,
+               ncol = n.haps)
+CacheHaplotypes(haps)
 }
 
 }
