@@ -402,14 +402,25 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// CopyForwardTable
-void CopyForwardTable(List to, List from);
-RcppExport SEXP _kalis_CopyForwardTable(SEXP toSEXP, SEXP fromSEXP) {
+// CopyForwardTable_cpp
+void CopyForwardTable_cpp(List to, List from);
+RcppExport SEXP _kalis_CopyForwardTable_cpp(SEXP toSEXP, SEXP fromSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type to(toSEXP);
     Rcpp::traits::input_parameter< List >::type from(fromSEXP);
-    CopyForwardTable(to, from);
+    CopyForwardTable_cpp(to, from);
+    return R_NilValue;
+END_RCPP
+}
+// CopyBackwardTable_cpp
+void CopyBackwardTable_cpp(List to, List from);
+RcppExport SEXP _kalis_CopyBackwardTable_cpp(SEXP toSEXP, SEXP fromSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type to(toSEXP);
+    Rcpp::traits::input_parameter< List >::type from(fromSEXP);
+    CopyBackwardTable_cpp(to, from);
     return R_NilValue;
 END_RCPP
 }
@@ -446,7 +457,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_Forward_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward_scalarPi_scalarmu_cpp, 6},
     {"_kalis_Forward1step_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward1step_scalarPi_scalarmu_cpp, 6},
     {"_kalis_ResetTable", (DL_FUNC) &_kalis_ResetTable, 1},
-    {"_kalis_CopyForwardTable", (DL_FUNC) &_kalis_CopyForwardTable, 2},
+    {"_kalis_CopyForwardTable_cpp", (DL_FUNC) &_kalis_CopyForwardTable_cpp, 2},
+    {"_kalis_CopyBackwardTable_cpp", (DL_FUNC) &_kalis_CopyBackwardTable_cpp, 2},
     {NULL, NULL, 0}
 };
 

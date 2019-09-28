@@ -238,3 +238,98 @@ print.kalisBackwardTable <- function(x, ...) {
   }
   cat("  Memory consumed: ", ceiling(utils::object.size(x)/1e6)/1e3, "GB.\n")
 }
+
+#' Copy Forward/Backward tables
+#'
+#' Copies the contents of one forward/backward table into another.
+#'
+#' The core code in kalis operates on forward and backward tables at a very low
+#' level, both for speed (using low level CPU vector instructions) but also to
+#' avoid unnecessary memory copies since these tables will tend to be very large
+#' in serious genetics applications.  As a result, if you attempt to copy a table
+#' in the standard idomatic way you might in R:
+#'
+#' \code{fwd2 <- fwd}
+#'
+#' then these two variables merely point to the *same* table: running the
+#' forward algorithm on \code{fwd} would result in \code{fwd2} also changing.
+#'
+#' This function is therefore designed to enable explicit copying of tables.
+#'
+#' @param to a \code{kalisForwardTable} or \code{kalisBackwardTable} object
+#'   which is to be copied into.
+#' @param from a \code{kalisForwardTable} or \code{kalisBackwardTable} object
+#'   which is to be copied from.
+#'
+#' @seealso \code{\link{MakeForwardTable}}, \code{\link{MakeForwardTable}} to
+#' create tables which can be copied into.
+#'
+#' @examples
+#' # Examples
+#' \dontrun{
+#' # Create a forward table for the hidden Markov model incorporating all
+#' # recipient and donor haplotypes
+#' fwd <- MakeForwardTable()
+#'
+#' # Propagate forward to locus 10:
+#' Forward(fwd, pars, 10, nthreads = 8)
+#'
+#' # This does **NOT** work as intended:
+#' fwd2 <- fwd
+#' Forward(fwd, pars, 20, nthreads = 8)
+#'
+#' # Both tables are now at locus 20
+#' fwd
+#' fwd2
+#'
+#' # Instead, to copy we create another table and use this function
+#' fwd2 <- MakeForwardTable()
+#' CopyTable(fwd2, fwd)
+#' }
+#'
+#' @importFrom lobstr ref
+#' @export
+CopyTable <- function(to, from) {
+  if(!("kalisForwardTable" %in% class(to)) && !("kalisBackwardTable" %in% class(to))) {
+    stop("The to argument is not a valid forward or backward table.")
+  }
+  if(!("kalisForwardTable" %in% class(from)) && !("kalisBackwardTable" %in% class(from))) {
+    stop("The from argument is not a valid forward or backward table.")
+  }
+
+  type <- NULL
+  if("kalisForwardTable" %in% class(from))
+    type <- "fwd"
+  else if("kalisBackwardTable" %in% class(from))
+    type <- "bck"
+
+  if(is.null(type)) {
+    stop("Error identifying type of from table")
+  } else if(type == "fwd" && !("kalisForwardTable" %in% class(to))) {
+    stop("type mismatch: from is a forward table, but to is a backward.")
+  } else if(type == "bck" && !("kalisBackwardTable" %in% class(to))) {
+    stop("type mismatch: from is a backward table, but to is a forward.")
+  }
+
+  if(to$from_recipient != from$from_recipient) {
+    stop(glue("from table starts with recipient {from$from_recipient}, but to table starts with recipient {to$from_recipient}"))
+  }
+  if(to$to_recipient != from$to_recipient) {
+    stop(glue("from table ends with recipient {from$to_recipient}, but to table ends with recipient {to$to_recipient}"))
+  }
+
+  if(to$pars.sha256 != from$pars.sha256) {
+    stop("The two tables provided were created with different parameter values (SHA-256 mismatch).")
+  }
+
+  if(all(ref(from) == ref(to))) {
+    stop("from and to are pointing to the same memory space.  Please make a new table before copying.")
+  }
+
+  if(type == "fwd") {
+    CopyForwardTable_cpp(to, from)
+  }
+  if(type == "bck") {
+    CopyBackwardTable_cpp(to, from)
+  }
+}

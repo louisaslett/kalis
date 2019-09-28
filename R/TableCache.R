@@ -145,7 +145,7 @@ FillTableCache <- function(cache, pars, from = 1, to = Inf, nthreads = 1) {
     Forward(cache[[i]], pars, t, nthreads)
 
     if(i < length(cache)) {
-      CopyForwardTable(cache[[i+1]], cache[[i]])
+      CopyForwardTable_cpp(cache[[i+1]], cache[[i]])
     }
   }
 }
@@ -203,7 +203,7 @@ ForwardUsingTableCache <- function(fwd, pars, cache, t = fwd$l+1, nthreads = 1) 
   }
   l <- sapply(cache, function(x) { x$l })
   if(any(l==t)) {
-    CopyForwardTable(fwd, cache[[which(l==t)]])
+    CopyForwardTable_cpp(fwd, cache[[which(l==t)]])
     return()
   }
   todo <- which(l>t)
@@ -222,7 +222,7 @@ ForwardUsingTableCache <- function(fwd, pars, cache, t = fwd$l+1, nthreads = 1) 
   # First, check if there are any spare slots -- we might just be accessing after
   # the last checkpoint already.  If so, run forward and return right away
   if(length(todo)==0) {
-    CopyForwardTable(fwd, cache[[from.idx]])
+    CopyForwardTable_cpp(fwd, cache[[from.idx]])
     Forward(fwd, pars, t, nthreads)
     return()
   }
@@ -230,7 +230,7 @@ ForwardUsingTableCache <- function(fwd, pars, cache, t = fwd$l+1, nthreads = 1) 
   # If we want just one step after the jumping off checkpoint, then we just wind
   # forward to it right away though I have spare checkpoint slots
   if(t == from+1) {
-    CopyForwardTable(fwd, cache[[from.idx]])
+    CopyForwardTable_cpp(fwd, cache[[from.idx]])
     Forward(fwd, pars, t, nthreads)
     return()
   }
@@ -242,11 +242,11 @@ ForwardUsingTableCache <- function(fwd, pars, cache, t = fwd$l+1, nthreads = 1) 
 
     # NB t-from >= 2 due to if statement above
     for(i in 1:(t-from-1)) {
-      CopyForwardTable(cache[[todo[i]]], cache[[from.idx]])
+      CopyForwardTable_cpp(cache[[todo[i]]], cache[[from.idx]])
       Forward(cache[[todo[i]]], pars, from+i, nthreads)
       from.idx <- todo[i]
     }
-    CopyForwardTable(fwd, cache[[from.idx]])
+    CopyForwardTable_cpp(fwd, cache[[from.idx]])
     Forward(fwd, pars, t, nthreads)
   } else {
     # We have more steps than spare slots, so we need a schedule to fill in the
@@ -265,11 +265,11 @@ ForwardUsingTableCache <- function(fwd, pars, cache, t = fwd$l+1, nthreads = 1) 
     fillin <- unique(fillin[fillin>from & fillin<t])
 
     for(i in 1:length(fillin)) {
-      CopyForwardTable(cache[[todo[i]]], cache[[from.idx]])
+      CopyForwardTable_cpp(cache[[todo[i]]], cache[[from.idx]])
       Forward(cache[[todo[i]]], pars, fillin[i], nthreads)
       from.idx <- todo[i]
     }
-    CopyForwardTable(fwd, cache[[from.idx]])
+    CopyForwardTable_cpp(fwd, cache[[from.idx]])
     Forward(fwd, pars, t, nthreads)
   }
 }

@@ -13,7 +13,7 @@ void ResetTable(List tbl) {
 }
 
 // [[Rcpp::export]]
-void CopyForwardTable(List to, List from) {
+void CopyForwardTable_cpp(List to, List from) {
   const int_fast32_t alpha_size = as<NumericMatrix>(to["alpha"]).length() * sizeof(double);
   const int_fast32_t alpha_f_size = as<NumericVector>(to["alpha.f"]).length() * sizeof(double);
 
@@ -23,5 +23,19 @@ void CopyForwardTable(List to, List from) {
   memcpy(&(as<NumericVector>(to["alpha.f"])[0]),
          &(as<NumericVector>(from["alpha.f"])[0]),
          alpha_f_size);
+  as<IntegerVector>(to["l"])[0] = as<IntegerVector>(from["l"])[0];
+}
+
+// [[Rcpp::export]]
+void CopyBackwardTable_cpp(List to, List from) {
+  const int_fast32_t beta_size = as<NumericMatrix>(to["beta"]).length() * sizeof(double);
+  const int_fast32_t beta_g_size = as<NumericVector>(to["beta.g"]).length() * sizeof(double);
+
+  memcpy(&(as<NumericMatrix>(to["beta"])[0]),
+         &(as<NumericMatrix>(from["beta"])[0]),
+         beta_size);
+  memcpy(&(as<NumericVector>(to["beta.g"])[0]),
+         &(as<NumericVector>(from["beta.g"])[0]),
+         beta_g_size);
   as<IntegerVector>(to["l"])[0] = as<IntegerVector>(from["l"])[0];
 }

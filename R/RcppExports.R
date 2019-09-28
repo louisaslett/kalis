@@ -125,7 +125,11 @@ ResetTable <- function(tbl) {
     invisible(.Call('_kalis_ResetTable', PACKAGE = 'kalis', tbl))
 }
 
-CopyForwardTable <- function(to, from) {
-    invisible(.Call('_kalis_CopyForwardTable', PACKAGE = 'kalis', to, from))
+CopyForwardTable_cpp <- function(to, from) {
+    invisible(.Call('_kalis_CopyForwardTable_cpp', PACKAGE = 'kalis', to, from))
+}
+
+CopyBackwardTable_cpp <- function(to, from) {
+    invisible(.Call('_kalis_CopyBackwardTable_cpp', PACKAGE = 'kalis', to, from))
 }
 
