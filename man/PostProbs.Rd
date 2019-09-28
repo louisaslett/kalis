@@ -2,7 +2,7 @@
 % Please edit documentation in R/Probs.R
 \name{PostProbs}
 \alias{PostProbs}
-\title{Calculate Posterior Marginal Probabilities from a Forward Table Object and a Backward Table Object}
+\title{Posterior marginal probabilities}
 \usage{
 PostProbs(fwd, bck, log = FALSE)
 }
@@ -11,31 +11,44 @@ PostProbs(fwd, bck, log = FALSE)
 
 \item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}
 
-\item{log}{logical; if FALSE, the posterior marginal probabilities p are returned as log(p).}
+\item{log}{logical; defaults to \code{FALSE}.
+If \code{TRUE}, the logarithm of the posterior marginal probabilities are
+returned.}
 }
 \value{
-matrix of posterior marginal probabilities
+Matrix of posterior marginal probabilities.
+The \eqn{(j,i)}-th element of of the returned matrix is the probability
+that \eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two
+tables, given the haplotypes observed (over the whole sequence).
 }
 \description{
-Provides an easy function for calculating the posterior marginal probabilities.
+Calculated the posterior marginal probabilities at a given locus using
+forward and backward tables propagated to that position.
 }
 \details{
-The forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities at locus l.
-The (j,i)-th element of of the returned matrix is the probability that j is copied by i at the current locus of the two tables, l, given the haplotypes observed (from locus 1 to L).
-Note: each column represents an independent HMM.
+The forward and backward tables must be at the same locus in order for them
+to be combined to yield the posterior marginal probabilities at locus
+\eqn{l}.
+The \eqn{(j,i)}-th element of of the returned matrix is the probability that
+\eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two
+tables, given the haplotypes observed (over the whole sequence).
+
+Note that each column represents an independent HMM.
 
 By convention, every diagonal element is zero.
 }
 \examples{
 \dontrun{
-PostProbs(fwd,bck)
+# To get the posterior probabilities at, say, locus 10 ...
+Forward(fwd, pars, 10, nthreads = 8)
+Backward(bck, pars, 10, nthreads = 8)
+p <- PostProbs(fwd, bck)
 }
 
 }
 \seealso{
-\code{\link{DistMat}} to generate calculate \eqn{d_{ji}} distances directly
-\code{\link{MakeForwardTable}} to generate Forward table;
-\code{\link{Forward}} to propogate a Backward table to a new locus;
-\code{\link{MakeBackwardTable}} to generate a Backward table;
+\code{\link{DistMat}} to generate calculate \eqn{d_{ji}}{d_(j,i)} distances
+directly;
+\code{\link{Forward}} to propogate a Forward table to a new locus;
 \code{\link{Backward}} to propogate a Backward table to a new locus.
 }

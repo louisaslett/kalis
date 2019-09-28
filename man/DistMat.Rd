@@ -2,7 +2,7 @@
 % Please edit documentation in R/Probs.R
 \name{DistMat}
 \alias{DistMat}
-\title{Calculate a Distance Matrix from a Forward Table and a Backward Table}
+\title{Distance matrix}
 \usage{
 DistMat(fwd, bck)
 }
@@ -12,29 +12,45 @@ DistMat(fwd, bck)
 \item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}
 }
 \value{
-matrix of distances
+Matrix of distances.
+The \eqn{(j,i)}-th element of of the returned matrix is the inferred
+distance \eqn{d_{ji}}{d_(j,i)} between haplotypes \eqn{j} and \eqn{i} at
+the current locus.
 }
 \description{
-Calculates a local distance matrix from a \code{kalisForwardTable} and a \code{kalisBackwardTable} at the same locus.
+Calculates a local distance matrix.
 }
 \details{
-The forward and backward tables must be at the same locus l.
-The (j,i)-th element of of the returned matrix is the inferred distance d_(j,i) between haplotypes j and i at the current locus of the two tables, l, given the haplotypes observed (from locus 1 to L).
+This computes a local distance matrix based on the forward and backward
+tables at a certain locus.
+The forward and backward tables provided must be at the same locus \eqn{l}.
+The \eqn{(j,i)}-th element of of the returned matrix is the inferred distance
+\eqn{d_{ji}}{d_(j,i)} between haplotypes \eqn{j} and \eqn{i} at the current
+locus, \eqn{l}, of the two tables given the haplotypes observed (over the
+whole sequence).
 
-d_(j,i) = -( log(p_(j,i)) + log(p_(i,j)) ) / 2 where p_(j,i) is the posterior marginal probability that j is coped by i at the current locus of the two tables, l, given the haplotypes observed (from locus 1 to L).
+In particular,
 
-By convention, d_(i,i) = 0 for all i.
+\deqn{d_{ji} = -\frac{log(p_{ji}) + log(p_{ij})}{2}}{d_(j,i) = -( log(p_(j,i)) + log(p_(i,j)) ) / 2}
+
+where \eqn{p_{ji}}{p_(j,i)} is the posterior marginal probability that
+\eqn{j} is coped by \eqn{i} at the current locus of the two tables, \eqn{l},
+given the haplotypes observed (over the whole sequence).
+
+By convention, \eqn{d_{ii} = 0}{d_(i,i) = 0} for all \eqn{i}.
 }
 \examples{
 \dontrun{
-DistMat(fwd, bak)
+# To get the distances at, say, locus 10 ...
+Forward(fwd, pars, 10, nthreads = 8)
+Backward(bck, pars, 10, nthreads = 8)
+d <- DistMat(fwd, bck)
 }
 
 }
 \seealso{
-\code{\link{PostProbs}} to calculate the posterior marginal probabilities p_(j,i);
-\code{\link{MakeForwardTable}} to generate Forward table;
-\code{\link{Forward}} to propogate a Backward table to a new locus;
-\code{\link{MakeBackwardTable}} to generate a Backward table;
+\code{\link{PostProbs}} to calculate the posterior marginal probabilities
+\eqn{p_{ji}}{p_(j,i)};
+\code{\link{Forward}} to propogate a Forward table to a new locus;
 \code{\link{Backward}} to propogate a Backward table to a new locus.
 }
