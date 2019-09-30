@@ -5,11 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Auto-tuning HMM Parameters for Local Phylogeny Inference • kalis</title>
+<title> • kalis</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Auto-tuning HMM Parameters for Local Phylogeny Inference">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script><meta property="og:title" content="">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -30,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">kalis</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1</span>
       </span>
     </div>
 
@@ -38,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -53,10 +54,16 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/AutoTuning.html">Auto-tuning HMM Parameters for Local Phylogeny Inference</a>
+      <a href="../articles/AutoTuning.html">UNKNOWN TITLE</a>
     </li>
     <li>
       <a href="../articles/Decoding_a_Single_Locus.html">Decoding a Single Locus</a>
+    </li>
+    <li>
+      <a href="../articles/SimpleGWAS.html">SimpleGWAS</a>
+    </li>
+    <li>
+      <a href="../articles/testing_new_dedip.html">testing_new_dedip</a>
     </li>
   </ul>
 </li>
@@ -70,13 +77,12 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Auto-tuning HMM Parameters for Local Phylogeny Inference</h1>
-                        <h4 class="author">Louis Aslett &amp; Ryan Christ</h4>
+      <h1></h1>
             
-            <h4 class="date">2019-05-08</h4>
       
       
       <div class="hidden name"><code>AutoTuning.Rmd</code></div>
@@ -85,231 +91,114 @@
 
     
     
-<div id="motivation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#motivation" class="anchor"></a>Motivation</h2>
-<p>The kalis Package is designed to obtain distance matrices that each coarsely approximate the local phylogeny underlying a given locus of the genome using the Li &amp; Stephens Model.</p>
-<p>As noted, there are three parameters…</p>
-<p>Those parameters do not have biological meaning for our purposes but are simply tunable to allow us to optimize for local phylogeny inference.</p>
-<p>motivating objective…but you should look at entire histogram</p>
-<p>What part of the genome to run this on? Well, ideally just the chromosome you’re working with.</p>
-<p>You’d want to know if the different chromosomes were yielding different parameter estimates.</p>
-<p>Here we provide the functionality for doing a single chromosome on a single machine. You can send this out on your cluster to do two chromosomes separately and compare the results.</p>
-<p>We have here a suggested method for combining the parameter estimates from across chromosomes.Though in principle, we don’t see immediately any reason why there’d be problems combining info for say population structure with slightly different parameters.</p>
-<p>If parameters are actually different between chromosomes, then we’d suggest using the parameters only on their respective chromosomes.</p>
-<p>If you’d like to do the optimization jointly over all chromosomes, that’s totally fine, but we’d suggest that you do it on a single chromosome first to give yourself a good initialization point then proceed. Unfortunately the optimal way to do that depends on your cluster architecture.</p>
-<p>Below we’ll give an example of how to do multi-chromosome comparison.</p>
+<table class="table"><tbody>
+<tr class="odd">
+<td>title: “Auto-tuning HMM Parameters for Local Phylogeny Inference”</td>
+</tr>
+<tr class="even">
+<td>author: “Louis Aslett &amp; Ryan Christ”</td>
+</tr>
+<tr class="odd">
+<td>date: “2019-09-30”</td>
+</tr>
+<tr class="even">
+<td>output: rmarkdown::html_vignette</td>
+</tr>
+<tr class="odd">
+<td>vignette: &gt;</td>
+</tr>
+<tr class="even">
+<td>%</td>
+</tr>
+<tr class="odd">
+<td>%</td>
+</tr>
+<tr class="even">
+<td>%</td>
+</tr>
+</tbody></table>
+<div id="provide-a-working-directory" class="section level3">
+<h3 class="hasAnchor">
+<a href="#provide-a-working-directory" class="anchor"></a>Provide a Working Directory</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">run.dir &lt;-<span class="st"> "~/Desktop/autotuning_test_files/"</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(kalis)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(RSpectra)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(mlrMBO)</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(future)</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(pryr)</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(QForm)</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(plotly)</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(akima)</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span>(<span class="st">"../../AutoTune2_local.R"</span>)</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"SmallHaps"</span>)</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co">#haps &lt;- SmallHaps[polymorphic.sites,]</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="kw"><a href="../reference/CacheHaplotypes.html">CacheHaplotypes</a></span>(SmallHaps)</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">m &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Beta.html">rbeta</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(SmallHaps)<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">10</span>)<span class="op">*</span><span class="fl">1e-6</span></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">pars &lt;-<span class="st"> </span><span class="kw"><a href="../reference/Parameters.html">Parameters</a></span>(<span class="kw"><a href="../reference/CalcRho.html">CalcRho</a></span>(<span class="dt">morgan.dist =</span> m, <span class="dt">Ne =</span> <span class="fl">1e-250</span>, <span class="dt">gamma =</span> <span class="dv">1</span>), <span class="dt">mu =</span> <span class="fl">1e-250</span>)</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">polymorphic.sites &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(SmallHaps)<span class="op">!=</span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(SmallHaps)<span class="op">!=</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb2-19" data-line-number="19">G &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/crossprod.html">tcrossprod</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(SmallHaps[polymorphic.sites,])))</a>
+<a class="sourceLine" id="cb2-20" data-line-number="20">bg.vecs &lt;-<span class="st"> </span>RSpectra<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/RSpectra/man/eigs.html">eigs</a></span>(G,<span class="dv">10</span>)<span class="op">$</span>vectors</a></code></pre></div>
 </div>
-<div id="styles" class="section level2">
-<h2 class="hasAnchor">
-<a href="#styles" class="anchor"></a>Styles</h2>
-<p>The <code>html_vignette</code> template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:</p>
-<pre><code>output: 
-  rmarkdown::html_vignette:
-    css: mystyles.css</code></pre>
+<div id="define-target-loci-for-tuning" class="section level3">
+<h3 class="hasAnchor">
+<a href="#define-target-loci-for-tuning" class="anchor"></a>Define Target Loci for Tuning</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">nthreads &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">num.target.loci &lt;-<span class="st"> </span><span class="dv">10</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">targets &lt;-<span class="st"> </span><span class="kw">InvRecombMap</span>(m,<span class="dt">num.target.loci =</span> num.target.loci)</a></code></pre></div>
 </div>
-<div id="figures" class="section level2">
-<h2 class="hasAnchor">
-<a href="#figures" class="anchor"></a>Figures</h2>
-<p>The figure sizes have been customised so that you can easily put two images side-by-side.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(<span class="dv">10</span><span class="op">:</span><span class="dv">1</span>)</a></code></pre></div>
-<p><img src="AutoTuning_files/figure-html/unnamed-chunk-1-1.png" width="700"><img src="AutoTuning_files/figure-html/unnamed-chunk-1-2.png" width="700"></p>
-<p>You can enable figure captions by <code>fig_caption: yes</code> in YAML:</p>
-<pre><code>output:
-  rmarkdown::html_vignette:
-    fig_caption: yes</code></pre>
-<p>Then you can use the chunk option <code>fig.cap = "Your figure caption."</code> in <strong>knitr</strong>.</p>
+<div id="set-up-optimization-using-mlrmbo" class="section level3">
+<h3 class="hasAnchor">
+<a href="#set-up-optimization-using-mlrmbo" class="anchor"></a>Set Up Optimization Using mlrMBO</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co"># Define Bounds on Parameters and Objective Function</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">ps &lt;-<span class="st"> </span><span class="kw">makeParamSet</span>(</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  <span class="kw">makeNumericParam</span>(<span class="st">"neg.log10.Ne"</span>, <span class="dt">lower=</span><span class="dv">0</span>,<span class="dt">upper=</span><span class="dv">300</span>),</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">  <span class="kw">makeNumericParam</span>(<span class="st">"gamma"</span>, <span class="dt">lower=</span><span class="dv">1</span>,<span class="dt">upper=</span><span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">  <span class="kw">makeNumericParam</span>(<span class="st">"neg.log10.mu"</span>, <span class="dt">lower=</span><span class="dv">0</span>,<span class="dt">upper=</span><span class="dv">300</span>)</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">)</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">obj.fun &lt;-<span class="st"> </span><span class="kw">makeSingleObjectiveFunction</span>(<span class="dt">name =</span> <span class="st">"autotune"</span>, <span class="dt">fn =</span> AutoTuneTarget3, <span class="dt">par.set =</span> ps)</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co"># Define kernel for Gaussian Process to Use</span></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">surr.km &lt;-<span class="st"> </span><span class="kw">makeLearner</span>(<span class="st">"regr.bgp"</span>, <span class="dt">predict.type =</span> <span class="st">"se"</span>)<span class="co">#, control = list(trace = FALSE))</span></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="co"># Set number of steps optimizer can take after grid evaluations</span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">control &lt;-<span class="st"> </span><span class="kw">makeMBOControl</span>() ;  control &lt;-<span class="st"> </span><span class="kw">setMBOControlTermination</span>(control, <span class="dt">iters =</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb4-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb4-19" data-line-number="19"><span class="co"># Set Initial Grid of Points at which to evaluate objective</span></a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">des &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>( <span class="dt">y =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="op">-</span>.<span class="dv">2</span>,<span class="op">-</span>.<span class="dv">6</span>,<span class="op">-</span>.<span class="dv">2</span>,<span class="op">-</span>.<span class="dv">6</span>),</a>
+<a class="sourceLine" id="cb4-21" data-line-number="21">                   <span class="dt">neg.log10.Ne =</span> <span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>,<span class="dv">280</span>),<span class="dt">each =</span> <span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb4-22" data-line-number="22">                   <span class="dt">gamma =</span> <span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="dv">1</span>,<span class="dv">4</span>),</a>
+<a class="sourceLine" id="cb4-23" data-line-number="23">                   <span class="dt">neg.log10.mu =</span> <span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>,<span class="dv">280</span>),<span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb4-24" data-line-number="24">)</a>
+<a class="sourceLine" id="cb4-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb4-26" data-line-number="26">start &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/proc.time.html">proc.time</a></span>()</a>
+<a class="sourceLine" id="cb4-27" data-line-number="27">res =<span class="st"> </span><span class="kw">mbo</span>(<span class="dt">fun=</span>obj.fun, <span class="dt">design=</span>des, <span class="dt">learner =</span> surr.km, <span class="dt">control =</span> control,</a>
+<a class="sourceLine" id="cb4-28" data-line-number="28">          <span class="dt">more.args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">morgan.dist =</span> m, <span class="dt">t =</span> targets, <span class="dt">bg.vecs =</span> bg.vecs, <span class="dt">nthreads =</span> <span class="dv">2</span>, <span class="dt">k =</span> <span class="dv">5</span>, <span class="dt">run.dir =</span> run.dir))</a>
+<a class="sourceLine" id="cb4-29" data-line-number="29">finish &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/proc.time.html">proc.time</a></span>() <span class="op">-</span>start</a>
+<a class="sourceLine" id="cb4-30" data-line-number="30"><span class="co">#</span></a>
+<a class="sourceLine" id="cb4-31" data-line-number="31">optimal.pars &lt;-<span class="st"> </span>res<span class="op">$</span>opt.path<span class="op">$</span>env<span class="op">$</span>path[res<span class="op">$</span>best.ind,]</a>
+<a class="sourceLine" id="cb4-32" data-line-number="32"><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(res)</a>
+<a class="sourceLine" id="cb4-33" data-line-number="33"><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(finish)</a>
+<a class="sourceLine" id="cb4-34" data-line-number="34"><span class="co">###</span></a></code></pre></div>
 </div>
-<div id="more-examples" class="section level2">
-<h2 class="hasAnchor">
-<a href="#more-examples" class="anchor"></a>More Examples</h2>
-<p>You can write math expressions, e.g. <span class="math inline">\(Y = X\beta + \epsilon\)</span>, footnotes<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, and tables, e.g. using <code><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">knitr::kable()</a></code>.</p>
-<table class="table">
-<thead><tr class="header">
-<th></th>
-<th align="right">mpg</th>
-<th align="right">cyl</th>
-<th align="right">disp</th>
-<th align="right">hp</th>
-<th align="right">drat</th>
-<th align="right">wt</th>
-<th align="right">qsec</th>
-<th align="right">vs</th>
-<th align="right">am</th>
-<th align="right">gear</th>
-<th align="right">carb</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td>Mazda RX4</td>
-<td align="right">21.0</td>
-<td align="right">6</td>
-<td align="right">160.0</td>
-<td align="right">110</td>
-<td align="right">3.90</td>
-<td align="right">2.620</td>
-<td align="right">16.46</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">4</td>
-</tr>
-<tr class="even">
-<td>Mazda RX4 Wag</td>
-<td align="right">21.0</td>
-<td align="right">6</td>
-<td align="right">160.0</td>
-<td align="right">110</td>
-<td align="right">3.90</td>
-<td align="right">2.875</td>
-<td align="right">17.02</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">4</td>
-</tr>
-<tr class="odd">
-<td>Datsun 710</td>
-<td align="right">22.8</td>
-<td align="right">4</td>
-<td align="right">108.0</td>
-<td align="right">93</td>
-<td align="right">3.85</td>
-<td align="right">2.320</td>
-<td align="right">18.61</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td>Hornet 4 Drive</td>
-<td align="right">21.4</td>
-<td align="right">6</td>
-<td align="right">258.0</td>
-<td align="right">110</td>
-<td align="right">3.08</td>
-<td align="right">3.215</td>
-<td align="right">19.44</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td>Hornet Sportabout</td>
-<td align="right">18.7</td>
-<td align="right">8</td>
-<td align="right">360.0</td>
-<td align="right">175</td>
-<td align="right">3.15</td>
-<td align="right">3.440</td>
-<td align="right">17.02</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td>Valiant</td>
-<td align="right">18.1</td>
-<td align="right">6</td>
-<td align="right">225.0</td>
-<td align="right">105</td>
-<td align="right">2.76</td>
-<td align="right">3.460</td>
-<td align="right">20.22</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td>Duster 360</td>
-<td align="right">14.3</td>
-<td align="right">8</td>
-<td align="right">360.0</td>
-<td align="right">245</td>
-<td align="right">3.21</td>
-<td align="right">3.570</td>
-<td align="right">15.84</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">4</td>
-</tr>
-<tr class="even">
-<td>Merc 240D</td>
-<td align="right">24.4</td>
-<td align="right">4</td>
-<td align="right">146.7</td>
-<td align="right">62</td>
-<td align="right">3.69</td>
-<td align="right">3.190</td>
-<td align="right">20.00</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="odd">
-<td>Merc 230</td>
-<td align="right">22.8</td>
-<td align="right">4</td>
-<td align="right">140.8</td>
-<td align="right">95</td>
-<td align="right">3.92</td>
-<td align="right">3.150</td>
-<td align="right">22.90</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td>Merc 280</td>
-<td align="right">19.2</td>
-<td align="right">6</td>
-<td align="right">167.6</td>
-<td align="right">123</td>
-<td align="right">3.92</td>
-<td align="right">3.440</td>
-<td align="right">18.30</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">4</td>
-</tr>
-</tbody>
-</table>
-<p>Also a quote using <code>&gt;</code>:</p>
-<blockquote>
-<p>“He who gives up [code] safety for [code] speed deserves neither.” (<a href="https://twitter.com/hadleywickham/status/504368538874703872">via</a>)</p>
-</blockquote>
-</div>
-<div class="footnotes">
-<hr>
-<ol>
-<li id="fn1"><p>A footnote here.<a href="#fnref1" class="footnote-back">↩</a></p></li>
-</ol>
+<div id="plot-autotuning-results" class="section level3">
+<h3 class="hasAnchor">
+<a href="#plot-autotuning-results" class="anchor"></a>Plot Autotuning Results</h3>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#motivation">Motivation</a></li>
-      <li><a href="#styles">Styles</a></li>
-      <li><a href="#figures">Figures</a></li>
-      <li><a href="#more-examples">More Examples</a></li>
-      </ul>
-</div>
+
       </div>
 
 </div>
+
 
 
       <footer><div class="copyright">
@@ -317,12 +206,14 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

@@ -11,12 +11,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ### Provide a Working Directory
-```{r run.dir}
+```{r run.dir, eval=FALSE}
 run.dir <- "~/Desktop/autotuning_test_files/"
 ```
 
 
-```{r load.data, results = "hide",message=FALSE}
+```{r load.data, results = "hide",message=FALSE, eval=FALSE}
 require(kalis)
 require(RSpectra)
 require(mlrMBO)
@@ -41,7 +41,7 @@ bg.vecs <- RSpectra::eigs(G,10)$vectors
 
 
 ### Load/Simulate Phenotype
-```{r c1}
+```{r c1, eval=FALSE}
 set.seed(17)
 a <- rbinom(ncol(SmallHaps)/2,1,0.5)
 x <- SmallHaps[250,seq(1,ncol(SmallHaps),by=2)] + SmallHaps[250,seq(1,ncol(SmallHaps),by=2)+1]
@@ -52,7 +52,7 @@ summary(glm(y~a+x,family="binomial"))
 
 ### Calculate Background Matrices to Adjust for Population Structure
 
-```{r bg.mat.calc, eval = T, message = F}
+```{r bg.mat.calc, message = F, eval=FALSE}
 
 nthreads <- 2
 num.target.loci <- 10

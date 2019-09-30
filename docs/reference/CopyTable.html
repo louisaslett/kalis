@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Remove all cached haplotypes and free memory — ClearHaplotypeCache • kalis</title>
+<title>Copy Forward/Backward tables — CopyTable • kalis</title>
 
 
 <!-- jquery -->
@@ -35,9 +35,8 @@
 
 
 
-<meta property="og:title" content="Remove all cached haplotypes and free memory — ClearHaplotypeCache" />
-<meta property="og:description" content="Remove all the haplotypes that were cached by a previous caching call and
-free up the memory that was allocated for future use." />
+<meta property="og:title" content="Copy Forward/Backward tables — CopyTable" />
+<meta property="og:description" content="Copies the contents of one forward/backward table into another." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -122,44 +121,75 @@ free up the memory that was allocated for future use." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Remove all cached haplotypes and free memory</h1>
+    <h1>Copy Forward/Backward tables</h1>
     
-    <div class="hidden name"><code>ClearHaplotypeCache.Rd</code></div>
+    <div class="hidden name"><code>CopyTable.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Remove all the haplotypes that were cached by a previous caching call and
-free up the memory that was allocated for future use.</p>
+    <p>Copies the contents of one forward/backward table into another.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ClearHaplotypeCache</span>()</pre>
+    <pre class="usage"><span class='fu'>CopyTable</span>(<span class='no'>to</span>, <span class='no'>from</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>to</th>
+      <td><p>a <code>kalisForwardTable</code> or <code>kalisBackwardTable</code> object
+which is to be copied into.</p></td>
+    </tr>
+    <tr>
+      <th>from</th>
+      <td><p>a <code>kalisForwardTable</code> or <code>kalisBackwardTable</code> object
+which is to be copied from.</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>Nothing is returned.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>To achieve higher performance, kalis internally represents haplotypes
-in an efficient raw binary format in memory which cannot be directly viewed
-or manipulated in R.  In particular, this cache sits outside R's memory
-management and will never be garbage collected (unless R is quit or the
-package is unloaded).  Therefore, this function is provided to enable freeing
-the memory used by this cache.</p>
+    <p>The core code in kalis operates on forward and backward tables at a very low
+level, both for speed (using low level CPU vector instructions) but also to
+avoid unnecessary memory copies since these tables will tend to be very large
+in serious genetics applications.  As a result, if you attempt to copy a table
+in the standard idomatic way you might in R:</p>
+<p><code>fwd2 &lt;- fwd</code></p>
+<p>then these two variables merely point to the <em>same</em> table: running the
+forward algorithm on <code>fwd</code> would result in <code>fwd2</code> also changing.</p>
+<p>This function is therefore designed to enable explicit copying of tables.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='CacheHaplotypes.html'>CacheHaplotypes</a></code> to create a haplotype cache.</p></div>
+    <div class='dont-index'><p><code><a href='MakeForwardTable.html'>MakeForwardTable</a></code>, <code><a href='MakeForwardTable.html'>MakeForwardTable</a></code> to
+create tables which can be copied into.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Examples</span>
 <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'>ClearHaplotypeCache</span>()
+<span class='co'># Create a forward table for the hidden Markov model incorporating all</span>
+<span class='co'># recipient and donor haplotypes</span>
+<span class='no'>fwd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='MakeForwardTable.html'>MakeForwardTable</a></span>()
+
+<span class='co'># Propagate forward to locus 10:</span>
+<span class='fu'><a href='Forward.html'>Forward</a></span>(<span class='no'>fwd</span>, <span class='no'>pars</span>, <span class='fl'>10</span>, <span class='kw'>nthreads</span> <span class='kw'>=</span> <span class='fl'>8</span>)
+
+<span class='co'># This does **NOT** work as intended:</span>
+<span class='no'>fwd2</span> <span class='kw'>&lt;-</span> <span class='no'>fwd</span>
+<span class='fu'><a href='Forward.html'>Forward</a></span>(<span class='no'>fwd</span>, <span class='no'>pars</span>, <span class='fl'>20</span>, <span class='kw'>nthreads</span> <span class='kw'>=</span> <span class='fl'>8</span>)
+
+<span class='co'># Both tables are now at locus 20</span>
+<span class='no'>fwd</span>
+<span class='no'>fwd2</span>
+
+<span class='co'># Instead, to copy we create another table and use this function</span>
+<span class='no'>fwd2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='MakeForwardTable.html'>MakeForwardTable</a></span>()
+<span class='fu'>CopyTable</span>(<span class='no'>fwd2</span>, <span class='no'>fwd</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#value">Value</a></li>
+      <li><a href="#arguments">Arguments</a></li>
       <li><a href="#details">Details</a></li>
       <li><a href="#see-also">See also</a></li>
       <li><a href="#examples">Examples</a></li>
