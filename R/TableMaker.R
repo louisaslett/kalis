@@ -8,9 +8,7 @@
 #' Markov model parameters created by \code{\link{Parameters}}.
 #' The returned \code{kalisForwardTable} is initialized at locus 0 and is ready
 #' to be propagated to a given target locus with the function
-#' \code{\link{Forward}}, or by using a cache (see
-#' \code{\link{CreateForwardTableCache}}, \code{\link{FillTableCache}} and
-#' \code{\link{ForwardUsingTableCache}}).
+#' \code{\link{Forward}}.
 #'
 #' Since there is an independent hidden Markov model run for each recipient
 #' haplotype, it is possible to create a partial forward table object which
@@ -49,10 +47,7 @@
 #'
 #' @seealso
 #'   \code{\link{Forward}} to propagate the newly created
-#'   \code{kalisForwardTable};
-#'   \code{\link{CreateForwardTableCache}}, \code{\link{FillTableCache}} and
-#'   \code{\link{ForwardUsingTableCache}} for information of caching to enable
-#'   rapid scanning backwards through the haplotype sequences.
+#'   \code{kalisForwardTable}.
 #'
 #' @examples
 #' # Examples

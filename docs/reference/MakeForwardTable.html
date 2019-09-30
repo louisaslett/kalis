@@ -182,9 +182,7 @@ for a given set of haplotypes (that must have already been cached by
 Markov model parameters created by <code><a href='Parameters.html'>Parameters</a></code>.
 The returned <code>kalisForwardTable</code> is initialized at locus 0 and is ready
 to be propagated to a given target locus with the function
-<code><a href='Forward.html'>Forward</a></code>, or by using a cache (see
-<code><a href='CreateForwardTableCache.html'>CreateForwardTableCache</a></code>, <code><a href='FillTableCache.html'>FillTableCache</a></code> and
-<code><a href='ForwardUsingTableCache.html'>ForwardUsingTableCache</a></code>).</p>
+<code><a href='Forward.html'>Forward</a></code>.</p>
 <p>Since there is an independent hidden Markov model run for each recipient
 haplotype, it is possible to create a partial forward table object which
 corresponds to a subset of recipients using the <code>from_recipient</code> and
@@ -192,10 +190,7 @@ corresponds to a subset of recipients using the <code>from_recipient</code> and
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='Forward.html'>Forward</a></code> to propagate the newly created
-<code>kalisForwardTable</code>;
-<code><a href='CreateForwardTableCache.html'>CreateForwardTableCache</a></code>, <code><a href='FillTableCache.html'>FillTableCache</a></code> and
-<code><a href='ForwardUsingTableCache.html'>ForwardUsingTableCache</a></code> for information of caching to enable
-rapid scanning backwards through the haplotype sequences.</p></div>
+<code>kalisForwardTable</code>.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Examples</span>
