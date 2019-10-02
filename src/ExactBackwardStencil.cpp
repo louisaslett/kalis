@@ -16,6 +16,8 @@ using namespace Rcpp;
 
 void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
                 double *const __restrict__ beta_g,
+                int *const __restrict__ cur_beta_theta,
+                const int *const __restrict__ end_beta_theta,
                 const int beta_from_rec,
                 const int beta_t,
                 const int t,
@@ -27,7 +29,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
                 const MU_TYPE_C mu,
                 const double *const __restrict__ rho) {
   int_fast32_t l = beta_t;
-
+  // DEBUG: Rcout << "Backward called" << std::endl;
   double g;
   double *__restrict__ gold;
   gold    = &(beta_g[0]);
@@ -94,12 +96,82 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
   const KALIS_DOUBLE _muTmp1 = KALIS_SET_DOUBLE(muTmp1), _muTmp2 = KALIS_SET_DOUBLE(muTmp2);
 #endif
 
-  if(!(l-1>t)) {
+  if(l == t && !*cur_beta_theta && *end_beta_theta) {
+    // DEBUG: Rcout << "B -> BT (no move, l=" << l << ", all rec)" << std::endl;
+    for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
+      int_fast32_t recipient_beta = recipient-beta_from_rec;
+#if KALIS_PI == PI_SCALAR
+      PiRow[recipient] = 0.0;
+#endif
+
+      g = 0.0; // For accumulating scalar part in ragged end ...
+      KALIS_DOUBLE _g = KALIS_SET_DOUBLE(0.0); // ... and for vector part.
+
+      // TODO: for larger problems break this down into L1 cachable chunks of
+      //       donors at a time
+      double *__restrict__ const betaRow = &(beta[N*recipient_beta]);
+#if KALIS_PI == PI_MATRIX
+      double *__restrict__ const PiRow = &(Pi[N*recipient]);
+      // The diagonal should be zero ... we can fix that after the loop, but in order to avoid accumulating
+      // incorrectly in g, we want to force the diagonal of Pi to zero
+      PiRow[recipient] = 0.0;
+#endif
+
+      // Load this recipient's bit into all 256-bits of an AVX register
+      int32_t recipient_hap = 0;
+      recipient_hap -= (hap_locus[l][recipient/32] >> recipient%32) & 1;
+      recipient_hap  = ~recipient_hap; // So H below will now be 1-H
+      KALIS_INT32 _recipient_hap      = KALIS_SET_INT32(recipient_hap);
+
+#if KALIS_MU == MU_VECTOR
+      // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
+      const double muTmp1a = 1.0 - 2.0 * mu[l], muTmp2a = mu[l];
+      const KALIS_DOUBLE _muTmp1a = KALIS_SET_DOUBLE(muTmp1a), _muTmp2a = KALIS_SET_DOUBLE(muTmp2a);
+#endif
+
+      for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
+        // Load next 256 donors and XOR with recipients
+        KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+        uint32_t *HA = (uint32_t*) &_HA;
+
+        for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
+          // IACA_START
+#include KALIS_BACKWARD_INNER_UNROLLED(KALIS_UNROLL,E)
+        }
+        // IACA_END
+      }
+      // Tidy up any ragged end past a multiple of 256 ...
+      for(int32_t donor=0; donor<N%(32*8); ++donor) {
+        int32_t donor_hapA = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+        int32_t HA = (recipient_hap ^ donor_hapA) & 1;
+#if KALIS_MU == MU_SCALAR
+        betaRow[(N/(32*8))*32*8+donor] = (HA * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor];
+#elif KALIS_MU == MU_VECTOR
+        betaRow[(N/(32*8))*32*8+donor] = (HA * muTmp1a + muTmp2a) * betaRow[(N/(32*8))*32*8+donor];
+#endif
+
+        g += PiRow[(N/(32*8))*32*8+donor] * betaRow[(N/(32*8))*32*8+donor];
+      }
+
+      betaRow[recipient] = 0.0;
+
+      // Accumulate row sum into g
+      KALIS_HSUM_DOUBLE(_g);
+      g += ((double*)&_g)[0];
+
+      gold[recipient_beta] = g;
+
+#if KALIS_PI == PI_SCALAR
+      PiRow[recipient] = Pi;
+#endif
+    }
+  } else if(!(l-1>t) && !*cur_beta_theta && !*end_beta_theta) {
     // If we do one step from entry point, then we have to use the slower code
     // which constructs two thetas
     // ie we can't move into beta*theta space
     //   beta = theta[l]*(beta*theta[l+1] / g...)
     //   g += beta*pi
+    // DEBUG: Rcout << "B -> B (l=" << l << ", all r, one step)" << std::endl;
     for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
       int_fast32_t recipient_beta = recipient-beta_from_rec;
 #if KALIS_PI == PI_SCALAR
@@ -225,12 +297,12 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         // Setup rho for AVX ops
         KALIS_DOUBLE _rho = KALIS_SET_DOUBLE(rho[l]);
 
-        if(l<reset_l-1 && l>t) {
+        if((l<reset_l-1 || *cur_beta_theta) && (l>t || *end_beta_theta)) {
           // Mid beta*theta step
           // Perform locus updates staying in beta*theta space
           //   beta = theta[l-i]*(beta / g...)
           //   g += beta*pi
-
+          // DEBUG: Rcout << "BT -> BT (l=" << l <<", r=" << recipient << ")" << std::endl;
 
           // Load this recipient's bit into all 256-bits of an AVX register
           int32_t recipient_hap = 0;
@@ -270,12 +342,12 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
           betaRow[recipient] = 0.0;
 
-        } else if(l==reset_l-1) {
+        } else if(l==reset_l-1 && !*cur_beta_theta) {
           // Pre beta*theta step
           // Move from beta space into beta*theta space simultaneously with a locus update
           //   beta = theta[l-1]*(beta / g...)
           //   g += beta*pi
-
+          // DEBUG: Rcout << "B -> BT (l=" << l <<", r=" << recipient << ")" << std::endl;
 
           // Load this recipient's bit into all 256-bits of an AVX register
           int32_t recipient_hap = 0, recipient_hap_prev = 0;
@@ -329,6 +401,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           // Move from beta*theta space into beta space simultaneously with a locus update
           //   beta = beta / g...
           //   g += beta*theta[l-targ]*pi
+          // DEBUG: Rcout << "BT -> B (l=" << l <<", r=" << recipient << ")" << std::endl;
 
           // Load this recipient's bit into all 256-bits of an AVX register
           int32_t recipient_hap = 0;
@@ -391,12 +464,15 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
   free(PiRow);
 #endif
 
+  *cur_beta_theta = *end_beta_theta;
 }
 
 
 
 void CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
             NumericVector beta_g,
+            LogicalVector cur_beta_theta,
+            LogicalVector end_beta_theta,
             const int beta_from_rec,
             const int beta_t,
             const int t,
@@ -409,6 +485,8 @@ void CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
             NumericVector rho) {
   CPP_RAW_FN(EXACTBACKWARDNOEXP)(&(beta[0]),
              &(beta_g[0]),
+             &(cur_beta_theta[0]),
+             &(end_beta_theta[0]),
              beta_from_rec,
              beta_t,
              t,
@@ -425,6 +503,8 @@ void CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
 
 void PAR_CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
                 NumericVector beta_g,
+                LogicalVector cur_beta_theta,
+                LogicalVector end_beta_theta,
                 const int beta_from_rec,
                 const int beta_t,
                 const int t,
@@ -449,6 +529,8 @@ void PAR_CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
     threads.push_back(std::thread(CPP_RAW_FN(EXACTBACKWARDNOEXP),
                                   &(beta[0]),
                                   &(beta_g[0]),
+                                  &(cur_beta_theta[0]),
+                                  &(end_beta_theta[0]),
                                   beta_from_rec,
                                   beta_t,
                                   t,

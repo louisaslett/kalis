@@ -91,6 +91,9 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
 #' @param t a locus position to move the backward table to.
 #'   Must be less than or equal to current locus position of \code{bck}.
 #'   By default, it simply advances to the locus immediately before.
+#' @param beta.theta logical indicating whether the table should be returned in
+#'   beta-theta space or in the standard space upon reaching the target locus
+#'   \code{t}.
 #' @param nthreads the number of CPU cores to use.
 #'   By default no parallelism is used.
 #'
@@ -111,7 +114,7 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
 #' }
 #'
 #' @export Backward
-Backward <- function(bck, pars, t = bck$l-1, nthreads = 1) {
+Backward <- function(bck, pars, t = bck$l-1, beta.theta = FALSE, nthreads = 1) {
   if(!("kalisBackwardTable" %in% class(bck))) {
     stop("The bck argument is not a valid backward table.")
   }
@@ -123,6 +126,9 @@ Backward <- function(bck, pars, t = bck$l-1, nthreads = 1) {
   if(!is.vector(t) || !is.numeric(t) || length(t) != 1 || is.na(t)) {
     stop("t must be a scalar.")
   }
+  if(!is.vector(beta.theta) || !is.logical(beta.theta) || length(beta.theta) != 1 || is.na(beta.theta)) {
+    stop("beta.theta must be a single logical value.")
+  }
   if(t < 1 || t > L) {
     stop(glue("Valid target loci range from 1 to {L} ... cannot move backward to locus {t}."))
   }
@@ -132,18 +138,21 @@ Backward <- function(bck, pars, t = bck$l-1, nthreads = 1) {
   if(nrow(bck$beta) != N || ncol(bck$beta) != bck$to_recipient-bck$from_recipient+1) {
     stop("Backward table is of the wrong dimensions for this problem.")
   }
+  if(t == bck$l && bck$beta.theta && !beta.theta) {
+    stop("Cannot move from beta-theta space to rescaled probability space without moving at least one locus.")
+  }
 
   if(is.matrix(pars$pars$Pi)) {
     if(length(pars$pars$mu) == 1) {
-      Backward_densePi_scalarmu_cpp(bck, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Backward_densePi_scalarmu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     } else {
-      Backward_densePi_densemu_cpp(bck, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Backward_densePi_densemu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     }
   } else {
     if(length(pars$pars$mu) == 1) {
-      Backward_scalarPi_scalarmu_cpp(bck, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Backward_scalarPi_scalarmu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     } else {
-      Backward_scalarPi_densemu_cpp(bck, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Backward_scalarPi_densemu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
     }
   }
 }

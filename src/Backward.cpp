@@ -9,10 +9,14 @@ void ResetBackwardTable(List bck) {
   IntegerVector newl(1);
   newl[0] = 2147483647;
   bck["l"] = newl;
+  LogicalVector newbt(1);
+  newbt[0] = false;
+  bck["beta.theta"] = newbt;
 }
 
 // [[Rcpp::export]]
 void Backward_densePi_densemu_cpp(List bck,
+                                  LogicalVector end_beta_theta,
                                   const int t,
                                   NumericMatrix Pi,
                                   NumericVector mu,
@@ -20,8 +24,9 @@ void Backward_densePi_densemu_cpp(List bck,
                                   const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
-  NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
-  NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);
+  NumericMatrix beta           = as<NumericMatrix>(bck["beta"]);
+  NumericVector beta_g         = as<NumericVector>(bck["beta.g"]);
+  LogicalVector cur_beta_theta = as<LogicalVector>(bck["beta.theta"]);
   int l        = as<int>(bck["l"]);
   int from_rec = as<int>(bck["from_recipient"]);
   int to_rec   = as<int>(bck["to_recipient"]);
@@ -30,12 +35,14 @@ void Backward_densePi_densemu_cpp(List bck,
     Rcout << "The backward table provided is for locus position " << l << " which is already past requested locus " << t << "\n";
     return;
   }
-  if(l==t) {
+  if(l==t && !(!cur_beta_theta[0] && end_beta_theta[0])) {
     return;
   }
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_cpp(beta,
                                   beta_g,
+                                  cur_beta_theta,
+                                  end_beta_theta,
                                   from_rec-1,
                                   l-1,
                                   t-1,
@@ -50,6 +57,8 @@ void Backward_densePi_densemu_cpp(List bck,
   } else {
     ExactBackwardNoExpAVX3_cpp(beta,
                                beta_g,
+                               cur_beta_theta,
+                               end_beta_theta,
                                from_rec-1,
                                l-1,
                                t-1,
@@ -68,6 +77,7 @@ void Backward_densePi_densemu_cpp(List bck,
 
 // [[Rcpp::export]]
 void Backward_scalarPi_densemu_cpp(List bck,
+                                   LogicalVector end_beta_theta,
                                    const int t,
                                    const double Pi,
                                    NumericVector mu,
@@ -75,8 +85,9 @@ void Backward_scalarPi_densemu_cpp(List bck,
                                    const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
-  NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
-  NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);
+  NumericMatrix beta           = as<NumericMatrix>(bck["beta"]);
+  NumericVector beta_g         = as<NumericVector>(bck["beta.g"]);
+  LogicalVector cur_beta_theta = as<LogicalVector>(bck["beta.theta"]);
   int l        = as<int>(bck["l"]);
   int from_rec = as<int>(bck["from_recipient"]);
   int to_rec   = as<int>(bck["to_recipient"]);
@@ -85,12 +96,14 @@ void Backward_scalarPi_densemu_cpp(List bck,
     Rcout << "The backward table provided is for locus position " << l << " which is already past requested locus " << t << "\n";
     return;
   }
-  if(l==t) {
+  if(l==t && !(!cur_beta_theta[0] && end_beta_theta[0])) {
     return;
   }
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_scPi_cpp(beta,
                                        beta_g,
+                                       cur_beta_theta,
+                                       end_beta_theta,
                                        from_rec-1,
                                        l-1,
                                        t-1,
@@ -105,6 +118,8 @@ void Backward_scalarPi_densemu_cpp(List bck,
   } else {
     ExactBackwardNoExpAVX3_scPi_cpp(beta,
                                     beta_g,
+                                    cur_beta_theta,
+                                    end_beta_theta,
                                     from_rec-1,
                                     l-1,
                                     t-1,
@@ -123,6 +138,7 @@ void Backward_scalarPi_densemu_cpp(List bck,
 
 // [[Rcpp::export]]
 void Backward_densePi_scalarmu_cpp(List bck,
+                                   LogicalVector end_beta_theta,
                                    const int t,
                                    NumericMatrix Pi,
                                    const double mu,
@@ -130,8 +146,9 @@ void Backward_densePi_scalarmu_cpp(List bck,
                                    const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
-  NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
-  NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);
+  NumericMatrix beta           = as<NumericMatrix>(bck["beta"]);
+  NumericVector beta_g         = as<NumericVector>(bck["beta.g"]);
+  LogicalVector cur_beta_theta = as<LogicalVector>(bck["beta.theta"]);
   int l        = as<int>(bck["l"]);
   int from_rec = as<int>(bck["from_recipient"]);
   int to_rec   = as<int>(bck["to_recipient"]);
@@ -140,12 +157,14 @@ void Backward_densePi_scalarmu_cpp(List bck,
     Rcout << "The backward table provided is for locus position " << l << " which is already past requested locus " << t << "\n";
     return;
   }
-  if(l==t) {
+  if(l==t && !(!cur_beta_theta[0] && end_beta_theta[0])) {
     return;
   }
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_scmu_cpp(beta,
                                        beta_g,
+                                       cur_beta_theta,
+                                       end_beta_theta,
                                        from_rec-1,
                                        l-1,
                                        t-1,
@@ -160,6 +179,8 @@ void Backward_densePi_scalarmu_cpp(List bck,
   } else {
     ExactBackwardNoExpAVX3_scmu_cpp(beta,
                                     beta_g,
+                                    cur_beta_theta,
+                                    end_beta_theta,
                                     from_rec-1,
                                     l-1,
                                     t-1,
@@ -178,6 +199,7 @@ void Backward_densePi_scalarmu_cpp(List bck,
 
 // [[Rcpp::export]]
 void Backward_scalarPi_scalarmu_cpp(List bck,
+                                    LogicalVector end_beta_theta,
                                     const int t,
                                     const double Pi,
                                     const double mu,
@@ -185,8 +207,9 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
                                     const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
-  NumericMatrix beta    = as<NumericMatrix>(bck["beta"]);
-  NumericVector beta_g  = as<NumericVector>(bck["beta.g"]);
+  NumericMatrix beta           = as<NumericMatrix>(bck["beta"]);
+  NumericVector beta_g         = as<NumericVector>(bck["beta.g"]);
+  LogicalVector cur_beta_theta = as<LogicalVector>(bck["beta.theta"]);
   int l        = as<int>(bck["l"]);
   int from_rec = as<int>(bck["from_recipient"]);
   int to_rec   = as<int>(bck["to_recipient"]);
@@ -195,12 +218,14 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
     Rcout << "The backward table provided is for locus position " << l << " which is already past requested locus " << t << "\n";
     return;
   }
-  if(l==t) {
+  if(l==t && !(!cur_beta_theta[0] && end_beta_theta[0])) {
     return;
   }
   if(nthreads>1) {
     ParExactBackwardNoExpAVX3_scmuPi_cpp(beta,
                                          beta_g,
+                                         cur_beta_theta,
+                                         end_beta_theta,
                                          from_rec-1,
                                          l-1,
                                          t-1,
@@ -215,6 +240,8 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
   } else {
     ExactBackwardNoExpAVX3_scmuPi_cpp(beta,
                                       beta_g,
+                                      cur_beta_theta,
+                                      end_beta_theta,
                                       from_rec-1,
                                       l-1,
                                       t-1,

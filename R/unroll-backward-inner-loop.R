@@ -1,5 +1,5 @@
 # for(n in c(1,2,4,8,16,32,64)) {
-#   for(ver in c("A", "B", "C", "D")) {
+#   for(ver in c("A", "B", "C", "D", "E")) {
 #     sink(glue("src/unrolls/ExactBackwardStencil_inner_unroll_{ver}_{n}.h"))
 #     unroll.backward.inner(n, ver)
 #     sink()
@@ -19,9 +19,9 @@ unroll.backward.inner <- function(n, ver) {
   cat("\n")
   cat(glue("KALIS_DOUBLE _beta{0:n}  = KALIS_LOADU_DOUBLE(betaNow{0:n});", .trim = FALSE), sep = "\n")
   cat("\n")
-  cat(glue("KALIS_DOUBLE _theta{0:n} = KALIS_SPREADBITSTO_DOUBLE((H{ifelse(ver %in% c('A', 'C'), 'A', 'B')}[(donor*(KALIS_DOUBLEVEC_SIZE*KALIS_UNROLL)+({0:n}*KALIS_DOUBLEVEC_SIZE))/32]) >> ((donor*(KALIS_DOUBLEVEC_SIZE*KALIS_UNROLL)+({0:n}*KALIS_DOUBLEVEC_SIZE))%32));", .trim = FALSE), sep = "\n")
+  cat(glue("KALIS_DOUBLE _theta{0:n} = KALIS_SPREADBITSTO_DOUBLE((H{ifelse(ver %in% c('A', 'C', 'E'), 'A', 'B')}[(donor*(KALIS_DOUBLEVEC_SIZE*KALIS_UNROLL)+({0:n}*KALIS_DOUBLEVEC_SIZE))/32]) >> ((donor*(KALIS_DOUBLEVEC_SIZE*KALIS_UNROLL)+({0:n}*KALIS_DOUBLEVEC_SIZE))%32));", .trim = FALSE), sep = "\n")
   cat("\n")
-  if(ver %in% c('A', 'C')) {
+  if(ver %in% c('A', 'C', 'E')) {
     cat("#if KALIS_MU == MU_SCALAR\n")
     cat(glue("_theta{0:n}              = KALIS_FMA_DOUBLE(_theta{0:n}, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1", .trim = FALSE), sep = "\n")
     cat("#elif KALIS_MU == MU_VECTOR\n")
@@ -29,24 +29,28 @@ unroll.backward.inner <- function(n, ver) {
     cat("#endif\n\n")
     cat(glue("_beta{0:n}               = KALIS_MUL_DOUBLE(_beta{0:n}, _theta{0:n}); // (theta*beta)", .trim = FALSE), sep = "\n")
     cat("\n")
+  }
+  if(ver %in% c('A', 'C')) {
     cat(glue("_beta{0:n}               = KALIS_FMA_DOUBLE(_beta{0:n}, _omRhoDivG, _rho); // (rho + [theta*beta] * [(1-rho)/g])", .trim = FALSE), sep = "\n")
     cat("\n")
   }
   cat(glue("KALIS_DOUBLE _pi{0:n}    = KALIS_LOADU_DOUBLE(PiRow + donoroff*(32*KALIS_INTVEC_SIZE) + donor*(KALIS_DOUBLEVEC_SIZE*KALIS_UNROLL) + ({0:n}*KALIS_DOUBLEVEC_SIZE));", .trim = FALSE), sep = "\n")
   cat("\n")
-  if(ver %in% c('A', 'C')) {
-    cat(glue("_theta{0:n}              = KALIS_SPREADBITSTO_DOUBLE((HB[(donor*(KALIS_DOUBLEVEC_SIZE*KALIS_UNROLL)+({0:n}*KALIS_DOUBLEVEC_SIZE))/32]) >> ((donor*(KALIS_DOUBLEVEC_SIZE*KALIS_UNROLL)+({0:n}*KALIS_DOUBLEVEC_SIZE))%32));", .trim = FALSE), sep = "\n")
-  } else {
-    cat(glue("_beta{0:n}               = KALIS_FMA_DOUBLE(_beta{0:n}, _omRhoDivG, _rho); // (rho + [theta*beta] * [(1-rho)/g])", .trim = FALSE), sep = "\n")
+  if(ver %in% c('A', 'B', 'C', 'D')) {
+    if(ver %in% c('A', 'C')) {
+      cat(glue("_theta{0:n}              = KALIS_SPREADBITSTO_DOUBLE((HB[(donor*(KALIS_DOUBLEVEC_SIZE*KALIS_UNROLL)+({0:n}*KALIS_DOUBLEVEC_SIZE))/32]) >> ((donor*(KALIS_DOUBLEVEC_SIZE*KALIS_UNROLL)+({0:n}*KALIS_DOUBLEVEC_SIZE))%32));", .trim = FALSE), sep = "\n")
+    } else {
+      cat(glue("_beta{0:n}               = KALIS_FMA_DOUBLE(_beta{0:n}, _omRhoDivG, _rho); // (rho + [theta*beta] * [(1-rho)/g])", .trim = FALSE), sep = "\n")
+    }
+    cat("\n")
+    cat("#if KALIS_MU == MU_SCALAR\n")
+    cat(glue("_theta{0:n}              = KALIS_FMA_DOUBLE(_theta{0:n}, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1", .trim = FALSE), sep = "\n")
+    cat("#elif KALIS_MU == MU_VECTOR\n")
+    cat(glue("_theta{0:n}              = KALIS_FMA_DOUBLE(_theta{0:n}, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1", .trim = FALSE), sep = "\n")
+    cat("#endif\n\n")
+    cat(glue("_{ifelse(ver %in% c('A', 'D'), 'theta', 'beta')}{0:n}              = KALIS_MUL_DOUBLE(_beta{0:n}, _theta{0:n}); // (theta*beta)", .trim = FALSE), sep = "\n")
+    cat("\n")
   }
-  cat("\n")
-  cat("#if KALIS_MU == MU_SCALAR\n")
-  cat(glue("_theta{0:n}              = KALIS_FMA_DOUBLE(_theta{0:n}, _muTmp1, _muTmp2); // theta = H * (2*mu - 1) - mu + 1", .trim = FALSE), sep = "\n")
-  cat("#elif KALIS_MU == MU_VECTOR\n")
-  cat(glue("_theta{0:n}              = KALIS_FMA_DOUBLE(_theta{0:n}, _muTmp1b, _muTmp2b); // theta = H * (2*mu - 1) - mu + 1", .trim = FALSE), sep = "\n")
-  cat("#endif\n\n")
-  cat(glue("_{ifelse(ver %in% c('A', 'D'), 'theta', 'beta')}{0:n}              = KALIS_MUL_DOUBLE(_beta{0:n}, _theta{0:n}); // (theta*beta)", .trim = FALSE), sep = "\n")
-  cat("\n")
   cat(glue("_g                   = KALIS_FMA_DOUBLE(_pi{0:n}, _{ifelse(ver %in% c('A', 'D'), 'theta', 'beta')}{0:n}, _g); // g += Pi * (theta*beta)", .trim = FALSE), sep = "\n")
   cat("\n")
   cat(glue("KALIS_STOREU_DOUBLE(betaNow{0:n}, _beta{0:n});", .trim = FALSE), sep = "\n")

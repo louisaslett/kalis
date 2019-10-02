@@ -37,5 +37,6 @@ void CopyBackwardTable_cpp(List to, List from) {
   memcpy(&(as<NumericVector>(to["beta.g"])[0]),
          &(as<NumericVector>(from["beta.g"])[0]),
          beta_g_size);
+  as<LogicalVector>(to["beta.theta"])[0] = as<LogicalVector>(from["beta.theta"])[0];
   as<IntegerVector>(to["l"])[0] = as<IntegerVector>(from["l"])[0];
 }

@@ -186,6 +186,8 @@ print.kalisForwardTable <- function(x, ...) {
 #'       \eqn{l}.}
 #'     \item{\code{beta.g}}{is a vector containing scaling constants needed to
 #'       continue propagating the HMM (please see kalis paper for details).}
+#'     \item{\code{beta.theta}}{boolean indicator for whether the matrix beta
+#'       is currently in so-called beta-theta space or not.}
 #'   }
 #'
 #'   A \code{kalisBackwardTable} also carries with it a checksum key for the
@@ -256,6 +258,7 @@ MakeBackwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   # Define core table, duplicating where relevant to ensure unique to this forward table
   bck$beta           <- duplicate(matrix(0, N, delN))
   bck$beta.g         <- duplicate(rep(0, delN))
+  bck$beta.theta     <- duplicate(FALSE)
   bck$l              <- duplicate(c(2147483647L))
   bck$from_recipient <- duplicate(from_recipient)
   bck$to_recipient   <- duplicate(to_recipient)
@@ -274,9 +277,9 @@ print.kalisBackwardTable <- function(x, ...) {
   d <- dim(x$beta)
 
   if(d[1]==d[2]) {
-    cat(glue("Full Backward Table object for {d[1]} haplotypes."), "\n")
+    cat(glue("Full Backward Table object for {d[1]} haplotypes, in {ifelse(bck$beta.theta, 'beta-theta', 'rescaled probability')} space."), "\n")
   } else {
-    cat(glue("Partial Backward Table object for {d[1]} haplotypes."), "\n")
+    cat(glue("Partial Backward Table object for {d[1]} haplotypes, in {ifelse(bck$beta.theta, 'beta-theta', 'rescaled probability')} space."), "\n")
     cat(glue("  Recipients {x$from_recipient} to {x$to_recipient}"), "\n")
   }
 

@@ -32,6 +32,8 @@ that haplotype \eqn{j} is copied by haplotype \eqn{i} at locus
 \eqn{l}.}
 \item{\code{beta.g}}{is a vector containing scaling constants needed to
 continue propagating the HMM (please see kalis paper for details).}
+\item{\code{beta.theta}}{boolean indicator for whether the matrix beta
+is currently in so-called beta-theta space or not.}
 }
 
 A \code{kalisBackwardTable} also carries with it a checksum key for the
