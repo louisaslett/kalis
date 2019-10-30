@@ -16,7 +16,7 @@ using namespace Rcpp;
 
 void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
                 double *const __restrict__ beta_g,
-                int *const __restrict__ cur_beta_theta,
+                const int *const __restrict__ cur_beta_theta,
                 const int *const __restrict__ end_beta_theta,
                 const int beta_from_rec,
                 const int beta_t,
@@ -463,8 +463,6 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #if KALIS_PI == PI_SCALAR
   free(PiRow);
 #endif
-
-  *cur_beta_theta = *end_beta_theta;
 }
 
 
@@ -497,6 +495,7 @@ void CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
              PI_ARG_CPP,
              MU_ARG_CPP,
              &(rho[0]));
+  *(&(cur_beta_theta[0])) = *(&(end_beta_theta[0]));
 }
 
 
@@ -547,6 +546,8 @@ void PAR_CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
   for(auto& th : threads) {
     th.join();
   }
+
+  *(&(cur_beta_theta[0])) = *(&(end_beta_theta[0]));
 }
 
 #endif
