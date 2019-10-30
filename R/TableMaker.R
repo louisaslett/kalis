@@ -277,9 +277,9 @@ print.kalisBackwardTable <- function(x, ...) {
   d <- dim(x$beta)
 
   if(d[1]==d[2]) {
-    cat(glue("Full Backward Table object for {d[1]} haplotypes, in {ifelse(bck$beta.theta, 'beta-theta', 'rescaled probability')} space."), "\n")
+    cat(glue("Full Backward Table object for {d[1]} haplotypes, in {ifelse(x$beta.theta, 'beta-theta', 'rescaled probability')} space."), "\n")
   } else {
-    cat(glue("Partial Backward Table object for {d[1]} haplotypes, in {ifelse(bck$beta.theta, 'beta-theta', 'rescaled probability')} space."), "\n")
+    cat(glue("Partial Backward Table object for {d[1]} haplotypes, in {ifelse(x$beta.theta, 'beta-theta', 'rescaled probability')} space."), "\n")
     cat(glue("  Recipients {x$from_recipient} to {x$to_recipient}"), "\n")
   }
 
