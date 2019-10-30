@@ -36,7 +36,7 @@
 
 
 <meta property="og:title" content="Distance matrix — DistMat" />
-<meta property="og:description" content="Calculates a local distance matrix." />
+<meta property="og:description" content="Utility for calculating posterior marginal probabilities and distance matrices at, in between, or excluding variants." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -127,10 +127,11 @@
     </div>
 
     <div class="ref-description">
-    <p>Calculates a local distance matrix.</p>
+    <p>Utility for calculating posterior marginal probabilities and distance matrices at, in between, or excluding variants.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>DistMat</span>(<span class='no'>fwd</span>, <span class='no'>bck</span>)</pre>
+    <pre class="usage"><span class='fu'>DistMat</span>(<span class='no'>fwd</span>, <span class='no'>bck</span>, <span class='kw'>neg.log</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>standardize</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>symmetrize</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>beta.theta.opts</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>bias</span> <span class='kw'>=</span> <span class='fl'>0.5</span>))</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -143,6 +144,22 @@
       <th>bck</th>
       <td><p>a backward table as returned by <code><a href='MakeBackwardTable.html'>MakeBackwardTable</a></code></p></td>
     </tr>
+    <tr>
+      <th>neg.log</th>
+      <td><p>a logical, should a negative logarithm be applied to the posterior copying probabilities to make them distances</p></td>
+    </tr>
+    <tr>
+      <th>standardize</th>
+      <td><p>a logical; should the columns be centered and scaled to have unit variance (done after neg.log transform)</p></td>
+    </tr>
+    <tr>
+      <th>symmetrize</th>
+      <td><p>a logical; should the final result be symmetried ( for a matrix M, 0.5*(M + t(M)) )</p></td>
+    </tr>
+    <tr>
+      <th>beta.theta.opts</th>
+      <td><p>a list; see Details.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -153,10 +170,9 @@ distance \(d_{ji}\) between haplotypes \(j\) and \(i\) at
 the current locus.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This computes a local distance matrix based on the forward and backward
-tables at a certain locus.
-The forward and backward tables provided must be at the same locus \(l\).
-The \((j,i)\)-th element of of the returned matrix is the inferred distance
+    <p>This computes a local probability or distance matrix based on the forward and backward
+tables at a certain locus.  The default usage is provide forward and backward tables at the same locus \(l\).
+so that the \((j,i)\)-th element of of the returned matrix is the inferred distance
 \(d_{ji}\) between haplotypes \(j\) and \(i\) at the current
 locus, \(l\), of the two tables given the haplotypes observed (over the
 whole sequence).</p>
@@ -166,6 +182,11 @@ whole sequence).</p>
 \(j\) is coped by \(i\) at the current locus of the two tables, \(l\),
 given the haplotypes observed (over the whole sequence).</p>
 <p>By convention, \(d_{ii} = 0\) for all \(i\).</p>
+<p>A matrix of the raw posterior marginal probabilities \(p_{ji}\) may be obtained by setting <code>neg.log = FALSE</code>, <code>standardize = FALSE</code>, and <code>symmetrize = FALSE</code>.</p>
+<p>This function also allows users to calculate distance matrices in between variants and also to calculate matrices that exclude a set of consecutive variants by passing a
+backward table in beta.theta space.  If in beta.theta space, <code>bck$l</code> may be greater than but not equal to <code>fwd$l</code>.  When passed a backward table in beta.theta space, the transition probabilities
+<code>rho</code> between <code>fwd$l</code> and <code>bck$l</code> will be summed together to form a total, <code>rho_total</code>.  If <code>bias</code> is provided as named element in the list <code>beta.theta.opts</code>, then the tables will be propagated to meet in between with the given <code>bias</code>.  More explicitly, the forward table will be propagated <code>rho_total * bias</code> and
+the backward table will be propagated a distance of <code>rho_total * (1-bias)</code>.  The distance to propagate the forward and backward tables respectively can be given by passing <code>rho1step.fwd</code> and <code>rho1step.bck</code> as arguments in <code>beta.theta.opts</code>, which override <code>bias</code>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='PostProbs.html'>PostProbs</a></code> to calculate the posterior marginal probabilities
