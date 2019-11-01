@@ -97,6 +97,10 @@ DedipOnlyMul <- function(M, x, from_recipient, nthreads) {
     .Call('_kalis_DedipOnlyMul', PACKAGE = 'kalis', M, x, from_recipient, nthreads)
 }
 
+DoubleMatAndMul <- function(M, M2, alpha, beta, x, from_recipient, nthreads) {
+    .Call('_kalis_DoubleMatAndMul', PACKAGE = 'kalis', M, M2, alpha, beta, x, from_recipient, nthreads)
+}
+
 ResetForwardTable <- function(fwd) {
     invisible(.Call('_kalis_ResetForwardTable', PACKAGE = 'kalis', fwd))
 }
@@ -119,6 +123,14 @@ Forward_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
 
 Forward1step_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
     invisible(.Call('_kalis_Forward1step_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
+}
+
+MatAndMul <- function(M, alpha, beta, x, standardize, from_recipient, nthreads) {
+    .Call('_kalis_MatAndMul', PACKAGE = 'kalis', M, alpha, beta, x, standardize, from_recipient, nthreads)
+}
+
+MatOnlyMul <- function(M, x, from_recipient, nthreads) {
+    .Call('_kalis_MatOnlyMul', PACKAGE = 'kalis', M, x, from_recipient, nthreads)
 }
 
 ResetTable <- function(tbl) {

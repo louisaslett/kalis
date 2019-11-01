@@ -67,10 +67,11 @@ CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recip
   }
 
   N <- get("N", envir = pkgVars)
+  L <- get("L", envir = pkgVars)
+
   if(anyNA(N)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
   }
-  L <- get("L", envir = pkgVars)
 
   if(from_recipient>to_recipient) {
     stop("from_recipient must be smaller than to_recipient.")

@@ -6,13 +6,6 @@ using namespace Rcpp;
 #include <stdlib.h>
 
 
-
-
-
-
-
-
-
 void DedipAndMul_C(const double* __restrict__ alpha_c1,
                    const double* __restrict__ alpha_c2,
                    const double* __restrict__ beta_c1,
