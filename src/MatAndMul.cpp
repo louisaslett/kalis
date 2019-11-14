@@ -197,12 +197,15 @@ void MatAndMul_A(double* __restrict__ res,
 
 // [[Rcpp::export]]
 NumericVector MatAndMul(NumericMatrix M,
-                        NumericMatrix alpha,
-                        NumericMatrix beta,
+                        List fwd,
+                        List bck,
                         NumericVector x,
                         LogicalVector standardize,
                         int from_recipient,
                         int nthreads) {
+
+  NumericMatrix alpha = fwd["alpha"];
+  NumericMatrix beta = bck["beta"];
 
   size_t r = (size_t) alpha.nrow(); // we need to make p=r and c2 = c
   size_t c = (size_t) alpha.ncol();
@@ -227,6 +230,12 @@ NumericVector MatAndMul(NumericMatrix M,
   }
 
   bool stdz = is_true(all(standardize));
+
+  if(stdz == true & r < 3) {
+    Rcout << "each matrix must have at least three rows to perform standardization \n";
+    return(NumericVector(1));
+  }
+
 
   MatAndMul_A(&(res[0]),
               &(M[0]),

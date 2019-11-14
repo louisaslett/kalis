@@ -403,9 +403,7 @@ ForwardUsingTableCache <- function(fwd, pars, cache, t = fwd$l-1, nthreads = 1) 
 
 #' @export
 print.kalisCheckpointTable <- function(x, ...) {
-  if(class(x)!="kalisCheckpointTable")
-    stop("Not a kalisCheckpointTable object")
-
+  if(!("kalisCheckpointTable" %in% class(x))) stop("Not a kalisCheckpointTable object")
   cat("Checkpoint Table object containing", length(x), "checkpoints.\n")
   cat("  Loci of checkpoints:\n")
   cat("   ", sapply(x, function(x) { x$l }), "\n")

@@ -137,6 +137,23 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// CalcTraces
+NumericVector CalcTraces(NumericMatrix M, NumericMatrix tX, NumericMatrix tQ, NumericMatrix Z, NumericMatrix J, size_t from_recipient, size_t nthreads);
+RcppExport SEXP _kalis_CalcTraces(SEXP MSEXP, SEXP tXSEXP, SEXP tQSEXP, SEXP ZSEXP, SEXP JSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type tX(tXSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type tQ(tQSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type J(JSEXP);
+    Rcpp::traits::input_parameter< size_t >::type from_recipient(from_recipientSEXP);
+    Rcpp::traits::input_parameter< size_t >::type nthreads(nthreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(CalcTraces(M, tX, tQ, Z, J, from_recipient, nthreads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ComputeStatus
 std::string ComputeStatus();
 RcppExport SEXP _kalis_ComputeStatus() {
@@ -313,19 +330,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // DoubleMatAndMul
-List DoubleMatAndMul(NumericMatrix M, NumericMatrix M2, NumericMatrix alpha, NumericMatrix beta, NumericVector x, int from_recipient, int nthreads);
-RcppExport SEXP _kalis_DoubleMatAndMul(SEXP MSEXP, SEXP M2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
+List DoubleMatAndMul(NumericMatrix M, NumericMatrix M2, List fwd, List bck, NumericVector x, int from_recipient, int nthreads);
+RcppExport SEXP _kalis_DoubleMatAndMul(SEXP MSEXP, SEXP M2SEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type M2(M2SEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
     Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(DoubleMatAndMul(M, M2, alpha, beta, x, from_recipient, nthreads));
+    rcpp_result_gen = Rcpp::wrap(DoubleMatAndMul(M, M2, fwd, bck, x, from_recipient, nthreads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -415,19 +432,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // MatAndMul
-NumericVector MatAndMul(NumericMatrix M, NumericMatrix alpha, NumericMatrix beta, NumericVector x, LogicalVector standardize, int from_recipient, int nthreads);
-RcppExport SEXP _kalis_MatAndMul(SEXP MSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP xSEXP, SEXP standardizeSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
+NumericVector MatAndMul(NumericMatrix M, List fwd, List bck, NumericVector x, LogicalVector standardize, int from_recipient, int nthreads);
+RcppExport SEXP _kalis_MatAndMul(SEXP MSEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP standardizeSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< LogicalVector >::type standardize(standardizeSEXP);
     Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
     Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(MatAndMul(M, alpha, beta, x, standardize, from_recipient, nthreads));
+    rcpp_result_gen = Rcpp::wrap(MatAndMul(M, fwd, bck, x, standardize, from_recipient, nthreads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -489,6 +506,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_QueryCache2_ind", (DL_FUNC) &_kalis_QueryCache2_ind, 1},
     {"_kalis_QueryCache2_loc", (DL_FUNC) &_kalis_QueryCache2_loc, 1},
     {"_kalis_ClearHaplotypeCache2", (DL_FUNC) &_kalis_ClearHaplotypeCache2, 0},
+    {"_kalis_CalcTraces", (DL_FUNC) &_kalis_CalcTraces, 7},
     {"_kalis_ComputeStatus", (DL_FUNC) &_kalis_ComputeStatus, 0},
     {"_kalis_Dedip_min", (DL_FUNC) &_kalis_Dedip_min, 3},
     {"_kalis_Dedip_2nd_min", (DL_FUNC) &_kalis_Dedip_2nd_min, 3},

@@ -171,11 +171,14 @@ void DoubleMatAndMul_A(double* __restrict__ res,
 // [[Rcpp::export]]
 List DoubleMatAndMul(NumericMatrix M,
                      NumericMatrix M2,
-                     NumericMatrix alpha,
-                     NumericMatrix beta,
+                     List fwd,
+                     List bck,
                      NumericVector x,
                      int from_recipient,
                      int nthreads) {
+
+  NumericMatrix alpha = fwd["alpha"];
+  NumericMatrix beta = bck["beta"];
 
   size_t r = (size_t) alpha.nrow(); // we need to make p=r and c2 = c
   size_t c = (size_t) alpha.ncol();
@@ -183,6 +186,11 @@ List DoubleMatAndMul(NumericMatrix M,
   NumericVector res(r);
   NumericVector res2(r);
 
+  if(r < 3) {
+    Rcout << "each matrix must have at least three rows to perform standardization \n";
+    List L = List::create(Named("raw") = NumericVector(1) , Named("std") = NumericVector(1));
+    return(L);
+  }
   if(alpha.nrow() != r || alpha.ncol() != c || beta.nrow() != r || beta.ncol() != c) {
     Rcout << "alpha, beta aren't right!\n";
     List L = List::create(Named("raw") = NumericVector(1) , Named("std") = NumericVector(1));

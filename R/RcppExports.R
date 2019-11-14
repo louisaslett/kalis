@@ -41,6 +41,10 @@ ClearHaplotypeCache2 <- function() {
     invisible(.Call('_kalis_ClearHaplotypeCache2', PACKAGE = 'kalis'))
 }
 
+CalcTraces <- function(M, tX, tQ, Z, J, from_recipient, nthreads) {
+    .Call('_kalis_CalcTraces', PACKAGE = 'kalis', M, tX, tQ, Z, J, from_recipient, nthreads)
+}
+
 ComputeStatus <- function() {
     .Call('_kalis_ComputeStatus', PACKAGE = 'kalis')
 }
@@ -97,8 +101,8 @@ DedipOnlyMul <- function(M, x, from_recipient, nthreads) {
     .Call('_kalis_DedipOnlyMul', PACKAGE = 'kalis', M, x, from_recipient, nthreads)
 }
 
-DoubleMatAndMul <- function(M, M2, alpha, beta, x, from_recipient, nthreads) {
-    .Call('_kalis_DoubleMatAndMul', PACKAGE = 'kalis', M, M2, alpha, beta, x, from_recipient, nthreads)
+DoubleMatAndMul <- function(M, M2, fwd, bck, x, from_recipient, nthreads) {
+    .Call('_kalis_DoubleMatAndMul', PACKAGE = 'kalis', M, M2, fwd, bck, x, from_recipient, nthreads)
 }
 
 ResetForwardTable <- function(fwd) {
@@ -125,8 +129,8 @@ Forward1step_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
     invisible(.Call('_kalis_Forward1step_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
 }
 
-MatAndMul <- function(M, alpha, beta, x, standardize, from_recipient, nthreads) {
-    .Call('_kalis_MatAndMul', PACKAGE = 'kalis', M, alpha, beta, x, standardize, from_recipient, nthreads)
+MatAndMul <- function(M, fwd, bck, x, standardize, from_recipient, nthreads) {
+    .Call('_kalis_MatAndMul', PACKAGE = 'kalis', M, fwd, bck, x, standardize, from_recipient, nthreads)
 }
 
 MatOnlyMul <- function(M, x, from_recipient, nthreads) {
