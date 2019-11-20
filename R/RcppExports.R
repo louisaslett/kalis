@@ -101,6 +101,10 @@ DedipOnlyMul <- function(M, x, from_recipient, nthreads) {
     .Call('_kalis_DedipOnlyMul', PACKAGE = 'kalis', M, x, from_recipient, nthreads)
 }
 
+DedipPar <- function(M, fwd, bck, x, from_recipient, nthreads) {
+    .Call('_kalis_DedipPar', PACKAGE = 'kalis', M, fwd, bck, x, from_recipient, nthreads)
+}
+
 DoubleMatAndMul <- function(M, M2, fwd, bck, x, from_recipient, nthreads) {
     .Call('_kalis_DoubleMatAndMul', PACKAGE = 'kalis', M, M2, fwd, bck, x, from_recipient, nthreads)
 }

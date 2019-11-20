@@ -329,6 +329,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// DedipPar
+List DedipPar(List M, List fwd, List bck, NumericVector x, int from_recipient, int nthreads);
+RcppExport SEXP _kalis_DedipPar(SEXP MSEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type M(MSEXP);
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(DedipPar(M, fwd, bck, x, from_recipient, nthreads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // DoubleMatAndMul
 List DoubleMatAndMul(NumericMatrix M, NumericMatrix M2, List fwd, List bck, NumericVector x, int from_recipient, int nthreads);
 RcppExport SEXP _kalis_DoubleMatAndMul(SEXP MSEXP, SEXP M2SEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
@@ -521,6 +537,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_Dedip2_all", (DL_FUNC) &_kalis_Dedip2_all, 1},
     {"_kalis_DedipAndMul", (DL_FUNC) &_kalis_DedipAndMul, 6},
     {"_kalis_DedipOnlyMul", (DL_FUNC) &_kalis_DedipOnlyMul, 4},
+    {"_kalis_DedipPar", (DL_FUNC) &_kalis_DedipPar, 6},
     {"_kalis_DoubleMatAndMul", (DL_FUNC) &_kalis_DoubleMatAndMul, 7},
     {"_kalis_ResetForwardTable", (DL_FUNC) &_kalis_ResetForwardTable, 1},
     {"_kalis_Forward_densePi_densemu_cpp", (DL_FUNC) &_kalis_Forward_densePi_densemu_cpp, 6},
