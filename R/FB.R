@@ -91,11 +91,11 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
 #' @param t a locus position to move the backward table to.
 #'   Must be less than or equal to current locus position of \code{bck}.
 #'   By default, it simply advances to the locus immediately before.
+#' @param nthreads the number of CPU cores to use.
+#'   By default no parallelism is used.
 #' @param beta.theta logical indicating whether the table should be returned in
 #'   beta-theta space or in the standard space upon reaching the target locus
 #'   \code{t}.
-#' @param nthreads the number of CPU cores to use.
-#'   By default no parallelism is used.
 #'
 #' @return
 #' There is nothing returned.
@@ -114,7 +114,7 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
 #' }
 #'
 #' @export Backward
-Backward <- function(bck, pars, t = bck$l-1, beta.theta = FALSE, nthreads = 1) {
+Backward <- function(bck, pars, t = bck$l-1, nthreads = 1, beta.theta = FALSE) {
   if(!("kalisBackwardTable" %in% class(bck))) {
     stop("The bck argument is not a valid backward table.")
   }

@@ -4,7 +4,7 @@
 \alias{Backward}
 \title{Propagate a backward table}
 \usage{
-Backward(bck, pars, t = bck$l - 1, beta.theta = FALSE, nthreads = 1)
+Backward(bck, pars, t = bck$l - 1, nthreads = 1, beta.theta = FALSE)
 }
 \arguments{
 \item{bck}{a \code{kalisBackwardTable} object, as returned by
@@ -17,12 +17,12 @@ Backward(bck, pars, t = bck$l - 1, beta.theta = FALSE, nthreads = 1)
 Must be less than or equal to current locus position of \code{bck}.
 By default, it simply advances to the locus immediately before.}
 
+\item{nthreads}{the number of CPU cores to use.
+By default no parallelism is used.}
+
 \item{beta.theta}{logical indicating whether the table should be returned in
 beta-theta space or in the standard space upon reaching the target locus
 \code{t}.}
-
-\item{nthreads}{the number of CPU cores to use.
-By default no parallelism is used.}
 }
 \value{
 There is nothing returned.
