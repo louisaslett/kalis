@@ -1,7 +1,9 @@
 pkgVars <- new.env(parent = emptyenv())
 assign("working.dir", '.', envir = pkgVars)
-assign("N", NA, envir = pkgVars)
-assign("L", NA, envir = pkgVars)
+assign("N", NA, envir = pkgVars) # must be integer
+assign("L", NA, envir = pkgVars) # must be integer
+assign("hap.ids", NA, envir = pkgVars) # integer => no ids supplied; character => ids
+assign("loci.ids", NA, envir = pkgVars) # integer => no ids supplied; character => ids
 
 # We assume haplotypes are stored in the slowest changing dimension
 # per the HDF5 spec definition.  This is "row-wise" in the C standard
@@ -56,8 +58,20 @@ assign("L", NA, envir = pkgVars)
 #'
 #'   1. HDF5
 #'       - `transpose` a logical value indicating whether to switch the
-#'   interpretation of the slowest changing dimension (hence switching the
-#'   number of haplotypes and the length)
+#'         interpretation of the slowest changing dimension (hence switching the
+#'         number of haplotypes and the length)
+#'       - `haps` a character vector giving the path to a 2-dimensional
+#'         object in the HDF5 file specifying the haplotype matrix.
+#'       - `hap.ids` a character vector giving the path to a 1-dimensional
+#'         object in the HDF5 file specifying identifiers for the haplotypes
+#'         being loaded.  By default, haplotypes will simply be numbered
+#'         according to the order they appear in the haplotype matrix, indexed
+#'         from 1.
+#'       - `loci.ids` a character vector giving the path to a 1-dimensional
+#'         object in the HDF5 file specifying identifiers for the haplotypes
+#'         being loaded.  By default, haplotypes will simply be numbered
+#'         according to the order they appear in the haplotype matrix, indexed
+#'         from 1.
 #'
 #' @return Nothing is returned by the function.
 #'   However, a status message is output indicating the dimensions of the loaded
@@ -140,6 +154,18 @@ CacheHaplotypes <- function(haps, format = "auto", ...) {
   }
 }
 
+
+
+CacheHaplotypes.err <- function(err) {
+  if(!is.na(get("N", envir = pkgVars))) {
+    stop(glue("{err}  Keeping existing cache."))
+  } else {
+    stop(err)
+  }
+}
+
+
+
 CacheHaplotypes.matrix <- function(x, transpose = FALSE) {
   if(!is.na(get("N", envir = pkgVars))) {
     warning("haplotypes already cached ... overwriting existing cache.")
@@ -154,79 +180,15 @@ CacheHaplotypes.matrix <- function(x, transpose = FALSE) {
     N <- dim(x)[1]
     L <- dim(x)[2]
   }
-  assign("N", N, envir = pkgVars)
+  assign("N", as.integer(N), envir = pkgVars)
+  assign("hap.ids", as.integer(1:N), envir = pkgVars)
+  assign("loci.ids", as.integer(1:L), envir = pkgVars)
 
   # Cache it!
-  assign("L", CacheHaplotypes_matrix_2(x, N, L, transpose), envir = pkgVars)
+  assign("L", as.integer(CacheHaplotypes_matrix_2(x, N, L, transpose)), envir = pkgVars)
 }
 
-CacheHaplotypes.hdf5 <- function(hdf5.file, transpose = FALSE) {
-  # Check for file and dataset within file
-  if(!file.exists(hdf5.file)) {
-    if(!is.na(get("N", envir = pkgVars))) {
-      stop("Cannot find HDF5 file to make new cache. Keeping existing cache.")
-    } else {
-      stop("Cannot find HDF5 file.")
-    }
-  }
-  h5content <- h5ls(hdf5.file)
-  if(!("haps" %in% h5content$name)) {
-    if(!is.na(get("N", envir = pkgVars))) {
-      stop("HDF5 file already exists but does not contain a 'haps' object in the root for haplotype data. Keeping existing cache.")
-    } else {
-      stop("HDF5 file already exists but does not contain a 'haps' object in the root for haplotype data.")
-    }
-  }
 
-  # Make sure we don't double up cache content if there is already stuff cached
-  if(!is.na(get("N", envir = pkgVars))) {
-    warning("haplotypes already cached ... overwriting existing cache.")
-    ClearHaplotypeCache()
-  }
-
-
-  # Get dimensions of haplotype data
-  hdf5.dim <- as.integer(str_split_fixed(h5content[h5content$name=="haps","dim"], "x", n = Inf))
-  # Sometimes on Linux it leaves a dimension unspecified, so have to load 1 row/col to ascertain
-  if(is.na(hdf5.dim[1])) {
-    hdf5.dim[1] <- dim(h5read(hdf5.file, "/haps", index = list(NULL,1)))[1]
-  }
-  if(is.na(hdf5.dim[2])) {
-    hdf5.dim[2] <- dim(h5read(hdf5.file, "/haps", index = list(1,NULL)))[2]
-  }
-  if(!transpose) {
-    N <- hdf5.dim[2]
-    L <- hdf5.dim[1]
-  } else {
-    N <- hdf5.dim[1]
-    L <- hdf5.dim[2]
-  }
-
-  # Hap IDs are only numeric for HDF5
-  assign("N", N, envir = pkgVars)
-
-  # Create a closure for easy access of HDF5 file
-  # We'll read in 10MB (raw size) chunks
-  make.hdf5.access <- function(hdf5.file, N, L) {
-    step.size <- round(10000000/(L/8))
-    current.step <- 1
-    function() {
-      if(current.step > N) {
-        return(matrix(nrow = 0, ncol = 0))
-      }
-      upto <- min(current.step + step.size - 1, N)
-      if(!transpose)
-        res <- h5read(hdf5.file, "haps", index = list(NULL, current.step:upto))
-      else
-        res <- t(h5read(hdf5.file, "haps", index = list(current.step:upto, NULL)))
-      current.step <<- upto + 1
-      res
-    }
-  }
-
-  # Cache it!
-  assign("L", CacheHaplotypes_hdf5_2(make.hdf5.access(hdf5.file, N, L), N, L), envir = pkgVars)
-}
 
 #' Retrieve haplotypes from memory cache
 #'
@@ -239,7 +201,10 @@ CacheHaplotypes.hdf5 <- function(hdf5.file, transpose = FALSE) {
 #' haplotypes out of this low-level format and into a standard R
 #' matrix of 0's and 1's.
 #'
-#' @param ids which haplotypes to retrieve from the cache, indexed from 1.
+#' @param ids which haplotypes to retrieve from the cache.  If supplied as an
+#'   integer vector, these are taken as numeric offsets.  If supplied as a
+#'   character vector then these correspond to haplotype IDs specified when the
+#'   haplotypes were read in.
 #' @param start the first locus position to retrieve for the specified
 #'   haplotypes.
 #'   Defaults to the beginning of the haplotype.
@@ -306,6 +271,8 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
   res
 }
 
+
+
 #' Remove all cached haplotypes and free memory
 #'
 #' Remove all the haplotypes that were cached by a previous caching call and
@@ -332,10 +299,18 @@ QueryCache <- function(ids = NA, start = 1, length = NA) {
 ClearHaplotypeCache <- function() {
   assign("N", NA, envir = pkgVars)
   assign("L", NA, envir = pkgVars)
+  assign("hap.ids", NA, envir = pkgVars)
+  assign("loci.ids", NA, envir = pkgVars)
   ClearHaplotypeCache2()
 }
 
+
+
 .onUnload <- function(libpath) {
+  assign("N", NA, envir = pkgVars)
+  assign("L", NA, envir = pkgVars)
+  assign("hap.ids", NA, envir = pkgVars)
+  assign("loci.ids", NA, envir = pkgVars)
   ClearHaplotypeCache()
   library.dynam.unload("kalis", libpath)
 }

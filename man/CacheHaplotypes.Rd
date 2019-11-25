@@ -22,6 +22,18 @@ following additional arguments are supported:
 \item \code{transpose} a logical value indicating whether to switch the
 interpretation of the slowest changing dimension (hence switching the
 number of haplotypes and the length)
+\item \code{haps} a character vector giving the path to a 2-dimensional
+object in the HDF5 file specifying the haplotype matrix.
+\item \code{hap.ids} a character vector giving the path to a 1-dimensional
+object in the HDF5 file specifying identifiers for the haplotypes
+being loaded.  By default, haplotypes will simply be numbered
+according to the order they appear in the haplotype matrix, indexed
+from 1.
+\item \code{loci.ids} a character vector giving the path to a 1-dimensional
+object in the HDF5 file specifying identifiers for the haplotypes
+being loaded.  By default, haplotypes will simply be numbered
+according to the order they appear in the haplotype matrix, indexed
+from 1.
 }
 }}
 }

@@ -7,7 +7,10 @@
 QueryCache(ids = NA, start = 1, length = NA)
 }
 \arguments{
-\item{ids}{which haplotypes to retrieve from the cache, indexed from 1.}
+\item{ids}{which haplotypes to retrieve from the cache.  If supplied as an
+integer vector, these are taken as numeric offsets.  If supplied as a
+character vector then these correspond to haplotype IDs specified when the
+haplotypes were read in.}
 
 \item{start}{the first locus position to retrieve for the specified
 haplotypes.

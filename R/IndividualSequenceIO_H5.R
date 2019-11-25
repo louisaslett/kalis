@@ -72,16 +72,16 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, haps, append = FALSE) {
   }
 
   if(file.exists(hdf5.file)) {
-    h5content <- h5ls(hdf5.file)
+    h5content <- rhdf5::h5ls(hdf5.file)
     if(!("haps" %in% h5content$name)) {
       message("HDF5 file already exists but does not contain haplotype data, now adding haps dataset.")
-      h5createDataset(file = hdf5.file,
-                      dataset = "haps",
-                      dims = c(L, 0),
-                      maxdims = c(L, 10e9),
-                      H5type = "H5T_STD_U8LE",
-                      chunk = c(L, 1),
-                      level = 7)
+      rhdf5::h5createDataset(file = hdf5.file,
+                             dataset = "haps",
+                             dims = c(L, 0),
+                             maxdims = c(L, 10e9),
+                             H5type = "H5T_STD_U8LE",
+                             chunk = c(L, 1),
+                             level = 7)
       hdf5.dim <- c(L, 0)
     } else {
       if(append) {
@@ -92,14 +92,14 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, haps, append = FALSE) {
         message("HDF5 file already exists, appending haplotypes ...\n")
       } else {
         message("HDF5 file exists and already contains a haps dataset, overwriting existing haps dataset...\n")
-        h5delete(file = hdf5.file, name = "haps")
-        h5createDataset(file = hdf5.file,
-                        dataset = "haps",
-                        dims = c(L, 0),
-                        maxdims = c(L, 10e9),
-                        H5type = "H5T_STD_U8LE",
-                        chunk = c(L, 1),
-                        level = 7)
+        rhdf5::h5delete(file = hdf5.file, name = "haps")
+        rhdf5::h5createDataset(file = hdf5.file,
+                               dataset = "haps",
+                               dims = c(L, 0),
+                               maxdims = c(L, 10e9),
+                               H5type = "H5T_STD_U8LE",
+                               chunk = c(L, 1),
+                               level = 7)
         hdf5.dim <- c(L, 0)
       }
 
@@ -107,14 +107,14 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, haps, append = FALSE) {
 
   } else {
     message("Creating HDF5 file ...\n")
-    h5createFile(hdf5.file)
-    h5createDataset(file = hdf5.file,
-                    dataset = "haps",
-                    dims = c(L, 0),
-                    maxdims = c(L, 10e9),
-                    H5type = "H5T_STD_U8LE",
-                    chunk = c(L, 1),
-                    level = 7)
+    rhdf5::h5createFile(hdf5.file)
+    rhdf5::h5createDataset(file = hdf5.file,
+                           dataset = "haps",
+                           dims = c(L, 0),
+                           maxdims = c(L, 10e9),
+                           H5type = "H5T_STD_U8LE",
+                           chunk = c(L, 1),
+                           level = 7)
     hdf5.dim <- c(L, 0)
   }
 
@@ -122,11 +122,11 @@ WriteIndividualHaplotypeH5 <- function(hdf5.file, haps, append = FALSE) {
   to <- hdf5.dim[2] + N
 
   # Expand to hold new haplotypes
-  h5set_extent(hdf5.file, "haps", c(hdf5.dim[1], to))
+  rhdf5::h5set_extent(hdf5.file, "haps", c(hdf5.dim[1], to))
 
   # Write
   message(glue("Writing {N} haplotype(s) of size {L} ...\n"))
-  h5write(haps, hdf5.file, "haps", index = list(NULL, from:to))
+  rhdf5::h5write(haps, hdf5.file, "haps", index = list(NULL, from:to))
 }
 
 
@@ -143,7 +143,7 @@ ReadIndividualHaplotypeH5 <- function(hdf5.file, ids) {
   }
 
   # Get dimensions of haplotype data
-  h5content <- h5ls(hdf5.file)
+  h5content <- rhdf5::h5ls(hdf5.file)
   if(!("haps" %in% h5content$name)) {
     stop("HDF5 file already exists but does not contain a 'haps' object in the root for haplotype data.")
   }
@@ -157,9 +157,9 @@ ReadIndividualHaplotypeH5 <- function(hdf5.file, ids) {
   }
 
   # Read
-  haps <- h5read(hdf5.file, "haps", index = list(NULL, ids))
+  haps <- rhdf5::h5read(hdf5.file, "haps", index = list(NULL, ids))
 
-  H5close()
+  rhdf5::H5close()
 
   haps
 }

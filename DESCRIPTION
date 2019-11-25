@@ -27,7 +27,6 @@ Imports:
     methods,
     stats,
     Rcpp (>= 0.12.19),
-    rhdf5,
     dplyr,
     stringr,
     glue (>= 1.3.0),
@@ -42,7 +41,9 @@ SystemRequirements:
     C++11
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
-Suggests: knitr,
+Suggests: rhdf5,
+    hdf5r,
+    knitr,
     rmarkdown,
     rstudioapi
 VignetteBuilder: knitr
