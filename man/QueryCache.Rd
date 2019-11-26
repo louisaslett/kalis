@@ -4,21 +4,24 @@
 \alias{QueryCache}
 \title{Retrieve haplotypes from memory cache}
 \usage{
-QueryCache(ids = NA, start = 1, length = NA)
+QueryCache(hap.ids = NA, loci.ids = NA, hap.index = NA, loci.index = NA)
 }
 \arguments{
-\item{ids}{which haplotypes to retrieve from the cache.  If supplied as an
-integer vector, these are taken as numeric offsets.  If supplied as a
-character vector then these correspond to haplotype IDs specified when the
-haplotypes were read in.}
+\item{hap.ids}{which haplotypes to retrieve from the cache, specified by ID.
+Cannot be specified at the same time as \code{hap.index}}
 
-\item{start}{the first locus position to retrieve for the specified
-haplotypes.
-Defaults to the beginning of the haplotype.}
+\item{loci.ids}{which loci to retrieve from the cache, specified by ID.
+Cannot be specified at the same time as \code{loci.index}}
 
-\item{length}{the number of consecutive loci to return from the start
-position.
-Defaults to length of entire haplotype from \code{start} argument to end.}
+\item{hap.index}{which haplotypes to retrieve from the cache, specified as
+a (vector) index.  This enables specifying haplotypes by offset in the order
+they were loaded into the cache (from 1 to the number of haplotypes).
+Cannot be specified at the same time as \code{hap.ids}}
+
+\item{loci.index}{which loci to retrieve from the cache, specified as
+a (vector) index.  This enables specifying loci by offset in the order
+they were loaded into the cache (from 1 to the number of loci).
+Cannot be specified at the same time as \code{loci.ids}}
 }
 \value{
 A matrix of 0/1 integers with \code{length} rows and

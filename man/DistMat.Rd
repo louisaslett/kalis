@@ -4,8 +4,14 @@
 \alias{DistMat}
 \title{Distance matrix}
 \usage{
-DistMat(fwd, bck, neg.log = TRUE, standardize = FALSE,
-  symmetrize = TRUE, beta.theta.opts = list(bias = 0.5))
+DistMat(
+  fwd,
+  bck,
+  neg.log = TRUE,
+  standardize = FALSE,
+  symmetrize = TRUE,
+  beta.theta.opts = list(bias = 0.5)
+)
 }
 \arguments{
 \item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}

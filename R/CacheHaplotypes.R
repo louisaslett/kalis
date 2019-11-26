@@ -201,16 +201,18 @@ CacheHaplotypes.matrix <- function(x, transpose = FALSE) {
 #' haplotypes out of this low-level format and into a standard R
 #' matrix of 0's and 1's.
 #'
-#' @param ids which haplotypes to retrieve from the cache.  If supplied as an
-#'   integer vector, these are taken as numeric offsets.  If supplied as a
-#'   character vector then these correspond to haplotype IDs specified when the
-#'   haplotypes were read in.
-#' @param start the first locus position to retrieve for the specified
-#'   haplotypes.
-#'   Defaults to the beginning of the haplotype.
-#' @param length the number of consecutive loci to return from the start
-#'   position.
-#'   Defaults to length of entire haplotype from `start` argument to end.
+#' @param hap.ids which haplotypes to retrieve from the cache, specified by ID.
+#'   Cannot be specified at the same time as `hap.index`
+#' @param loci.ids which loci to retrieve from the cache, specified by ID.
+#'   Cannot be specified at the same time as `loci.index`
+#' @param hap.index which haplotypes to retrieve from the cache, specified as
+#'   a (vector) index.  This enables specifying haplotypes by offset in the order
+#'   they were loaded into the cache (from 1 to the number of haplotypes).
+#'   Cannot be specified at the same time as `hap.ids`
+#' @param loci.index which loci to retrieve from the cache, specified as
+#'   a (vector) index.  This enables specifying loci by offset in the order
+#'   they were loaded into the cache (from 1 to the number of loci).
+#'   Cannot be specified at the same time as `loci.ids`
 #'
 #' @return A matrix of 0/1 integers with `length` rows and
 #'   `length(ids)` columns, such that haplotypes appear in columns.
@@ -236,38 +238,96 @@ CacheHaplotypes.matrix <- function(x, transpose = FALSE) {
 #' }
 #'
 #' @export QueryCache
-QueryCache <- function(ids = NA, start = 1, length = NA) {
+QueryCache <- function(hap.ids = NA, loci.ids = NA, hap.index = NA, loci.index = NA) {
   N <- get("N", envir = pkgVars)
+  L <- get("L", envir = pkgVars)
+  all.hap.ids <- get("hap.ids", envir = pkgVars)
+  all.loci.ids <- get("loci.ids", envir = pkgVars)
 
-  if(is.na(length)) {
-    length <- get("L", envir = pkgVars)
+  # Check arguments
+  if(!is.atomic(hap.ids) || !is.atomic(loci.ids) || !is.atomic(hap.index) || !is.atomic(loci.index)) {
+    stop("Arguments can only be vectors.")
   }
-  if((length(ids)==1 && is.na(ids)) || all(ids==1:N)) {
-    ids <- 1:N
+  if(is.na(hap.ids) && is.na(hap.index)) {
+    stop("At least one of hap.ids or hap.index must be provided.")
+  }
+  if(!is.na(hap.ids) && !is.na(hap.index)) {
+    stop("Only one of hap.ids or hap.index may be provided.")
+  }
+  if(is.na(loci.ids) && is.na(loci.index)) {
+    stop("At least one of loci.ids or loci.index must be provided.")
+  }
+  if(!is.na(loci.ids) && !is.na(loci.index)) {
+    stop("Only one of loci.ids or loci.index may be provided.")
+  }
 
-    res <- matrix(nrow = length, ncol = length(ids))
-    for(l in start:(start+length-1)) {
-      res[l-start+1,] <- as.integer(intToBits(QueryCache2_loc(l-1)))[1:length(ids)]
+  # Check IDs and argument compatibility
+  if(!is.na(hap.ids) && is.integer(all.hap.ids)) {
+    hap.ids <- suppressWarnings(as.integer(hap.ids))
+    if(any(is.na(hap.ids))) {
+      stop("hap.ids supplied but no hap.ids were loaded into cache ... failed when trying to interpret as an index.")
+    }
+    warning("hap.ids supplied but no hap.ids were loaded into cache ... interpreting as an index.")
+  } else if(!is.na(hap.ids) && is.character(all.hap.ids)) {
+    hap.ids2 <- match(as.character(hap.ids), all.hap.ids)
+    if(any(is.na(hap.ids2))) {
+      stop(glue("haplotype IDs: {paste(as.character(hap.ids)[is.na(hap.ids2)], collapse = ', ')} not found in the cache."))
+    }
+    hap.ids <- haps.ids2
+  } else if(is.na(hap.ids)) {
+    hap.ids <- suppressWarnings(as.integer(hap.index))
+    if(any(is.na(hap.ids))) {
+      stop("Failed when trying to interpret hap.index as an integer.")
     }
   } else {
-    res <- matrix(nrow = length, ncol = length(ids))
-    for(i in 1:length(ids)) {
-      id <- ids[i]
-      if(is.numeric(id) && abs(id - round(id)) < .Machine$double.eps^0.5) {
-        if(id<1 || id>N) {
-          stop("haplotype id ", id, " is out of range.")
-        }
-        idx <- id
-      } else {
-        stop(glue("ids must be integer values identifying haplotype number between 1 and {N}."))
-      }
-
-      hap <- as.integer(intToBits(QueryCache2_ind(idx-1)))
-
-      res[,i] <- hap[start:(start+length-1)]
-    }
+    stop("Unrecoverable error trying to interpret hap.ids/hap.index arguments.")
   }
 
+  if(!is.na(loci.ids) && is.integer(all.loci.ids)) {
+    loci.ids <- suppressWarnings(as.integer(loci.ids))
+    if(any(is.na(loci.ids))) {
+      stop("loci.ids supplied but no loci.ids were loaded into cache ... failed when trying to interpret as an index.")
+    }
+    warning("loci.ids supplied but no loci.ids were loaded into cache ... interpreting as an index.")
+  } else if(!is.na(loci.ids) && is.character(all.loci.ids)) {
+    loci.ids2 <- match(as.character(loci.ids), all.loci.ids)
+    if(any(is.na(loci.ids2))) {
+      stop(glue("loci IDs: {paste(as.character(loci.ids)[is.na(loci.ids2)], collapse = ', ')} not found in the cache."))
+    }
+    loci.ids <- loci.ids2
+  } else if(is.na(loci.ids)) {
+    loci.ids <- suppressWarnings(as.integer(loci.index))
+    if(any(is.na(loci.ids))) {
+      stop("Failed when trying to interpret loci.index as an integer.")
+    }
+  } else {
+    stop("Unrecoverable error trying to interpret hap.ids/hap.index arguments.")
+  }
+
+  # Check we have sensible indexing by this point
+  if(any(hap.ids < 1 | hap.ids > N)) {
+    stop("Invalid haplotypes specified.")
+  }
+  if(any(loci.ids < 1 | loci.ids > L)) {
+    stop("Invalid loci specified.")
+  }
+
+  # Finally, grab them!
+  res <- matrix(integer(1),
+                nrow = length(loci.ids),
+                ncol = length(hap.ids),
+                dimnames = list(all.loci.ids[loci.ids],
+                                all.hap.ids[hap.ids]))
+
+  if(length(loci.ids) < length(hap.ids)) {
+    for(i in 1:length(loci.ids)) {
+      res[i,] <- as.integer(intToBits(QueryCache2_loc(loci.ids[i]-1)))[hap.ids]
+    }
+  } else {
+    for(i in 1:length(hap.ids)) {
+      res[,i] <- as.integer(intToBits(QueryCache2_ind(hap.ids[i]-1)))[loci.ids]
+    }
+  }
   res
 }
 
