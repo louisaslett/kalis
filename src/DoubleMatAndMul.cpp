@@ -30,7 +30,7 @@ void DoubleMatAndMul_C(const double* __restrict__ alpha,
 
     if(i!=j) {
       if(temp <= 0) {
-        z1 += c_2[i] = 708.396418532264078749;
+        z1 += c_2[i] = 744.4400719213812180897;
       } else {
         z1 += c_2[i] = -log(temp);
       }
@@ -38,11 +38,11 @@ void DoubleMatAndMul_C(const double* __restrict__ alpha,
     }
   }
 
-  // note that if all of the c_1 are 0, then all of the distances are 708 distance - mean distance  = 0...so all of the standardized distances go to 0.
+  // note that if all of the c_1 are 0, then all of the distances are 744 distance - mean distance  = 0...so all of the standardized distances go to 0.
   // this is consistent with the unstandardized distance version
 
   if(z0<=0) {
-    z0 = -708.396418532264078749;
+    z0 = -744.4400719213812180897;
   } else {
    z0 = log(z0);
   }
