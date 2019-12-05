@@ -447,6 +447,34 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// calc_tables_cpp_original_v1
+void calc_tables_cpp_original_v1(NumericMatrix& cost_table, IntegerMatrix& index_table, NumericVector s, int maxcpt, int maxn);
+RcppExport SEXP _kalis_calc_tables_cpp_original_v1(SEXP cost_tableSEXP, SEXP index_tableSEXP, SEXP sSEXP, SEXP maxcptSEXP, SEXP maxnSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type cost_table(cost_tableSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix& >::type index_table(index_tableSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
+    Rcpp::traits::input_parameter< int >::type maxcpt(maxcptSEXP);
+    Rcpp::traits::input_parameter< int >::type maxn(maxnSEXP);
+    calc_tables_cpp_original_v1(cost_table, index_table, s, maxcpt, maxn);
+    return R_NilValue;
+END_RCPP
+}
+// calc_tables_cpp_new_v2
+void calc_tables_cpp_new_v2(NumericMatrix& cost_table, IntegerMatrix& index_table, NumericVector s, int maxcpt, int maxn);
+RcppExport SEXP _kalis_calc_tables_cpp_new_v2(SEXP cost_tableSEXP, SEXP index_tableSEXP, SEXP sSEXP, SEXP maxcptSEXP, SEXP maxnSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type cost_table(cost_tableSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix& >::type index_table(index_tableSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
+    Rcpp::traits::input_parameter< int >::type maxcpt(maxcptSEXP);
+    Rcpp::traits::input_parameter< int >::type maxn(maxnSEXP);
+    calc_tables_cpp_new_v2(cost_table, index_table, s, maxcpt, maxn);
+    return R_NilValue;
+END_RCPP
+}
 // MatAndMul
 NumericVector MatAndMul(NumericMatrix M, List fwd, List bck, NumericVector x, LogicalVector standardize, int from_recipient, int nthreads);
 RcppExport SEXP _kalis_MatAndMul(SEXP MSEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP standardizeSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
@@ -510,34 +538,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// calc_tables_cpp_original_v1
-void calc_tables_cpp_original_v1(NumericMatrix& cost_table, IntegerMatrix& index_table, NumericVector s, int maxcpt, int maxn);
-RcppExport SEXP _kalis_calc_tables_cpp_original_v1(SEXP cost_tableSEXP, SEXP index_tableSEXP, SEXP sSEXP, SEXP maxcptSEXP, SEXP maxnSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix& >::type cost_table(cost_tableSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix& >::type index_table(index_tableSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
-    Rcpp::traits::input_parameter< int >::type maxcpt(maxcptSEXP);
-    Rcpp::traits::input_parameter< int >::type maxn(maxnSEXP);
-    calc_tables_cpp_original_v1(cost_table, index_table, s, maxcpt, maxn);
-    return R_NilValue;
-END_RCPP
-}
-// calc_tables_cpp_new_v2
-void calc_tables_cpp_new_v2(NumericMatrix& cost_table, IntegerMatrix& index_table, NumericVector s, int maxcpt, int maxn);
-RcppExport SEXP _kalis_calc_tables_cpp_new_v2(SEXP cost_tableSEXP, SEXP index_tableSEXP, SEXP sSEXP, SEXP maxcptSEXP, SEXP maxnSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix& >::type cost_table(cost_tableSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix& >::type index_table(index_tableSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
-    Rcpp::traits::input_parameter< int >::type maxcpt(maxcptSEXP);
-    Rcpp::traits::input_parameter< int >::type maxn(maxnSEXP);
-    calc_tables_cpp_new_v2(cost_table, index_table, s, maxcpt, maxn);
-    return R_NilValue;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_kalis_ResetBackwardTable", (DL_FUNC) &_kalis_ResetBackwardTable, 1},
@@ -573,13 +573,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_Forward_densePi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward_densePi_scalarmu_cpp, 6},
     {"_kalis_Forward_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward_scalarPi_scalarmu_cpp, 6},
     {"_kalis_Forward1step_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward1step_scalarPi_scalarmu_cpp, 6},
+    {"_kalis_calc_tables_cpp_original_v1", (DL_FUNC) &_kalis_calc_tables_cpp_original_v1, 5},
+    {"_kalis_calc_tables_cpp_new_v2", (DL_FUNC) &_kalis_calc_tables_cpp_new_v2, 5},
     {"_kalis_MatAndMul", (DL_FUNC) &_kalis_MatAndMul, 7},
     {"_kalis_MatOnlyMul", (DL_FUNC) &_kalis_MatOnlyMul, 4},
     {"_kalis_ResetTable", (DL_FUNC) &_kalis_ResetTable, 1},
     {"_kalis_CopyForwardTable_cpp", (DL_FUNC) &_kalis_CopyForwardTable_cpp, 2},
     {"_kalis_CopyBackwardTable_cpp", (DL_FUNC) &_kalis_CopyBackwardTable_cpp, 2},
-    {"_kalis_calc_tables_cpp_original_v1", (DL_FUNC) &_kalis_calc_tables_cpp_original_v1, 5},
-    {"_kalis_calc_tables_cpp_new_v2", (DL_FUNC) &_kalis_calc_tables_cpp_new_v2, 5},
     {NULL, NULL, 0}
 };
 

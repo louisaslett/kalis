@@ -133,6 +133,14 @@ Forward1step_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
     invisible(.Call('_kalis_Forward1step_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
 }
 
+calc_tables_cpp_original_v1 <- function(cost_table, index_table, s, maxcpt, maxn) {
+    invisible(.Call('_kalis_calc_tables_cpp_original_v1', PACKAGE = 'kalis', cost_table, index_table, s, maxcpt, maxn))
+}
+
+calc_tables_cpp_new_v2 <- function(cost_table, index_table, s, maxcpt, maxn) {
+    invisible(.Call('_kalis_calc_tables_cpp_new_v2', PACKAGE = 'kalis', cost_table, index_table, s, maxcpt, maxn))
+}
+
 MatAndMul <- function(M, fwd, bck, x, standardize, from_recipient, nthreads) {
     .Call('_kalis_MatAndMul', PACKAGE = 'kalis', M, fwd, bck, x, standardize, from_recipient, nthreads)
 }
@@ -151,13 +159,5 @@ CopyForwardTable_cpp <- function(to, from) {
 
 CopyBackwardTable_cpp <- function(to, from) {
     invisible(.Call('_kalis_CopyBackwardTable_cpp', PACKAGE = 'kalis', to, from))
-}
-
-calc_tables_cpp_original_v1 <- function(cost_table, index_table, s, maxcpt, maxn) {
-    invisible(.Call('_kalis_calc_tables_cpp_original_v1', PACKAGE = 'kalis', cost_table, index_table, s, maxcpt, maxn))
-}
-
-calc_tables_cpp_new_v2 <- function(cost_table, index_table, s, maxcpt, maxn) {
-    invisible(.Call('_kalis_calc_tables_cpp_new_v2', PACKAGE = 'kalis', cost_table, index_table, s, maxcpt, maxn))
 }
 
