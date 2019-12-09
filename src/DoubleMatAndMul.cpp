@@ -24,55 +24,93 @@ void DoubleMatAndMul_C(const double* __restrict__ alpha,
   double temp = 0.0;
   double rd = (double)(r - 1);
 
+  // Calculate column sums
   for(size_t i = 0; i < r; i++) {
+    z0 += c_2[i] = *(alpha++) * *(beta++);
+  }
 
-    z0 += temp = *(alpha++) * *(beta++);
+  if(z0<=0) { // if all of the donors have "0" probability of being copied
+    for(size_t i=0; i < r; i++){
+      if(i!=j) {
+        c_1[i] = 744.4400719213812180897; // final value for M_raw[i,j]
+        c_2[i] = 0.0; // final value for M_std[i,j]
 
-    if(i!=j) {
-      if(temp <= 0) {
-        z1 += c_2[i] = 744.4400719213812180897;
+        res[j+from_off] += c_1[i]*x[i];
+        res[i]          += c_1[i]*x[j+from_off];
+
+        res2[j+from_off] += 0.0;
+        res2[i]          += 0.0;
+
       } else {
-        z1 += c_2[i] = -log(temp);
+        c_2[i] = 0.0;
+        c_1[i] = 0.0;
       }
-      z2 += std::pow(c_2[i], 2.0);
     }
-  }
 
-  // note that if all of the c_1 are 0, then all of the distances are 744 distance - mean distance  = 0...so all of the standardized distances go to 0.
-  // this is consistent with the unstandardized distance version
-
-  if(z0<=0) {
-    z0 = -744.4400719213812180897;
   } else {
-   z0 = log(z0);
-  }
 
-  z1 = z1 / rd; // Calculate Mean
+    for(size_t i=0; i < r; i++){
+      if(i!=j) {
 
-  z2 = (z2 - std::pow(z1, 2.0) * rd) / (rd - 1.0);
+        c_2[i] = c_2[i] / z0;
 
-  z2 = std::pow(z2, -0.5); // Calculate standard deviation
+        if(c_2[i]==0) {
+          c_1[i] = 744.4400719213812180897;  // -log of smallest representable double
+        } else {
+          c_1[i] = -log(c_2[i]);
+        }
 
-  z1 = -z1 * z2;
+        z1 += c_1[i];
+        z2 += std::pow(c_1[i], 2.0);
 
-  for(size_t i = 0; i < r; i++) {
+      }
+    }
 
-    if(i!=j) {
-      c_1[i] = c_2[i] + z0;
-      c_2[i] = c_2[i] * z2 + z1; // this is the final value for M[i,j]
+    z1 = z1 / rd; // Calculate Mean
 
-      res[j+from_off] += c_1[i]*x[i];
-      res[i]          += c_1[i]*x[j+from_off];
+    z2 = (z2 - std::pow(z1, 2.0) * rd) / (rd - 1.0); // Unbiased Estimate of the Variance
 
-      res2[j+from_off] += c_2[i]*x[i];
-      res2[i]          += c_2[i]*x[j+from_off];
+    if(z2 <= 0){ // if there is no variance in the distances
+
+      for(size_t i = 0; i < r; i++) {
+        if(i!=j) {
+          c_2[i] = 0.0;
+
+          res[j+from_off] += c_1[i]*x[i];
+          res[i]          += c_1[i]*x[j+from_off];
+
+          res2[j+from_off] += 0.0;
+          res2[i]          += 0.0;
+
+        } else {
+          c_1[i] = 0.0;
+          c_2[i] = 0.0;
+        }
+      }
 
     } else {
-      c_2[i] = 0.0;
-      c_1[i] = 0.0;
+
+      z2 = std::pow(z2, -0.5); // Calculate 1 / standard deviation
+
+      z1 = -z1 * z2;
+
+      for(size_t i = 0; i < r; i++) {
+        if(i!=j) {
+          c_2[i] = c_1[i] * z2 + z1; // this is the final value for M[i,j]
+
+          res[j+from_off] += c_1[i]*x[i];
+          res[i]          += c_1[i]*x[j+from_off];
+
+          res2[j+from_off] += c_2[i]*x[i];
+          res2[i]          += c_2[i]*x[j+from_off];
+
+        } else {
+          c_1[i] = 0.0;
+          c_2[i] = 0.0;
+        }
+      }
     }
   }
-
 }
 
 
