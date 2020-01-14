@@ -21,7 +21,11 @@ CacheHaplotypes.hdf5 <- function(hdf5.file,
 
 
 
-CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file, transpose = FALSE, haps = "/haps", hap.ids = NULL, loci.ids = NULL) {
+CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file,
+                                       transpose,
+                                       haps,
+                                       hap.ids,
+                                       loci.ids) {
   # Check for file and dataset within file
   if(!file.exists(hdf5.file)) {
     CacheHaplotypes.err("Cannot find HDF5 file.")
@@ -64,6 +68,10 @@ CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file, transpose = FALSE, haps = "/ha
       CacheHaplotypes.err(glue("HDF5 object at '{hap.ids}' contains {h5.hap.ids$dims[1]} haplotype IDs, but {haps} dataset contains {N} haplotypes (is transpose set correctly?)."))
     }
     hap.ids.tmp <- as.character(h5.hap.ids[])
+    if(length(unique(hap.ids.tmp)) != length(hap.ids.tmp)) {
+      h5$close_all()
+      CacheHaplotypes.err(glue("HDF5 object at '{hap.ids}' contains {h5.hap.ids$dims[1]} haplotype IDs, but they are not all unique."))
+    }
   } else {
     hap.ids.tmp <- as.integer(1:N)
   }
@@ -84,6 +92,10 @@ CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file, transpose = FALSE, haps = "/ha
       CacheHaplotypes.err(glue("HDF5 object at '{loci.ids}' contains {h5.loci.ids$dims[1]} locus IDs, but {haps} dataset contains {L} loci (is transpose set correctly?)."))
     }
     loci.ids.tmp <- as.character(h5.loci.ids[])
+    if(length(unique(loci.ids.tmp)) != length(loci.ids.tmp)) {
+      h5$close_all()
+      CacheHaplotypes.err(glue("HDF5 object at '{loci.ids}' contains {h5.loci.ids$dims[1]} locus IDs, but they are not all unique."))
+    }
   } else {
     loci.ids.tmp <- as.integer(1:L)
   }
@@ -125,10 +137,10 @@ CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file, transpose = FALSE, haps = "/ha
 
 
 CacheHaplotypes.hdf5.rhdf5 <- function(hdf5.file,
-                                       transpose = FALSE,
-                                       haps = "/haps",
-                                       hap.ids = NULL,
-                                       loci.ids = NULL) {
+                                       transpose,
+                                       haps,
+                                       hap.ids,
+                                       loci.ids) {
   # Check for file and dataset within file
   if(!file.exists(hdf5.file)) {
     CacheHaplotypes.err("Cannot find HDF5 file.")
@@ -160,8 +172,14 @@ CacheHaplotypes.hdf5.rhdf5 <- function(hdf5.file,
   if(length(hap.ids.tmp) != N) {
     CacheHaplotypes.err(glue("There are {length(hap.ids.tmp)} haplotype IDs provided at '{hap.ids}' in the HDF5 file, but there are {N} haplotypes provided in '{haps}' (do you need to change transpose?)"))
   }
+  if(length(unique(hap.ids.tmp)) != length(hap.ids.tmp)) {
+    CacheHaplotypes.err(glue("HDF5 object at '{hap.ids}' contains {length(hap.ids.tmp)} haplotype IDs, but they are not all unique."))
+  }
   if(length(loci.ids.tmp) != L) {
     CacheHaplotypes.err(glue("There are {length(loci.ids.tmp)} locus IDs provided at '{loci.ids}' in the HDF5 file, but there are {L} loci provided in '{haps}' (do you need to change transpose?)"))
+  }
+  if(length(unique(loci.ids.tmp)) != length(loci.ids.tmp)) {
+    CacheHaplotypes.err(glue("HDF5 object at '{loci.ids}' contains {length(loci.ids.tmp)} locus IDs, but they are not all unique."))
   }
 
   # Make sure we don't double up cache content if there is already stuff cached
