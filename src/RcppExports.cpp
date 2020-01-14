@@ -538,6 +538,24 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// TrippleMatAndMul
+List TrippleMatAndMul(NumericMatrix M, NumericMatrix M2, NumericMatrix M3, List fwd, List bck, NumericVector x, int from_recipient, int nthreads);
+RcppExport SEXP _kalis_TrippleMatAndMul(SEXP MSEXP, SEXP M2SEXP, SEXP M3SEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type M2(M2SEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type M3(M3SEXP);
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(TrippleMatAndMul(M, M2, M3, fwd, bck, x, from_recipient, nthreads));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_kalis_ResetBackwardTable", (DL_FUNC) &_kalis_ResetBackwardTable, 1},
@@ -580,6 +598,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_ResetTable", (DL_FUNC) &_kalis_ResetTable, 1},
     {"_kalis_CopyForwardTable_cpp", (DL_FUNC) &_kalis_CopyForwardTable_cpp, 2},
     {"_kalis_CopyBackwardTable_cpp", (DL_FUNC) &_kalis_CopyBackwardTable_cpp, 2},
+    {"_kalis_TrippleMatAndMul", (DL_FUNC) &_kalis_TrippleMatAndMul, 8},
     {NULL, NULL, 0}
 };
 

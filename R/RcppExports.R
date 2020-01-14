@@ -161,3 +161,7 @@ CopyBackwardTable_cpp <- function(to, from) {
     invisible(.Call('_kalis_CopyBackwardTable_cpp', PACKAGE = 'kalis', to, from))
 }
 
+TrippleMatAndMul <- function(M, M2, M3, fwd, bck, x, from_recipient, nthreads) {
+    .Call('_kalis_TrippleMatAndMul', PACKAGE = 'kalis', M, M2, M3, fwd, bck, x, from_recipient, nthreads)
+}
+
