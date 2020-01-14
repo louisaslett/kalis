@@ -153,7 +153,7 @@ simulation and genealogical analysis for large sample sizes.
 <span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowMeans</a></span>(<span class='no'>SmallHaps</span>),<span class='kw'>breaks</span><span class='kw'>=</span><span class='fl'>20</span>)
 
 <span class='co'># Store in kalis hdf5 format</span>
-<span class='fu'><a href='WriteIndividualHaplotypeH5.html'>WriteIndividualHaplotypeH5</a></span>(<span class='st'>"SmallHaps.h5"</span>, <span class='no'>SmallHaps</span>)
+<span class='fu'>WriteIndividualHaplotypeH5</span>(<span class='st'>"SmallHaps.h5"</span>, <span class='no'>SmallHaps</span>)
 
 <span class='co'># Import into kalis cache directly ...</span>
 <span class='fu'><a href='CacheHaplotypes.html'>CacheHaplotypes</a></span>(<span class='no'>SmallHaps</span>)
