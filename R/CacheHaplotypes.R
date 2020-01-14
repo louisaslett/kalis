@@ -251,12 +251,10 @@ IDs.to.index <- function(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, 
   }
 
   # Check we have sensible indexing by this point
-  N <- get("N", envir = pkgVars)
-  L <- get("L", envir = pkgVars)
-  if(any(hap.ids < 1 | hap.ids > N)) {
+  if(any(hap.ids < 1 | hap.ids > length(all.hap.ids))) {
     stop("Invalid haplotypes specified.")
   }
-  if(any(loci.ids < 1 | loci.ids > L)) {
+  if(any(loci.ids < 1 | loci.ids > length(all.loci.ids))) {
     stop("Invalid loci specified.")
   }
 

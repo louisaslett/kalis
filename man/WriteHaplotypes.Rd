@@ -2,6 +2,7 @@
 % Please edit documentation in R/IndividualSequenceIO_H5.R
 \name{WriteHaplotypes}
 \alias{WriteHaplotypes}
+\alias{ReadHaplotypes}
 \title{Write haplotype matrix to HDF5 file}
 \usage{
 WriteHaplotypes(
@@ -13,6 +14,18 @@ WriteHaplotypes(
   hap.ids.name = "/hap.ids",
   loci.ids.name = "/loci.ids",
   append = FALSE
+)
+
+ReadHaplotypes(
+  hdf5.file,
+  hap.ids = NA,
+  loci.ids = NA,
+  hap.index = NA,
+  loci.index = NA,
+  haps.name = "/haps",
+  hap.ids.name = "/hap.ids",
+  loci.ids.name = "/loci.ids",
+  transpose = FALSE
 )
 }
 \arguments{
@@ -54,6 +67,11 @@ Note that if \code{hdf5.file} exists but does not contain a dataset named
 \code{haps}, then \code{WriteIndividualHaplotypeH5} will simply create a
 \code{haps} dataset within the existing file.
 }
+\section{Functions}{
+\itemize{
+\item \code{ReadHaplotypes}: Read haplotype matrix from HDF5 file
+}}
+
 \examples{
 # Examples
 \dontrun{

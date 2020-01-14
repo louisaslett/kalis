@@ -256,36 +256,52 @@ WriteHaplotypes <- function(hdf5.file, haps,
 }
 
 
-#' @describeIn WriteIndividualHaplotypeH5 Read haplotype matrix from HDF5 file
-#' @export ReadIndividualHaplotypeH5
-ReadIndividualHaplotypeH5 <- function(hdf5.file, ids) {
-  if(!is.vector(ids, mode = "numeric")) {
-    stop("ids must be a vector of haplotype indices.")
-  }
-
-  # Check for file
+#' @describeIn WriteHaplotypes Read haplotype matrix from HDF5 file
+#' @export ReadHaplotypes
+ReadHaplotypes <- function(hdf5.file,
+                           hap.ids = NA, loci.ids = NA,
+                           hap.index = NA, loci.index = NA,
+                           haps.name = "/haps", hap.ids.name = "/hap.ids", loci.ids.name = "/loci.ids",
+                           transpose = FALSE) {
   if(!file.exists(hdf5.file)) {
     stop("Cannot find HDF5 file.")
   }
-
-  # Get dimensions of haplotype data
-  h5content <- rhdf5::h5ls(hdf5.file)
-  if(!("haps" %in% h5content$name)) {
-    stop("HDF5 file already exists but does not contain a 'haps' object in the root for haplotype data.")
+  if(!identical(hap.ids, NA) && !identical(hap.index, NA)) {
+    stop("Can only specify one of hap.ids or hap.index argument.")
   }
-  hdf5.dim <- as.integer(str_split_fixed(h5content[h5content$name=="haps","dim"], "x", n = Inf))
-  N <- hdf5.dim[2]
-  L <- hdf5.dim[1]
-
-  # Check index set range
-  if(any(ids < 1) || any(ids > N)) {
-    stop(glue("HDF5 file contains {N} haplotypes, some requested indices out of range."))
+  if(!identical(loci.ids, NA) && !identical(loci.index, NA)) {
+    stop("Can only specify one of loci.ids or loci.index argument.")
   }
+
+  # Get dimensions of hap data
+  hdf5.dim <- integer(2)
+  hdf5.dim[1] <- dim(rhdf5::h5read(hdf5.file, haps.name, index = list(NULL,1)))[1]
+  hdf5.dim[2] <- dim(rhdf5::h5read(hdf5.file, haps.name, index = list(1,NULL)))[2]
+  if(!transpose) {
+    N <- hdf5.dim[2]
+    L <- hdf5.dim[1]
+  } else {
+    N <- hdf5.dim[1]
+    L <- hdf5.dim[2]
+  }
+
+  # Figure out what to call all haplotypes/loci
+  all.hap.ids  <- tryCatch(rhdf5::h5read(hdf5.file, hap.ids.name),  error = function(e) 1:N)
+  all.loci.ids <- tryCatch(rhdf5::h5read(hdf5.file, loci.ids.name), error = function(e) 1:L)
+
+  # Default to get everything
+  if(identical(hap.ids, NA) && identical(hap.index, NA)) {
+    hap.index <- 1:N
+  }
+  if(identical(loci.ids, NA) && identical(loci.index, NA)) {
+    loci.index <- 1:L
+  }
+  idx <- IDs.to.index(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, all.loci.ids)
 
   # Read
-  haps <- rhdf5::h5read(hdf5.file, "haps", index = list(NULL, ids))
+  haps <- rhdf5::h5read(hdf5.file, haps.name, index = list(idx$loci, idx$hap))
 
   rhdf5::H5close()
 
-  haps
+  list(haps = haps, hap.ids = all.hap.ids[idx$hap], loci.ids = all.loci.ids[idx$loci])
 }
