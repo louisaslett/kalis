@@ -132,26 +132,34 @@ a simple integer 0/1 for inspection and use in R." />
 a simple integer 0/1 for inspection and use in R.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>QueryCache</span>(<span class='kw'>ids</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>length</span> <span class='kw'>=</span> <span class='fl'>NA</span>)</pre>
+    <pre class="usage"><span class='fu'>QueryCache</span>(<span class='kw'>hap.ids</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>loci.ids</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>hap.index</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>loci.index</span> <span class='kw'>=</span> <span class='fl'>NA</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>ids</th>
-      <td><p>which haplotypes to retrieve from the cache, indexed from 1.</p></td>
+      <th>hap.ids</th>
+      <td><p>which haplotypes to retrieve from the cache, specified by ID.
+Cannot be specified at the same time as <code>hap.index</code></p></td>
     </tr>
     <tr>
-      <th>start</th>
-      <td><p>the first locus position to retrieve for the specified
-haplotypes.
-Defaults to the beginning of the haplotype.</p></td>
+      <th>loci.ids</th>
+      <td><p>which loci to retrieve from the cache, specified by ID.
+Cannot be specified at the same time as <code>loci.index</code></p></td>
     </tr>
     <tr>
-      <th>length</th>
-      <td><p>the number of consecutive loci to return from the start
-position.
-Defaults to length of entire haplotype from <code>start</code> argument to end.</p></td>
+      <th>hap.index</th>
+      <td><p>which haplotypes to retrieve from the cache, specified as
+a (vector) index.  This enables specifying haplotypes by offset in the order
+they were loaded into the cache (from 1 to the number of haplotypes).
+Cannot be specified at the same time as <code>hap.ids</code></p></td>
+    </tr>
+    <tr>
+      <th>loci.index</th>
+      <td><p>which loci to retrieve from the cache, specified as
+a (vector) index.  This enables specifying loci by offset in the order
+they were loaded into the cache (from 1 to the number of loci).
+Cannot be specified at the same time as <code>loci.ids</code></p></td>
     </tr>
     </table>
 

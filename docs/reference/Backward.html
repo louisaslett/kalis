@@ -132,7 +132,7 @@ The table is updated in-place." />
 The table is updated in-place.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>Backward</span>(<span class='no'>bck</span>, <span class='no'>pars</span>, <span class='kw'>t</span> <span class='kw'>=</span> <span class='no'>bck</span>$<span class='no'>l</span> - <span class='fl'>1</span>, <span class='kw'>beta.theta</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>nthreads</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
+    <pre class="usage"><span class='fu'>Backward</span>(<span class='no'>bck</span>, <span class='no'>pars</span>, <span class='kw'>t</span> <span class='kw'>=</span> <span class='no'>bck</span>$<span class='no'>l</span> - <span class='fl'>1</span>, <span class='kw'>nthreads</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>beta.theta</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,15 +154,15 @@ Must be less than or equal to current locus position of <code>bck</code>.
 By default, it simply advances to the locus immediately before.</p></td>
     </tr>
     <tr>
+      <th>nthreads</th>
+      <td><p>the number of CPU cores to use.
+By default no parallelism is used.</p></td>
+    </tr>
+    <tr>
       <th>beta.theta</th>
       <td><p>logical indicating whether the table should be returned in
 beta-theta space or in the standard space upon reaching the target locus
 <code>t</code>.</p></td>
-    </tr>
-    <tr>
-      <th>nthreads</th>
-      <td><p>the number of CPU cores to use.
-By default no parallelism is used.</p></td>
     </tr>
     </table>
 

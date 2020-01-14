@@ -4,8 +4,13 @@
 \alias{CreateForwardTableCache}
 \title{Create cache for forward tables}
 \usage{
-CreateForwardTableCache(pars, size = 1, from_recipient = 1,
-  to_recipient = Inf, max.tables = 0)
+CreateForwardTableCache(
+  pars,
+  size = 1,
+  from_recipient = 1,
+  to_recipient = Inf,
+  max.tables = 0
+)
 }
 \arguments{
 \item{pars}{a \code{kalisParameters} object, as returned by

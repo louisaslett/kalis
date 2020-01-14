@@ -24,7 +24,7 @@ The elements of the backward table list are:
 \describe{
 \item{\code{l}}{denotes the current locus position.}
 \item{\code{beta}}{is a matrix of rescaled backward probabilities under
-the Li & Stephens HMM.
+the Li \& Stephens HMM.
 Each column of \code{beta} corresponds to an independent HMM such
 that \eqn{\beta^l_{ji}} is proportional to the probability of observing
 haplotype \eqn{i} from locus \eqn{l+1} up through locus \eqn{L} given
