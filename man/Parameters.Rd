@@ -4,12 +4,8 @@
 \alias{Parameters}
 \title{Construct parameter specification}
 \usage{
-Parameters(
-  rho = rep(0, get("L", envir = pkgVars) - 1),
-  mu = 1e-08,
-  Pi = NULL,
-  check.rho = TRUE
-)
+Parameters(rho = rep(0, get("L", envir = pkgVars) - 1), mu = 1e-08,
+  Pi = NULL, check.rho = TRUE)
 }
 \arguments{
 \item{rho}{recombination probability vector (must be L-1 long).

@@ -4,7 +4,8 @@
 \alias{QueryCache}
 \title{Retrieve haplotypes from memory cache}
 \usage{
-QueryCache(hap.ids = NA, loci.ids = NA, hap.index = NA, loci.index = NA)
+QueryCache(hap.ids = NA, loci.ids = NA, hap.index = NA,
+  loci.index = NA)
 }
 \arguments{
 \item{hap.ids}{which haplotypes to retrieve from the cache, specified by ID.

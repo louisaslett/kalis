@@ -24,7 +24,7 @@ The elements of the forward table list are:
 \describe{
 \item{\code{l}}{denotes the current locus position.}
 \item{\code{alpha}}{is a matrix of rescaled forward probabilities under
-the Li \& Stephens HMM.
+the Li & Stephens HMM.
 Each column of \code{alpha} corresponds to an independent HMM such
 that \eqn{\alpha^l_{ji}} is proportional to the probability that
 haplotype \eqn{j} is copied by haplotype \eqn{i} at locus \eqn{l} and
