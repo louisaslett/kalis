@@ -1,6 +1,6 @@
-#' Write haplotype matrix to a file
+#' Write haplotype matrix to HDF5 file
 #'
-#' By default, writes an R matrix of 0/1s to the HDF5 format which is used for reading to
+#' Writes an R matrix of 0/1s to the HDF5 format which is used for reading to
 #' optimised in memory cache.  If you're working with a large haplotype dataset,
 #' we recommend that you convert it directly to this HDF5 format (see vignette)
 #' rather than read it into R.
@@ -15,17 +15,17 @@
 #' dimension as defined in the HDF5 specification (note that different languages
 #' treat this as rows or columns).
 #'
-#' Note that if \code{file} exists but does not contain a dataset named
+#' Note that if \code{hdf5.file} exists but does not contain a dataset named
 #' \code{haps}, then \code{WriteIndividualHaplotypeH5} will simply create a
 #' \code{haps} dataset within the existing file.
 #'
-#' @param file the name of the file which the haplotypes are to be
+#' @param hdf5.file the name of the file which the haplotypes are to be
 #'   written to.
 #' @param haps a vector or a matrix where each column is a haplotype to be
-#'   stored in the file \code{file}.
+#'   stored in the file \code{hdf5.file}.
 #' @param ids a vector of the indices of which haplotypes are to be read.
 #' @param append a logical indicating whether overwrite (default) or append to
-#'   an existing \code{haps} dataset if it already exists in \code{file}.
+#'   an existing \code{haps} dataset if it already exists in \code{hdf5.file}.
 #'
 #' @return
 #' \code{WriteIndividualHaplotypeH5} does not return anything.
@@ -56,11 +56,9 @@
 #' }
 #'
 #' @export WriteHaplotypes
-WriteHaplotypes <- function(haps,
-                            file,
-                            format = "hdf5",
-                            hap.ids = NA, var.ids = NA,
-                            haps.name = "/haps", hap.ids.name = "/hap.ids", var.ids.name = "/var.ids",
+WriteHaplotypes <- function(hdf5.file, haps,
+                            hap.ids = NA, loci.ids = NA,
+                            haps.name = "/haps", hap.ids.name = "/hap.ids", loci.ids.name = "/loci.ids",
                             append = FALSE) {
   if(any(!(haps == 1 | haps == 0))) {
     stop("haplotype is not binary.")
@@ -88,31 +86,31 @@ WriteHaplotypes <- function(haps,
     write.hap.ids <- TRUE
   }
 
-  write.var.ids <- FALSE # see below
-  if(!any(is.na(var.ids))) {
-    if(!is.atomic(var.ids) || length(var.ids) != L) {
-      stop(glue("var.ids must be a vector of length {L} to match supplied haplotype data."))
+  write.loci.ids <- FALSE # see below
+  if(!any(is.na(loci.ids))) {
+    if(!is.atomic(loci.ids) || length(loci.ids) != L) {
+      stop(glue("loci.ids must be a vector of length {L} to match supplied haplotype data."))
     }
-    if(length(unique(var.ids)) != length(var.ids)) {
-      stop("var.ids must all be unique.")
+    if(length(unique(loci.ids)) != length(loci.ids)) {
+      stop("loci.ids must all be unique.")
     }
     # NB loci ids are special in that they are only written when writing a new
     #    dataset to disk or when overwriting a previous data set.  But when
     #    appending, we sanity check for matching but do not append (only append
     #    haps, not new loci!)
-    write.var.ids <- TRUE
+    write.loci.ids <- TRUE
   }
 
-  if(file.exists(file)) {
-    h5 <- rhdf5::H5Fopen(file)
+  if(file.exists(hdf5.file)) {
+    h5 <- rhdf5::H5Fopen(hdf5.file)
 
     if(!rhdf5::H5Lexists(h5, haps.name)) {
       if(!any(is.na(hap.ids)) && rhdf5::H5Lexists(h5, hap.ids.name))
         stop(glue("HDF5 file exists and does not contain haplotype data, but already has a data set at {hap.ids.name} so cannot create haplotype IDs."))
-      if(!any(is.na(var.ids)) && rhdf5::H5Lexists(h5, var.ids.name))
-        stop(glue("HDF5 file exists and does not contain haplotype data, but already has a data set at {var.ids.name} so cannot create locus IDs."))
+      if(!any(is.na(loci.ids)) && rhdf5::H5Lexists(h5, loci.ids.name))
+        stop(glue("HDF5 file exists and does not contain haplotype data, but already has a data set at {loci.ids.name} so cannot create locus IDs."))
       message(glue("HDF5 file already exists but does not contain haplotype data at {haps.name}, now adding."))
-      if(!rhdf5::h5createDataset(file = file,
+      if(!rhdf5::h5createDataset(file = hdf5.file,
                                  dataset = haps.name,
                                  dims = c(L, N),
                                  maxdims = c(L, rhdf5::H5Sunlimited()),
@@ -121,7 +119,7 @@ WriteHaplotypes <- function(haps,
                                  level = 7))
         stop("Failed creating dataset.")
       if(!any(is.na(hap.ids))) {
-        rhdf5::h5createDataset(file = file,
+        rhdf5::h5createDataset(file = hdf5.file,
                                dataset = hap.ids.name,
                                dims = c(N),
                                maxdims = c(rhdf5::H5Sunlimited()),
@@ -131,16 +129,16 @@ WriteHaplotypes <- function(haps,
                                level = 7)
         write.hap.ids <- TRUE
       }
-      if(!any(is.na(var.ids))) {
-        rhdf5::h5createDataset(file = file,
-                               dataset = var.ids.name,
+      if(!any(is.na(loci.ids))) {
+        rhdf5::h5createDataset(file = hdf5.file,
+                               dataset = loci.ids.name,
                                dims = c(L),
                                maxdims = c(rhdf5::H5Sunlimited()),
                                storage.mode = "character",
                                size = 100,
                                chunk = c(1000),
                                level = 7)
-        write.var.ids <- TRUE
+        write.loci.ids <- TRUE
       }
     } else {
       if(append) {
@@ -174,21 +172,21 @@ WriteHaplotypes <- function(haps,
           write.hap.ids <- TRUE
         }
 
-        if(!any(is.na(var.ids))) {
-          if(!rhdf5::H5Lexists(h5, var.ids.name)) {
+        if(!any(is.na(loci.ids))) {
+          if(!rhdf5::H5Lexists(h5, loci.ids.name)) {
             stop("locus IDs have been provided, but the existing loci in the HDF5 file do not already have IDs.")
           }
-          h5.var.ids <- rhdf5::H5Dopen(h5, var.ids.name)
-          h5.var.ids.S <- rhdf5::H5Dget_space(h5.var.ids)
-          var.ids.dims <- rhdf5::H5Sget_simple_extent_dims(h5.var.ids.S)$size
-          if(length(var.ids.dims) != 1)
-            stop(glue("The data set {var.ids.name} does not contain 1-dimensional data ... invalid IDs."))
-          if(var.ids.dims[1] != L)
-            stop(glue("The length of locus IDs in the {var.ids.name} data set is not {L} ... invalid IDs."))
-          h5.loci <- rhdf5::h5read(h5, var.ids.name)
-          if(any(as.character(var.ids) != h5.loci))
+          h5.loci.ids <- rhdf5::H5Dopen(h5, loci.ids.name)
+          h5.loci.ids.S <- rhdf5::H5Dget_space(h5.loci.ids)
+          loci.ids.dims <- rhdf5::H5Sget_simple_extent_dims(h5.loci.ids.S)$size
+          if(length(loci.ids.dims) != 1)
+            stop(glue("The data set {loci.ids.name} does not contain 1-dimensional data ... invalid IDs."))
+          if(loci.ids.dims[1] != L)
+            stop(glue("The length of locus IDs in the {loci.ids.name} data set is not {L} ... invalid IDs."))
+          h5.loci <- rhdf5::h5read(h5, loci.ids.name)
+          if(any(as.character(loci.ids) != h5.loci))
             stop("The loci IDs provided and those in the HDF5 file differ.")
-          write.var.ids <- FALSE # we're appending *haps* so no new loci
+          write.loci.ids <- FALSE # we're appending *haps* so no new loci
         }
 
         # TODO: check data type for all these and error out if mismatch
@@ -207,15 +205,15 @@ WriteHaplotypes <- function(haps,
         rhdf5::h5set_extent(h5, haps.name, c(L, N))
         if(!any(is.na(hap.ids)) && rhdf5::H5Lexists(h5, hap.ids.name))
           rhdf5::h5set_extent(h5, hap.ids.name, c(N))
-        if(!any(is.na(var.ids)) && rhdf5::H5Lexists(h5, var.ids.name))
-          rhdf5::h5set_extent(h5, var.ids.name, c(L))
+        if(!any(is.na(loci.ids)) && rhdf5::H5Lexists(h5, loci.ids.name))
+          rhdf5::h5set_extent(h5, loci.ids.name, c(L))
       }
     }
   } else {
     message("Creating HDF5 file ...\n")
-    h5 <- rhdf5::H5Fcreate(file)
+    h5 <- rhdf5::H5Fcreate(hdf5.file)
 
-    if(!rhdf5::h5createDataset(file = file,
+    if(!rhdf5::h5createDataset(file = hdf5.file,
                                dataset = haps.name,
                                dims = c(L, N),
                                maxdims = c(L, rhdf5::H5Sunlimited()),
@@ -224,7 +222,7 @@ WriteHaplotypes <- function(haps,
                                level = 7))
       stop("Failed creating dataset.")
     if(!any(is.na(hap.ids)))
-      rhdf5::h5createDataset(file = file,
+      rhdf5::h5createDataset(file = hdf5.file,
                              dataset = hap.ids.name,
                              dims = c(N),
                              maxdims = c(rhdf5::H5Sunlimited()),
@@ -232,9 +230,9 @@ WriteHaplotypes <- function(haps,
                              size = 100,
                              chunk = c(1000),
                              level = 7)
-    if(!any(is.na(var.ids)))
-      rhdf5::h5createDataset(file = file,
-                             dataset = var.ids.name,
+    if(!any(is.na(loci.ids)))
+      rhdf5::h5createDataset(file = hdf5.file,
+                             dataset = loci.ids.name,
                              dims = c(L),
                              maxdims = c(rhdf5::H5Sunlimited()),
                              storage.mode = "character",
@@ -250,8 +248,8 @@ WriteHaplotypes <- function(haps,
   if(write.hap.ids) {
     rhdf5::h5write.default(as.array(as.character(hap.ids)), h5, hap.ids.name, index = list((N.old+1):(N.old+N)))
   }
-  if(write.var.ids) {
-    rhdf5::h5write.default(as.array(as.character(var.ids)), h5, var.ids.name, index = list(1:L))
+  if(write.loci.ids) {
+    rhdf5::h5write.default(as.array(as.character(loci.ids)), h5, loci.ids.name, index = list(1:L))
   }
 
   rhdf5::h5closeAll()
@@ -260,25 +258,25 @@ WriteHaplotypes <- function(haps,
 
 #' @describeIn WriteHaplotypes Read haplotype matrix from HDF5 file
 #' @export ReadHaplotypes
-ReadHaplotypes <- function(file,
-                           hap.ids = NA, var.ids = NA,
+ReadHaplotypes <- function(hdf5.file,
+                           hap.ids = NA, loci.ids = NA,
                            hap.index = NA, loci.index = NA,
-                           haps.name = "/haps", hap.ids.name = "/hap.ids", var.ids.name = "/var.ids",
+                           haps.name = "/haps", hap.ids.name = "/hap.ids", loci.ids.name = "/loci.ids",
                            transpose = FALSE) {
-  if(!file.exists(file)) {
+  if(!file.exists(hdf5.file)) {
     stop("Cannot find HDF5 file.")
   }
   if(!identical(hap.ids, NA) && !identical(hap.index, NA)) {
     stop("Can only specify one of hap.ids or hap.index argument.")
   }
-  if(!identical(var.ids, NA) && !identical(loci.index, NA)) {
-    stop("Can only specify one of var.ids or loci.index argument.")
+  if(!identical(loci.ids, NA) && !identical(loci.index, NA)) {
+    stop("Can only specify one of loci.ids or loci.index argument.")
   }
 
   # Get dimensions of hap data
   hdf5.dim <- integer(2)
-  hdf5.dim[1] <- dim(rhdf5::h5read(file, haps.name, index = list(NULL,1)))[1]
-  hdf5.dim[2] <- dim(rhdf5::h5read(file, haps.name, index = list(1,NULL)))[2]
+  hdf5.dim[1] <- dim(rhdf5::h5read(hdf5.file, haps.name, index = list(NULL,1)))[1]
+  hdf5.dim[2] <- dim(rhdf5::h5read(hdf5.file, haps.name, index = list(1,NULL)))[2]
   if(!transpose) {
     N <- hdf5.dim[2]
     L <- hdf5.dim[1]
@@ -288,22 +286,22 @@ ReadHaplotypes <- function(file,
   }
 
   # Figure out what to call all haplotypes/loci
-  all.hap.ids  <- tryCatch(rhdf5::h5read(file, hap.ids.name),  error = function(e) 1:N)
-  all.var.ids <- tryCatch(rhdf5::h5read(file, var.ids.name), error = function(e) 1:L)
+  all.hap.ids  <- tryCatch(rhdf5::h5read(hdf5.file, hap.ids.name),  error = function(e) 1:N)
+  all.loci.ids <- tryCatch(rhdf5::h5read(hdf5.file, loci.ids.name), error = function(e) 1:L)
 
   # Default to get everything
   if(identical(hap.ids, NA) && identical(hap.index, NA)) {
     hap.index <- 1:N
   }
-  if(identical(var.ids, NA) && identical(loci.index, NA)) {
+  if(identical(loci.ids, NA) && identical(loci.index, NA)) {
     loci.index <- 1:L
   }
-  idx <- IDs.to.index(hap.ids, var.ids, hap.index, loci.index, all.hap.ids, all.var.ids)
+  idx <- IDs.to.index(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, all.loci.ids)
 
   # Read
-  haps <- rhdf5::h5read(file, haps.name, index = list(idx$loci, idx$hap))
+  haps <- rhdf5::h5read(hdf5.file, haps.name, index = list(idx$loci, idx$hap))
 
   rhdf5::H5close()
 
-  list(haps = haps, hap.ids = all.hap.ids[idx$hap], var.ids = all.var.ids[idx$loci])
+  list(haps = haps, hap.ids = all.hap.ids[idx$hap], loci.ids = all.loci.ids[idx$loci])
 }
