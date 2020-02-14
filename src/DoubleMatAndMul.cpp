@@ -21,7 +21,6 @@ void DoubleMatAndMul_C(const double* __restrict__ alpha,
   double z0 = 0.0;
   double z1 = 0.0;
   double z2 = 0.0;
-  double temp = 0.0;
   double rd = (double)(r - 1);
 
   // Calculate column sums
@@ -37,9 +36,6 @@ void DoubleMatAndMul_C(const double* __restrict__ alpha,
 
         res[j+from_off] += c_1[i]*x[i];
         res[i]          += c_1[i]*x[j+from_off];
-
-        res2[j+from_off] += 0.0;
-        res2[i]          += 0.0;
 
       } else {
         c_2[i] = 0.0;
@@ -78,9 +74,6 @@ void DoubleMatAndMul_C(const double* __restrict__ alpha,
 
           res[j+from_off] += c_1[i]*x[i];
           res[i]          += c_1[i]*x[j+from_off];
-
-          res2[j+from_off] += 0.0;
-          res2[i]          += 0.0;
 
         } else {
           c_1[i] = 0.0;
@@ -221,8 +214,8 @@ List DoubleMatAndMul(NumericMatrix M,
   size_t r = (size_t) alpha.nrow(); // we need to make p=r and c2 = c
   size_t c = (size_t) alpha.ncol();
 
-  NumericVector res(r);
-  NumericVector res2(r);
+  NumericVector res(r); // filled with 0 at initialization
+  NumericVector res2(r); // filled with 0 at initialization
 
   if(r < 3) {
     Rcout << "each matrix must have at least three rows to perform standardization \n";

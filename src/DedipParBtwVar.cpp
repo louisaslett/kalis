@@ -6,10 +6,14 @@ using namespace Rcpp;
 #include <stdlib.h>
 
 
-void DedipPar_C(const double* __restrict__ alpha_c1,
+void DedipParBtwVarScalarPi_C(const double* __restrict__ alpha_c1,
                 const double* __restrict__ alpha_c2,
+                const double* __restrict__ f_c1,
+                const double* __restrict__ f_c2,
                 const double* __restrict__ beta_c1,
                 const double* __restrict__ beta_c2,
+                const double* __restrict__ g_c1,
+                const double* __restrict__ g_c2,
                 const double* __restrict__ x,
                 double* __restrict__ M_min_min,
                 double* __restrict__ M_min_mean,
@@ -21,7 +25,9 @@ void DedipPar_C(const double* __restrict__ alpha_c1,
                 double* __restrict__ res_min2nd,
                 size_t j,
                 size_t r,
-                size_t from_off) {
+                size_t from_off,
+                double fwd_rho,
+                double bck_rho) {
 
   double quad[4];
   double z1 = 0.0;
@@ -31,6 +37,14 @@ void DedipPar_C(const double* __restrict__ alpha_c1,
   m1 = 0.0; m2 = 0.0;
   s1 = 0.0; s2 = 0.0;
 
+  double beta_coeff_c1 = (1 - bck_rho) / (*g_c1);
+  double alpha_coeff_c1 = (1 - fwd_rho) / (*f_c1);
+
+  double beta_coeff_c2 = (1 - bck_rho) / (*g_c2);
+  double alpha_coeff_c2 = (1 - fwd_rho) / (*f_c2);
+
+  double alpha_offset = fwd_rho / rd;
+
   for(size_t i = 0; i < r/2; i++) {
     // each column is an independent HMM
     // quad is arranged
@@ -38,10 +52,10 @@ void DedipPar_C(const double* __restrict__ alpha_c1,
     // M_min_mean[i]  M_min2nd[i]
 
     // We always do the off-diagonal elements because we want to count distances between sister chromosomes even when i=j
-    z1 += M_min_min[i]  = *(alpha_c1++) * *(beta_c1++);
-    z1 += M_min_mean[i] = *(alpha_c1++) * *(beta_c1++);
-    z2 += M_min_max[i]  = *(alpha_c2++) * *(beta_c2++);
-    z2 += M_min2nd[i]   = *(alpha_c2++) * *(beta_c2++);
+    z1 += M_min_min[i]  = (alpha_coeff_c1 * *(alpha_c1++) + alpha_offset) * (beta_coeff_c1 * *(beta_c1++) + bck_rho) ;
+    z1 += M_min_mean[i] = (alpha_coeff_c1 * *(alpha_c1++) + alpha_offset) * (beta_coeff_c1 * *(beta_c1++) + bck_rho) ;
+    z2 += M_min_max[i]  = (alpha_coeff_c2 * *(alpha_c2++) + alpha_offset) * (beta_coeff_c2 * *(beta_c2++) + bck_rho) ;
+    z2 += M_min2nd[i]   = (alpha_coeff_c2 * *(alpha_c2++) + alpha_offset) * (beta_coeff_c2 * *(beta_c2++) + bck_rho) ;
   }
 
   // NEED TO ADD IN HANDLING HERE FOR THE CASE WHERE THE COLSUM IS 0!!!!!!!!
@@ -175,12 +189,14 @@ void DedipPar_C(const double* __restrict__ alpha_c1,
   }
 }
 
-void DedipPar_B(double* M_min_min,
+void DedipParBtwVarScalarPi_B(double* M_min_min,
                 double* M_min_mean,
                 double* M_min_max,
                 double* M_min2nd,
                 const double* __restrict__ alpha,
+                const double* __restrict__ f,
                 const double* __restrict__ beta,
+                const double* __restrict__ g,
                 const double* __restrict__ x,
                 double* __restrict__ res_min_min,
                 double* __restrict__ res_min_mean,
@@ -189,12 +205,18 @@ void DedipPar_B(double* M_min_min,
                 size_t r,
                 size_t from_off,
                 size_t from,
-                size_t N) {
+                size_t N,
+                double fwd_rho,
+                double bck_rho) {
   for(size_t j = from; j < from+N; j++) {
-    DedipPar_C(alpha+2*j*r,
+    DedipParBtwVarScalarPi_C(alpha+2*j*r,
                alpha+(2*j+1)*r,
+               f+(2*j),
+               f+(2*j+1),
                beta+2*j*r,
                beta+(2*j+1)*r,
+               g+(2*j),
+               g+(2*j+1),
                x,
                M_min_min + j*(r/2),
                M_min_mean + j*(r/2),
@@ -206,11 +228,13 @@ void DedipPar_B(double* M_min_min,
                res_min2nd,
                j,
                r,
-               from_off);
+               from_off,
+               fwd_rho,
+               bck_rho);
   }
 }
 
-void DedipPar_A(double* __restrict__ res_min_min,
+void DedipParBtwVarScalarPi_A(double* __restrict__ res_min_min,
                 double* __restrict__ res_min_mean,
                 double* __restrict__ res_min_max,
                 double* __restrict__ res_min2nd,
@@ -219,14 +243,18 @@ void DedipPar_A(double* __restrict__ res_min_min,
                 double* __restrict__ M_min_max,
                 double* __restrict__ M_min2nd,
                 const double* __restrict__ alpha,
+                const double* __restrict__ f,
                 const double* __restrict__ beta,
+                const double* __restrict__ g,
                 const double* __restrict__ x,
                 size_t from_off,
                 size_t nthreads,
                 size_t r,
                 size_t c,
                 size_t c2,
-                size_t p) {
+                size_t p,
+                double fwd_rho,
+                double bck_rho) {
 
   from_off = (from_off-1)/2;
 
@@ -247,14 +275,14 @@ void DedipPar_A(double* __restrict__ res_min_min,
     std::vector<std::thread> threads;
     for(size_t i=0; i<nthreads; ++i) {
       threads.push_back(std::thread(
-          DedipPar_B,
-          M_min_min, M_min_mean, M_min_max, M_min2nd, alpha, beta, x, res_perth_min_min + i*p, res_perth_min_mean + i*p,
-          res_perth_min_max + i*p, res_perth_min2nd + i*p, r, from_off, i*num_perth, num_perth));
+          DedipParBtwVarScalarPi_B,
+          M_min_min, M_min_mean, M_min_max, M_min2nd, alpha, f, beta, g, x, res_perth_min_min + i*p, res_perth_min_mean + i*p,
+          res_perth_min_max + i*p, res_perth_min2nd + i*p, r, from_off, i*num_perth, num_perth, fwd_rho, bck_rho));
     }
     // Tidy ragged end
     if(rag_end != 0) {
-      DedipPar_B(M_min_min, M_min_mean, M_min_max, M_min2nd, alpha, beta, x, res_perth_min_min + nthreads*p, res_perth_min_mean + nthreads*p,
-                 res_perth_min_max + nthreads*p, res_perth_min2nd + nthreads*p, r, from_off, nthreads*num_perth, rag_end);
+      DedipParBtwVarScalarPi_B(M_min_min, M_min_mean, M_min_max, M_min2nd, alpha, f, beta, g, x, res_perth_min_min + nthreads*p, res_perth_min_mean + nthreads*p,
+                 res_perth_min_max + nthreads*p, res_perth_min2nd + nthreads*p, r, from_off, nthreads*num_perth, rag_end, fwd_rho, bck_rho);
     }
     for(auto& th : threads) {
       th.join();
@@ -280,8 +308,8 @@ void DedipPar_A(double* __restrict__ res_min_min,
 
   } else {
 
-    DedipPar_B(M_min_min, M_min_mean, M_min_max, M_min2nd, alpha, beta, x, res_min_min, res_min_mean,
-               res_min_max, res_min2nd, r, from_off, 0, c2);
+    DedipParBtwVarScalarPi_B(M_min_min, M_min_mean, M_min_max, M_min2nd, alpha, f, beta, g, x, res_min_min, res_min_mean,
+               res_min_max, res_min2nd, r, from_off, 0, c2, fwd_rho, bck_rho);
 
     for(size_t i = 0; i < p; i++) {
       res_min_min[i]  *= 0.5;
@@ -296,15 +324,20 @@ void DedipPar_A(double* __restrict__ res_min_min,
 
 
 // [[Rcpp::export]]
-List DedipParAtVarScalarPi(List M,
-                           List fwd,
-                           List bck,
-                           NumericVector x,
-                           int from_recipient,
-                           int nthreads) {
+List DedipParBtwVarScalarPi(List M,
+                            List fwd,
+                            List bck,
+                            NumericVector x,
+                            double fwd_rho,
+                            double bck_rho,
+                            int from_recipient,
+                            int nthreads) {
 
   NumericMatrix alpha = fwd["alpha"];
   NumericMatrix beta = bck["beta"];
+
+  NumericVector f = fwd["alpha.f"];
+  NumericVector g = bck["beta.g"];
 
   size_t r = (size_t) alpha.nrow();
   size_t c = (size_t) alpha.ncol();
@@ -358,23 +391,27 @@ List DedipParAtVarScalarPi(List M,
   }
 
 
-  DedipPar_A(&(res_min_min[0]),
-             &(res_min_mean[0]),
-             &(res_min_max[0]),
-             &(res_min2nd[0]),
-             &(M_min_min[0]),
-             &(M_min_mean[0]),
-             &(M_min_max[0]),
-             &(M_min2nd[0]),
-             &(alpha[0]),
-             &(beta[0]),
-             &(x[0]),
-             from_recipient,
-             nthreads,
-             r,
-             c,
-             c2,
-             p);
+  DedipParBtwVarScalarPi_A(&(res_min_min[0]),
+                           &(res_min_mean[0]),
+                           &(res_min_max[0]),
+                           &(res_min2nd[0]),
+                           &(M_min_min[0]),
+                           &(M_min_mean[0]),
+                           &(M_min_max[0]),
+                           &(M_min2nd[0]),
+                           &(alpha[0]),
+                           &(f[0]),
+                           &(beta[0]),
+                           &(g[0]),
+                           &(x[0]),
+                           from_recipient,
+                           nthreads,
+                           r,
+                           c,
+                           c2,
+                           p,
+                           fwd_rho,
+                           bck_rho);
 
   List L = List::create(Named("min_min") = res_min_min , Named("min_mean") = res_min_mean ,
                         Named("min_max") = res_min_max , Named("min2nd") = res_min2nd);

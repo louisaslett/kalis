@@ -16,34 +16,40 @@ void MatAndMul_C(const double* __restrict__ alpha,
                  size_t j,
                  size_t r,
                  size_t from_off) {
-  double z1;
-  z1 = 0.0;
+  double z0 = 0.0;
 
+  // We will assume in this accumulation that alpha * beta is always 0 along the matrix diagonal
   for(size_t i = 0; i < r; i++) {
-    z1 += c_1[i] = *(alpha++) * *(beta++);
+    z0 += c_1[i] = *(alpha++) * *(beta++);
   }
 
-  if(z1 <= 0){
-    // if the sum is zero, then we assume that all c_1 are 0, so we say that all of the distances are really far, so distance - min possible distance  = 0...so all of the distances go to 0.
-    // this is consistent with the standardized distance version
+  if(z0 <= 0){
+    // if the sum is zero (all of the alpha*beta entries = 0), then all of the distances are beyond the resolution
+    // of numerical precision, so we set all of the distances to the -log of the smallest respresentable double
     for(size_t i = 0; i < r; i++) {
-      c_1[i] = 0.0;
+      if(i==j){
+        c_1[i] = 0.0;
+      } else {
+        c_1[i] = 744.4400719213812180897;
+      }
     }
-  } else {
 
-    z1 = log(z1);
+  } else { // z0 > 0
 
     for(size_t i = 0; i < r; i++) {
-      if(i!=j) {
+      if(i==j) {
+        c_1[i] = 0.0;
+      } else {
+
+        c_1[i] = c_1[i] / z0;
+
         if(c_1[i] == 0){
-          c_1[i] = 708.396418532264078749 + z1;
+          c_1[i] = 744.4400719213812180897;  // -log of smallest representable double
         } else {
-          c_1[i] = -log(c_1[i]) + z1; // this is the final value for M[i,j]
+          c_1[i] = -log(c_1[i]); // this is the final value for M[i,j]
         }
         res[j+from_off] += c_1[i]*x[i];
         res[i]          += c_1[i]*x[j+from_off];
-      } else {
-        c_1[i] = 0.0;
       }
     }
   }
@@ -57,47 +63,67 @@ void MatAndMul_C_standardize(const double* __restrict__ alpha,
                              size_t j,
                              size_t r,
                              size_t from_off) {
+  double z0 = 0.0;
   double z1 = 0.0;
   double z2 = 0.0;
-  double temp = 0.0;
   double rd = (double)(r - 1);
 
+  // We will assume in this accumulation that alpha * beta is always 0 along the matrix diagonal
   for(size_t i = 0; i < r; i++) {
-
-    temp = *(alpha++) * *(beta++);
-
-    if(i!=j) {
-      if(temp <= 0) {
-        z1 += c_1[i] = 708.396418532264078749;
-      } else {
-        z1 += c_1[i] = -log(temp);
-      }
-      z2 += std::pow(c_1[i], 2.0);
-    }
+    z0 += c_1[i] = *(alpha++) * *(beta++);
   }
 
-  // note that if all of the c_1 are 0, then all of the distances are 708 distance - mean distance  = 0...so all of the standardized distances go to 0.
-  // this is consistent with the unstandardized distance version
+  // if all of the donors have "0" probability of being copied, so all c_1[i] = 0, we exit here...otherwise...
+  if(z0<=0){
 
-  z1 = z1 / rd; // Calculate Mean
-
-  z2 = (z2 - std::pow(z1, 2.0) * rd) / (rd - 1.0);
-
-  z2 = std::pow(z2, -0.5); // Calculate standard deviation
-
-  z1 = -z1 * z2;
-
-  for(size_t i = 0; i < r; i++) {
-
-    if(i!=j) {
-      c_1[i] = c_1[i] * z2 + z1; // this is the final value for M[i,j]
-      res[j+from_off] += c_1[i]*x[i];
-      res[i]          += c_1[i]*x[j+from_off];
-    } else {
+    for(size_t i = 0; i < r; i++) {
       c_1[i] = 0.0;
     }
-  }
 
+  } else { // z0 > 0
+
+    for(size_t i=0; i < r; i++){
+      if(i==j) {
+        continue;
+      } else {
+        c_1[i] = c_1[i] / z0;
+
+        if(c_1[i]==0) {
+          c_1[i] = 744.4400719213812180897;  // -log of smallest representable double
+        } else {
+          c_1[i] = -log(c_1[i]);
+        }
+
+        z1 += c_1[i];
+        z2 += std::pow(c_1[i],2.0);
+      }
+    }
+
+    z1 = z1 / rd; // Calculate Mean
+
+    z2 = (z2 - std::pow(z1, 2.0) * rd) / (rd - 1.0); // Unbiased Estimate of the Variance
+
+    if(z2 <= 0){ // if there is no variance in the distances, we just set them all to 0
+      for(size_t i = 0; i < r; i++) {
+        c_1[i] = 0.0;
+      }
+    } else {
+
+      z2 = std::pow(z2, -0.5); // Calculate standard deviation
+
+      z1 = -z1 * z2;
+
+      for(size_t i = 0; i < r; i++) {
+        if(i==j) {
+          c_1[i] = 0.0;
+        } else {
+          c_1[i] = c_1[i] * z2 + z1; // this is the final value for M[i,j]
+          res[j+from_off] += c_1[i]*x[i];
+          res[i]          += c_1[i]*x[j+from_off];
+        }
+      }
+    }
+  }
 }
 
 
