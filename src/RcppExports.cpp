@@ -138,7 +138,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // CalcTraces
-NumericVector CalcTraces(NumericMatrix M, NumericMatrix tX, NumericMatrix tQ, NumericMatrix Z, NumericMatrix J, size_t from_recipient, size_t nthreads);
+List CalcTraces(NumericMatrix M, NumericMatrix tX, NumericMatrix tQ, NumericMatrix Z, NumericMatrix J, size_t from_recipient, size_t nthreads);
 RcppExport SEXP _kalis_CalcTraces(SEXP MSEXP, SEXP tXSEXP, SEXP tQSEXP, SEXP ZSEXP, SEXP JSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
