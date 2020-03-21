@@ -96,7 +96,7 @@ List CalcTraces(NumericMatrix M,  // r x c
     CalcTraces_A(&(M[0]), &(tX[0]), &(tQ[0]), &(Z[0]), &(J[0]), &(trace[0]), &(hsnorm[0]), &(diag[0]), r, from_off, 0, c, p);
   }
 
-  List L = List::create(Named("trace") = trace , Named("hsnorm") = hsnorm,
+  List L = List::create(Named("trace") = trace , Named("hsnorm2") = hsnorm,
                         Named("diag") = diag);
   return L;
 }
