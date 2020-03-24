@@ -2,8 +2,6 @@ pkgVars <- new.env(parent = emptyenv())
 assign("working.dir", '.', envir = pkgVars)
 assign("N", NA, envir = pkgVars) # must be integer
 assign("L", NA, envir = pkgVars) # must be integer
-assign("hap.ids", NA, envir = pkgVars) # integer => no ids supplied; character => ids
-assign("loci.ids", NA, envir = pkgVars) # integer => no ids supplied; character => ids
 
 # We assume haplotypes are stored in the slowest changing dimension
 # per the HDF5 spec definition.  This is "row-wise" in the C standard
@@ -50,6 +48,10 @@ assign("loci.ids", NA, envir = pkgVars) # integer => no ids supplied; character 
 #'
 #' @param haps can be the name of a file from which the haplotypes are to be
 #'   read, or can be a binary R matrix.
+#' @param loci.idx an optional integer vector of which loci to load from `haps`
+#'   into the cache, indexed from 1.
+#' @param hap.idx an optional integer vector of which haplotypes to load from
+#'   `haps` into the cache, indexed from 1.
 #' @param format the file format which `file` is stored in, or `"auto"` to
 #'   detect format based on the file extension.  Recognised options are `"hdf5"`
 #'   and `"vcf"`
@@ -60,24 +62,26 @@ assign("loci.ids", NA, envir = pkgVars) # integer => no ids supplied; character 
 #'       - `transpose` a logical value indicating whether to switch the
 #'         interpretation of the slowest changing dimension (hence switching the
 #'         number of haplotypes and the length)
-#'       - `haps` a character vector giving the path to a 2-dimensional
-#'         object in the HDF5 file specifying the haplotype matrix.
-#'       - `hap.ids` a character vector giving the path to a 1-dimensional
-#'         object in the HDF5 file specifying identifiers for the haplotypes
-#'         being loaded.  By default, haplotypes will simply be numbered
-#'         according to the order they appear in the haplotype matrix, indexed
-#'         from 1.
-#'       - `loci.ids` a character vector giving the path to a 1-dimensional
-#'         object in the HDF5 file specifying identifiers for the haplotypes
-#'         being loaded.  By default, haplotypes will simply be numbered
-#'         according to the order they appear in the haplotype matrix, indexed
-#'         from 1.
+#'       - `haps` a string giving the path to a 2-dimensional object in the
+#'         HDF5 file specifying the haplotype matrix.  Defaults to `/haps`
+#'       - `hdf5.pkg` a string giving the HDF5 R package to use to load the file
+#'         from disk.  The packages `rhdf5` (BioConductor) and `hdf5r` (CRAN)
+#'         are both supported.  Default is to use `hdf5r` if both packages are
+#'         available, with fallback to `rhdf5`.  This should never need to be
+#'         specified unless you have both packages but want to force the use of
+#'         the `rhdf5` package.
+#'   1. R matrix
+#'       - `transpose` a logical value indicating whether to switch the
+#'         interpretation of the dimensions (hence switching the number of
+#'         haplotypes and the length).  By default (`FALSE`), loci are taken to
+#'         be in rows with haplotypes in columns (ie a num loci x num haps
+#'         matrix)
 #'
 #' @return Nothing is returned by the function.
 #'   However, a status message is output indicating the dimensions of the loaded
 #'   data.
-#'   This can be useful for HDF5 input when you are uncertain about the
-#'   orientation of the `haps` object.
+#'   This can be especially useful for HDF5 input when you are uncertain about
+#'   the orientation of the `haps` object.
 #'   If this message shows the dimensions incorrectly ordered, call the function
 #'   again with the extra argument `transpose = TRUE`.
 #'
@@ -112,14 +116,28 @@ assign("loci.ids", NA, envir = pkgVars) # integer => no ids supplied; character 
 #' }
 #'
 #' @export
-CacheHaplotypes <- function(haps, format = "auto", ...) {
-  if(is.character(haps)) {
-    if(!file.exists(haps)) {
-      if(!is.na(get("N", envir = pkgVars))) {
-        stop("Cannot find file to make new cache. Keeping existing cache.")
-      } else {
-        stop("Cannot find file.")
-      }
+CacheHaplotypes <- function(haps, loci.idx = NULL, hap.idx = NULL, format = "auto", ...) {
+  if(!identical(loci.idx, NULL)) {
+    if(!testAtomicVector(loci.idx, any.missing = FALSE, unique = TRUE)) {
+      CacheHaplotypes.err(glue("Error for argument loci.idx ... {checkAtomicVector(loci.idx, any.missing = FALSE, unique = TRUE)}"))
+    }
+    if(!testIntegerish(loci.idx, lower = 1, sorted = TRUE)) {
+      CacheHaplotypes.err(glue("Error for argument loci.idx ... {checkIntegerish(loci.idx, lower = 1, sorted = TRUE)}"))
+    }
+  }
+
+  if(!identical(hap.idx, NULL)) {
+    if(!testAtomicVector(hap.idx, any.missing = FALSE, unique = TRUE)) {
+      CacheHaplotypes.err(glue("Error for argument hap.idx ... {checkAtomicVector(hap.idx, any.missing = FALSE, unique = TRUE)}"))
+    }
+    if(!testIntegerish(hap.idx, lower = 1, sorted = TRUE)) {
+      CacheHaplotypes.err(glue("Error for argument hap.idx ... {checkIntegerish(hap.idx, lower = 1, sorted = TRUE)}"))
+    }
+  }
+
+  if(testString(haps)) {
+    if(!testFile(haps, access = "r")) {
+      CacheHaplotypes.err(checkFile(haps, access = "r"))
     }
 
     cached <- FALSE
@@ -128,7 +146,7 @@ CacheHaplotypes <- function(haps, format = "auto", ...) {
     if(format == "hdf5" ||
        (format == "auto" && (ext == ".h5" ||
                              ext == ".hdf5"))) {
-      CacheHaplotypes.hdf5(haps, ...)
+      CacheHaplotypes.hdf5(haps, loci.idx, hap.idx, ...)
       cached <- TRUE
     }
     if(format == "vcf" ||
@@ -148,7 +166,7 @@ CacheHaplotypes <- function(haps, format = "auto", ...) {
     if(any(!(haps == 1 || haps == 0))) {
       stop("All entries in haplotype matrix must be zero or one.")
     }
-    CacheHaplotypes.matrix(haps, ...)
+    CacheHaplotypes.matrix(haps, loci.idx, hap.idx, ...)
   } else {
     stop("Unable to load haplotypes from the provided object.")
   }
@@ -166,103 +184,6 @@ CacheHaplotypes.err <- function(err) {
 
 
 
-CacheHaplotypes.matrix <- function(x, transpose = FALSE) {
-  if(!is.na(get("N", envir = pkgVars))) {
-    warning("haplotypes already cached ... overwriting existing cache.")
-    ClearHaplotypeCache()
-  }
-
-  # Get dimensions of haplotype data
-  if(!transpose) {
-    N <- dim(x)[2]
-    L <- dim(x)[1]
-  } else {
-    N <- dim(x)[1]
-    L <- dim(x)[2]
-  }
-  assign("N", as.integer(N), envir = pkgVars)
-  assign("hap.ids", as.integer(1:N), envir = pkgVars)
-  assign("loci.ids", as.integer(1:L), envir = pkgVars)
-
-  # Cache it!
-  assign("L", as.integer(CacheHaplotypes_matrix_2(x, N, L, transpose)), envir = pkgVars)
-}
-
-
-
-IDs.to.index <- function(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, all.loci.ids) {
-  if(!is.atomic(hap.ids) || !is.atomic(loci.ids) || !is.atomic(hap.index) || !is.atomic(loci.index)) {
-    stop("Arguments can only be vectors.")
-  }
-  if(is.na(hap.ids) && is.na(hap.index)) {
-    stop("At least one of hap.ids or hap.index must be provided.")
-  }
-  if(!is.na(hap.ids) && !is.na(hap.index)) {
-    stop("Only one of hap.ids or hap.index may be provided.")
-  }
-  if(is.na(loci.ids) && is.na(loci.index)) {
-    stop("At least one of loci.ids or loci.index must be provided.")
-  }
-  if(!is.na(loci.ids) && !is.na(loci.index)) {
-    stop("Only one of loci.ids or loci.index may be provided.")
-  }
-
-  # Check IDs and argument compatibility
-  if(!is.na(hap.ids) && is.integer(all.hap.ids)) {
-    hap.ids <- suppressWarnings(as.integer(hap.ids))
-    if(any(is.na(hap.ids))) {
-      stop("hap.ids supplied but no hap.ids are present ... failed when trying to interpret as an index.")
-    }
-    warning("hap.ids supplied but no hap.ids are present ... interpreting as an index.")
-  } else if(!is.na(hap.ids) && is.character(all.hap.ids)) {
-    hap.ids2 <- match(as.character(hap.ids), all.hap.ids)
-    if(any(is.na(hap.ids2))) {
-      stop(glue("Can't find haplotype IDs: {paste(as.character(hap.ids)[is.na(hap.ids2)], collapse = ', ')}"))
-    }
-    hap.ids <- hap.ids2
-  } else if(is.na(hap.ids)) {
-    hap.ids <- suppressWarnings(as.integer(hap.index))
-    if(any(is.na(hap.ids))) {
-      stop("Failed when trying to interpret hap.index as an integer.")
-    }
-  } else {
-    stop("Unrecoverable error trying to interpret hap.ids/hap.index arguments.")
-  }
-
-  if(!is.na(loci.ids) && is.integer(all.loci.ids)) {
-    loci.ids <- suppressWarnings(as.integer(loci.ids))
-    if(any(is.na(loci.ids))) {
-      stop("loci.ids supplied but no loci.ids are present ... failed when trying to interpret as an index.")
-    }
-    warning("loci.ids supplied but no loci.ids are present ... interpreting as an index.")
-  } else if(!is.na(loci.ids) && is.character(all.loci.ids)) {
-    loci.ids2 <- match(as.character(loci.ids), all.loci.ids)
-    if(any(is.na(loci.ids2))) {
-      stop(glue("loci IDs: {paste(as.character(loci.ids)[is.na(loci.ids2)], collapse = ', ')} not found."))
-    }
-    loci.ids <- loci.ids2
-  } else if(is.na(loci.ids)) {
-    loci.ids <- suppressWarnings(as.integer(loci.index))
-    if(any(is.na(loci.ids))) {
-      stop("Failed when trying to interpret loci.index as an integer.")
-    }
-  } else {
-    stop("Unrecoverable error trying to interpret hap.ids/hap.index arguments.")
-  }
-
-  # Check we have sensible indexing by this point
-  if(any(hap.ids < 1 | hap.ids > length(all.hap.ids))) {
-    stop("Invalid haplotypes specified.")
-  }
-  if(any(loci.ids < 1 | loci.ids > length(all.loci.ids))) {
-    stop("Invalid loci specified.")
-  }
-
-  list(hap = hap.ids, loci = loci.ids)
-}
-
-
-
 #' Retrieve haplotypes from memory cache
 #'
 #' Retrieve haplotypes from the memory cache, converting the raw binary into
@@ -274,16 +195,11 @@ IDs.to.index <- function(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, 
 #' haplotypes out of this low-level format and into a standard R
 #' matrix of 0's and 1's.
 #'
-#' @param hap.ids which haplotypes to retrieve from the cache, specified by ID.
-#'   Cannot be specified at the same time as `hap.index`
-#' @param loci.ids which loci to retrieve from the cache, specified by ID.
-#'   Cannot be specified at the same time as `loci.index`
-#' @param hap.index which haplotypes to retrieve from the cache, specified as
-#'   a (vector) index.  This enables specifying haplotypes by offset in the order
+#' @param hap.idx which haplotypes to retrieve from the cache, specified as a
+#'   (vector) index.  This enables specifying haplotypes by offset in the order
 #'   they were loaded into the cache (from 1 to the number of haplotypes).
-#'   Cannot be specified at the same time as `hap.ids`
-#' @param loci.index which loci to retrieve from the cache, specified as
-#'   a (vector) index.  This enables specifying loci by offset in the order
+#' @param loci.idx which loci to retrieve from the cache, specified as a
+#'   (vector) index.  This enables specifying loci by offset in the order
 #'   they were loaded into the cache (from 1 to the number of loci).
 #'   Cannot be specified at the same time as `loci.ids`
 #'
@@ -311,35 +227,44 @@ IDs.to.index <- function(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, 
 #' }
 #'
 #' @export QueryCache
-QueryCache <- function(hap.ids = NA, loci.ids = NA, hap.index = NA, loci.index = NA) {
+QueryCache <- function(loci.idx = NULL, hap.idx = NULL) {
   N <- get("N", envir = pkgVars)
   L <- get("L", envir = pkgVars)
-  all.hap.ids <- get("hap.ids", envir = pkgVars)
-  all.loci.ids <- get("loci.ids", envir = pkgVars)
 
-  # Check arguments
-  if(identical(hap.ids, NA) && identical(hap.index, NA)) {
-    hap.index <- all.hap.ids
+  if(!identical(loci.idx, NULL)) {
+    if(!testAtomicVector(loci.idx, any.missing = FALSE, unique = TRUE)) {
+      CacheHaplotypes.err(glue("Error for argument loci.idx ... {checkAtomicVector(loci.idx, any.missing = FALSE, unique = TRUE)}"))
+    }
+    if(!testIntegerish(loci.idx, lower = 1, upper = L)) {
+      CacheHaplotypes.err(glue("Error for argument loci.idx ... {checkIntegerish(loci.idx, lower = 1, upper = L)}"))
+    }
+  } else {
+    loci.idx <- 1:L
   }
-  if(identical(loci.ids, NA) && identical(loci.index, NA)) {
-    loci.index <- all.loci.ids
+
+  if(!identical(hap.idx, NULL)) {
+    if(!testAtomicVector(hap.idx, any.missing = FALSE, unique = TRUE)) {
+      CacheHaplotypes.err(glue("Error for argument hap.idx ... {checkAtomicVector(hap.idx, any.missing = FALSE, unique = TRUE)}"))
+    }
+    if(!testIntegerish(hap.idx, lower = 1, upper = N)) {
+      CacheHaplotypes.err(glue("Error for argument hap.idx ... {checkIntegerish(hap.idx, lower = 1, upper = N)}"))
+    }
+  } else {
+    hap.idx <- 1:N
   }
-  idx <- IDs.to.index(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, all.loci.ids)
 
   # Finally, grab them!
   res <- matrix(integer(1),
-                nrow = length(idx$loci),
-                ncol = length(idx$hap),
-                dimnames = list(all.loci.ids[idx$loci],
-                                all.hap.ids[idx$hap]))
+                nrow = length(loci.idx),
+                ncol = length(hap.idx))
 
-  if(length(idx$loci) < length(idx$hap)) {
-    for(i in 1:length(idx$loci)) {
-      res[i,] <- as.integer(intToBits(QueryCache2_loc(idx$loci[i]-1)))[idx$hap]
+  if(length(loci.idx) < length(hap.idx)) {
+    for(i in 1:length(loci.idx)) {
+      res[i,] <- as.integer(intToBits(QueryCache2_loc(loci.idx[i]-1)))[hap.idx]
     }
   } else {
-    for(i in 1:length(idx$hap)) {
-      res[,i] <- as.integer(intToBits(QueryCache2_ind(idx$hap[i]-1)))[idx$loci]
+    for(i in 1:length(hap.idx)) {
+      res[,i] <- as.integer(intToBits(QueryCache2_ind(hap.idx[i]-1)))[loci.idx]
     }
   }
   res
@@ -373,8 +298,6 @@ QueryCache <- function(hap.ids = NA, loci.ids = NA, hap.index = NA, loci.index =
 ClearHaplotypeCache <- function() {
   assign("N", NA, envir = pkgVars)
   assign("L", NA, envir = pkgVars)
-  assign("hap.ids", NA, envir = pkgVars)
-  assign("loci.ids", NA, envir = pkgVars)
   ClearHaplotypeCache2()
 }
 
@@ -383,8 +306,6 @@ ClearHaplotypeCache <- function() {
 .onUnload <- function(libpath) {
   assign("N", NA, envir = pkgVars)
   assign("L", NA, envir = pkgVars)
-  assign("hap.ids", NA, envir = pkgVars)
-  assign("loci.ids", NA, envir = pkgVars)
   ClearHaplotypeCache()
   library.dynam.unload("kalis", libpath)
 }

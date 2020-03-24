@@ -4,24 +4,17 @@
 \alias{QueryCache}
 \title{Retrieve haplotypes from memory cache}
 \usage{
-QueryCache(hap.ids = NA, loci.ids = NA, hap.index = NA, loci.index = NA)
+QueryCache(loci.idx = NULL, hap.idx = NULL)
 }
 \arguments{
-\item{hap.ids}{which haplotypes to retrieve from the cache, specified by ID.
-Cannot be specified at the same time as \code{hap.index}}
-
-\item{loci.ids}{which loci to retrieve from the cache, specified by ID.
-Cannot be specified at the same time as \code{loci.index}}
-
-\item{hap.index}{which haplotypes to retrieve from the cache, specified as
-a (vector) index.  This enables specifying haplotypes by offset in the order
-they were loaded into the cache (from 1 to the number of haplotypes).
-Cannot be specified at the same time as \code{hap.ids}}
-
-\item{loci.index}{which loci to retrieve from the cache, specified as
-a (vector) index.  This enables specifying loci by offset in the order
+\item{loci.idx}{which loci to retrieve from the cache, specified as a
+(vector) index.  This enables specifying loci by offset in the order
 they were loaded into the cache (from 1 to the number of loci).
 Cannot be specified at the same time as \code{loci.ids}}
+
+\item{hap.idx}{which haplotypes to retrieve from the cache, specified as a
+(vector) index.  This enables specifying haplotypes by offset in the order
+they were loaded into the cache (from 1 to the number of haplotypes).}
 }
 \value{
 A matrix of 0/1 integers with \code{length} rows and

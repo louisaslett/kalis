@@ -1,8 +1,8 @@
 CacheHaplotypes.hdf5 <- function(hdf5.file,
+                                 loci.idx,
+                                 hap.idx,
                                  transpose = FALSE,
                                  haps = "/haps",
-                                 hap.ids = NULL,
-                                 loci.ids = NULL,
                                  hdf5.pkg = c("hdf5r", "rhdf5")) {
   for(pkg in hdf5.pkg) {
     if(!(pkg %in% c("hdf5r", "rhdf5"))) {
@@ -10,10 +10,10 @@ CacheHaplotypes.hdf5 <- function(hdf5.file,
     }
     if(length(find.package(pkg, quiet = TRUE)) > 0) {
       if(pkg == "hdf5r") {
-        return(CacheHaplotypes.hdf5.hdf5r(hdf5.file, transpose, haps, hap.ids, loci.ids))
+        return(CacheHaplotypes.hdf5.hdf5r(hdf5.file, loci.idx, hap.idx, transpose, haps))
       }
       if(pkg == "rhdf5") {
-        return(CacheHaplotypes.hdf5.rhdf5(hdf5.file, transpose, haps, hap.ids, loci.ids))
+        return(CacheHaplotypes.hdf5.rhdf5(hdf5.file, loci.idx, hap.idx, transpose, haps))
       }
     }
   }
@@ -22,13 +22,13 @@ CacheHaplotypes.hdf5 <- function(hdf5.file,
 
 
 CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file,
+                                       loci.idx,
+                                       hap.idx,
                                        transpose,
-                                       haps,
-                                       hap.ids,
-                                       loci.ids) {
+                                       haps) {print("hdf5r")
   # Check for file and dataset within file
-  if(!file.exists(hdf5.file)) {
-    CacheHaplotypes.err("Cannot find HDF5 file.")
+  if(!testFile(hdf5.file, access = "r")) {
+    CacheHaplotypes.err(checkFile(hdf5.file, access = "r"))
   }
 
   # Open file and objects
@@ -38,67 +38,54 @@ CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file,
     CacheHaplotypes.err(glue("HDF5 file exists but does not contain an object at '{haps}' for the haplotype data."))
   }
 
-  # haplotypes
+  # locate haplotypes within file
   h5.haps <- h5$open(haps)
   if(length(h5.haps$dims) != 2) {
     h5$close_all()
     CacheHaplotypes.err(glue("HDF5 object at '{haps}' does not contain 2-dimensional data."))
   }
-  if(!transpose) {
-    N <- h5.haps$dims[2]
-    L <- h5.haps$dims[1]
+
+  # Check/assign indices to read
+  if(!identical(loci.idx, NULL)) {
+    if(!transpose) {
+      if(!testIntegerish(loci.idx, lower = 1, upper = h5.haps$dims[1], sorted = TRUE)) {
+        CacheHaplotypes.err(glue("Error for argument loci.idx ... {checkIntegerish(loci.idx, lower = 1, upper = h5.haps$dims[1], sorted = TRUE)}"))
+      }
+    } else {
+      if(!testIntegerish(loci.idx, lower = 1, upper = h5.haps$dims[2], sorted = TRUE)) {
+        CacheHaplotypes.err(glue("Error for argument loci.idx ... {checkIntegerish(loci.idx, lower = 1, upper = h5.haps$dims[2], sorted = TRUE)}"))
+      }
+    }
+    loci.idx <- loci.idx
   } else {
-    N <- h5.haps$dims[1]
-    L <- h5.haps$dims[2]
+    if(!transpose) {
+      loci.idx <- 1:(h5.haps$dims[1])
+    } else {
+      loci.idx <- 1:(h5.haps$dims[2])
+    }
   }
 
-  # haplotype ids
-  if(!is.null(hap.ids)) {
-    if(!h5$exists(hap.ids)) {
-      h5$close_all()
-      CacheHaplotypes.err(glue("HDF5 file exists but does not contain an object at '{hap.ids}' for the haplotype IDs."))
+  if(!identical(hap.idx, NULL)) {
+    if(!transpose) {
+      if(!testIntegerish(hap.idx, lower = 1, upper = h5.haps$dims[2], sorted = TRUE)) {
+        CacheHaplotypes.err(glue("Error for argument hap.idx ... {checkIntegerish(hap.idx, lower = 1, upper = h5.haps$dims[2], sorted = TRUE)}"))
+      }
+    } else {
+      if(!testIntegerish(hap.idx, lower = 1, upper = h5.haps$dims[1], sorted = TRUE)) {
+        CacheHaplotypes.err(glue("Error for argument hap.idx ... {checkIntegerish(hap.idx, lower = 1, upper = h5.haps$dims[1], sorted = TRUE)}"))
+      }
     }
-    h5.hap.ids <- h5$open(hap.ids)
-    if(length(h5.hap.ids$dims) != 1) {
-      h5$close_all()
-      CacheHaplotypes.err(glue("HDF5 object at '{hap.ids}' does not contain 1-dimensional ID information."))
-    }
-    if(h5.hap.ids$dims[1] != N) {
-      h5$close_all()
-      CacheHaplotypes.err(glue("HDF5 object at '{hap.ids}' contains {h5.hap.ids$dims[1]} haplotype IDs, but {haps} dataset contains {N} haplotypes (is transpose set correctly?)."))
-    }
-    hap.ids.tmp <- as.character(h5.hap.ids[])
-    if(length(unique(hap.ids.tmp)) != length(hap.ids.tmp)) {
-      h5$close_all()
-      CacheHaplotypes.err(glue("HDF5 object at '{hap.ids}' contains {h5.hap.ids$dims[1]} haplotype IDs, but they are not all unique."))
-    }
+    hap.idx <- hap.idx
   } else {
-    hap.ids.tmp <- as.integer(1:N)
+    if(!transpose) {
+      hap.idx <- 1:(h5.haps$dims[2])
+    } else {
+      hap.idx <- 1:(h5.haps$dims[1])
+    }
   }
 
-  # loci ids
-  if(!is.null(loci.ids)) {
-    if(!h5$exists(loci.ids)) {
-      h5$close_all()
-      CacheHaplotypes.err(glue("HDF5 file exists but does not contain an object at '{loci.ids}' for the locus IDs."))
-    }
-    h5.loci.ids <- h5$open(loci.ids)
-    if(length(h5.loci.ids$dims) != 1) {
-      h5$close_all()
-      CacheHaplotypes.err(glue("HDF5 object at '{loci.ids}' does not contain 1-dimensional ID information."))
-    }
-    if(h5.loci.ids$dims[1] != L) {
-      h5$close_all()
-      CacheHaplotypes.err(glue("HDF5 object at '{loci.ids}' contains {h5.loci.ids$dims[1]} locus IDs, but {haps} dataset contains {L} loci (is transpose set correctly?)."))
-    }
-    loci.ids.tmp <- as.character(h5.loci.ids[])
-    if(length(unique(loci.ids.tmp)) != length(loci.ids.tmp)) {
-      h5$close_all()
-      CacheHaplotypes.err(glue("HDF5 object at '{loci.ids}' contains {h5.loci.ids$dims[1]} locus IDs, but they are not all unique."))
-    }
-  } else {
-    loci.ids.tmp <- as.integer(1:L)
-  }
+  L <- length(loci.idx)
+  N <- length(hap.idx)
 
   # Make sure we don't double up cache content if there is already stuff cached
   if(!is.na(get("N", envir = pkgVars))) {
@@ -106,12 +93,10 @@ CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file,
     ClearHaplotypeCache()
   }
   assign("N", as.integer(N), envir = pkgVars)
-  assign("hap.ids", hap.ids.tmp, envir = pkgVars); rm(hap.ids.tmp);
-  assign("loci.ids", loci.ids.tmp, envir = pkgVars); rm(loci.ids.tmp);
 
   # Create a closure for easy access of HDF5 file
   # We'll read in 10MB (raw size) chunks
-  make.hdf5.access <- function(h5.haps, N, L) {
+  make.hdf5.access <- function(h5.haps, loci.idx, hap.idx, transpose, L, N) {
     step.size <- round(10000000/(L/8))
     current.step <- 1
     function() {
@@ -120,16 +105,16 @@ CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file,
       }
       upto <- min(current.step + step.size - 1, N)
       if(!transpose)
-        res <- h5.haps[,current.step:upto]
+        res <- h5.haps[loci.idx,hap.idx[current.step:upto]]
       else
-        res <- t(h5.haps[current.step:upto,])
+        res <- t(h5.haps[hap.idx[current.step:upto],loci.idx])
       current.step <<- upto + 1
       res
     }
   }
 
   # Cache it!
-  assign("L", CacheHaplotypes_hdf5_2(make.hdf5.access(h5.haps, N, L), N, L), envir = pkgVars)
+  assign("L", CacheHaplotypes_hdf5_2(make.hdf5.access(h5.haps, loci.idx, hap.idx, transpose, L, N), N, L), envir = pkgVars)
   h5$close_all()
   invisible(NULL)
 }
@@ -137,50 +122,61 @@ CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file,
 
 
 CacheHaplotypes.hdf5.rhdf5 <- function(hdf5.file,
+                                       loci.idx,
+                                       hap.idx,
                                        transpose,
-                                       haps,
-                                       hap.ids,
-                                       loci.ids) {
+                                       haps) {print("rhdf5")
   # Check for file and dataset within file
-  if(!file.exists(hdf5.file)) {
-    CacheHaplotypes.err("Cannot find HDF5 file.")
+  if(!testFile(hdf5.file, access = "r")) {
+    CacheHaplotypes.err(checkFile(hdf5.file, access = "r"))
   }
 
   # Get dimensions of haplotype data
   hdf5.dim <- integer(2)
   hdf5.dim[1] <- dim(rhdf5::h5read(hdf5.file, haps, index = list(NULL,1)))[1]
   hdf5.dim[2] <- dim(rhdf5::h5read(hdf5.file, haps, index = list(1,NULL)))[2]
-  if(!transpose) {
-    N <- hdf5.dim[2]
-    L <- hdf5.dim[1]
+
+  # Check/assign indices to read
+  if(!identical(loci.idx, NULL)) {
+    if(!transpose) {
+      if(!testIntegerish(loci.idx, lower = 1, upper = hdf5.dim[1], sorted = TRUE)) {
+        CacheHaplotypes.err(glue("Error for argument loci.idx ... {checkIntegerish(loci.idx, lower = 1, upper = hdf5.dim[1], sorted = TRUE)}"))
+      }
+    } else {
+      if(!testIntegerish(loci.idx, lower = 1, upper = hdf5.dim[2], sorted = TRUE)) {
+        CacheHaplotypes.err(glue("Error for argument loci.idx ... {checkIntegerish(loci.idx, lower = 1, upper = hdf5.dim[2], sorted = TRUE)}"))
+      }
+    }
+    loci.idx <- loci.idx
   } else {
-    N <- hdf5.dim[1]
-    L <- hdf5.dim[2]
+    if(!transpose) {
+      loci.idx <- 1:(hdf5.dim[1])
+    } else {
+      loci.idx <- 1:(hdf5.dim[2])
+    }
   }
 
-  # Haplotype and locus IDs
-  if(is.null(hap.ids)) {
-    hap.ids.tmp <- as.integer(1:N)
+  if(!identical(hap.idx, NULL)) {
+    if(!transpose) {
+      if(!testIntegerish(hap.idx, lower = 1, upper = hdf5.dim[2], sorted = TRUE)) {
+        CacheHaplotypes.err(glue("Error for argument hap.idx ... {checkIntegerish(hap.idx, lower = 1, upper = hdf5.dim[2], sorted = TRUE)}"))
+      }
+    } else {
+      if(!testIntegerish(hap.idx, lower = 1, upper = hdf5.dim[1], sorted = TRUE)) {
+        CacheHaplotypes.err(glue("Error for argument hap.idx ... {checkIntegerish(hap.idx, lower = 1, upper = hdf5.dim[1], sorted = TRUE)}"))
+      }
+    }
+    hap.idx <- hap.idx
   } else {
-    hap.ids.tmp <- as.character(rhdf5::h5read(hdf5.file, hap.ids))
+    if(!transpose) {
+      hap.idx <- 1:(hdf5.dim[2])
+    } else {
+      hap.idx <- 1:(hdf5.dim[1])
+    }
   }
-  if(is.null(loci.ids)) {
-    loci.ids.tmp <- as.integer(1:L)
-  } else {
-    loci.ids.tmp <- as.character(rhdf5::h5read(hdf5.file, loci.ids))
-  }
-  if(length(hap.ids.tmp) != N) {
-    CacheHaplotypes.err(glue("There are {length(hap.ids.tmp)} haplotype IDs provided at '{hap.ids}' in the HDF5 file, but there are {N} haplotypes provided in '{haps}' (do you need to change transpose?)"))
-  }
-  if(length(unique(hap.ids.tmp)) != length(hap.ids.tmp)) {
-    CacheHaplotypes.err(glue("HDF5 object at '{hap.ids}' contains {length(hap.ids.tmp)} haplotype IDs, but they are not all unique."))
-  }
-  if(length(loci.ids.tmp) != L) {
-    CacheHaplotypes.err(glue("There are {length(loci.ids.tmp)} locus IDs provided at '{loci.ids}' in the HDF5 file, but there are {L} loci provided in '{haps}' (do you need to change transpose?)"))
-  }
-  if(length(unique(loci.ids.tmp)) != length(loci.ids.tmp)) {
-    CacheHaplotypes.err(glue("HDF5 object at '{loci.ids}' contains {length(loci.ids.tmp)} locus IDs, but they are not all unique."))
-  }
+
+  L <- length(loci.idx)
+  N <- length(hap.idx)
 
   # Make sure we don't double up cache content if there is already stuff cached
   if(!is.na(get("N", envir = pkgVars))) {
@@ -188,12 +184,10 @@ CacheHaplotypes.hdf5.rhdf5 <- function(hdf5.file,
     ClearHaplotypeCache()
   }
   assign("N", as.integer(N), envir = pkgVars)
-  assign("hap.ids", hap.ids.tmp, envir = pkgVars); rm(hap.ids.tmp);
-  assign("loci.ids", loci.ids.tmp, envir = pkgVars); rm(loci.ids.tmp);
 
   # Create a closure for easy access of HDF5 file
   # We'll read in 10MB (raw size) chunks
-  make.hdf5.access <- function(hdf5.file, N, L, haps) {
+  make.hdf5.access <- function(hdf5.file, loci.idx, hap.idx, transpose, L, N, haps) {
     step.size <- round(10000000/(L/8))
     current.step <- 1
     function() {
@@ -202,15 +196,15 @@ CacheHaplotypes.hdf5.rhdf5 <- function(hdf5.file,
       }
       upto <- min(current.step + step.size - 1, N)
       if(!transpose)
-        res <- rhdf5::h5read(hdf5.file, haps, index = list(NULL, current.step:upto))
+        res <- rhdf5::h5read(hdf5.file, haps, index = list(loci.idx, hap.idx[current.step:upto]))
       else
-        res <- t(rhdf5::h5read(hdf5.file, haps, index = list(current.step:upto, NULL)))
+        res <- t(rhdf5::h5read(hdf5.file, haps, index = list(hap.idx[current.step:upto], loci.idx)))
       current.step <<- upto + 1
       res
     }
   }
 
   # Cache it!
-  assign("L", as.integer(CacheHaplotypes_hdf5_2(make.hdf5.access(hdf5.file, N, L, haps), N, L)), envir = pkgVars)
+  assign("L", as.integer(CacheHaplotypes_hdf5_2(make.hdf5.access(hdf5.file, loci.idx, hap.idx, transpose, L, N, haps), N, L)), envir = pkgVars)
   invisible(NULL)
 }

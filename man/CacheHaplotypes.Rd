@@ -4,11 +4,17 @@
 \alias{CacheHaplotypes}
 \title{Create memory cache of haplotypes}
 \usage{
-CacheHaplotypes(haps, format = "auto", ...)
+CacheHaplotypes(haps, loci.idx = NULL, hap.idx = NULL, format = "auto", ...)
 }
 \arguments{
 \item{haps}{can be the name of a file from which the haplotypes are to be
 read, or can be a binary R matrix.}
+
+\item{loci.idx}{an optional integer vector of which loci to load from \code{haps}
+into the cache, indexed from 1.}
+
+\item{hap.idx}{an optional integer vector of which haplotypes to load from
+\code{haps} into the cache, indexed from 1.}
 
 \item{format}{the file format which \code{file} is stored in, or \code{"auto"} to
 detect format based on the file extension.  Recognised options are \code{"hdf5"}
@@ -22,18 +28,22 @@ following additional arguments are supported:
 \item \code{transpose} a logical value indicating whether to switch the
 interpretation of the slowest changing dimension (hence switching the
 number of haplotypes and the length)
-\item \code{haps} a character vector giving the path to a 2-dimensional
-object in the HDF5 file specifying the haplotype matrix.
-\item \code{hap.ids} a character vector giving the path to a 1-dimensional
-object in the HDF5 file specifying identifiers for the haplotypes
-being loaded.  By default, haplotypes will simply be numbered
-according to the order they appear in the haplotype matrix, indexed
-from 1.
-\item \code{loci.ids} a character vector giving the path to a 1-dimensional
-object in the HDF5 file specifying identifiers for the haplotypes
-being loaded.  By default, haplotypes will simply be numbered
-according to the order they appear in the haplotype matrix, indexed
-from 1.
+\item \code{haps} a string giving the path to a 2-dimensional object in the
+HDF5 file specifying the haplotype matrix.  Defaults to \verb{/haps}
+\item \code{hdf5.pkg} a string giving the HDF5 R package to use to load the file
+from disk.  The packages \code{rhdf5} (BioConductor) and \code{hdf5r} (CRAN)
+are both supported.  Default is to use \code{hdf5r} if both packages are
+available, with fallback to \code{rhdf5}.  This should never need to be
+specified unless you have both packages but want to force the use of
+the \code{rhdf5} package.
+}
+\item R matrix
+\itemize{
+\item \code{transpose} a logical value indicating whether to switch the
+interpretation of the dimensions (hence switching the number of
+haplotypes and the length).  By default (\code{FALSE}), loci are taken to
+be in rows with haplotypes in columns (ie a num loci x num haps
+matrix)
 }
 }}
 }
@@ -41,8 +51,8 @@ from 1.
 Nothing is returned by the function.
 However, a status message is output indicating the dimensions of the loaded
 data.
-This can be useful for HDF5 input when you are uncertain about the
-orientation of the \code{haps} object.
+This can be especially useful for HDF5 input when you are uncertain about
+the orientation of the \code{haps} object.
 If this message shows the dimensions incorrectly ordered, call the function
 again with the extra argument \code{transpose = TRUE}.
 }
