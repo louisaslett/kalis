@@ -256,6 +256,80 @@ WriteHaplotypes <- function(hdf5.file, haps,
 }
 
 
+
+IDs.to.index <- function(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, all.loci.ids) {
+  if(!is.atomic(hap.ids) || !is.atomic(loci.ids) || !is.atomic(hap.index) || !is.atomic(loci.index)) {
+    stop("Arguments can only be vectors.")
+  }
+  if(is.na(hap.ids) && is.na(hap.index)) {
+    stop("At least one of hap.ids or hap.index must be provided.")
+  }
+  if(!is.na(hap.ids) && !is.na(hap.index)) {
+    stop("Only one of hap.ids or hap.index may be provided.")
+  }
+  if(is.na(loci.ids) && is.na(loci.index)) {
+    stop("At least one of loci.ids or loci.index must be provided.")
+  }
+  if(!is.na(loci.ids) && !is.na(loci.index)) {
+    stop("Only one of loci.ids or loci.index may be provided.")
+  }
+
+  # Check IDs and argument compatibility
+  if(!is.na(hap.ids) && is.integer(all.hap.ids)) {
+    hap.ids <- suppressWarnings(as.integer(hap.ids))
+    if(any(is.na(hap.ids))) {
+      stop("hap.ids supplied but no hap.ids are present ... failed when trying to interpret as an index.")
+    }
+    warning("hap.ids supplied but no hap.ids are present ... interpreting as an index.")
+  } else if(!is.na(hap.ids) && is.character(all.hap.ids)) {
+    hap.ids2 <- match(as.character(hap.ids), all.hap.ids)
+    if(any(is.na(hap.ids2))) {
+      stop(glue("Can't find haplotype IDs: {paste(as.character(hap.ids)[is.na(hap.ids2)], collapse = ', ')}"))
+    }
+    hap.ids <- hap.ids2
+  } else if(is.na(hap.ids)) {
+    hap.ids <- suppressWarnings(as.integer(hap.index))
+    if(any(is.na(hap.ids))) {
+      stop("Failed when trying to interpret hap.index as an integer.")
+    }
+  } else {
+    stop("Unrecoverable error trying to interpret hap.ids/hap.index arguments.")
+  }
+
+  if(!is.na(loci.ids) && is.integer(all.loci.ids)) {
+    loci.ids <- suppressWarnings(as.integer(loci.ids))
+    if(any(is.na(loci.ids))) {
+      stop("loci.ids supplied but no loci.ids are present ... failed when trying to interpret as an index.")
+    }
+    warning("loci.ids supplied but no loci.ids are present ... interpreting as an index.")
+  } else if(!is.na(loci.ids) && is.character(all.loci.ids)) {
+    loci.ids2 <- match(as.character(loci.ids), all.loci.ids)
+    if(any(is.na(loci.ids2))) {
+      stop(glue("loci IDs: {paste(as.character(loci.ids)[is.na(loci.ids2)], collapse = ', ')} not found."))
+    }
+    loci.ids <- loci.ids2
+  } else if(is.na(loci.ids)) {
+    loci.ids <- suppressWarnings(as.integer(loci.index))
+    if(any(is.na(loci.ids))) {
+      stop("Failed when trying to interpret loci.index as an integer.")
+    }
+  } else {
+    stop("Unrecoverable error trying to interpret hap.ids/hap.index arguments.")
+  }
+
+  # Check we have sensible indexing by this point
+  if(any(hap.ids < 1 | hap.ids > length(all.hap.ids))) {
+    stop("Invalid haplotypes specified.")
+  }
+  if(any(loci.ids < 1 | loci.ids > length(all.loci.ids))) {
+    stop("Invalid loci specified.")
+  }
+
+  list(hap = hap.ids, loci = loci.ids)
+}
+
+
+
 #' @describeIn WriteHaplotypes Read haplotype matrix from HDF5 file
 #' @export ReadHaplotypes
 ReadHaplotypes <- function(hdf5.file,
