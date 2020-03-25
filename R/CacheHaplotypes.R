@@ -151,7 +151,7 @@ CacheHaplotypes <- function(haps, loci.idx = NULL, hap.idx = NULL, format = "aut
     }
     if(format == "vcf" ||
        (format == "auto" && (ext == ".vcf" ||
-                             ext == ".gz" && stringr::str_to_lower(stringr::str_extract(haps, stringr::regex("\\.[0-9a-z]\\.[0-9a-z]+$"))) == ".vcf.gz"))) {
+                             ext == ".gz" && stringr::str_to_lower(stringr::str_extract(haps, stringr::regex("\\.[0-9a-z]+\\.[0-9a-z]+$"))) == ".vcf.gz"))) {
       message("Native import of VCF is currently not supported.  Please see the vignettes for a simple script to convert VCF to HDF5.")
       cached <- TRUE
     }
