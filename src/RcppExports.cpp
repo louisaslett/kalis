@@ -466,8 +466,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // MatAndMul
-NumericVector MatAndMul(NumericMatrix M, List fwd, List bck, NumericVector x, LogicalVector standardize, int from_recipient, int nthreads);
-RcppExport SEXP _kalis_MatAndMul(SEXP MSEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP standardizeSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
+NumericVector MatAndMul(NumericMatrix M, List fwd, List bck, NumericVector x, LogicalVector standardize, LogicalVector calcprobs, LogicalVector unifonunderflow, size_t from_recipient, size_t nthreads);
+RcppExport SEXP _kalis_MatAndMul(SEXP MSEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP standardizeSEXP, SEXP calcprobsSEXP, SEXP unifonunderflowSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -476,9 +476,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< LogicalVector >::type standardize(standardizeSEXP);
-    Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
-    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(MatAndMul(M, fwd, bck, x, standardize, from_recipient, nthreads));
+    Rcpp::traits::input_parameter< LogicalVector >::type calcprobs(calcprobsSEXP);
+    Rcpp::traits::input_parameter< LogicalVector >::type unifonunderflow(unifonunderflowSEXP);
+    Rcpp::traits::input_parameter< size_t >::type from_recipient(from_recipientSEXP);
+    Rcpp::traits::input_parameter< size_t >::type nthreads(nthreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(MatAndMul(M, fwd, bck, x, standardize, calcprobs, unifonunderflow, from_recipient, nthreads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -493,6 +495,27 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< size_t >::type from_recipient(from_recipientSEXP);
     Rcpp::traits::input_parameter< size_t >::type nthreads(nthreadsSEXP);
     rcpp_result_gen = Rcpp::wrap(MatOnlyMul(M, x, from_recipient, nthreads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// MatAndMulBtwVar
+NumericVector MatAndMulBtwVar(NumericMatrix M, List fwd, List bck, NumericVector x, LogicalVector standardize, LogicalVector calcprobs, LogicalVector unifonunderflow, double fwd_rho, double bck_rho, int from_recipient, int nthreads);
+RcppExport SEXP _kalis_MatAndMulBtwVar(SEXP MSEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP standardizeSEXP, SEXP calcprobsSEXP, SEXP unifonunderflowSEXP, SEXP fwd_rhoSEXP, SEXP bck_rhoSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
+    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
+    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< LogicalVector >::type standardize(standardizeSEXP);
+    Rcpp::traits::input_parameter< LogicalVector >::type calcprobs(calcprobsSEXP);
+    Rcpp::traits::input_parameter< LogicalVector >::type unifonunderflow(unifonunderflowSEXP);
+    Rcpp::traits::input_parameter< double >::type fwd_rho(fwd_rhoSEXP);
+    Rcpp::traits::input_parameter< double >::type bck_rho(bck_rhoSEXP);
+    Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
+    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(MatAndMulBtwVar(M, fwd, bck, x, standardize, calcprobs, unifonunderflow, fwd_rho, bck_rho, from_recipient, nthreads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -610,8 +633,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_Forward_densePi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward_densePi_scalarmu_cpp, 6},
     {"_kalis_Forward_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward_scalarPi_scalarmu_cpp, 6},
     {"_kalis_Forward1step_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward1step_scalarPi_scalarmu_cpp, 6},
-    {"_kalis_MatAndMul", (DL_FUNC) &_kalis_MatAndMul, 7},
+    {"_kalis_MatAndMul", (DL_FUNC) &_kalis_MatAndMul, 9},
     {"_kalis_MatOnlyMul", (DL_FUNC) &_kalis_MatOnlyMul, 4},
+    {"_kalis_MatAndMulBtwVar", (DL_FUNC) &_kalis_MatAndMulBtwVar, 11},
     {"_kalis_ResetTable", (DL_FUNC) &_kalis_ResetTable, 1},
     {"_kalis_CopyForwardTable_cpp", (DL_FUNC) &_kalis_CopyForwardTable_cpp, 2},
     {"_kalis_CopyBackwardTable_cpp", (DL_FUNC) &_kalis_CopyBackwardTable_cpp, 2},

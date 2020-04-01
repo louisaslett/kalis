@@ -23,9 +23,15 @@ Forward(fwd, pars, 250)
 Backward(bck, pars, 250)
 
 ## ------------------------------------------------------------------------
-p <- PostProbs(fwd,bck)
-d <- DistMat(fwd,bck)
+
+#p <- PostProbs(fwd,bck)
+M <- DistMat(fwd,bck)
+
 
 ## ---- results='asis'-----------------------------------------------------
-plot(d)
+plot(M)
+
+## ---- results='asis'-----------------------------------------------------
+M <- 0.5*(M + t(M))
+plot(M)
 

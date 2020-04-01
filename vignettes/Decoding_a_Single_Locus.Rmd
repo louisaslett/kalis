@@ -49,12 +49,20 @@ Backward(bck, pars, 250)
 Now that \code{fwd} and \code{bck} are at the same locus, they can be combined to obtain $p^\ell$ or $d^\ell$ as follows.
 
 ```{r}
-p <- PostProbs(fwd,bck)
-d <- DistMat(fwd,bck)
+
+#p <- PostProbs(fwd,bck)
+M <- DistMat(fwd,bck)
+
 ```
 
 The distance matrix can be easily clustered and visualized just by calling 
 
 ```{r, results='asis'}
-plot(d)
+plot(M)
+```
+
+In some applications, one might want to symmetrize the matrix before plotting as follows.  
+```{r, results='asis'}
+M <- 0.5*(M + t(M))
+plot(M)
 ```

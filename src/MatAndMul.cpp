@@ -8,7 +8,57 @@ using namespace Rcpp;
 
 
 
-void MatAndMul_C(const double* __restrict__ alpha,
+void MatAndMul_C_probs(const double* __restrict__ alpha,
+                 const double* __restrict__ beta,
+                 const double* __restrict__ x,
+                 double* __restrict__ c_1,
+                 double* __restrict__ res,
+                 bool useunif,
+                 size_t j,
+                 size_t r,
+                 size_t from_off) {
+  double z0 = 0.0;
+  double rd = (double)(r - 1);
+  double ccc = 0.0;
+
+  if(useunif){
+    ccc = 1/rd;
+  }
+
+  // We will assume in this accumulation that alpha * beta is always 0 along the matrix diagonal
+  for(size_t i = 0; i < r; i++) {
+    z0 += c_1[i] = *(alpha++) * *(beta++);
+  }
+
+  if(z0 <= 0){
+    // if the sum is zero (all of the alpha*beta entries = 0), then all of the of the entries are set to either uniform or all 0
+
+    for(size_t i = 0; i < r; i++) {
+      if(i==j){
+        c_1[i] = 0.0;
+      } else {
+        c_1[i] = ccc;
+      }
+    }
+
+  } else { // z0 > 0
+
+    for(size_t i = 0; i < r; i++) {
+      if(i==j) {
+        c_1[i] = 0.0;
+      } else {
+
+        c_1[i] = c_1[i] / z0;
+
+        res[j+from_off] += c_1[i]*x[i];
+        res[i]          += c_1[i]*x[j+from_off];
+      }
+    }
+  }
+}
+
+
+void MatAndMul_C_raw_dist(const double* __restrict__ alpha,
                  const double* __restrict__ beta,
                  const double* __restrict__ x,
                  double* __restrict__ c_1,
@@ -55,7 +105,7 @@ void MatAndMul_C(const double* __restrict__ alpha,
   }
 }
 
-void MatAndMul_C_standardize(const double* __restrict__ alpha,
+void MatAndMul_C_standardize_dist(const double* __restrict__ alpha,
                              const double* __restrict__ beta,
                              const double* __restrict__ x,
                              double* __restrict__ c_1,
@@ -132,32 +182,52 @@ void MatAndMul_B(double* M,
                  const double* __restrict__ beta,
                  const double* __restrict__ x,
                  bool standardize,
+                 bool probs,
+                 bool useunif,
                  double* __restrict__ res,
                  size_t r,
                  size_t from_off,
                  size_t from,
                  size_t N) {
-  if( standardize == true ){
+
+  if(probs){
+
     for(size_t j = from; j < from+N; j++) {
-      MatAndMul_C_standardize(alpha+j*r,
-                              beta+j*r,
-                              x,
-                              M+j*r,
-                              res,
-                              j,
-                              r,
-                              from_off);
+      MatAndMul_C_probs(alpha+j*r,
+                        beta+j*r,
+                        x,
+                        M+j*r,
+                        res,
+                        useunif,
+                        j,
+                        r,
+                        from_off);
     }
+
   } else {
-    for(size_t j = from; j < from+N; j++) {
-      MatAndMul_C(alpha+j*r,
-                  beta+j*r,
-                  x,
-                  M+j*r,
-                  res,
-                  j,
-                  r,
-                  from_off);
+
+    if( standardize == true ){
+      for(size_t j = from; j < from+N; j++) {
+        MatAndMul_C_standardize_dist(alpha+j*r,
+                                     beta+j*r,
+                                     x,
+                                     M+j*r,
+                                     res,
+                                     j,
+                                     r,
+                                     from_off);
+      }
+    } else {
+      for(size_t j = from; j < from+N; j++) {
+        MatAndMul_C_raw_dist(alpha+j*r,
+                             beta+j*r,
+                             x,
+                             M+j*r,
+                             res,
+                             j,
+                             r,
+                             from_off);
+      }
     }
   }
 }
@@ -168,6 +238,8 @@ void MatAndMul_A(double* __restrict__ res,
                  const double* __restrict__ beta,
                  const double* __restrict__ x,
                  bool standardize,
+                 bool probs,
+                 bool useunif,
                  size_t from_off,
                  size_t nthreads,
                  size_t r,
@@ -189,11 +261,11 @@ void MatAndMul_A(double* __restrict__ res,
     for(size_t i=0; i<nthreads; ++i) {
       threads.push_back(std::thread(
           MatAndMul_B,
-          M, alpha, beta, x, standardize, res_perth + i*r, r, from_off, i*num_perth, num_perth));
+          M, alpha, beta, x, standardize, probs, useunif, res_perth + i*r, r, from_off, i*num_perth, num_perth));
     }
     // Tidy ragged end
     if(rag_end != 0) {
-      MatAndMul_B(M, alpha, beta, x, standardize, res_perth+nthreads*r, r, from_off, nthreads*num_perth, rag_end);
+      MatAndMul_B(M, alpha, beta, x, standardize, probs, useunif, res_perth+nthreads*r, r, from_off, nthreads*num_perth, rag_end);
     }
     for(auto& th : threads) {
       th.join();
@@ -209,7 +281,7 @@ void MatAndMul_A(double* __restrict__ res,
     free(res_perth);
   } else {
 
-    MatAndMul_B(M, alpha, beta, x, standardize, res, r, from_off, 0, c);
+    MatAndMul_B(M, alpha, beta, x, standardize, probs, useunif, res, r, from_off, 0, c);
 
     for(size_t i = 0; i < r; i++) {
       res[i] *= 0.5;
@@ -227,9 +299,12 @@ NumericVector MatAndMul(NumericMatrix M,
                         List bck,
                         NumericVector x,
                         LogicalVector standardize,
-                        int from_recipient,
-                        int nthreads) {
+                        LogicalVector calcprobs,
+                        LogicalVector unifonunderflow,
+                        size_t from_recipient,
+                        size_t nthreads) {
 
+  M.attr("class") = "kalisDistanceMatrix";
   NumericMatrix alpha = fwd["alpha"];
   NumericMatrix beta = bck["beta"];
 
@@ -256,6 +331,8 @@ NumericVector MatAndMul(NumericMatrix M,
   }
 
   bool stdz = is_true(all(standardize));
+  bool probs = is_true(all(calcprobs));
+  bool useunif = is_true(all(unifonunderflow));
 
   if(stdz == true & r < 3) {
     Rcout << "each matrix must have at least three rows to perform standardization \n";
@@ -269,6 +346,8 @@ NumericVector MatAndMul(NumericMatrix M,
               &(beta[0]),
               &(x[0]),
               stdz,
+              probs,
+              useunif,
               from_recipient,
               nthreads,
               r,
@@ -303,7 +382,7 @@ NumericVector MatOnlyMul(NumericMatrix M,
   size_t r = (size_t) M.nrow();
   size_t c = (size_t) M.ncol();
 
-  NumericVector res(r);
+  NumericVector res(r); // filled with 0 at initialization
 
   if(x.length() != r) {
     Rcout << "x isn't right!\n";

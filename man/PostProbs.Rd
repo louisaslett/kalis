@@ -4,22 +4,46 @@
 \alias{PostProbs}
 \title{Posterior marginal probabilities}
 \usage{
-PostProbs(fwd, bck, log = FALSE)
+PostProbs(
+  fwd,
+  bck,
+  unif.on.underflow = FALSE,
+  M = NULL,
+  beta.theta.opts = NULL,
+  from_recipient = 1,
+  nthreads = 1
+)
 }
 \arguments{
 \item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
 
 \item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}
 
-\item{log}{logical; defaults to \code{FALSE}.
-If \code{TRUE}, the logarithm of the posterior marginal probabilities are
-returned.}
+\item{unif.on.underflow}{a logical; if TRUE, then if all probabilities in a column underflow, then they will be set to \eqn{1/(N-1)} instead of 0}
+
+\item{M}{an pre-existing matrix into which to write the probabilities, can yield substantial speed up but requires special attention (see Details)}
+
+\item{beta.theta.opts}{a list; see Details.}
+
+\item{from_recipient}{offset for distributed problems, see kalis distributed.}
+
+\item{nthreads}{the number of CPU cores to use. By default no parallelism is used.}
 }
 \value{
+
+
 Matrix of posterior marginal probabilities.
 The \eqn{(j,i)}-th element of of the returned matrix is the probability
 that \eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two
 tables, given the haplotypes observed (over the whole sequence).
+
+If calculating many posterior probability matrices in succession, providing a pre-existing matrix \code{M} that can be updated in-place can drastically increase speed by eliminating the time needed for memory allocation.
+Be warned, since the matrix is updated in-place, if any other variables point to the same memory address, they will also be simultaneously overwritten.  For example, writing\preformatted{M <- matrix(0,nrow(fwd$alpha),ncol(fwd$alpha))
+P <- M
+PostProbs(fwd,bck,M=M)
+}
+
+will update M and P simultaneously.
 }
 \description{
 Calculated the posterior marginal probabilities at a given locus using

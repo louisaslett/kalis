@@ -137,12 +137,16 @@ Forward1step_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
     invisible(.Call('_kalis_Forward1step_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
 }
 
-MatAndMul <- function(M, fwd, bck, x, standardize, from_recipient, nthreads) {
-    .Call('_kalis_MatAndMul', PACKAGE = 'kalis', M, fwd, bck, x, standardize, from_recipient, nthreads)
+MatAndMul <- function(M, fwd, bck, x, standardize, calcprobs, unifonunderflow, from_recipient, nthreads) {
+    .Call('_kalis_MatAndMul', PACKAGE = 'kalis', M, fwd, bck, x, standardize, calcprobs, unifonunderflow, from_recipient, nthreads)
 }
 
 MatOnlyMul <- function(M, x, from_recipient, nthreads) {
     .Call('_kalis_MatOnlyMul', PACKAGE = 'kalis', M, x, from_recipient, nthreads)
+}
+
+MatAndMulBtwVar <- function(M, fwd, bck, x, standardize, calcprobs, unifonunderflow, fwd_rho, bck_rho, from_recipient, nthreads) {
+    .Call('_kalis_MatAndMulBtwVar', PACKAGE = 'kalis', M, fwd, bck, x, standardize, calcprobs, unifonunderflow, fwd_rho, bck_rho, from_recipient, nthreads)
 }
 
 ResetTable <- function(tbl) {
