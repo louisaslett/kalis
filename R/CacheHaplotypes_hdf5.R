@@ -25,7 +25,7 @@ CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file,
                                        loci.idx,
                                        hap.idx,
                                        transpose,
-                                       haps) {print("hdf5r")
+                                       haps) {
   # Check for file and dataset within file
   if(!testFile(hdf5.file, access = "r")) {
     CacheHaplotypes.err(checkFile(hdf5.file, access = "r"))
@@ -125,7 +125,7 @@ CacheHaplotypes.hdf5.rhdf5 <- function(hdf5.file,
                                        loci.idx,
                                        hap.idx,
                                        transpose,
-                                       haps) {print("rhdf5")
+                                       haps) {
   # Check for file and dataset within file
   if(!testFile(hdf5.file, access = "r")) {
     CacheHaplotypes.err(checkFile(hdf5.file, access = "r"))
