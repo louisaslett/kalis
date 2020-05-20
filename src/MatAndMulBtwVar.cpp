@@ -30,14 +30,16 @@ void MatAndMulBtwVar_C_probs(const double* __restrict__ alpha,
     ccc = 1/rd;
   }
 
-  double beta_coeff_c1 = (1 - bck_rho) / (*g);
-  double alpha_coeff_c1 = (1 - fwd_rho) / (*f);
+  if(*g != 0 & *f != 0){
+    double beta_coeff_c1 = (1 - bck_rho) / (*g);
+    double alpha_coeff_c1 = (1 - fwd_rho) / (*f);
 
-  double alpha_offset = fwd_rho / rd;
+    double alpha_offset = fwd_rho / rd;
 
-  // We will assume in this accumulation that alpha * beta is always 0 along the matrix diagonal
-  for(size_t i = 0; i < r; i++) {
-    z0 += c_1[i] = (alpha_coeff_c1 * *(alpha++) + alpha_offset) * (beta_coeff_c1 * *(beta++) + bck_rho) ;
+    // We will assume in this accumulation that alpha * beta is always 0 along the matrix diagonal
+    for(size_t i = 0; i < r; i++) {
+      z0 += c_1[i] = (alpha_coeff_c1 * *(alpha++) + alpha_offset) * (beta_coeff_c1 * *(beta++) + bck_rho) ;
+    }
   }
 
   if(z0 <= 0){
@@ -82,14 +84,16 @@ void MatAndMulBtwVar_C_raw_dist(const double* __restrict__ alpha,
   double z0 = 0.0;
   double rd = (double)(r - 1);
 
-  double beta_coeff_c1 = (1 - bck_rho) / (*g);
-  double alpha_coeff_c1 = (1 - fwd_rho) / (*f);
+  if(*g != 0 & *f != 0){
+    double beta_coeff_c1 = (1 - bck_rho) / (*g);
+    double alpha_coeff_c1 = (1 - fwd_rho) / (*f);
 
-  double alpha_offset = fwd_rho / rd;
+    double alpha_offset = fwd_rho / rd;
 
-  // We will assume in this accumulation that alpha * beta is always 0 along the matrix diagonal
-  for(size_t i = 0; i < r; i++) {
-    z0 += c_1[i] = (alpha_coeff_c1 * *(alpha++) + alpha_offset) * (beta_coeff_c1 * *(beta++) + bck_rho) ;
+    // We will assume in this accumulation that alpha * beta is always 0 along the matrix diagonal
+    for(size_t i = 0; i < r; i++) {
+      z0 += c_1[i] = (alpha_coeff_c1 * *(alpha++) + alpha_offset) * (beta_coeff_c1 * *(beta++) + bck_rho) ;
+    }
   }
 
   if(z0 <= 0){
@@ -143,15 +147,18 @@ void MatAndMulBtwVar_C_standardize_dist(const double* __restrict__ alpha,
   double z2 = 0.0;
   double rd = (double)(r - 1);
 
-  double beta_coeff_c1 = (1 - bck_rho) / (*g);
-  double alpha_coeff_c1 = (1 - fwd_rho) / (*f);
 
-  double alpha_offset = fwd_rho / rd;
+  if(*g != 0 & *f != 0){
+
+    double beta_coeff_c1 = (1 - bck_rho) / (*g);
+    double alpha_coeff_c1 = (1 - fwd_rho) / (*f);
+    double alpha_offset = fwd_rho / rd;
 
 
-  // We will assume in this accumulation that alpha * beta is always 0 along the matrix diagonal
-  for(size_t i = 0; i < r; i++) {
-    z0 += c_1[i] = (alpha_coeff_c1 * *(alpha++) + alpha_offset) * (beta_coeff_c1 * *(beta++) + bck_rho) ;
+    // We will assume in this accumulation that alpha * beta is always 0 along the matrix diagonal
+    for(size_t i = 0; i < r; i++) {
+      z0 += c_1[i] = (alpha_coeff_c1 * *(alpha++) + alpha_offset) * (beta_coeff_c1 * *(beta++) + bck_rho) ;
+    }
   }
 
   // if all of the donors have "0" probability of being copied, so all c_1[i] = 0, we exit here...otherwise...

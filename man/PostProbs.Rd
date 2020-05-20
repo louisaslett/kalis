@@ -30,8 +30,6 @@ PostProbs(
 \item{nthreads}{the number of CPU cores to use. By default no parallelism is used.}
 }
 \value{
-
-
 Matrix of posterior marginal probabilities.
 The \eqn{(j,i)}-th element of of the returned matrix is the probability
 that \eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two

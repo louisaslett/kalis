@@ -21,7 +21,6 @@
 #' @param beta.theta.opts a list; see Details.
 #' @param from_recipient offset for distributed problems, see kalis distributed.
 #' @param nthreads the number of CPU cores to use. By default no parallelism is used.
-#' @return
 #'
 #' @return
 #'   Matrix of posterior marginal probabilities.
@@ -191,7 +190,7 @@ input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
 
     if(fwd$l == bck$l){stop("A forward table cannot be combined with a backward table at the same locus if the backward table is in beta.theta space.")}
 
-    if((!is.null(beta.theta.opts$rho.fwd) & !is.null(beta.theta.opts$rho.bck)) | (!is.null(beta.theta.opts$pars) & !is.null(beta.theta.opts$bias))){
+    if(!((!is.null(beta.theta.opts$rho.fwd) & !is.null(beta.theta.opts$rho.bck)) | (!is.null(beta.theta.opts$pars) & !is.null(beta.theta.opts$bias)))){
       stop("beta.theta.opts must be a named list containing either pars and bias OR rho.fwd and rho.bck.")
     }
 
