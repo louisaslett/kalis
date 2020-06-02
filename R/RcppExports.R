@@ -41,8 +41,8 @@ ClearHaplotypeCache2 <- function() {
     invisible(.Call('_kalis_ClearHaplotypeCache2', PACKAGE = 'kalis'))
 }
 
-CalcTraces <- function(M, tX, tQ, Z, J, from_recipient, nthreads) {
-    .Call('_kalis_CalcTraces', PACKAGE = 'kalis', M, tX, tQ, Z, J, from_recipient, nthreads)
+CalcTraces <- function(M, tX, tQ, J, from_recipient, nthreads) {
+    .Call('_kalis_CalcTraces', PACKAGE = 'kalis', M, tX, tQ, J, from_recipient, nthreads)
 }
 
 ComputeStatus <- function() {

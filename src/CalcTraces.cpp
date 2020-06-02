@@ -8,18 +8,17 @@ using namespace Rcpp;
 
 
 void CalcTraces_A(const double* __restrict__ M,
-                  const double* __restrict__ tX,
-                  const double* __restrict__ tQ,
-                  const double* __restrict__ Z,
-                  const double* __restrict__ J,
-                  double* __restrict__ res,
-                  double* __restrict__ res2,
-                  double* diag,
-                  size_t r,
-                  size_t from_off,
-                  size_t from,
-                  size_t N,
-                  size_t p) {
+                   const double* __restrict__ tX,
+                   const double* __restrict__ tQ,
+                   const double* __restrict__ J,
+                   double* __restrict__ res,
+                   double* __restrict__ res2,
+                   double* diag,
+                   size_t r,
+                   size_t from_off,
+                   size_t from,
+                   size_t N,
+                   size_t p) {
   double temp;
   double temp2;
   for(size_t j = from; j < from+N; j++) {
@@ -27,7 +26,7 @@ void CalcTraces_A(const double* __restrict__ M,
       temp = M[i + j*r];
       for(size_t l = 0; l < p; l++){
         // temp += temp;
-        temp += tX[l + i*p] * Z[l + (from_off+j)*p] - tQ[l + i*p] * J[l + (from_off+j)*p];
+        temp += tX[l + i*p] * tQ[l + (from_off+j)*p] - tQ[l + i*p] * J[l + (from_off+j)*p];
       }
       temp2 = temp * temp;
       res2[0] += temp2; // part of the HS norm
@@ -42,12 +41,11 @@ void CalcTraces_A(const double* __restrict__ M,
 
 // [[Rcpp::export]]
 List CalcTraces(NumericMatrix M,  // r x c
-                         NumericMatrix tX, // p x r
-                         NumericMatrix tQ, // p x r
-                         NumericMatrix Z,  // p x r (will only use a subset of these rows)
-                         NumericMatrix J,  // p x r (will only use a subset of these rows)
-                         size_t from_recipient,
-                         size_t nthreads) {
+                 NumericMatrix tX, // p x r
+                 NumericMatrix tQ, // p x r
+                 NumericMatrix J,  // p x r (will only use a subset of these rows)
+                 size_t from_recipient,
+                 size_t nthreads) {
 
   size_t p = (size_t) tX.nrow();
   size_t r = (size_t) M.nrow();
@@ -75,11 +73,11 @@ List CalcTraces(NumericMatrix M,  // r x c
     for(size_t i=0; i<nthreads; ++i) {
       threads.push_back(std::thread(
           CalcTraces_A,
-          &(M[0]), &(tX[0]), &(tQ[0]), &(Z[0]), &(J[0]), res_perth + i, res_perth2 + i, &(diag[0]), r, from_off, i*num_perth, num_perth, p));
+          &(M[0]), &(tX[0]), &(tQ[0]), &(J[0]), res_perth + i, res_perth2 + i, &(diag[0]), r, from_off, i*num_perth, num_perth, p));
     }
     // Tidy ragged end
     if(rag_end != 0) {
-      CalcTraces_A(&(M[0]), &(tX[0]), &(tQ[0]), &(Z[0]), &(J[0]), res_perth + nthreads, res_perth2 + nthreads, &(diag[0]), r, from_off, nthreads*num_perth, rag_end, p);
+      CalcTraces_A(&(M[0]), &(tX[0]), &(tQ[0]), &(J[0]), res_perth + nthreads, res_perth2 + nthreads, &(diag[0]), r, from_off, nthreads*num_perth, rag_end, p);
     }
     for(auto& th : threads) {
       th.join();
@@ -93,7 +91,7 @@ List CalcTraces(NumericMatrix M,  // r x c
     free(res_perth);
     free(res_perth2);
   } else {
-    CalcTraces_A(&(M[0]), &(tX[0]), &(tQ[0]), &(Z[0]), &(J[0]), &(trace[0]), &(hsnorm[0]), &(diag[0]), r, from_off, 0, c, p);
+    CalcTraces_A(&(M[0]), &(tX[0]), &(tQ[0]), &(J[0]), &(trace[0]), &(hsnorm[0]), &(diag[0]), r, from_off, 0, c, p);
   }
 
   List L = List::create(Named("trace") = trace , Named("hsnorm2") = hsnorm,
