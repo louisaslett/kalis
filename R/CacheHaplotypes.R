@@ -142,6 +142,7 @@ CacheHaplotypes <- function(haps, loci.idx = NULL, hap.idx = NULL, format = "aut
 
     cached <- FALSE
     ext <- stringr::str_to_lower(stringr::str_extract(haps, stringr::regex("\\.[0-9a-z]+$")))
+    ext2 <- stringr::str_to_lower(stringr::str_extract(haps, stringr::regex("\\.[0-9a-z]+\\.[0-9a-z]+$")))
 
     if(format == "hdf5" ||
        (format == "auto" && (ext == ".h5" ||
@@ -151,8 +152,13 @@ CacheHaplotypes <- function(haps, loci.idx = NULL, hap.idx = NULL, format = "aut
     }
     if(format == "vcf" ||
        (format == "auto" && (ext == ".vcf" ||
-                             ext == ".gz" && stringr::str_to_lower(stringr::str_extract(haps, stringr::regex("\\.[0-9a-z]+\\.[0-9a-z]+$"))) == ".vcf.gz"))) {
+                             ext == ".gz" && !is.na(ext2) && ext2 == ".vcf.gz"))) {
       message("Native import of VCF is currently not supported.  Please see the vignettes for a simple script to convert VCF to HDF5.")
+      cached <- TRUE
+    }
+    if(format == "hapgz" ||
+       (format == "auto" && (ext == ".gz" && !is.na(ext2) && ext2 == ".hap.gz"))) {
+      CacheHaplotypes.hapgz(haps, loci.idx, hap.idx, ...)
       cached <- TRUE
     }
 

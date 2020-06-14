@@ -29,6 +29,18 @@ CacheHaplotypes_hdf5_2 <- function(nexthaps, N, L) {
     .Call('_kalis_CacheHaplotypes_hdf5_2', PACKAGE = 'kalis', nexthaps, N, L)
 }
 
+CacheHaplotypes_hapgz_ncols <- function(file) {
+    .Call('_kalis_CacheHaplotypes_hapgz_ncols', PACKAGE = 'kalis', file)
+}
+
+CacheHaplotypes_hapgz_nlines <- function(file) {
+    .Call('_kalis_CacheHaplotypes_hapgz_nlines', PACKAGE = 'kalis', file)
+}
+
+CacheHaplotypes_hapgz_2 <- function(file, loci_idx, hap_idx, L, N) {
+    .Call('_kalis_CacheHaplotypes_hapgz_2', PACKAGE = 'kalis', file, loci_idx, hap_idx, L, N)
+}
+
 QueryCache2_ind <- function(idx) {
     .Call('_kalis_QueryCache2_ind', PACKAGE = 'kalis', idx)
 }
@@ -163,6 +175,10 @@ CopyBackwardTable_cpp <- function(to, from) {
 
 TrippleMatAndMul <- function(M, M2, M3, fwd, bck, x, from_recipient, nthreads) {
     .Call('_kalis_TrippleMatAndMul', PACKAGE = 'kalis', M, M2, M3, fwd, bck, x, from_recipient, nthreads)
+}
+
+gziplines <- function(file) {
+    .Call('_kalis_gziplines', PACKAGE = 'kalis', file)
 }
 
 calc_tables_cpp_original_v1 <- function(cost_table, index_table, s, maxcpt, maxn) {

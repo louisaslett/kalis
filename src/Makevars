@@ -1,6 +1,7 @@
 #PKG_CXXFLAGS += -mavx -mavx2 -mbmi -mbmi2 -mfma -std=c++11 -Wall -fno-strict-aliasing
 CXX_STD = CXX11
 PKG_CXXFLAGS = -fno-strict-aliasing
+PKG_LIBS = -lz
 
 all: $(SHLIB)
 

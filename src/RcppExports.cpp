@@ -106,6 +106,43 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// CacheHaplotypes_hapgz_ncols
+int CacheHaplotypes_hapgz_ncols(std::string file);
+RcppExport SEXP _kalis_CacheHaplotypes_hapgz_ncols(SEXP fileSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type file(fileSEXP);
+    rcpp_result_gen = Rcpp::wrap(CacheHaplotypes_hapgz_ncols(file));
+    return rcpp_result_gen;
+END_RCPP
+}
+// CacheHaplotypes_hapgz_nlines
+int CacheHaplotypes_hapgz_nlines(std::string file);
+RcppExport SEXP _kalis_CacheHaplotypes_hapgz_nlines(SEXP fileSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type file(fileSEXP);
+    rcpp_result_gen = Rcpp::wrap(CacheHaplotypes_hapgz_nlines(file));
+    return rcpp_result_gen;
+END_RCPP
+}
+// CacheHaplotypes_hapgz_2
+int CacheHaplotypes_hapgz_2(std::string file, IntegerVector loci_idx, IntegerVector hap_idx, int L, int N);
+RcppExport SEXP _kalis_CacheHaplotypes_hapgz_2(SEXP fileSEXP, SEXP loci_idxSEXP, SEXP hap_idxSEXP, SEXP LSEXP, SEXP NSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type file(fileSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type loci_idx(loci_idxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type hap_idx(hap_idxSEXP);
+    Rcpp::traits::input_parameter< int >::type L(LSEXP);
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(CacheHaplotypes_hapgz_2(file, loci_idx, hap_idx, L, N));
+    return rcpp_result_gen;
+END_RCPP
+}
 // QueryCache2_ind
 IntegerVector QueryCache2_ind(int idx);
 RcppExport SEXP _kalis_QueryCache2_ind(SEXP idxSEXP) {
@@ -568,6 +605,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gziplines
+IntegerVector gziplines(std::string file);
+RcppExport SEXP _kalis_gziplines(SEXP fileSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type file(fileSEXP);
+    rcpp_result_gen = Rcpp::wrap(gziplines(file));
+    return rcpp_result_gen;
+END_RCPP
+}
 // calc_tables_cpp_original_v1
 void calc_tables_cpp_original_v1(NumericMatrix& cost_table, IntegerMatrix& index_table, NumericVector s, int maxcpt, int maxn);
 RcppExport SEXP _kalis_calc_tables_cpp_original_v1(SEXP cost_tableSEXP, SEXP index_tableSEXP, SEXP sSEXP, SEXP maxcptSEXP, SEXP maxnSEXP) {
@@ -605,6 +653,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_Backward_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Backward_scalarPi_scalarmu_cpp, 7},
     {"_kalis_CacheHaplotypes_matrix_2", (DL_FUNC) &_kalis_CacheHaplotypes_matrix_2, 4},
     {"_kalis_CacheHaplotypes_hdf5_2", (DL_FUNC) &_kalis_CacheHaplotypes_hdf5_2, 3},
+    {"_kalis_CacheHaplotypes_hapgz_ncols", (DL_FUNC) &_kalis_CacheHaplotypes_hapgz_ncols, 1},
+    {"_kalis_CacheHaplotypes_hapgz_nlines", (DL_FUNC) &_kalis_CacheHaplotypes_hapgz_nlines, 1},
+    {"_kalis_CacheHaplotypes_hapgz_2", (DL_FUNC) &_kalis_CacheHaplotypes_hapgz_2, 5},
     {"_kalis_QueryCache2_ind", (DL_FUNC) &_kalis_QueryCache2_ind, 1},
     {"_kalis_QueryCache2_loc", (DL_FUNC) &_kalis_QueryCache2_loc, 1},
     {"_kalis_ClearHaplotypeCache2", (DL_FUNC) &_kalis_ClearHaplotypeCache2, 0},
@@ -639,6 +690,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_CopyForwardTable_cpp", (DL_FUNC) &_kalis_CopyForwardTable_cpp, 2},
     {"_kalis_CopyBackwardTable_cpp", (DL_FUNC) &_kalis_CopyBackwardTable_cpp, 2},
     {"_kalis_TrippleMatAndMul", (DL_FUNC) &_kalis_TrippleMatAndMul, 8},
+    {"_kalis_gziplines", (DL_FUNC) &_kalis_gziplines, 1},
     {"_kalis_calc_tables_cpp_original_v1", (DL_FUNC) &_kalis_calc_tables_cpp_original_v1, 5},
     {"_kalis_calc_tables_cpp_new_v2", (DL_FUNC) &_kalis_calc_tables_cpp_new_v2, 5},
     {NULL, NULL, 0}
