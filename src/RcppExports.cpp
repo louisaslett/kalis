@@ -605,17 +605,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gziplines
-IntegerVector gziplines(std::string file);
-RcppExport SEXP _kalis_gziplines(SEXP fileSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type file(fileSEXP);
-    rcpp_result_gen = Rcpp::wrap(gziplines(file));
-    return rcpp_result_gen;
-END_RCPP
-}
 // calc_tables_cpp_original_v1
 void calc_tables_cpp_original_v1(NumericMatrix& cost_table, IntegerMatrix& index_table, NumericVector s, int maxcpt, int maxn);
 RcppExport SEXP _kalis_calc_tables_cpp_original_v1(SEXP cost_tableSEXP, SEXP index_tableSEXP, SEXP sSEXP, SEXP maxcptSEXP, SEXP maxnSEXP) {
@@ -690,7 +679,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_CopyForwardTable_cpp", (DL_FUNC) &_kalis_CopyForwardTable_cpp, 2},
     {"_kalis_CopyBackwardTable_cpp", (DL_FUNC) &_kalis_CopyBackwardTable_cpp, 2},
     {"_kalis_TrippleMatAndMul", (DL_FUNC) &_kalis_TrippleMatAndMul, 8},
-    {"_kalis_gziplines", (DL_FUNC) &_kalis_gziplines, 1},
     {"_kalis_calc_tables_cpp_original_v1", (DL_FUNC) &_kalis_calc_tables_cpp_original_v1, 5},
     {"_kalis_calc_tables_cpp_new_v2", (DL_FUNC) &_kalis_calc_tables_cpp_new_v2, 5},
     {NULL, NULL, 0}

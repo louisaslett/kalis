@@ -177,10 +177,6 @@ TrippleMatAndMul <- function(M, M2, M3, fwd, bck, x, from_recipient, nthreads) {
     .Call('_kalis_TrippleMatAndMul', PACKAGE = 'kalis', M, M2, M3, fwd, bck, x, from_recipient, nthreads)
 }
 
-gziplines <- function(file) {
-    .Call('_kalis_gziplines', PACKAGE = 'kalis', file)
-}
-
 calc_tables_cpp_original_v1 <- function(cost_table, index_table, s, maxcpt, maxn) {
     invisible(.Call('_kalis_calc_tables_cpp_original_v1', PACKAGE = 'kalis', cost_table, index_table, s, maxcpt, maxn))
 }
