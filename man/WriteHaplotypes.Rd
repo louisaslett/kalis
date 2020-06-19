@@ -18,13 +18,13 @@ WriteHaplotypes(
 
 ReadHaplotypes(
   hdf5.file,
-  hap.ids = NA,
+  loci.idx = NA,
+  hap.idx = NA,
   loci.ids = NA,
-  hap.index = NA,
-  loci.index = NA,
+  hap.ids = NA,
   haps.name = "/haps",
-  hap.ids.name = "/hap.ids",
   loci.ids.name = "/loci.ids",
+  hap.ids.name = "/hap.ids",
   transpose = FALSE
 )
 }
