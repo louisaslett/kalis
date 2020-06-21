@@ -1,0 +1,8 @@
+CXX_STD = CXX11
+PKG_CXXFLAGS=@cflags@ -fno-strict-aliasing
+PKG_LIBS=@libs@
+
+all: $(SHLIB)
+
+clean:
+	rm -rf src/*.o src/*.so

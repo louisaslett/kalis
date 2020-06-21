@@ -1,12 +1,16 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 #include <stdlib.h>
-#include <immintrin.h>
 #include <thread>
 #include <vector>
 #include <functional>
 
 #include "Cache.h"
+
+
+#if defined(KALIS_IMMINTRIN_H)
+#include <immintrin.h>
+#endif
 
 // #include <iacaMarks.h>
 
