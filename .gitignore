@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+src/Makevars
 src/*.o
 src/*.so
 src/*.dll
