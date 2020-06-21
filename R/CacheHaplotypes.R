@@ -153,7 +153,7 @@ CacheHaplotypes <- function(haps, loci.idx = NULL, hap.idx = NULL, format = "aut
     if(format == "vcf" ||
        (format == "auto" && (ext == ".vcf" ||
                              ext == ".gz" && !is.na(ext2) && ext2 == ".vcf.gz"))) {
-      message("Native import of VCF is currently not supported.  Please see the vignettes for a simple script to convert VCF to HDF5.")
+      message("Native import of VCF is currently not supported.  Please see the vignettes for a simple script to convert VCF to a .hap.gz or HDF5 file.")
       cached <- TRUE
     }
     if(format == "hapgz" ||

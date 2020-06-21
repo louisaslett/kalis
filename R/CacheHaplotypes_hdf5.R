@@ -15,6 +15,8 @@ CacheHaplotypes.hdf5 <- function(hdf5.file,
       if(pkg == "rhdf5") {
         return(CacheHaplotypes.hdf5.rhdf5(hdf5.file, loci.idx, hap.idx, transpose, haps))
       }
+    } else {
+      stop("Either hdf5r or rhdf5 packages must be installed to load from HDF5 files.")
     }
   }
 }
