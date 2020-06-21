@@ -158,9 +158,9 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
         const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*(32*KALIS_INTVEC_SIZE)+donor;
 
 #if !defined(KALIS_1STEP)
-        f += alphaRow[(N/(32*KALIS_INTVEC_SIZE))*(32*KALIS_INTVEC_SIZE)+donor] = (H * muTmp1 + muTmp2) * (PiRow[donornum] * rho[l-1] + omRhoDivF * alphaRow[donornum]);
+        f += alphaRow[donornum] = (H * muTmp1 + muTmp2) * (PiRow[donornum] * rho[l-1] + omRhoDivF * alphaRow[donornum]);
 #elif defined(KALIS_1STEP)
-        f += alphaRow[(N/(32*KALIS_INTVEC_SIZE))*(32*KALIS_INTVEC_SIZE)+donor] = 1.0 * (PiRow[donornum] * rho[l-1] + omRhoDivF * alphaRow[donornum]);
+        f += alphaRow[donornum] = 1.0 * (PiRow[donornum] * rho[l-1] + omRhoDivF * alphaRow[donornum]);
 #endif
       }
 

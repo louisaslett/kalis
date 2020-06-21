@@ -145,16 +145,19 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         // IACA_END
       }
       // Tidy up any ragged end past a multiple of 256 ...
-      for(int32_t donor=0; donor<N%(32*8); ++donor) {
-        int32_t donor_hapA = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+      for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
+        int32_t donor_hapA = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
         int32_t HA = (recipient_hap ^ donor_hapA) & 1;
+
+        const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
+
 #if KALIS_MU == MU_SCALAR
-        betaRow[(N/(32*8))*32*8+donor] = (HA * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor];
+        betaRow[donornum] = (HA * muTmp1 + muTmp2) * betaRow[donornum];
 #elif KALIS_MU == MU_VECTOR
-        betaRow[(N/(32*8))*32*8+donor] = (HA * muTmp1a + muTmp2a) * betaRow[(N/(32*8))*32*8+donor];
+        betaRow[donornum] = (HA * muTmp1a + muTmp2a) * betaRow[donornum];
 #endif
 
-        g += PiRow[(N/(32*8))*32*8+donor] * betaRow[(N/(32*8))*32*8+donor];
+        g += PiRow[donornum] * betaRow[donornum];
       }
 
       betaRow[recipient] = 0.0;
@@ -235,21 +238,24 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           // IACA_END
         }
         // Tidy up any ragged end past a multiple of 256 ...
-        for(int32_t donor=0; donor<N%(32*8); ++donor) {
-          int32_t donor_hap = (hap_locus[l+1][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+        for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
+          int32_t donor_hap = (hap_locus[l+1][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
           int32_t H = (recipient_hap_prev ^ donor_hap) & 1;
+
+          const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
+
 #if KALIS_MU == MU_SCALAR
-          betaRow[(N/(32*8))*32*8+donor] = rho[l] + (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor] * omRhoDivG;
+          betaRow[donornum] = rho[l] + (H * muTmp1 + muTmp2) * betaRow[donornum] * omRhoDivG;
 #elif KALIS_MU == MU_VECTOR
-          betaRow[(N/(32*8))*32*8+donor] = rho[l] + (H * muTmp1a + muTmp2a) * betaRow[(N/(32*8))*32*8+donor] * omRhoDivG;
+          betaRow[donornum] = rho[l] + (H * muTmp1a + muTmp2a) * betaRow[donornum] * omRhoDivG;
 #endif
 
           donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
           H = (recipient_hap ^ donor_hap) & 1;
 #if KALIS_MU == MU_VECTOR
-          g += PiRow[(N/(32*8))*32*8+donor] * (H * muTmp1b + muTmp2b) * betaRow[(N/(32*8))*32*8+donor];
+          g += PiRow[donornum] * (H * muTmp1b + muTmp2b) * betaRow[donornum];
 #elif KALIS_MU == MU_SCALAR
-          g += PiRow[(N/(32*8))*32*8+donor] * (H * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor];
+          g += PiRow[donornum] * (H * muTmp1 + muTmp2) * betaRow[donornum];
 #endif
         }
         betaRow[recipient] = 0.0;
@@ -332,16 +338,19 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             // IACA_END
           }
           // Tidy up any ragged end past a multiple of 256 ...
-          for(int32_t donor=0; donor<N%(32*8); ++donor) {
-            int32_t donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+          for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
+            int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
             int32_t H = (recipient_hap ^ donor_hap) & 1;
+
+            const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
+
 #if KALIS_MU == MU_SCALAR
-            betaRow[(N/(32*8))*32*8+donor] = (rho[l] + betaRow[(N/(32*8))*32*8+donor] * omRhoDivG) * (H * muTmp1 + muTmp2);
+            betaRow[donornum] = (rho[l] + betaRow[donornum] * omRhoDivG) * (H * muTmp1 + muTmp2);
 #elif KALIS_MU == MU_VECTOR
-            betaRow[(N/(32*8))*32*8+donor] = (rho[l] + betaRow[(N/(32*8))*32*8+donor] * omRhoDivG) * (H * muTmp1b + muTmp2b);
+            betaRow[donornum] = (rho[l] + betaRow[donornum] * omRhoDivG) * (H * muTmp1b + muTmp2b);
 #endif
 
-            g += PiRow[(N/(32*8))*32*8+donor] * betaRow[(N/(32*8))*32*8+donor];
+            g += PiRow[donornum] * betaRow[donornum];
           }
 
           betaRow[recipient] = 0.0;
@@ -384,18 +393,21 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             // IACA_END
           }
           // Tidy up any ragged end past a multiple of 256 ...
-          for(int32_t donor=0; donor<N%(32*8); ++donor) {
-            int32_t donor_hapA = (hap_locus[l+1][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+          for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
+            int32_t donor_hapA = (hap_locus[l+1][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
             int32_t HA = (recipient_hap_prev ^ donor_hapA) & 1;
-            int32_t donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+            int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
             int32_t H = (recipient_hap ^ donor_hap) & 1;
+
+            const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
+
 #if KALIS_MU == MU_SCALAR
-            betaRow[(N/(32*8))*32*8+donor] = (rho[l] + (HA * muTmp1 + muTmp2) * betaRow[(N/(32*8))*32*8+donor] * omRhoDivG) * (H * muTmp1 + muTmp2);
+            betaRow[donornum] = (rho[l] + (HA * muTmp1 + muTmp2) * betaRow[donornum] * omRhoDivG) * (H * muTmp1 + muTmp2);
 #elif KALIS_MU == MU_VECTOR
-            betaRow[(N/(32*8))*32*8+donor] = (rho[l] + (HA * muTmp1a + muTmp2a) * betaRow[(N/(32*8))*32*8+donor] * omRhoDivG) * (H * muTmp1b + muTmp2b);
+            betaRow[donornum] = (rho[l] + (HA * muTmp1a + muTmp2a) * betaRow[donornum] * omRhoDivG) * (H * muTmp1b + muTmp2b);
 #endif
 
-            g += PiRow[(N/(32*8))*32*8+donor] * betaRow[(N/(32*8))*32*8+donor];
+            g += PiRow[donornum] * betaRow[donornum];
           }
 
           betaRow[recipient] = 0.0;
@@ -431,19 +443,22 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             // IACA_END
           }
           // Tidy up any ragged end past a multiple of 256 ...
-          for(int32_t donor=0; donor<N%(32*8); ++donor) {
-            int32_t donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+          for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
+            int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
             int32_t H = (recipient_hap ^ donor_hap) & 1;
+
+            const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
+
 #if KALIS_MU == MU_SCALAR
-            betaRow[(N/(32*8))*32*8+donor] = (rho[l] + betaRow[(N/(32*8))*32*8+donor] * omRhoDivG);
+            betaRow[donornum] = (rho[l] + betaRow[donornum] * omRhoDivG);
 #elif KALIS_MU == MU_VECTOR
-            betaRow[(N/(32*8))*32*8+donor] = (rho[l] + betaRow[(N/(32*8))*32*8+donor] * omRhoDivG);
+            betaRow[donornum] = (rho[l] + betaRow[donornum] * omRhoDivG);
 #endif
 
 #if KALIS_MU == MU_VECTOR
-            g += PiRow[(N/(32*8))*32*8+donor] * betaRow[(N/(32*8))*32*8+donor] * (H * muTmp1b + muTmp2b);
+            g += PiRow[donornum] * betaRow[donornum] * (H * muTmp1b + muTmp2b);
 #elif KALIS_MU == MU_SCALAR
-            g += PiRow[(N/(32*8))*32*8+donor] * betaRow[(N/(32*8))*32*8+donor] * (H * muTmp1 + muTmp2);
+            g += PiRow[donornum] * betaRow[donornum] * (H * muTmp1 + muTmp2);
 #endif
           }
 
