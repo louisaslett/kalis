@@ -257,21 +257,21 @@ WriteHaplotypes <- function(hdf5.file, haps,
 
 
 
-IDs.to.index <- function(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, all.loci.ids) {
-  if(!is.atomic(hap.ids) || !is.atomic(loci.ids) || !is.atomic(hap.index) || !is.atomic(loci.index)) {
+IDs.to.index <- function(hap.ids, loci.ids, hap.idx, loci.idx, all.hap.ids, all.loci.ids) {
+  if(!is.atomic(hap.ids) || !is.atomic(loci.ids) || !is.atomic(hap.idx) || !is.atomic(loci.idx)) {
     stop("Arguments can only be vectors.")
   }
-  if(is.na(hap.ids) && is.na(hap.index)) {
-    stop("At least one of hap.ids or hap.index must be provided.")
+  if(is.na(hap.ids) && is.na(hap.idx)) {
+    stop("At least one of hap.ids or hap.idx must be provided.")
   }
-  if(!is.na(hap.ids) && !is.na(hap.index)) {
-    stop("Only one of hap.ids or hap.index may be provided.")
+  if(!is.na(hap.ids) && !is.na(hap.idx)) {
+    stop("Only one of hap.ids or hap.idx may be provided.")
   }
-  if(is.na(loci.ids) && is.na(loci.index)) {
-    stop("At least one of loci.ids or loci.index must be provided.")
+  if(is.na(loci.ids) && is.na(loci.idx)) {
+    stop("At least one of loci.ids or loci.idx must be provided.")
   }
-  if(!is.na(loci.ids) && !is.na(loci.index)) {
-    stop("Only one of loci.ids or loci.index may be provided.")
+  if(!is.na(loci.ids) && !is.na(loci.idx)) {
+    stop("Only one of loci.ids or loci.idx may be provided.")
   }
 
   # Check IDs and argument compatibility
@@ -288,12 +288,12 @@ IDs.to.index <- function(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, 
     }
     hap.ids <- hap.ids2
   } else if(is.na(hap.ids)) {
-    hap.ids <- suppressWarnings(as.integer(hap.index))
+    hap.ids <- suppressWarnings(as.integer(hap.idx))
     if(any(is.na(hap.ids))) {
-      stop("Failed when trying to interpret hap.index as an integer.")
+      stop("Failed when trying to interpret hap.idx as an integer.")
     }
   } else {
-    stop("Unrecoverable error trying to interpret hap.ids/hap.index arguments.")
+    stop("Unrecoverable error trying to interpret hap.ids/hap.idx arguments.")
   }
 
   if(!is.na(loci.ids) && is.integer(all.loci.ids)) {
@@ -309,12 +309,12 @@ IDs.to.index <- function(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, 
     }
     loci.ids <- loci.ids2
   } else if(is.na(loci.ids)) {
-    loci.ids <- suppressWarnings(as.integer(loci.index))
+    loci.ids <- suppressWarnings(as.integer(loci.idx))
     if(any(is.na(loci.ids))) {
-      stop("Failed when trying to interpret loci.index as an integer.")
+      stop("Failed when trying to interpret loci.idx as an integer.")
     }
   } else {
-    stop("Unrecoverable error trying to interpret hap.ids/hap.index arguments.")
+    stop("Unrecoverable error trying to interpret hap.ids/hap.idx arguments.")
   }
 
   # Check we have sensible indexing by this point
@@ -333,18 +333,19 @@ IDs.to.index <- function(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, 
 #' @describeIn WriteHaplotypes Read haplotype matrix from HDF5 file
 #' @export ReadHaplotypes
 ReadHaplotypes <- function(hdf5.file,
-                           hap.ids = NA, loci.ids = NA,
-                           hap.index = NA, loci.index = NA,
-                           haps.name = "/haps", hap.ids.name = "/hap.ids", loci.ids.name = "/loci.ids",
+                           loci.idx = NA, hap.idx = NA,
+                           loci.ids = NA, hap.ids = NA,
+                           haps.name = "/haps",
+                           loci.ids.name = "/loci.ids", hap.ids.name = "/hap.ids",
                            transpose = FALSE) {
   if(!file.exists(hdf5.file)) {
     stop("Cannot find HDF5 file.")
   }
-  if(!identical(hap.ids, NA) && !identical(hap.index, NA)) {
-    stop("Can only specify one of hap.ids or hap.index argument.")
+  if(!identical(hap.ids, NA) && !identical(hap.idx, NA)) {
+    stop("Can only specify one of hap.ids or hap.idx argument.")
   }
-  if(!identical(loci.ids, NA) && !identical(loci.index, NA)) {
-    stop("Can only specify one of loci.ids or loci.index argument.")
+  if(!identical(loci.ids, NA) && !identical(loci.idx, NA)) {
+    stop("Can only specify one of loci.ids or loci.idx argument.")
   }
 
   # Get dimensions of hap data
@@ -364,13 +365,13 @@ ReadHaplotypes <- function(hdf5.file,
   all.loci.ids <- tryCatch(rhdf5::h5read(hdf5.file, loci.ids.name), error = function(e) 1:L)
 
   # Default to get everything
-  if(identical(hap.ids, NA) && identical(hap.index, NA)) {
-    hap.index <- 1:N
+  if(identical(hap.ids, NA) && identical(hap.idx, NA)) {
+    hap.idx <- 1:N
   }
-  if(identical(loci.ids, NA) && identical(loci.index, NA)) {
-    loci.index <- 1:L
+  if(identical(loci.ids, NA) && identical(loci.idx, NA)) {
+    loci.idx <- 1:L
   }
-  idx <- IDs.to.index(hap.ids, loci.ids, hap.index, loci.index, all.hap.ids, all.loci.ids)
+  idx <- IDs.to.index(hap.ids, loci.ids, hap.idx, loci.idx, all.hap.ids, all.loci.ids)
 
   # Read
   haps <- rhdf5::h5read(hdf5.file, haps.name, index = list(idx$loci, idx$hap))
