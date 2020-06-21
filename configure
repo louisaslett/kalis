@@ -57,7 +57,29 @@ fi
 # Check if we're on an x86 system with intrinsics
 echo "#include <immintrin.h>" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1
 if [ $? -eq 0 ]; then
-PKG_CFLAGS="$PKG_CFLAGS -DKALIS_IMMINTRIN_H"
+  PKG_CFLAGS="$PKG_CFLAGS -DKALIS_IMMINTRIN_H"
+fi
+
+# Check if we're on an ARM system with intrinsics
+echo "#include <arm_neon.h>" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+  PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ARM_NEON_H"
+fi
+
+# To disable using assembly intrinsics even when available
+if [ "$NOASM" ]; then
+  PKG_CFLAGS="$PKG_CFLAGS -DKALIS_NOASM"
+  echo "Assembly intrinsics disabled by NOASM configure-vars flag"
+else
+  echo "Assembly intrinsics will be used if available"
+fi
+
+# To customise unroll depth
+if [ "$UNROLL" ]; then
+  PKG_CFLAGS="$PKG_CFLAGS -DKALIS_UNROLL=$UNROLL"
+  echo "Loop unrolling default overridden by UNROLL configure-vars flag to depth $UNROLL"
+else
+  echo "Loop unrolling at default value"
 fi
 
 # Gen Makevars

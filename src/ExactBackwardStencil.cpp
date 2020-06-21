@@ -11,6 +11,9 @@ using namespace Rcpp;
 #if defined(KALIS_IMMINTRIN_H)
 #include <immintrin.h>
 #endif
+#if defined(KALIS_ARM_NEON_H)
+#include <arm_neon.h>
+#endif
 
 // #include <iacaMarks.h>
 
