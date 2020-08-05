@@ -35,12 +35,13 @@ Imports:
     checkmate,
     fastcluster,
     lattice,
-    RColorBrewer
+    RColorBrewer,
+    lobstr
 LinkingTo:
     Rcpp
 SystemRequirements:
     C++11
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Suggests: rhdf5,
     hdf5r,

@@ -374,7 +374,10 @@ ReadHaplotypes <- function(hdf5.file,
   idx <- IDs.to.index(hap.ids, loci.ids, hap.idx, loci.idx, all.hap.ids, all.loci.ids)
 
   # Read
-  haps <- rhdf5::h5read(hdf5.file, haps.name, index = list(idx$loci, idx$hap))
+  if(!transpose)
+    haps <- matrix(as.integer(rhdf5::h5read(hdf5.file, haps.name, index = list(idx$loci, idx$hap))), nrow = length(idx$loci))
+  else
+    haps <- matrix(as.integer(t(rhdf5::h5read(hdf5.file, haps.name, index = list(idx$hap, idx$loci)))), nrow = length(idx$loci))
 
   rhdf5::H5close()
 
