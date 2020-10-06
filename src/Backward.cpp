@@ -21,6 +21,7 @@ void Backward_densePi_densemu_cpp(List bck,
                                   NumericMatrix Pi,
                                   NumericVector mu,
                                   NumericVector rho,
+                                  const bool use_speidel,
                                   const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
@@ -53,6 +54,7 @@ void Backward_densePi_densemu_cpp(List bck,
                                   Pi,
                                   mu,
                                   rho,
+                                  use_speidel,
                                   nthreads);
   } else {
     ExactBackwardNoExpAVX3_cpp(beta,
@@ -68,7 +70,8 @@ void Backward_densePi_densemu_cpp(List bck,
                                N,
                                Pi,
                                mu,
-                               rho);
+                               rho,
+                               use_speidel);
   }
   IntegerVector newl(1);
   newl[0] = t;
@@ -82,6 +85,7 @@ void Backward_scalarPi_densemu_cpp(List bck,
                                    const double Pi,
                                    NumericVector mu,
                                    NumericVector rho,
+                                   const bool use_speidel,
                                    const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
@@ -114,6 +118,7 @@ void Backward_scalarPi_densemu_cpp(List bck,
                                        Pi,
                                        mu,
                                        rho,
+                                       use_speidel,
                                        nthreads);
   } else {
     ExactBackwardNoExpAVX3_scPi_cpp(beta,
@@ -129,7 +134,8 @@ void Backward_scalarPi_densemu_cpp(List bck,
                                     N,
                                     Pi,
                                     mu,
-                                    rho);
+                                    rho,
+                                    use_speidel);
   }
   IntegerVector newl(1);
   newl[0] = t;
@@ -143,6 +149,7 @@ void Backward_densePi_scalarmu_cpp(List bck,
                                    NumericMatrix Pi,
                                    const double mu,
                                    NumericVector rho,
+                                   const bool use_speidel,
                                    const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
@@ -175,6 +182,7 @@ void Backward_densePi_scalarmu_cpp(List bck,
                                        Pi,
                                        mu,
                                        rho,
+                                       use_speidel,
                                        nthreads);
   } else {
     ExactBackwardNoExpAVX3_scmu_cpp(beta,
@@ -190,7 +198,8 @@ void Backward_densePi_scalarmu_cpp(List bck,
                                     N,
                                     Pi,
                                     mu,
-                                    rho);
+                                    rho,
+                                    use_speidel);
   }
   IntegerVector newl(1);
   newl[0] = t;
@@ -204,6 +213,7 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
                                     const double Pi,
                                     const double mu,
                                     NumericVector rho,
+                                    const bool use_speidel,
                                     const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
@@ -236,6 +246,7 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
                                          Pi,
                                          mu,
                                          rho,
+                                         use_speidel,
                                          nthreads);
   } else {
     ExactBackwardNoExpAVX3_scmuPi_cpp(beta,
@@ -251,7 +262,8 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
                                       N,
                                       Pi,
                                       mu,
-                                      rho);
+                                      rho,
+                                      use_speidel);
   }
   IntegerVector newl(1);
   newl[0] = t;

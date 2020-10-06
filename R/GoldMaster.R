@@ -133,3 +133,69 @@ Exact_Forward_GMmatLS_R_newH <- function(t, L, N, H, Pi, mu, rho) {
 
   return(list(alpha=alpha, alphasum=f))
 }
+Exact_Backward_GMmatLS_R_speidel <- function(t, L, N, H, Pi, mu, rho) {
+  # Setup Pi & rho
+  diag(Pi) <- 0
+
+  l <- L
+
+  indH <- 1-outer(1-H[,l], H[,l], "*"); diag(indH) <- 0
+  theta <- indH * (1-mu[l])
+  indH <- 1-indH; diag(indH) <- 0
+  theta <- theta + indH * mu[l]
+
+  beta.old <- log(matrix(1, N, N))
+
+  g <- -log(rowSums(Pi*rho[l-1]*theta))
+
+  while(l>t) {
+    l <- l-1
+
+    beta.new <- log(1.0 + (1-rho[l])*theta*exp(beta.old+g)) - g
+    diag(beta.new) <- -g
+
+    indH <- 1-outer(1-H[,l], H[,l], "*"); diag(indH) <- 0
+    theta <- indH * (1-mu[l])
+    indH <- 1-indH; diag(indH) <- 0
+    theta <- theta + indH * mu[l]
+
+    if(l>1) {
+      g <- -( log(rowSums(Pi*rho[l-1]*theta*exp(beta.new+g))) - g)
+    }
+
+    beta.old <- beta.new
+  }
+
+  return(beta.old)
+}
+# Gold master forward algorithm, no sanity checks, matrix-wise, log-space
+Exact_Forward_GMmatLS_R_speidel <- function(t, L, N, H, Pi, mu, rho) {
+  # Setup Pi & rho
+  diag(Pi) <- 0
+
+  l <- 1
+
+  indH <- 1-outer(1-H[,l], H[,l], "*"); diag(indH) <- 0
+  theta <- indH * (1-mu[l])
+  indH <- 1-indH; diag(indH) <- 0
+  theta <- theta + indH * mu[l]
+
+  alpha <- log(Pi*theta)
+
+  f <- -log(rowSums(exp(alpha)*rho[l]))
+
+  while(l<t) {
+    l <- l+1
+
+    indH <- 1-outer(1-H[,l], H[,l], "*"); diag(indH) <- 0
+    theta <- indH * (1-mu[l])
+    indH <- 1-indH; diag(indH) <- 0
+    theta <- theta + indH * mu[l]
+
+    alpha <- log(theta*Pi + theta*(1-rho[l-1])*exp(alpha+f)) - f
+
+    f <- -( log(rowSums(exp(alpha+f)*rho[l])) - f )
+  }
+
+  return(list(alpha=alpha, alphasum=f))
+}

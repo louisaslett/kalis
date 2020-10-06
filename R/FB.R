@@ -61,15 +61,15 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
 
   if(is.matrix(pars$pars$Pi)) {
     if(length(pars$pars$mu) == 1) {
-      Forward_densePi_scalarmu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Forward_densePi_scalarmu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
     } else {
-      Forward_densePi_densemu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Forward_densePi_densemu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
     }
   } else {
     if(length(pars$pars$mu) == 1) {
-      Forward_scalarPi_scalarmu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Forward_scalarPi_scalarmu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
     } else {
-      Forward_scalarPi_densemu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Forward_scalarPi_densemu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
     }
   }
 }
@@ -144,15 +144,15 @@ Backward <- function(bck, pars, t = bck$l-1, nthreads = 1, beta.theta = FALSE) {
 
   if(is.matrix(pars$pars$Pi)) {
     if(length(pars$pars$mu) == 1) {
-      Backward_densePi_scalarmu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Backward_densePi_scalarmu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
     } else {
-      Backward_densePi_densemu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Backward_densePi_densemu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
     }
   } else {
     if(length(pars$pars$mu) == 1) {
-      Backward_scalarPi_scalarmu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Backward_scalarPi_scalarmu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
     } else {
-      Backward_scalarPi_densemu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, nthreads)
+      Backward_scalarPi_densemu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
     }
   }
 }

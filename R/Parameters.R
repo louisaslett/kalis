@@ -184,7 +184,11 @@ CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE) {
 #' }
 #'
 #' @export
-Parameters <- function(rho = rep(0, get("L", envir = pkgVars)-1), mu = 1e-8, Pi = NULL, check.rho = TRUE) {
+Parameters <- function(rho = rep(0, get("L", envir = pkgVars)-1),
+                       mu = 1e-8,
+                       Pi = NULL,
+                       use.speidel = FALSE,
+                       check.rho = TRUE) {
   N <- get("N", envir = pkgVars)
   if(anyNA(N)) {
     stop("No haplotypes cached ... cannot determine table size until cache is loaded with CacheAllHaplotypes().")
@@ -225,12 +229,17 @@ Parameters <- function(rho = rep(0, get("L", envir = pkgVars)-1), mu = 1e-8, Pi 
     stop("Pi must be a matrix or left as NULL to have uniform copying probabilities of 1/(N-1) for a problem with N recipients.")
   }
 
+  if(!test_logical(use.speidel, any.missing = FALSE, len = 1)) {
+    stop("use.speidel must be TRUE or FALSE")
+  }
+
   # Create the new parameter environment
   res <- new.env(parent = emptyenv())
   res$pars <- new.env(parent = emptyenv())
-  res$pars$rho <- c(rho, 1)
-  res$pars$mu  <- mu
-  res$pars$Pi  <- Pi
+  res$pars$rho          <- c(rho, 1)
+  res$pars$mu           <- mu
+  res$pars$Pi           <- Pi
+  res$pars$use.speidel  <- use.speidel
 
   # Lock down and checksum
   lockEnvironment(res$pars, bindings = TRUE)

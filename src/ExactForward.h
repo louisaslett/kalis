@@ -15,7 +15,8 @@ void ExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
                                const int N,
                                NumericMatrix Pi,
                                NumericVector mu,
-                               NumericVector rho);
+                               NumericVector rho,
+                               const bool use_speidel);
 
 void ParExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
                                   NumericVector alpha_f,
@@ -29,6 +30,7 @@ void ParExactForwardNoExpAVX3_cpp(NumericMatrix alpha,
                                   NumericMatrix Pi,
                                   NumericVector mu,
                                   NumericVector rho,
+                                  const bool use_speidel,
                                   const int nthreads);
 
 void ExactForwardNoExpAVX3_scmu_cpp(NumericMatrix alpha,
@@ -42,7 +44,8 @@ void ExactForwardNoExpAVX3_scmu_cpp(NumericMatrix alpha,
                                     const int N,
                                     NumericMatrix Pi,
                                     const double mu,
-                                    NumericVector rho);
+                                    NumericVector rho,
+                                    const bool use_speidel);
 
 void ParExactForwardNoExpAVX3_scmu_cpp(NumericMatrix alpha,
                                        NumericVector alpha_f,
@@ -56,6 +59,7 @@ void ParExactForwardNoExpAVX3_scmu_cpp(NumericMatrix alpha,
                                        NumericMatrix Pi,
                                        const double mu,
                                        NumericVector rho,
+                                       const bool use_speidel,
                                        const int nthreads);
 
 void ExactForwardNoExpAVX3_scPi_cpp(NumericMatrix alpha,
@@ -69,7 +73,8 @@ void ExactForwardNoExpAVX3_scPi_cpp(NumericMatrix alpha,
                                     const int N,
                                     const double Pi,
                                     NumericVector mu,
-                                    NumericVector rho);
+                                    NumericVector rho,
+                                    const bool use_speidel);
 
 void ParExactForwardNoExpAVX3_scPi_cpp(NumericMatrix alpha,
                                        NumericVector alpha_f,
@@ -83,6 +88,7 @@ void ParExactForwardNoExpAVX3_scPi_cpp(NumericMatrix alpha,
                                        const double Pi,
                                        NumericVector mu,
                                        NumericVector rho,
+                                       const bool use_speidel,
                                        const int nthreads);
 
 void ExactForwardNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
@@ -96,7 +102,8 @@ void ExactForwardNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
                                       const int N,
                                       const double Pi,
                                       const double mu,
-                                      NumericVector rho);
+                                      NumericVector rho,
+                                      const bool use_speidel);
 
 void ParExactForwardNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
                                          NumericVector alpha_f,
@@ -110,6 +117,7 @@ void ParExactForwardNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
                                          const double Pi,
                                          const double mu,
                                          NumericVector rho,
+                                         const bool use_speidel,
                                          const int nthreads);
 
 void ExactForward1stepNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
@@ -123,7 +131,8 @@ void ExactForward1stepNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
                                            const int N,
                                            const double Pi,
                                            const double mu,
-                                           NumericVector rho);
+                                           NumericVector rho,
+                                           const bool use_speidel);
 
 void ParExactForward1stepNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
                                               NumericVector alpha_f,
@@ -137,6 +146,7 @@ void ParExactForward1stepNoExpAVX3_scmuPi_cpp(NumericMatrix alpha,
                                               const double Pi,
                                               const double mu,
                                               NumericVector rho,
+                                              const bool use_speidel,
                                               const int nthreads);
 
 #endif

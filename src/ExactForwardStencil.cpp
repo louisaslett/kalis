@@ -32,7 +32,8 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
                 const int N,
                 const PI_TYPE_C Pi,
                 const MU_TYPE_C mu,
-                const double *const __restrict__ rho) {
+                const double *const __restrict__ rho,
+                const bool use_speidel) {
   int_fast32_t l = alpha_t;
 
   double f;
@@ -58,7 +59,11 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
         int32_t donor_hap = (hap_locus[0][donor/32] >> donor%32) & 1;
-        int32_t H = (recipient_hap ^ donor_hap) & 1;
+        int32_t H;
+        if(use_speidel)
+          H = (recipient_hap & ~donor_hap) & 1;
+        else
+          H = (recipient_hap ^ donor_hap) & 1;
 #if KALIS_MU == MU_SCALAR
         double theta = (H * (1.0 - 2.0*mu) + mu);
 #elif KALIS_MU == MU_VECTOR
@@ -139,8 +144,12 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 
       for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
 #if !defined(KALIS_1STEP)
-        // Load next 256 donors and XOR with recipients
-        KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+        // Load next 256 donors and XOR or ANDNOT with recipients
+        KALIS_INT32 _HA;
+        if(use_speidel)
+          _HA = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+        else
+          _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
         uint32_t *HA = (uint32_t*) &_HA;
 #endif
 
@@ -156,7 +165,11 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
       for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
 #if !defined(KALIS_1STEP)
         int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
-        int32_t H = (recipient_hap ^ donor_hap) & 1;
+        int32_t H;
+        if(use_speidel)
+          H = (recipient_hap & ~donor_hap) & 1;
+        else
+          H = (recipient_hap ^ donor_hap) & 1;
 #endif
         const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*(32*KALIS_INTVEC_SIZE)+donor;
 
@@ -200,7 +213,8 @@ void CPP_FN(EXACTFORWARDNOEXP)(NumericMatrix alpha,
             const int N,
             PI_TYPE_CPP Pi,
             MU_TYPE_CPP mu,
-            NumericVector rho) {
+            NumericVector rho,
+            const bool use_speidel) {
   CPP_RAW_FN(EXACTFORWARDNOEXP)(&(alpha[0]),
              &(alpha_f[0]),
              alpha_from_rec,
@@ -212,7 +226,8 @@ void CPP_FN(EXACTFORWARDNOEXP)(NumericMatrix alpha,
              N,
              PI_ARG_CPP,
              MU_ARG_CPP,
-             &(rho[0]));
+             &(rho[0]),
+             use_speidel);
 }
 
 
@@ -229,6 +244,7 @@ void PAR_CPP_FN(EXACTFORWARDNOEXP)(NumericMatrix alpha,
                 PI_TYPE_CPP Pi,
                 MU_TYPE_CPP mu,
                 NumericVector rho,
+                const bool use_speidel,
                 const int nthreads) {
   std::vector<std::thread> threads;
 
@@ -252,7 +268,8 @@ void PAR_CPP_FN(EXACTFORWARDNOEXP)(NumericMatrix alpha,
                                   N,
                                   PI_ARG_CPP,
                                   MU_ARG_CPP,
-                                  &(rho[0])));
+                                  &(rho[0]),
+                                  use_speidel));
     // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
   }
 

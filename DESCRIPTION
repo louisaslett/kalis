@@ -1,7 +1,7 @@
 Package: kalis
 Type: Package
 Title: High Performance Li & Stephens Local Ancestry Inference
-Version: 0.9.1
+Version: 0.9.2
 Authors@R: c(person("Louis", "Aslett", role = c("aut", "cre"),
                     email = "louis.aslett@durham.ac.uk"),
              person("Ryan", "Christ", role = "aut",

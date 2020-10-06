@@ -5,20 +5,20 @@ ResetBackwardTable <- function(bck) {
     invisible(.Call('_kalis_ResetBackwardTable', PACKAGE = 'kalis', bck))
 }
 
-Backward_densePi_densemu_cpp <- function(bck, end_beta_theta, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_Backward_densePi_densemu_cpp', PACKAGE = 'kalis', bck, end_beta_theta, t, Pi, mu, rho, nthreads))
+Backward_densePi_densemu_cpp <- function(bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads) {
+    invisible(.Call('_kalis_Backward_densePi_densemu_cpp', PACKAGE = 'kalis', bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads))
 }
 
-Backward_scalarPi_densemu_cpp <- function(bck, end_beta_theta, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_Backward_scalarPi_densemu_cpp', PACKAGE = 'kalis', bck, end_beta_theta, t, Pi, mu, rho, nthreads))
+Backward_scalarPi_densemu_cpp <- function(bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads) {
+    invisible(.Call('_kalis_Backward_scalarPi_densemu_cpp', PACKAGE = 'kalis', bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads))
 }
 
-Backward_densePi_scalarmu_cpp <- function(bck, end_beta_theta, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_Backward_densePi_scalarmu_cpp', PACKAGE = 'kalis', bck, end_beta_theta, t, Pi, mu, rho, nthreads))
+Backward_densePi_scalarmu_cpp <- function(bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads) {
+    invisible(.Call('_kalis_Backward_densePi_scalarmu_cpp', PACKAGE = 'kalis', bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads))
 }
 
-Backward_scalarPi_scalarmu_cpp <- function(bck, end_beta_theta, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_Backward_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', bck, end_beta_theta, t, Pi, mu, rho, nthreads))
+Backward_scalarPi_scalarmu_cpp <- function(bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads) {
+    invisible(.Call('_kalis_Backward_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads))
 }
 
 CacheHaplotypes_matrix_2 <- function(x, N, L, transpose) {
@@ -129,24 +129,24 @@ ResetForwardTable <- function(fwd) {
     invisible(.Call('_kalis_ResetForwardTable', PACKAGE = 'kalis', fwd))
 }
 
-Forward_densePi_densemu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_Forward_densePi_densemu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
+Forward_densePi_densemu_cpp <- function(fwd, t, Pi, mu, rho, use_speidel, nthreads) {
+    invisible(.Call('_kalis_Forward_densePi_densemu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, use_speidel, nthreads))
 }
 
-Forward_scalarPi_densemu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_Forward_scalarPi_densemu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
+Forward_scalarPi_densemu_cpp <- function(fwd, t, Pi, mu, rho, use_speidel, nthreads) {
+    invisible(.Call('_kalis_Forward_scalarPi_densemu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, use_speidel, nthreads))
 }
 
-Forward_densePi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_Forward_densePi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
+Forward_densePi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, use_speidel, nthreads) {
+    invisible(.Call('_kalis_Forward_densePi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, use_speidel, nthreads))
 }
 
-Forward_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_Forward_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
+Forward_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, use_speidel, nthreads) {
+    invisible(.Call('_kalis_Forward_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, use_speidel, nthreads))
 }
 
-Forward1step_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, nthreads) {
-    invisible(.Call('_kalis_Forward1step_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, nthreads))
+Forward1step_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, use_speidel, nthreads) {
+    invisible(.Call('_kalis_Forward1step_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, use_speidel, nthreads))
 }
 
 MatAndMul <- function(M, fwd, bck, x, standardize, calcprobs, unifonunderflow, from_recipient, nthreads) {

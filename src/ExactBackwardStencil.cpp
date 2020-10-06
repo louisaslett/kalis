@@ -34,7 +34,8 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
                 const int N,
                 PI_TYPE_C Pi,
                 const MU_TYPE_C mu,
-                const double *const __restrict__ rho) {
+                const double *const __restrict__ rho,
+                const bool use_speidel) {
   int_fast32_t l = beta_t;
   // DEBUG: Rcout << "Backward called" << std::endl;
   double g;
@@ -60,7 +61,11 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
         int32_t donor_hap = (hap_locus[l][donor/32] >> donor%32) & 1;
-        int32_t H = (recipient_hap ^ donor_hap) & 1;
+        int32_t H;
+        if(use_speidel)
+          H = (recipient_hap & ~donor_hap) & 1;
+        else
+          H = (recipient_hap ^ donor_hap) & 1;
 #if KALIS_MU == MU_SCALAR
         double theta = (H * (1.0 - 2.0*mu) + mu);
 #elif KALIS_MU == MU_VECTOR
@@ -137,8 +142,12 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #endif
 
       for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
-        // Load next 256 donors and XOR with recipients
-        KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+        // Load next 256 donors and XOR/ANDNOT with recipients
+        KALIS_INT32 _HA;
+        if(use_speidel)
+          _HA = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+        else
+          _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
         uint32_t *HA = (uint32_t*) &_HA;
 
         for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
@@ -150,7 +159,11 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
       // Tidy up any ragged end past a multiple of 256 ...
       for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
         int32_t donor_hapA = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
-        int32_t HA = (recipient_hap ^ donor_hapA) & 1;
+        int32_t HA;
+        if(use_speidel)
+          HA = (recipient_hap & ~donor_hapA) & 1;
+        else
+          HA = (recipient_hap ^ donor_hapA) & 1;
 
         const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
 
@@ -228,10 +241,16 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         // Setup rho for AVX ops
         KALIS_DOUBLE _rho = KALIS_SET_DOUBLE(rho[l]);
         for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
-          // Load next 256 donors and XOR with recipients
-          KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
+          // Load next 256 donors and XOR/ANDNOT with recipients
+          KALIS_INT32 _HA, _HB;
+          if(use_speidel) {
+            _HA = KALIS_ANDNOT_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
+            _HB = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+          } else {
+            _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
+            _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+          }
           uint32_t *HA = (uint32_t*) &_HA;
-          KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
           uint32_t *HB = (uint32_t*) &_HB;
 
           for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
@@ -243,7 +262,11 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         // Tidy up any ragged end past a multiple of 256 ...
         for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
           int32_t donor_hap = (hap_locus[l+1][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
-          int32_t H = (recipient_hap_prev ^ donor_hap) & 1;
+          int32_t H;
+          if(use_speidel)
+            H = (recipient_hap_prev & ~donor_hap) & 1;
+          else
+            H = (recipient_hap_prev ^ donor_hap) & 1;
 
           const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
 
@@ -254,7 +277,11 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #endif
 
           donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
-          H = (recipient_hap ^ donor_hap) & 1;
+          if(use_speidel)
+            H = (recipient_hap & ~donor_hap) & 1;
+          else
+            H = (recipient_hap ^ donor_hap) & 1;
+
 #if KALIS_MU == MU_VECTOR
           g += PiRow[donornum] * (H * muTmp1b + muTmp2b) * betaRow[donornum];
 #elif KALIS_MU == MU_SCALAR
@@ -330,8 +357,12 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #endif
 
           for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
-            // Load next 256 donors and XOR with recipients
-            KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+            // Load next 256 donors and XOR/ANDNOT with recipients
+            KALIS_INT32 _HB;
+            if(use_speidel)
+              _HB = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+            else
+              _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
             uint32_t *HB = (uint32_t*) &_HB;
 
             for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
@@ -343,7 +374,11 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           // Tidy up any ragged end past a multiple of 256 ...
           for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
             int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
-            int32_t H = (recipient_hap ^ donor_hap) & 1;
+            int32_t H;
+            if(use_speidel)
+              H = (recipient_hap & ~donor_hap) & 1;
+            else
+              H = (recipient_hap ^ donor_hap) & 1;
 
             const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
 
@@ -383,10 +418,16 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #endif
 
           for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
-            // Load next 256 donors and XOR with recipients
-            KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
+            // Load next 256 donors and XOR/ANDNOT with recipients
+            KALIS_INT32 _HA, _HB;
+            if(use_speidel) {
+              _HA = KALIS_ANDNOT_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
+              _HB = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+            } else {
+              _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
+              _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+            }
             uint32_t *HA = (uint32_t*) &_HA;
-            KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
             uint32_t *HB = (uint32_t*) &_HB;
 
             for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
@@ -398,9 +439,15 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           // Tidy up any ragged end past a multiple of 256 ...
           for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
             int32_t donor_hapA = (hap_locus[l+1][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
-            int32_t HA = (recipient_hap_prev ^ donor_hapA) & 1;
             int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
-            int32_t H = (recipient_hap ^ donor_hap) & 1;
+            int32_t HA, H;
+            if(use_speidel) {
+              HA = (recipient_hap_prev & ~donor_hapA) & 1;
+              H  = (recipient_hap & ~donor_hap) & 1;
+            } else {
+              HA = (recipient_hap_prev ^ donor_hapA) & 1;
+              H  = (recipient_hap ^ donor_hap) & 1;
+            }
 
             const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
 
@@ -435,8 +482,12 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #endif
 
           for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
-            // Load next 256 donors and XOR with recipients
-            KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+            // Load next 256 donors and XOR/ANDNOT with recipients
+            KALIS_INT32 _HB;
+            if(use_speidel)
+              _HB = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+            else
+              _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
             uint32_t *HB = (uint32_t*) &_HB;
 
             for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
@@ -448,7 +499,11 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           // Tidy up any ragged end past a multiple of 256 ...
           for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
             int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
-            int32_t H = (recipient_hap ^ donor_hap) & 1;
+            int32_t H;
+            if(use_speidel)
+              H = (recipient_hap & ~donor_hap) & 1;
+            else
+              H = (recipient_hap ^ donor_hap) & 1;
 
             const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
 
@@ -502,7 +557,8 @@ void CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
             const int N,
             PI_TYPE_CPP Pi,
             MU_TYPE_CPP mu,
-            NumericVector rho) {
+            NumericVector rho,
+            const bool use_speidel) {
   CPP_RAW_FN(EXACTBACKWARDNOEXP)(&(beta[0]),
              &(beta_g[0]),
              &(cur_beta_theta[0]),
@@ -516,7 +572,8 @@ void CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
              N,
              PI_ARG_CPP,
              MU_ARG_CPP,
-             &(rho[0]));
+             &(rho[0]),
+             use_speidel);
   *(&(cur_beta_theta[0])) = *(&(end_beta_theta[0]));
 }
 
@@ -536,6 +593,7 @@ void PAR_CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
                 PI_TYPE_CPP Pi,
                 MU_TYPE_CPP mu,
                 NumericVector rho,
+                const bool use_speidel,
                 const int nthreads) {
   std::vector<std::thread> threads;
 
@@ -561,7 +619,8 @@ void PAR_CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
                                   N,
                                   PI_ARG_CPP,
                                   MU_ARG_CPP,
-                                  &(rho[0])));
+                                  &(rho[0]),
+                                  use_speidel));
     // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
   }
 

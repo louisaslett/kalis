@@ -17,6 +17,7 @@ void Forward_densePi_densemu_cpp(List fwd,
                                  NumericMatrix Pi,
                                  NumericVector mu,
                                  NumericVector rho,
+                                 const bool use_speidel,
                                  const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
@@ -46,6 +47,7 @@ void Forward_densePi_densemu_cpp(List fwd,
                                  Pi,
                                  mu,
                                  rho,
+                                 use_speidel,
                                  nthreads);
   } else {
     ExactForwardNoExpAVX3_cpp(alpha,
@@ -59,7 +61,8 @@ void Forward_densePi_densemu_cpp(List fwd,
                               N,
                               Pi,
                               mu,
-                              rho);
+                              rho,
+                              use_speidel);
   }
 
   IntegerVector newl(1);
@@ -73,6 +76,7 @@ void Forward_scalarPi_densemu_cpp(List fwd,
                                   const double Pi,
                                   NumericVector mu,
                                   NumericVector rho,
+                                  const bool use_speidel,
                                   const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
@@ -102,6 +106,7 @@ void Forward_scalarPi_densemu_cpp(List fwd,
                                       Pi,
                                       mu,
                                       rho,
+                                      use_speidel,
                                       nthreads);
   } else {
     ExactForwardNoExpAVX3_scPi_cpp(alpha,
@@ -115,7 +120,8 @@ void Forward_scalarPi_densemu_cpp(List fwd,
                                    N,
                                    Pi,
                                    mu,
-                                   rho);
+                                   rho,
+                                   use_speidel);
   }
 
   IntegerVector newl(1);
@@ -129,6 +135,7 @@ void Forward_densePi_scalarmu_cpp(List fwd,
                                   NumericMatrix Pi,
                                   const double mu,
                                   NumericVector rho,
+                                  const bool use_speidel,
                                   const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
@@ -158,6 +165,7 @@ void Forward_densePi_scalarmu_cpp(List fwd,
                                       Pi,
                                       mu,
                                       rho,
+                                      use_speidel,
                                       nthreads);
   } else {
     ExactForwardNoExpAVX3_scmu_cpp(alpha,
@@ -171,7 +179,8 @@ void Forward_densePi_scalarmu_cpp(List fwd,
                                    N,
                                    Pi,
                                    mu,
-                                   rho);
+                                   rho,
+                                   use_speidel);
   }
 
   IntegerVector newl(1);
@@ -185,6 +194,7 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
                                    const double Pi,
                                    const double mu,
                                    NumericVector rho,
+                                   const bool use_speidel,
                                    const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
@@ -214,6 +224,7 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
                                         Pi,
                                         mu,
                                         rho,
+                                        use_speidel,
                                         nthreads);
   } else {
     ExactForwardNoExpAVX3_scmuPi_cpp(alpha,
@@ -227,7 +238,8 @@ void Forward_scalarPi_scalarmu_cpp(List fwd,
                                      N,
                                      Pi,
                                      mu,
-                                     rho);
+                                     rho,
+                                     use_speidel);
   }
 
   IntegerVector newl(1);
@@ -241,6 +253,7 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
                                         const double Pi,
                                         const double mu,
                                         NumericVector rho,
+                                        const bool use_speidel,
                                         const int nthreads) {
   const int L = hap_size;
   const int N = num_inds;
@@ -270,6 +283,7 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
                                              Pi,
                                              mu,
                                              rho,
+                                             use_speidel,
                                              nthreads);
   } else {
     ExactForward1stepNoExpAVX3_scmuPi_cpp(alpha,
@@ -283,7 +297,8 @@ void Forward1step_scalarPi_scalarmu_cpp(List fwd,
                                           N,
                                           Pi,
                                           mu,
-                                          rho);
+                                          rho,
+                                          use_speidel);
   }
 
   IntegerVector newl(1);

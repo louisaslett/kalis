@@ -8,6 +8,7 @@ Parameters(
   rho = rep(0, get("L", envir = pkgVars) - 1),
   mu = 1e-08,
   Pi = NULL,
+  use.speidel = FALSE,
   check.rho = TRUE
 )
 }
