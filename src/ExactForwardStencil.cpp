@@ -58,11 +58,10 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
 
       for(int_fast32_t donor=0; donor<N; ++donor) {
         int32_t donor_hap = (hap_locus[0][donor/32] >> donor%32) & 1;
-        int32_t H;
 #ifdef KALIS_SPEIDEL
-        H = (recipient_hap & ~donor_hap) & 1;
+        int32_t H = (recipient_hap & ~donor_hap) & 1;
 #else
-        H = (recipient_hap ^ donor_hap) & 1;
+        int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
 #if KALIS_MU == MU_SCALAR
         double theta = (H * (1.0 - 2.0*mu) + mu);
@@ -145,11 +144,10 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
       for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
 #if !defined(KALIS_1STEP)
         // Load next 256 donors and XOR or ANDNOT with recipients
-        KALIS_INT32 _HA;
 #ifdef KALIS_SPEIDEL
-        _HA = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+        KALIS_INT32 _HA = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #else
-        _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+        KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
         uint32_t *HA = (uint32_t*) &_HA;
 #endif
@@ -166,11 +164,10 @@ void CPP_RAW_FN(EXACTFORWARDNOEXP)(double *const __restrict__ alpha,
       for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
 #if !defined(KALIS_1STEP)
         int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
-        int32_t H;
 #ifdef KALIS_SPEIDEL
-        H = (recipient_hap & ~donor_hap) & 1;
+        int32_t H = (recipient_hap & ~donor_hap) & 1;
 #else
-        H = (recipient_hap ^ donor_hap) & 1;
+        int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
 #endif
         const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*(32*KALIS_INTVEC_SIZE)+donor;
