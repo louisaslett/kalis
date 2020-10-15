@@ -4,11 +4,9 @@
 \name{SmallHaps}
 \alias{SmallHaps}
 \title{SmallHaps Example Phased Haplotype Dataset for kalis}
-\format{
-An object of class \code{matrix} where each column is a
+\format{An object of class \code{matrix} where each column is a
 simulated haplotype.
-This is suitable for passing directly to \code{\link{CacheHaplotypes}}.
-}
+This is suitable for passing directly to \code{\link{CacheHaplotypes}}.}
 \usage{
 data(SmallHaps)
 }

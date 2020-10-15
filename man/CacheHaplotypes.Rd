@@ -2,33 +2,50 @@
 % Please edit documentation in R/CacheHaplotypes.R
 \name{CacheHaplotypes}
 \alias{CacheHaplotypes}
-\title{Create memory cache of haplotypes}
+\title{Load haplotypes into package memory space}
 \usage{
-CacheHaplotypes(haps, loci.idx = NULL, hap.idx = NULL, format = "auto", ...)
+CacheHaplotypes(
+  haps,
+  loci.idx = NULL,
+  hap.idx = NULL,
+  warn.singletons = TRUE,
+  format = "auto",
+  ...
+)
 }
 \arguments{
 \item{haps}{can be the name of a file from which the haplotypes are to be
-read, or can be a binary R matrix.}
+read, or can be an R matrix containing only 0/1s.
+See Details section for supported file types.}
 
-\item{loci.idx}{an optional integer vector of which loci to load from \code{haps}
+\item{loci.idx}{an optional vector of indicies specifying the loci to load
 into the cache, indexed from 1.}
 
-\item{hap.idx}{an optional integer vector of which haplotypes to load from
-\code{haps} into the cache, indexed from 1.}
+\item{hap.idx}{an optional vector of incidies specifying the haplotypes to load
+into the cache, indexed from 1.}
 
-\item{format}{the file format which \code{file} is stored in, or \code{"auto"} to
-detect format based on the file extension.  Recognised options are \code{"hdf5"}
-and \code{"vcf"}}
+\item{warn.singletons}{a logical, if \code{TRUE}, suppress warning that singletons (variants where there is only one 1 or only one 0) are present in the loaded \code{haps}.  Defaults to \code{FALSE}.  See Details.}
 
-\item{...}{options passed on to the specific format transcoding engine.  The
-following additional arguments are supported:
+\item{format}{the file format that \code{haps} is stored in, or \code{"auto"} to
+detect the format based on the file extension.  Recognised options are \code{"hapgz"} (format used by IMPUTE2 and SHAPEIT) or
+\code{"hdf5"} (custom).  See Details section for more information and easy conversion from VCF/BCF and other formats.}
+
+\item{...}{format specific options for reading in \code{haps}.  Supported optional arguments are:
 \enumerate{
-\item HDF5
+\item hapgz
 \itemize{
-\item \code{transpose} a logical value indicating whether to switch the
-interpretation of the slowest changing dimension (hence switching the
-number of haplotypes and the length)
-\item \code{haps} a string giving the path to a 2-dimensional object in the
+\item \code{legendgz.file} a string for faster loading: a legendgz file can be supplied and will be used
+to more efficiently determine the number of variants in the hapgz file
+\item \code{L} an integer for faster loading: the number of variants in the hapgz file can be directly provided
+\item \code{N} an integer for faster loading: the number of haplotypes in the hapgz file can be directly provided
+}
+\item hdf5
+\itemize{
+\item \code{transpose} a logical, if \code{TRUE}, switch the interpretation of rows and columns in \code{haps}:
+hence switching the number of haplotypes and the number of variants (the HDF5 specification does not
+prescribe row/column interpretation, only defining the
+slowest changing dimension as 'first'). Defaults to \code{FALSE}.
+\item \code{haps.path} a string giving the path to a 2-dimensional object in the
 HDF5 file specifying the haplotype matrix.  Defaults to \verb{/haps}
 \item \code{hdf5.pkg} a string giving the HDF5 R package to use to load the file
 from disk.  The packages \code{rhdf5} (BioConductor) and \code{hdf5r} (CRAN)
@@ -39,25 +56,19 @@ the \code{rhdf5} package.
 }
 \item R matrix
 \itemize{
-\item \code{transpose} a logical value indicating whether to switch the
-interpretation of the dimensions (hence switching the number of
-haplotypes and the length).  By default (\code{FALSE}), loci are taken to
-be in rows with haplotypes in columns (ie a num loci x num haps
-matrix)
+\item \code{transpose} a logical, if \code{TRUE}, switch the interpretation of rows and columns in \code{haps}:
+hence switching the number of haplotypes and the number of variants.  Defaults to \code{FALSE}, meaning loci are taken to
+be in rows with haplotypes in columns (ie a num loci x num haps matrix)
 }
 }}
 }
 \value{
 Nothing is returned by the function.
-However, a status message is output indicating the dimensions of the loaded
-data.
-This can be especially useful for HDF5 input when you are uncertain about
-the orientation of the \code{haps} object.
-If this message shows the dimensions incorrectly ordered, call the function
-again with the extra argument \code{transpose = TRUE}.
+It is highly recommended that you run \code{\link{CacheSummary}} after \code{CacheHaplotypes}, especially if you are uncertain about the interpretation of rows and columns in \code{haps}.
+If \code{\link{CacheSummary}} shows that the number of haplotypes and variants are reversed, try calling \code{CacheHaplotypes} again with the extra argument \code{transpose = TRUE}.
 }
 \description{
-Load haplotypes from hard drive or an R matrix to memory.
+Load haplotypes from hard drive or an R matrix into an optimized kalis package memory space (overwrites any previous load).
 }
 \details{
 To achieve higher performance, kalis internally represents haplotypes
@@ -68,17 +79,23 @@ that only one set of haplotypes can be cached at a time and calling this
 function twice overwrites cache of haplotypes created by the first function
 call.
 
-At present, only HDF5 is supported natively and there is a vignette giving a
-simple script to convert from VCF to HDF5.  If there is sufficient demand
-other formats may be added in future.
+Including singletons (variants where there is only one 1 or only one 0) in the loaded haplotypes can lead to numerical instability and
+columns of NaNs in the resulting forward and backward tables when \code{mu} (see \code{\link{Parameters}}) is small.  Thus, \code{kalis} throws a warning when loaded haplotypes contain singletons.
+
+At present, hap.gz and hdf5 are supported natively, see example below showing how to convert from a VCF/BCF to hap.gz with one \code{bcftools} command.
+
+\strong{hap.gz format}
+
+This is the HAP/LEGEND/SAMPLE format used by IMPUTE2 and SHAPEIT.  Only the \code{.hap.gz} file is required for loading with \code{CacheHaplotypes} though the \code{.legend.gz} file can speed up reading the haplotypes.
+See http://samtools.github.io/bcftools/bcftools.html#convert for more details on this format.
 
 \strong{R matrix}
 
 If supplying an R matrix, it must consist of only 0's or 1's.  The haplotypes
-should be stored in columns, with loci in rows.  That is, the dimensions
+should be stored in columns, with variants in rows.  That is, the dimensions
 should be:
 
-(num rows)x(num cols) = (num loci)x(num haplotypes).
+(num rows)x(num cols) = (num variants)x(num haplotypes).
 
 It is fine to delete this matrix after calling \code{CacheHaplotypes}.
 
@@ -98,17 +115,31 @@ prints.
 \examples{
 # Examples
 \dontrun{
-# Load haplotypes to cache from an HDF5 file on disk
-CacheHaplotypes("myhaps.h5")
 
-# If the diagnostic message printed during the above indicates the numbers
-# of haplotypes and their length are the wrong way around, reload with
+# If starting from a VCF/BCF
+# first use bcftools to convert to HAP/SAMPLE/LEGEND format
+# (bcftools can take in several starting formats), see http://samtools.github.io/bcftools/bcftools.html#convert .
+system("bcftools convert -h my.vcf.gz")
+CacheHaplotypes("my.hap.gz")
+CacheSummary()
+
+
+# If starting directly from a hap.gz file on disk (HAP/LEGEND/SAMPLE format), see http://samtools.github.io/bcftools/bcftools.html#convert .
+CacheHaplotypes("my.hap.gz")
+CacheSummary()
+
+
+# If starting from a HDF5 file on disk
+CacheHaplotypes("my.h5")
+CacheSummary()
+
+
+# If CacheSummary() indicates that the numbers of
+# haplotypes and variants are the wrong way around, reload with
 # argument to transpose
 CacheHaplotypes("myhaps.h5", transpose = TRUE)
+CacheSummary()
 
-# When correct orientation is known, you can avoid diagnostic messages for
-# running in script files
-suppressMessages(CacheHaplotypes("myhaps.h5"))
 
 # Alternatively, if you have an exotic file format that can be loaded in to
 # R by other means, then a binary matrix can be supplied.  This example
@@ -124,6 +155,6 @@ CacheHaplotypes(haps)
 
 }
 \seealso{
-\code{\link{ClearHaplotypeCache}} to remove the haplotypes from
-the cache and free the memory.
+\code{\link{CacheSummary}} for a list detailing the current cache status; \code{\link{QueryCache}} to copy the haplotypes in the \code{kalis} cache into an R matrix; \code{\link{ClearHaplotypeCache}} to remove the haplotypes from
+the cache and free the memory; \code{\link{N}} for the number of haplotypes cached; \code{\link{L}} for the number of variants (loci) cached
 }

@@ -7,9 +7,9 @@ assign("L", NA, envir = pkgVars) # must be integer
 # per the HDF5 spec definition.  This is "row-wise" in the C standard
 # spec, or "col-wise" in the rhdf5 spec.
 
-#' Create memory cache of haplotypes
+#' Load haplotypes into package memory space
 #'
-#' Load haplotypes from hard drive or an R matrix to memory.
+#' Load haplotypes from hard drive or an R matrix into an optimized kalis package memory space (overwrites any previous load).
 #'
 #' To achieve higher performance, kalis internally represents haplotypes
 #' in an efficient raw binary format in memory.  This function will load
@@ -19,19 +19,28 @@ assign("L", NA, envir = pkgVars) # must be integer
 #' function twice overwrites cache of haplotypes created by the first function
 #' call.
 #'
-#' At present, only HDF5 is supported natively and there is a vignette giving a
-#' simple script to convert from VCF to HDF5.  If there is sufficient demand
-#' other formats may be added in future.
+#' Including singletons (variants where there is only one 1 or only one 0) in the loaded haplotypes can lead to numerical instability and
+#' columns of NaNs in the resulting forward and backward tables when `mu` (see \code{\link{Parameters}}) is small.  Thus, `kalis` throws a warning when loaded haplotypes contain singletons.
+#'
+#' At present, hap.gz and hdf5 are supported natively, see example below showing how to convert from a VCF/BCF to hap.gz with one `bcftools` command.
+#'
+#'
+#' **hap.gz format**
+#'
+#' This is the HAP/LEGEND/SAMPLE format used by IMPUTE2 and SHAPEIT.  Only the `.hap.gz` file is required for loading with `CacheHaplotypes` though the `.legend.gz` file can speed up reading the haplotypes.
+#' See http://samtools.github.io/bcftools/bcftools.html#convert for more details on this format.
+#'
 #'
 #' **R matrix**
 #'
 #' If supplying an R matrix, it must consist of only 0's or 1's.  The haplotypes
-#' should be stored in columns, with loci in rows.  That is, the dimensions
+#' should be stored in columns, with variants in rows.  That is, the dimensions
 #' should be:
 #'
-#' (num rows)x(num cols) = (num loci)x(num haplotypes).
+#' (num rows)x(num cols) = (num variants)x(num haplotypes).
 #'
 #' It is fine to delete this matrix after calling \code{CacheHaplotypes}.
+#'
 #'
 #' **HDF5 format**
 #'
@@ -46,23 +55,32 @@ assign("L", NA, envir = pkgVars) # must be integer
 #' and their length have not been exchanged in the diagnostic output which kalis
 #' prints.
 #'
-#' @param haps can be the name of a file from which the haplotypes are to be
-#'   read, or can be a binary R matrix.
-#' @param loci.idx an optional integer vector of which loci to load from `haps`
-#'   into the cache, indexed from 1.
-#' @param hap.idx an optional integer vector of which haplotypes to load from
-#'   `haps` into the cache, indexed from 1.
-#' @param format the file format which `file` is stored in, or `"auto"` to
-#'   detect format based on the file extension.  Recognised options are `"hdf5"`
-#'   and `"vcf"`
-#' @param ... options passed on to the specific format transcoding engine.  The
-#'   following additional arguments are supported:
 #'
-#'   1. HDF5
-#'       - `transpose` a logical value indicating whether to switch the
-#'         interpretation of the slowest changing dimension (hence switching the
-#'         number of haplotypes and the length)
-#'       - `haps` a string giving the path to a 2-dimensional object in the
+#'
+#' @param haps can be the name of a file from which the haplotypes are to be
+#'   read, or can be an R matrix containing only 0/1s.
+#'   See Details section for supported file types.
+#' @param loci.idx an optional vector of indicies specifying the loci to load
+#'   into the cache, indexed from 1.
+#' @param hap.idx an optional vector of incidies specifying the haplotypes to load
+#'   into the cache, indexed from 1.
+#' @param warn.singletons a logical, if `TRUE`, suppress warning that singletons (variants where there is only one 1 or only one 0) are present in the loaded `haps`.  Defaults to `FALSE`.  See Details.
+#' @param format the file format that `haps` is stored in, or `"auto"` to
+#'   detect the format based on the file extension.  Recognised options are `"hapgz"` (format used by IMPUTE2 and SHAPEIT) or
+#'   `"hdf5"` (custom).  See Details section for more information and easy conversion from VCF/BCF and other formats.
+#' @param ... format specific options for reading in `haps`.  Supported optional arguments are:
+#'
+#'   1. hapgz
+#'       - `legendgz.file` a string for faster loading: a legendgz file can be supplied and will be used
+#'         to more efficiently determine the number of variants in the hapgz file
+#'       - `L` an integer for faster loading: the number of variants in the hapgz file can be directly provided
+#'       - `N` an integer for faster loading: the number of haplotypes in the hapgz file can be directly provided
+#'   1. hdf5
+#'       - `transpose` a logical, if `TRUE`, switch the interpretation of rows and columns in `haps`:
+#'         hence switching the number of haplotypes and the number of variants (the HDF5 specification does not
+#'         prescribe row/column interpretation, only defining the
+#'         slowest changing dimension as 'first'). Defaults to `FALSE`.
+#'       - `haps.path` a string giving the path to a 2-dimensional object in the
 #'         HDF5 file specifying the haplotype matrix.  Defaults to `/haps`
 #'       - `hdf5.pkg` a string giving the HDF5 R package to use to load the file
 #'         from disk.  The packages `rhdf5` (BioConductor) and `hdf5r` (CRAN)
@@ -71,37 +89,45 @@ assign("L", NA, envir = pkgVars) # must be integer
 #'         specified unless you have both packages but want to force the use of
 #'         the `rhdf5` package.
 #'   1. R matrix
-#'       - `transpose` a logical value indicating whether to switch the
-#'         interpretation of the dimensions (hence switching the number of
-#'         haplotypes and the length).  By default (`FALSE`), loci are taken to
-#'         be in rows with haplotypes in columns (ie a num loci x num haps
-#'         matrix)
+#'       - `transpose` a logical, if `TRUE`, switch the interpretation of rows and columns in `haps`:
+#'         hence switching the number of haplotypes and the number of variants.  Defaults to `FALSE`, meaning loci are taken to
+#'         be in rows with haplotypes in columns (ie a num loci x num haps matrix)
 #'
 #' @return Nothing is returned by the function.
-#'   However, a status message is output indicating the dimensions of the loaded
-#'   data.
-#'   This can be especially useful for HDF5 input when you are uncertain about
-#'   the orientation of the `haps` object.
-#'   If this message shows the dimensions incorrectly ordered, call the function
-#'   again with the extra argument `transpose = TRUE`.
+#'   It is highly recommended that you run \code{\link{CacheSummary}} after `CacheHaplotypes`, especially if you are uncertain about the interpretation of rows and columns in `haps`.
+#'   If \code{\link{CacheSummary}} shows that the number of haplotypes and variants are reversed, try calling `CacheHaplotypes` again with the extra argument `transpose = TRUE`.
 #'
-#' @seealso \code{\link{ClearHaplotypeCache}} to remove the haplotypes from
-#'   the cache and free the memory.
+#' @seealso \code{\link{CacheSummary}} for a list detailing the current cache status; \code{\link{QueryCache}} to copy the haplotypes in the `kalis` cache into an R matrix; \code{\link{ClearHaplotypeCache}} to remove the haplotypes from
+#'   the cache and free the memory; \code{\link{N}} for the number of haplotypes cached; \code{\link{L}} for the number of variants (loci) cached
 #'
 #' @examples
 #' # Examples
 #' \dontrun{
-#' # Load haplotypes to cache from an HDF5 file on disk
-#' CacheHaplotypes("myhaps.h5")
 #'
-#' # If the diagnostic message printed during the above indicates the numbers
-#' # of haplotypes and their length are the wrong way around, reload with
+#' # If starting from a VCF/BCF
+#' # first use bcftools to convert to HAP/SAMPLE/LEGEND format
+#' # (bcftools can take in several starting formats), see http://samtools.github.io/bcftools/bcftools.html#convert .
+#' system("bcftools convert -h my.vcf.gz")
+#' CacheHaplotypes("my.hap.gz")
+#' CacheSummary()
+#'
+#'
+#' # If starting directly from a hap.gz file on disk (HAP/LEGEND/SAMPLE format), see http://samtools.github.io/bcftools/bcftools.html#convert .
+#' CacheHaplotypes("my.hap.gz")
+#' CacheSummary()
+#'
+#'
+#' # If starting from a HDF5 file on disk
+#' CacheHaplotypes("my.h5")
+#' CacheSummary()
+#'
+#'
+#' # If CacheSummary() indicates that the numbers of
+#' # haplotypes and variants are the wrong way around, reload with
 #' # argument to transpose
 #' CacheHaplotypes("myhaps.h5", transpose = TRUE)
+#' CacheSummary()
 #'
-#' # When correct orientation is known, you can avoid diagnostic messages for
-#' # running in script files
-#' suppressMessages(CacheHaplotypes("myhaps.h5"))
 #'
 #' # Alternatively, if you have an exotic file format that can be loaded in to
 #' # R by other means, then a binary matrix can be supplied.  This example
@@ -116,7 +142,7 @@ assign("L", NA, envir = pkgVars) # must be integer
 #' }
 #'
 #' @export
-CacheHaplotypes <- function(haps, loci.idx = NULL, hap.idx = NULL, format = "auto", ...) {
+CacheHaplotypes <- function(haps, loci.idx = NULL, hap.idx = NULL, warn.singletons = TRUE, format = "auto", ...) {
   if(!identical(loci.idx, NULL)) {
     if(!testAtomicVector(loci.idx, any.missing = FALSE, unique = TRUE)) {
       CacheHaplotypes.err(glue("Error for argument loci.idx ... {checkAtomicVector(loci.idx, any.missing = FALSE, unique = TRUE)}"))
