@@ -2,7 +2,7 @@
 % Please edit documentation in R/Parameters.R
 \name{Parameters}
 \alias{Parameters}
-\title{Construct parameter specification}
+\title{Define a set of Li and Stephens parameters}
 \usage{
 Parameters(
   rho = rep(0, get("L", envir = pkgVars) - 1),
@@ -17,7 +17,7 @@ Parameters(
 See \code{\link{CalcRho}} for assistance constructing this from standard
 genetics parameters.}
 
-\item{mu}{a scalar (for uniform) or vector (for varying) mutation costs.}
+\item{mu}{a scalar (for uniform) or vector (for varying) mutation probabilities.}
 
 \item{Pi}{leaving the default of uniform copying probabilities is recommended
 for computational efficiency.
@@ -46,31 +46,30 @@ Markov model run.
 \details{
 There are 3 parameters which must be specified before the forward or backward
 equations in the Li and Stephens hidden Markov model can be run.  These are
-the vector of recombination probabilities, the mutation costs, and the
+the vector of recombination probabilities, the mutation probabilities, and the
 prior copying probabilities.
 
 \strong{Recombination probabilities, \code{rho}}
 
 This is a vector parameter which must have length \code{L-1}, where \code{L}
-is the length (number of loci) of the haplotype sequences which have been
-loaded into the memory cache (using \code{\link{CacheHaplotypes}}).
+is the number of variants that have been
+loaded into the kalis memory cache (using \code{\link{CacheHaplotypes}}).
 Note that element i of this vector should be the recombination probability
-between locus \code{i} and \code{i+1}.
+between variants \code{i} and \code{i+1}.
 
 There is a utility function, \code{\link{CalcRho}}, to assist with creating
-this recombination vector based on the more standard genetic parameters of
-Morgan distances, effective population size and a scalar power.
+these recombination probabilities from a recombination map.
 
 By default, the recombination probabilities are set to zero everywhere.
 
-\strong{Mutation costs, \code{mu}}
+\strong{Mutation probabilities, \code{mu}}
 
-The mutation costs may be specified either as uniform across the whole length
-of the haplotypes (by providing a single scalar value), or may be varying
-at each locus (by providing a vector of length equal to the length of the
-haplotype sequences which have been loaded into the memory cache).
+The mutation probabilities may be specified either as uniform across all
+variants (by providing a single scalar value), or may be varying
+at each variant (by providing a vector of length equal to the number of
+variants, \code{L}, which have been loaded into the kalis memory cache).
 
-By default, mutation costs are set to \eqn{10^{-8}}{10^-8}.
+By default, mutation probabilities are set to \eqn{10^{-8}}{10^-8}.
 
 \strong{Copying probabilities, \code{Pi}}
 
@@ -79,17 +78,21 @@ prior probability of copying from any other.
 However, in the spirit of ChromoPainter (Lawson et al., 2012) we allow a
 matrix of prior copying probabilities.
 
-The copying probabilities may be specified as a matrix of size \eqn{N \times N}{N * N}
+The copying probabilities may be specified as a standard R matrix of size
+\eqn{N \times N}{N * N}
 (where \eqn{N} is the number of haplotypes which have been loaded into the
-memory cache), or for uniform copying probabilities need not be specified
-(resulting in copying probability \eqn{\frac{1}{N-1}}{1/(N-1)} everywhere).
+kalis memory cache).  The element at row i, column j corresponds to the prior
+(background) probability that haplotype j copies from haplotype i.
 Note that the diagonal must by definition be zero and columns must sum to
 one.
+Alternatively, for uniform copying probabilities, this argument need not be specified
+(resulting in copying probability \eqn{\frac{1}{N-1}}{1/(N-1)} everywhere).
 
 Note that there is a computational cost associated with non-uniform copying
-probabilities, so absent a strong motivation it is recommended to leave the
-default of uniform probabilities (NB \emph{do not} specify a uniform matrix which
-would incur a computation cost too).
+probabilities, so it is recommended to leave the
+default of uniform probabilities when appropriate
+(Note: \emph{do not} specify a uniform matrix when uniform probabilities are intended, since this
+would end up incurring the computational cost of non-uniform probabilities).
 }
 \examples{
 \dontrun{

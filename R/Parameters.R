@@ -1,32 +1,33 @@
-#' Calculate recombination parameter
+#' Calculate recombination probabilities
 #'
-#' A convenient function to calculate the recombination parameter rho from more
-#' standard genetics parameters.
+#' Calculate the recombination probabilities, rho, from a given recombination map.
 #'
-#' This convenient function to calculate the recombination parameter rho from
-#' other more standard genetics parameters is intended to assist in setting up
-#' the Li and Stephens hidden Markov model transition probabilities.
+#' This convenient function to calculate the recombination probabilities rho
+#' (the Li and Stephens hidden Markov model transition probabilities) from
+#' a recombination map.
 #'
+#' TODO: add kalis paper cross ref.
 #' See page 3 in Supplemental Information for the original ChromoPainter paper
 #' (Lawson et al., 2012) for motivation behind our parameterization, which is as
-#' follow:
+#' follows:
 #'
-#' \deqn{\rho = \exp(-N_e \times morgan.dist^\gamma) - 1}{\rho = exp(-Ne * morgan.dist^\gamma) - 1}
+#' \deqn{\rho = \exp(-s \times cM^\gamma) - 1}{\rho = exp(-s * cM^\gamma) - 1}
 #'
 #'
-#' @param morgan.dist a vector specifying the recombination distance between
-#'   loci in Morgans.
-#'   Note element i of this vector should be the distance between loci i and i+1
-#'   (not i and i-1), and thus length one less than the haplotype length.
+#' @param cM a vector specifying the recombination distance between variants in centimorgans.
+#'   Note element i of this vector should be the distance between variants i and i+1
+#'   (not i and i-1), and thus length one less than the number of variants.
 #'   This can be easily obtained by applying \code{\link{diff}} to a
 #'   recombination map 'CDF'.
-#' @param Ne a scalar for the effective population size.
+#'   By default, recombination probabilities are zero, meaning that all variants
+#'   are perfectly linked.
+#' @param s a scalar multiplier on the recombination map (related to effective population size).
 #' @param gamma a scalar power to which the Morgan distances are raised.
 #' @param floor if TRUE (default) any transition probabilities below machine
 #'   precision (1e-16) will be zeroed out.
 #'   If \code{FALSE} raw transition probabilities will be preserved.
 #'
-#' @return A vector of transition probabilities which can be used at the
+#' @return A vector of recombination probabilities which can be used as the
 #'   \code{rho} argument to the \code{\link{Parameters}} function when creating
 #'   a parameter set.
 #'
@@ -39,11 +40,11 @@
 #'
 #' @examples
 #' \dontrun{
-#' pars <- CalcRho(...)
+#' rho <- CalcRho(...)
 #' }
 #'
 #' @export
-CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE) {
+CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
   L <- get("L", envir = pkgVars)
   if(anyNA(L)) {
     stop("No haplotypes cached ... cannot determine rho length until cache is loaded with CacheAllHaplotypes().")
@@ -52,21 +53,22 @@ CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE) {
   if(!is.vector(floor) || !is.logical(floor) || length(floor) != 1) {
     stop("floor must be TRUE or FALSE.")
   }
-  if(!is.numeric(morgan.dist)) {
-    stop("morgan.dist must be numeric vector type.")
+  if(!is.numeric(cM)) {
+    stop("cM must be numeric vector type.")
   }
-  if(length(morgan.dist) == 1){
-    morgan.dist <- rep(morgan.dist, L-1)
+  cM <- cM/100.0
+  if(length(cM) == 1){
+    cM <- rep(cM, L-1)
   }
-  if(!is.vector(morgan.dist)) {
-    stop("morgan.dist must be a vector of recombination distances.")
+  if(!is.vector(cM)) {
+    stop("cM must be a vector of recombination distances.")
   }
-  if(length(morgan.dist) != L-1) {
-    stop("morgan.dist is the wrong length for this problem.")
+  if(length(cM) != L-1) {
+    stop("cM is the wrong length for this problem.")
   }
 
-  if(!is.vector(Ne) || !is.numeric(Ne) || length(Ne) != 1) {
-    stop("Ne must be a scalar.")
+  if(!test_number(s, lower = 0, finite = TRUE)) {
+    stop("s must be a positive scalar.")
   }
 
   if(!is.vector(gamma) || !is.numeric(gamma) || length(gamma) != 1 || gamma < 0) {
@@ -74,7 +76,7 @@ CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE) {
   }
 
   # Compute rho
-  rho <- c(-(expm1(-Ne*morgan.dist^gamma)))
+  rho <- c(-(expm1(-s*cM^gamma)))
   if(floor) {
     rho <- ifelse(rho < 1e-16, 0, rho)
   }
@@ -83,38 +85,37 @@ CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE) {
 }
 
 
-#' Construct parameter specification
+#' Define a set of Li and Stephens parameters
 #'
 #' Specify a parameter set to be used for a particular Li and Stephens hidden
 #' Markov model run.
 #'
 #' There are 3 parameters which must be specified before the forward or backward
 #' equations in the Li and Stephens hidden Markov model can be run.  These are
-#' the vector of recombination probabilities, the mutation costs, and the
+#' the vector of recombination probabilities, the mutation probabilities, and the
 #' prior copying probabilities.
 #'
 #' **Recombination probabilities, \code{rho}**
 #'
 #' This is a vector parameter which must have length \code{L-1}, where \code{L}
-#' is the length (number of loci) of the haplotype sequences which have been
-#' loaded into the memory cache (using \code{\link{CacheHaplotypes}}).
+#' is the number of variants that have been
+#' loaded into the kalis memory cache (using \code{\link{CacheHaplotypes}}).
 #' Note that element i of this vector should be the recombination probability
-#' between locus \code{i} and \code{i+1}.
+#' between variants \code{i} and \code{i+1}.
 #'
 #' There is a utility function, \code{\link{CalcRho}}, to assist with creating
-#' this recombination vector based on the more standard genetic parameters of
-#' Morgan distances, effective population size and a scalar power.
+#' these recombination probabilities from a recombination map.
 #'
 #' By default, the recombination probabilities are set to zero everywhere.
 #'
-#' **Mutation costs, \code{mu}**
+#' **Mutation probabilities, \code{mu}**
 #'
-#' The mutation costs may be specified either as uniform across the whole length
-#' of the haplotypes (by providing a single scalar value), or may be varying
-#' at each locus (by providing a vector of length equal to the length of the
-#' haplotype sequences which have been loaded into the memory cache).
+#' The mutation probabilities may be specified either as uniform across all
+#' variants (by providing a single scalar value), or may be varying
+#' at each variant (by providing a vector of length equal to the number of
+#' variants, \code{L}, which have been loaded into the kalis memory cache).
 #'
-#' By default, mutation costs are set to \eqn{10^{-8}}{10^-8}.
+#' By default, mutation probabilities are set to \eqn{10^{-8}}{10^-8}.
 #'
 #' **Copying probabilities, \code{Pi}**
 #'
@@ -123,22 +124,26 @@ CalcRho <- function(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE) {
 #' However, in the spirit of ChromoPainter (Lawson et al., 2012) we allow a
 #' matrix of prior copying probabilities.
 #'
-#' The copying probabilities may be specified as a matrix of size \eqn{N \times N}{N * N}
+#' The copying probabilities may be specified as a standard R matrix of size
+#' \eqn{N \times N}{N * N}
 #' (where \eqn{N} is the number of haplotypes which have been loaded into the
-#' memory cache), or for uniform copying probabilities need not be specified
-#' (resulting in copying probability \eqn{\frac{1}{N-1}}{1/(N-1)} everywhere).
+#' kalis memory cache).  The element at row i, column j corresponds to the prior
+#' (background) probability that haplotype j copies from haplotype i.
 #' Note that the diagonal must by definition be zero and columns must sum to
 #' one.
+#' Alternatively, for uniform copying probabilities, this argument need not be specified
+#' (resulting in copying probability \eqn{\frac{1}{N-1}}{1/(N-1)} everywhere).
 #'
 #' Note that there is a computational cost associated with non-uniform copying
-#' probabilities, so absent a strong motivation it is recommended to leave the
-#' default of uniform probabilities (NB *do not* specify a uniform matrix which
-#' would incur a computation cost too).
+#' probabilities, so it is recommended to leave the
+#' default of uniform probabilities when appropriate
+#' (Note: *do not* specify a uniform matrix when uniform probabilities are intended, since this
+#' would end up incurring the computational cost of non-uniform probabilities).
 #'
 #' @param rho recombination probability vector (must be L-1 long).
 #'   See \code{\link{CalcRho}} for assistance constructing this from standard
 #'   genetics parameters.
-#' @param mu a scalar (for uniform) or vector (for varying) mutation costs.
+#' @param mu a scalar (for uniform) or vector (for varying) mutation probabilities.
 #' @param Pi leaving the default of uniform copying probabilities is recommended
 #'   for computational efficiency.
 #'   If desired, a full matrix of background copying probabilities can be

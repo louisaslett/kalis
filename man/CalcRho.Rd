@@ -2,19 +2,20 @@
 % Please edit documentation in R/Parameters.R
 \name{CalcRho}
 \alias{CalcRho}
-\title{Calculate recombination parameter}
+\title{Calculate recombination probabilities}
 \usage{
-CalcRho(morgan.dist = 0, Ne = 1, gamma = 1, floor = TRUE)
+CalcRho(cM = 0, s = 1, gamma = 1, floor = TRUE)
 }
 \arguments{
-\item{morgan.dist}{a vector specifying the recombination distance between
-loci in Morgans.
-Note element i of this vector should be the distance between loci i and i+1
-(not i and i-1), and thus length one less than the haplotype length.
+\item{cM}{a vector specifying the recombination distance between variants in centimorgans.
+Note element i of this vector should be the distance between variants i and i+1
+(not i and i-1), and thus length one less than the number of variants.
 This can be easily obtained by applying \code{\link{diff}} to a
-recombination map 'CDF'.}
+recombination map 'CDF'.
+By default, recombination probabilities are zero, meaning that all variants
+are perfectly linked.}
 
-\item{Ne}{a scalar for the effective population size.}
+\item{s}{a scalar multiplier on the recombination map (related to effective population size).}
 
 \item{gamma}{a scalar power to which the Morgan distances are raised.}
 
@@ -23,28 +24,28 @@ precision (1e-16) will be zeroed out.
 If \code{FALSE} raw transition probabilities will be preserved.}
 }
 \value{
-A vector of transition probabilities which can be used at the
+A vector of recombination probabilities which can be used as the
 \code{rho} argument to the \code{\link{Parameters}} function when creating
 a parameter set.
 }
 \description{
-A convenient function to calculate the recombination parameter rho from more
-standard genetics parameters.
+Calculate the recombination probabilities, rho, from a given recombination map.
 }
 \details{
-This convenient function to calculate the recombination parameter rho from
-other more standard genetics parameters is intended to assist in setting up
-the Li and Stephens hidden Markov model transition probabilities.
+This convenient function to calculate the recombination probabilities rho
+(the Li and Stephens hidden Markov model transition probabilities) from
+a recombination map.
 
+TODO: add kalis paper cross ref.
 See page 3 in Supplemental Information for the original ChromoPainter paper
 (Lawson et al., 2012) for motivation behind our parameterization, which is as
-follow:
+follows:
 
-\deqn{\rho = \exp(-N_e \times morgan.dist^\gamma) - 1}{\rho = exp(-Ne * morgan.dist^\gamma) - 1}
+\deqn{\rho = \exp(-s \times cM^\gamma) - 1}{\rho = exp(-s * cM^\gamma) - 1}
 }
 \examples{
 \dontrun{
-pars <- CalcRho(...)
+rho <- CalcRho(...)
 }
 
 }
