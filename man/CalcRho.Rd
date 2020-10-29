@@ -19,9 +19,9 @@ are perfectly linked.}
 
 \item{gamma}{a scalar power to which the Morgan distances are raised.}
 
-\item{floor}{if TRUE (default) any transition probabilities below machine
+\item{floor}{if TRUE (default) any recombination probabilities below machine
 precision (1e-16) will be zeroed out.
-If \code{FALSE} raw transition probabilities will be preserved.}
+If \code{FALSE} raw recombination probabilities will be preserved.}
 }
 \value{
 A vector of recombination probabilities which can be used as the
@@ -54,6 +54,6 @@ Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
 population structure using dense haplotype data. \emph{PLoS genetics}, \strong{8}(1).
 }
 \seealso{
-\code{\link{Parameters}} to use the resulting transition
+\code{\link{Parameters}} to use the resulting recombination
 probabilities to construct a \code{kalisParameters} object.
 }

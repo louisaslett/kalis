@@ -22,13 +22,14 @@ table.  By default includes to the last recipient haplotype.}
 A specialized list of class \code{kalisBackwardTable}.
 The elements of the backward table list are:
 \describe{
-\item{\code{l}}{denotes the current locus position.}
+\item{\code{l}}{denotes the current variant position.  2147483647 indicates a
+newly created backward table which has not yet been propagated to any variant.}
 \item{\code{beta}}{is a matrix of rescaled backward probabilities under
 the Li \& Stephens HMM.
 Each column of \code{beta} corresponds to an independent HMM such
 that \eqn{\beta^l_{ji}} is proportional to the probability of observing
-haplotype \eqn{i} from locus \eqn{l+1} up through locus \eqn{L} given
-that haplotype \eqn{j} is copied by haplotype \eqn{i} at locus
+haplotype \eqn{i} from variant \eqn{l+1} up through variant \eqn{L} given
+that haplotype \eqn{j} is copied by haplotype \eqn{i} at variant
 \eqn{l}.}
 \item{\code{beta.g}}{is a vector containing scaling constants needed to
 continue propagating the HMM (please see kalis paper for details).}
@@ -52,7 +53,7 @@ by \code{\link{CacheHaplotypes}}) and a given set of Li and Stephens hidden
 Markov model parameters created by \code{\link{Parameters}}.
 The returned \code{kalisBackwardTable} is initialized at at the end of the
 cached haplotypes (technically \code{bck$l}=2,147,483,647 for computational
-reasons) and is ready to be propagated to a given target locus with the function
+reasons) and is ready to be propagated to a given target variant with the function
 \code{\link{Backward}}.
 
 Since there is an independent hidden Markov model run for each recipient
@@ -74,8 +75,8 @@ bck <- MakeBackwardTable(pars)
 bck <- MakeBackwardTable(pars, 100, 200)
 
 # This table is uninitialised, but ready to pass to the Backward function
-# which will trigger initialisation and propagation from the last locus.
-# For example, initialise and propagate backward to locus 10:
+# which will trigger initialisation and propagation from the last variant.
+# For example, initialise and propagate backward to variant 10:
 Backward(bck, pars, 10, nthreads = 8)
 }
 

@@ -14,8 +14,8 @@ Parameters(
 }
 \arguments{
 \item{rho}{recombination probability vector (must be L-1 long).
-See \code{\link{CalcRho}} for assistance constructing this from standard
-genetics parameters.}
+See \code{\link{CalcRho}} for assistance constructing this from a recombination
+map.}
 
 \item{mu}{a scalar (for uniform) or vector (for varying) mutation probabilities.}
 
@@ -23,14 +23,19 @@ genetics parameters.}
 for computational efficiency.
 If desired, a full matrix of background copying probabilities can be
 provided, such that the (j,i)-th element is the background probability that
-j is copied by i.
+i copies from j.
 Hence, (a) the diagonal must be zero; and (b) the columns of Pi must sum to
-1.}
+1.
+Note: each column corresponds to an independent Li and Stephens
+hidden Markov model.}
 
 \item{check.rho}{if \code{TRUE}, a check that rho is within machine precision
 will be performed.
 If you have created rho using \code{\link{CalcRho}} with \code{floor=TRUE}
-then this will be satisfied automatically.}
+then this will be satisfied automatically.
+This can be important to ensure that the convex combination rho and (1-rho)
+normalises to 1 within machine precision, but an advanced user may wish to
+override this requirement.}
 }
 \value{
 A \code{kalisParameters} object, suitable for use to create the
@@ -81,8 +86,8 @@ matrix of prior copying probabilities.
 The copying probabilities may be specified as a standard R matrix of size
 \eqn{N \times N}{N * N}
 (where \eqn{N} is the number of haplotypes which have been loaded into the
-kalis memory cache).  The element at row i, column j corresponds to the prior
-(background) probability that haplotype j copies from haplotype i.
+kalis memory cache).  The element at row j, column i corresponds to the prior
+(background) probability that haplotype i copies from haplotype j.
 Note that the diagonal must by definition be zero and columns must sum to
 one.
 Alternatively, for uniform copying probabilities, this argument need not be specified

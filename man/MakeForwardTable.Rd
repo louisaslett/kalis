@@ -12,23 +12,26 @@ MakeForwardTable(pars, from_recipient = 1, to_recipient = Inf)
 parameters to be associated with this forward table.  These parameters can
 be set up by using the \code{\link{Parameters}} function.}
 
-\item{from_recipient}{first recipient haplotype if creating a partial forward
-table.  By default includes from the first recipient haplotype.}
+\item{from_recipient}{first recipient haplotype included if creating a partial forward
+table.  By default includes from the first recipient haplotype.  Haplotypes are
+indexed from 1.}
 
-\item{to_recipient}{last recipient haplotype if creating a partial forward
-table.  By default includes to the last recipient haplotype.}
+\item{to_recipient}{last recipient haplotype included if creating a partial forward
+table.  By default includes to the last recipient haplotype.  Haplotypes are
+indexed from 1.}
 }
 \value{
 A specialized list of class \code{kalisForwardTable}.
 The elements of the forward table list are:
 \describe{
-\item{\code{l}}{denotes the current locus position.}
+\item{\code{l}}{denotes the current variant position.  Zero indicates a
+newly created forward table which has not yet been propagated to any variant.}
 \item{\code{alpha}}{is a matrix of rescaled forward probabilities under
-the Li \& Stephens HMM.
+the Li and Stephens HMM.
 Each column of \code{alpha} corresponds to an independent HMM such
 that \eqn{\alpha^l_{ji}} is proportional to the probability that
-haplotype \eqn{j} is copied by haplotype \eqn{i} at locus \eqn{l} and
-observing haplotype \eqn{i} from locus 1 up through locus \eqn{l}.}
+haplotype \eqn{j} is copied by haplotype \eqn{i} at variant \eqn{l} and
+observing haplotype \eqn{i} from variant 1 up through variant \eqn{l}.}
 \item{\code{alpha.f}}{is a vector containing scaling constants needed to
 continue propagating the HMM (please see kalis paper for details).}
 }
@@ -43,16 +46,22 @@ thrown.
 Allocates the memory for and initializes a forward table.
 }
 \details{
-\code{MakeForwardTable} returns a \code{kalisForwardTable} object appropriate
-for a given set of haplotypes (that must have already been cached by
-\code{\link{CacheHaplotypes}}) and a given set of Li and Stephens hidden
-Markov model parameters created by \code{\link{Parameters}}.
-The returned \code{kalisForwardTable} is initialized at locus 0 and is ready
-to be propagated to a given target locus with the function
+\code{MakeForwardTable} initializes a \code{kalisForwardTable} object that will
+store the forward probabilities for each recipient haplotype.  Note: since all
+other haplotypes loaded by \code{\link{CacheHaplotypes}} into the kalis cache
+are taken as potential donor haplotypes, this
+table will be (total # haplotypes in cache)x(# recipients).
+Also note that this table object is linked to a given set of Li and Stephens hidden
+Markov model parameters, created by \code{\link{Parameters}}, to ensure consistency
+for any given HMM run.
+
+The returned \code{kalisForwardTable} is ready
+to be propagated to a given target variant with the function
 \code{\link{Forward}}.
 
-Since there is an independent hidden Markov model run for each recipient
-haplotype, it is possible to create a partial forward table object which
+Note: each column corresponds to an independent Li and Stephens
+hidden Markov model (ie for each recipient).  Therefore, it is possible to
+create a partial forward table object which
 corresponds to a subset of recipients using the \code{from_recipient} and
 \code{to_recipient} arguments.
 }
@@ -71,8 +80,8 @@ fwd <- MakeForwardTable(pars)
 fwd <- MakeForwardTable(pars, 100, 200)
 
 # This table is uninitialised, but ready to pass to the Forward function
-# which will trigger initialisation and propagation from the first locus.
-# For example, initialise and propagate forward to locus 10:
+# which will trigger initialisation and propagation from the first variant
+# For example, initialise and propagate forward to variant 10:
 Forward(fwd, pars, 10, nthreads = 8)
 }
 

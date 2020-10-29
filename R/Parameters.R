@@ -23,15 +23,15 @@
 #'   are perfectly linked.
 #' @param s a scalar multiplier on the recombination map (related to effective population size).
 #' @param gamma a scalar power to which the Morgan distances are raised.
-#' @param floor if TRUE (default) any transition probabilities below machine
+#' @param floor if TRUE (default) any recombination probabilities below machine
 #'   precision (1e-16) will be zeroed out.
-#'   If \code{FALSE} raw transition probabilities will be preserved.
+#'   If \code{FALSE} raw recombination probabilities will be preserved.
 #'
 #' @return A vector of recombination probabilities which can be used as the
 #'   \code{rho} argument to the \code{\link{Parameters}} function when creating
 #'   a parameter set.
 #'
-#' @seealso \code{\link{Parameters}} to use the resulting transition
+#' @seealso \code{\link{Parameters}} to use the resulting recombination
 #'   probabilities to construct a \code{kalisParameters} object.
 #'
 #' @references
@@ -56,7 +56,6 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
   if(!is.numeric(cM)) {
     stop("cM must be numeric vector type.")
   }
-  cM <- cM/100.0
   if(length(cM) == 1){
     cM <- rep(cM, L-1)
   }
@@ -66,6 +65,7 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
   if(length(cM) != L-1) {
     stop("cM is the wrong length for this problem.")
   }
+  morgans <- cM/100.0
 
   if(!test_number(s, lower = 0, finite = TRUE)) {
     stop("s must be a positive scalar.")
@@ -76,7 +76,7 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
   }
 
   # Compute rho
-  rho <- c(-(expm1(-s*cM^gamma)))
+  rho <- c(-(expm1(-s*morgans^gamma)))
   if(floor) {
     rho <- ifelse(rho < 1e-16, 0, rho)
   }
@@ -127,8 +127,8 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
 #' The copying probabilities may be specified as a standard R matrix of size
 #' \eqn{N \times N}{N * N}
 #' (where \eqn{N} is the number of haplotypes which have been loaded into the
-#' kalis memory cache).  The element at row i, column j corresponds to the prior
-#' (background) probability that haplotype j copies from haplotype i.
+#' kalis memory cache).  The element at row j, column i corresponds to the prior
+#' (background) probability that haplotype i copies from haplotype j.
 #' Note that the diagonal must by definition be zero and columns must sum to
 #' one.
 #' Alternatively, for uniform copying probabilities, this argument need not be specified
@@ -141,20 +141,25 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
 #' would end up incurring the computational cost of non-uniform probabilities).
 #'
 #' @param rho recombination probability vector (must be L-1 long).
-#'   See \code{\link{CalcRho}} for assistance constructing this from standard
-#'   genetics parameters.
+#'   See \code{\link{CalcRho}} for assistance constructing this from a recombination
+#'   map.
 #' @param mu a scalar (for uniform) or vector (for varying) mutation probabilities.
 #' @param Pi leaving the default of uniform copying probabilities is recommended
 #'   for computational efficiency.
 #'   If desired, a full matrix of background copying probabilities can be
 #'   provided, such that the (j,i)-th element is the background probability that
-#'   j is copied by i.
+#'   i copies from j.
 #'   Hence, (a) the diagonal must be zero; and (b) the columns of Pi must sum to
 #'   1.
+#'   Note: each column corresponds to an independent Li and Stephens
+#'   hidden Markov model.
 #' @param check.rho if \code{TRUE}, a check that rho is within machine precision
 #'   will be performed.
 #'   If you have created rho using \code{\link{CalcRho}} with \code{floor=TRUE}
 #'   then this will be satisfied automatically.
+#'   This can be important to ensure that the convex combination rho and (1-rho)
+#'   normalises to 1 within machine precision, but an advanced user may wish to
+#'   override this requirement.
 #'
 #' @return A \code{kalisParameters} object, suitable for use to create the
 #'   standard forward and backward recursion tables with

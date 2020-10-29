@@ -37,14 +37,14 @@ This function is therefore designed to enable explicit copying of tables.
 # recipient and donor haplotypes
 fwd <- MakeForwardTable()
 
-# Propagate forward to locus 10:
+# Propagate forward to variant 10:
 Forward(fwd, pars, 10, nthreads = 8)
 
 # This does **NOT** work as intended:
 fwd2 <- fwd
 Forward(fwd, pars, 20, nthreads = 8)
 
-# Both tables are now at locus 20
+# Both tables are now at variant 20
 fwd
 fwd2
 
