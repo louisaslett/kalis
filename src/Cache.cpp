@@ -47,14 +47,14 @@ int CacheHaplotypes_matrix_2(IntegerMatrix x, int N, int L, int transpose) {
     ind++;
   }
 
-  Rcpp::Function msg("message");
-  msg(std::string("Cache loaded: ") +
-    std::to_string(num_inds) +
-    std::string(" haplotypes of length ") +
-    std::to_string(hap_size) +
-    std::string(" (consuming ") +
-    std::to_string((hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0) +
-    std::string(" GB RAM)"));
+  // Rcpp::Function msg("message");
+  // msg(std::string("Cache loaded: ") +
+  //   std::to_string(num_inds) +
+  //   std::string(" haplotypes of length ") +
+  //   std::to_string(hap_size) +
+  //   std::string(" (consuming ") +
+  //   std::to_string((hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0) +
+  //   std::string(" GB RAM)"));
   // std::bitset<8> x(hap_ind[3][4]);
   // Rcout << haps[3];
   // Rcout << x;
@@ -94,14 +94,14 @@ int CacheHaplotypes_hdf5_2(Function nexthaps, int N, int L) {
     nexthapmat = nexthaps();
   }
 
-  Rcpp::Function msg("message");
-  msg(std::string("Cache loaded: ") +
-    std::to_string(num_inds) +
-    std::string(" haplotypes of length ") +
-    std::to_string(hap_size) +
-    std::string(" (consuming ") +
-    std::to_string((hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0) +
-    std::string(" GB RAM)"));
+  // Rcpp::Function msg("message");
+  // msg(std::string("Cache loaded: ") +
+  //   std::to_string(num_inds) +
+  //   std::string(" haplotypes of length ") +
+  //   std::to_string(hap_size) +
+  //   std::string(" (consuming ") +
+  //   std::to_string((hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0) +
+  //   std::string(" GB RAM)"));
   // std::bitset<8> x(hap_ind[3][4]);
   // Rcout << haps[3];
   // Rcout << x;
@@ -285,14 +285,14 @@ int CacheHaplotypes_hapgz_2(std::string file,
 
   gzclose(fd);
 
-  Rcpp::Function msg("message");
-  msg(std::string("Cache loaded: ") +
-    std::to_string(num_inds) +
-    std::string(" haplotypes of length ") +
-    std::to_string(hap_size) +
-    std::string(" (consuming ") +
-    std::to_string((hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0) +
-    std::string(" GB RAM)"));
+  // Rcpp::Function msg("message");
+  // msg(std::string("Cache loaded: ") +
+  //   std::to_string(num_inds) +
+  //   std::string(" haplotypes of length ") +
+  //   std::to_string(hap_size) +
+  //   std::string(" (consuming ") +
+  //   std::to_string((hap_size*int(ceil((num_inds/32.0)/8.0))*8*sizeof(uint32_t))/1073741824.0) +
+  //   std::string(" GB RAM)"));
   // std::bitset<8> x(hap_ind[3][4]);
   // Rcout << haps[3];
   // Rcout << x;

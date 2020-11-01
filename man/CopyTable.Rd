@@ -21,7 +21,7 @@ The core code in kalis operates on forward and backward tables at a very low
 level, both for speed (using low level CPU vector instructions) but also to
 avoid unnecessary memory copies since these tables will tend to be very large
 in serious genetics applications.  As a result, if you attempt to copy a table
-in the standard idomatic way you might in R:
+in the standard idomatic way in R:
 
 \code{fwd2 <- fwd}
 
