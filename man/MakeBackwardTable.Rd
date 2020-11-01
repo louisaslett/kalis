@@ -9,14 +9,16 @@ MakeBackwardTable(pars, from_recipient = 1, to_recipient = Inf)
 }
 \arguments{
 \item{pars}{a \code{kalisParameters} object specifying the genetics
-parameters to be associated with this forward table.  These parameters can
+parameters to be associated with this backward table.  These parameters can
 be set up by using the \code{\link{Parameters}} function.}
 
-\item{from_recipient}{first recipient haplotype if creating a partial forward
-table.  By default includes from the first recipient haplotype.}
+\item{from_recipient}{first recipient haplotype included if creating a partial backward
+table.  By default includes from the first recipient haplotype.  Haplotypes are
+indexed from 1.}
 
-\item{to_recipient}{last recipient haplotype if creating a partial forward
-table.  By default includes to the last recipient haplotype.}
+\item{to_recipient}{last recipient haplotype included if creating a partial backward
+table.  By default includes to the last recipient haplotype.  Haplotypes are
+indexed from 1.}
 }
 \value{
 A specialized list of class \code{kalisBackwardTable}.
@@ -25,16 +27,17 @@ The elements of the backward table list are:
 \item{\code{l}}{denotes the current variant position.  2147483647 indicates a
 newly created backward table which has not yet been propagated to any variant.}
 \item{\code{beta}}{is a matrix of rescaled backward probabilities under
-the Li \& Stephens HMM.
+the Li and Stephens HMM.
 Each column of \code{beta} corresponds to an independent HMM such
 that \eqn{\beta^l_{ji}} is proportional to the probability of observing
 haplotype \eqn{i} from variant \eqn{l+1} up through variant \eqn{L} given
 that haplotype \eqn{j} is copied by haplotype \eqn{i} at variant
 \eqn{l}.}
 \item{\code{beta.g}}{is a vector containing scaling constants needed to
-continue propagating the HMM (please see kalis paper for details).}
+continue propagating the HMM (TODO: add ref please see kalis paper for details).}
 \item{\code{beta.theta}}{boolean indicator for whether the matrix beta
-is currently in so-called beta-theta space or not.}
+is currently in so-called beta-theta space or not.  See \code{\link{Backward}}
+for details about beta-theta space which is specified during the run.}
 }
 
 A \code{kalisBackwardTable} also carries with it a checksum key for the
@@ -47,24 +50,30 @@ thrown.
 Allocates the memory for and initializes a backward table.
 }
 \details{
-\code{MakeBackwardTable} returns a \code{kalisBackwardTable} object
-appropriate for a given set of haplotypes (that must have already been cached
-by \code{\link{CacheHaplotypes}}) and a given set of Li and Stephens hidden
-Markov model parameters created by \code{\link{Parameters}}.
-The returned \code{kalisBackwardTable} is initialized at at the end of the
-cached haplotypes (technically \code{bck$l}=2,147,483,647 for computational
-reasons) and is ready to be propagated to a given target variant with the function
+\code{MakeBackwardTable} initializes a \code{kalisBackwardTable} object that will
+store the rescaled backward probabilities for each recipient haplotype.  Note: since all
+other haplotypes loaded by \code{\link{CacheHaplotypes}} into the kalis cache
+are taken as potential donor haplotypes, this
+table will be of size (total # haplotypes in cache)x(# recipients).
+Also note that this table object is linked to a given set of Li and Stephens hidden
+Markov model parameters, created by \code{\link{Parameters}}, to ensure consistency
+for any given HMM run.
+
+The returned \code{kalisBackwardTable} is ready
+to be propagated to a given target variant with the function
 \code{\link{Backward}}.
 
-Since there is an independent hidden Markov model run for each recipient
-haplotype, it is possible to create a partial backward table object which
+Note: each column corresponds to an independent Li and Stephens
+hidden Markov model (ie for each recipient).  Therefore, it is possible to
+create a partial backward table object which
 corresponds to a subset of recipients using the \code{from_recipient} and
 \code{to_recipient} arguments.
 }
 \examples{
 \dontrun{
-# This code assumes you have already created the parameter set in a variable
-# called pars
+# Load the toy haplotype example and set toy parameters
+CacheHaplotypes(SmallHaplotypes)
+pars <- Parameters(rho = CalcRho(cM=SmallMap))
 
 # Create a backward table for the hidden Markov model incorporating all
 # recipient and donor haplotypes

@@ -33,7 +33,7 @@ that \eqn{\alpha^l_{ji}} is proportional to the probability that
 haplotype \eqn{j} is copied by haplotype \eqn{i} at variant \eqn{l} and
 observing haplotype \eqn{i} from variant 1 up through variant \eqn{l}.}
 \item{\code{alpha.f}}{is a vector containing scaling constants needed to
-continue propagating the HMM (please see kalis paper for details).}
+continue propagating the HMM (TODO: add ref please see kalis paper for details).}
 }
 
 A \code{kalisForwardTable} also carries with it a checksum key for the
@@ -47,10 +47,10 @@ Allocates the memory for and initializes a forward table.
 }
 \details{
 \code{MakeForwardTable} initializes a \code{kalisForwardTable} object that will
-store the forward probabilities for each recipient haplotype.  Note: since all
+store the rescaled forward probabilities for each recipient haplotype.  Note: since all
 other haplotypes loaded by \code{\link{CacheHaplotypes}} into the kalis cache
 are taken as potential donor haplotypes, this
-table will be (total # haplotypes in cache)x(# recipients).
+table will be of size (total # haplotypes in cache)x(# recipients).
 Also note that this table object is linked to a given set of Li and Stephens hidden
 Markov model parameters, created by \code{\link{Parameters}}, to ensure consistency
 for any given HMM run.
@@ -68,8 +68,9 @@ corresponds to a subset of recipients using the \code{from_recipient} and
 \examples{
 # Examples
 \dontrun{
-# This code assumes you have already created the parameter set in a variable
-# called pars
+# Load the toy haplotype example and set toy parameters
+CacheHaplotypes(SmallHaplotypes)
+pars <- Parameters(rho = CalcRho(cM=SmallMap))
 
 # Create a forward table for the hidden Markov model incorporating all
 # recipient and donor haplotypes
@@ -89,4 +90,6 @@ Forward(fwd, pars, 10, nthreads = 8)
 \seealso{
 \code{\link{Forward}} to propagate the newly created
 \code{kalisForwardTable}.
+\code{\link{MakeBackwardTable}} to create a corresponding
+\code{kalisBackwardTable}.
 }
