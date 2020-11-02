@@ -11,11 +11,11 @@ Forward(fwd, pars, t = fwd$l + 1, nthreads = 1)
 \code{\link{MakeForwardTable}}.}
 
 \item{pars}{a \code{kalisParameters} object, as returned by
-\code{Parameters}.}
+\code{\link{Parameters}}.}
 
-\item{t}{a locus position to move the forward table to.
-Must be greater than or equal to current locus position of \code{fwd}.
-By default, it simply advances to the next locus.}
+\item{t}{a variant to move the forward table to.
+Must be greater than or equal to current variant of \code{fwd}.
+By default, it simply advances to the next variant downstream.}
 
 \item{nthreads}{the number of CPU cores to use.
 By default no parallelism is used.}
@@ -25,25 +25,44 @@ There is nothing returned.
 For performance reasons, \code{fwd} is updated in-place.
 }
 \description{
-Propagates a \code{kalisForwardTable} to a downstream locus position.
+Propagates a \code{kalisForwardTable} to a downstream variant.
 The table is updated in-place.
 }
 \details{
 \code{Forward} implements the forward algorithm to advance the Li and
 Stephens rescaled hidden Markov model forward probabilities to a new target
-locus.
+variant.  Naturally, this can only propagate a table to variants downstream
+of its current position.
+
+For mathematical details please see Section 2 of the kalis paper (TODO: ref).
+Note that the precise formulation of the forward equation is determined by
+whether the flag \code{use.spiedel} is set in the parameters provided in
+\code{pars}.
 }
 \examples{
 \dontrun{
-# Assuming that pars already contains a Parameters object, we can create a
-# new forward table and propagate to locus 100 using 8-core parallelsim:
-fwd <- MakeForwardTable()
-Forward(fwd, pars, 100, nthreads = 8)
+# Load the toy haplotype example and set toy parameters
+CacheHaplotypes(SmallHaplotypes)
+pars <- Parameters(rho = CalcRho(cM = SmallMap))
+
+# Create a forward table for the hidden Markov model incorporating all
+# recipient and donor haplotypes
+fwd <- MakeForwardTable(pars)
+
+# Create a forward table for the hidden Markov model incorporating only
+# recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.
+fwd <- MakeForwardTable(pars, 100, 200)
+
+# This table is uninitialised, but ready to pass to the Forward function
+# which will trigger initialisation and propagation.
+# For example, initialise and propagate forward to the 10th variant:
+Forward(fwd, pars, 10, nthreads = 8)
+print(fwd)
 }
 
 }
 \seealso{
 \code{\link{MakeForwardTable}} to generate a forward table;
-\code{\link{Backward}} for the analagous backward propagation function;
+\code{\link{Backward}} for the analogous backward propagation function;
 \code{\link{CopyTable}} to create a copy of table.
 }

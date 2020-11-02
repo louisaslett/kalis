@@ -65,20 +65,15 @@
 #' \dontrun{
 #' # Load the toy haplotype example and set toy parameters
 #' CacheHaplotypes(SmallHaplotypes)
-#' pars <- Parameters(rho = CalcRho(cM=SmallMap))
+#' pars <- Parameters(rho = CalcRho(cM = SmallMap))
 #'
 #' # Create a forward table for the hidden Markov model incorporating all
 #' # recipient and donor haplotypes
 #' fwd <- MakeForwardTable(pars)
 #'
-#' # Create a forward table for the hidden Markov model incorporating only
+#' # OR, create a forward table for the hidden Markov model incorporating only
 #' # recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.
 #' fwd <- MakeForwardTable(pars, 100, 200)
-#'
-#' # This table is uninitialised, but ready to pass to the Forward function
-#' # which will trigger initialisation and propagation from the first variant
-#' # For example, initialise and propagate forward to variant 10:
-#' Forward(fwd, pars, 10, nthreads = 8)
 #' }
 #'
 #' @aliases print.kalisForwardTable
@@ -223,20 +218,15 @@ print.kalisForwardTable <- function(x, ...) {
 #' \dontrun{
 #' # Load the toy haplotype example and set toy parameters
 #' CacheHaplotypes(SmallHaplotypes)
-#' pars <- Parameters(rho = CalcRho(cM=SmallMap))
+#' pars <- Parameters(rho = CalcRho(cM = SmallMap))
 #'
 #' # Create a backward table for the hidden Markov model incorporating all
 #' # recipient and donor haplotypes
 #' bck <- MakeBackwardTable(pars)
 #'
-#' # Create a backward table for the hidden Markov model incorporating only
+#' # OR, create a backward table for the hidden Markov model incorporating only
 #' # recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.
 #' bck <- MakeBackwardTable(pars, 100, 200)
-#'
-#' # This table is uninitialised, but ready to pass to the Backward function
-#' # which will trigger initialisation and propagation from the last variant.
-#' # For example, initialise and propagate backward to variant 10:
-#' Backward(bck, pars, 10, nthreads = 8)
 #' }
 #'
 #' @aliases print.kalisBackwardTable

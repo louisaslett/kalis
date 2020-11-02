@@ -73,20 +73,15 @@ corresponds to a subset of recipients using the \code{from_recipient} and
 \dontrun{
 # Load the toy haplotype example and set toy parameters
 CacheHaplotypes(SmallHaplotypes)
-pars <- Parameters(rho = CalcRho(cM=SmallMap))
+pars <- Parameters(rho = CalcRho(cM = SmallMap))
 
 # Create a backward table for the hidden Markov model incorporating all
 # recipient and donor haplotypes
 bck <- MakeBackwardTable(pars)
 
-# Create a backward table for the hidden Markov model incorporating only
+# OR, create a backward table for the hidden Markov model incorporating only
 # recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.
 bck <- MakeBackwardTable(pars, 100, 200)
-
-# This table is uninitialised, but ready to pass to the Backward function
-# which will trigger initialisation and propagation from the last variant.
-# For example, initialise and propagate backward to variant 10:
-Backward(bck, pars, 10, nthreads = 8)
 }
 
 }
