@@ -64,7 +64,7 @@ assign("L", NA, envir = pkgVars) # must be integer
 #'   into the cache, indexed from 1.
 #' @param hap.idx an optional vector of incidies specifying the haplotypes to load
 #'   into the cache, indexed from 1.
-#' @param warn.singletons a logical, if `TRUE`, suppress warning that singletons (variants where there is only one 1 or only one 0) are present in the loaded `haps`.  Defaults to `FALSE`.  See Details.
+#' @param warn.singletons a logical, if `FALSE`, suppress warning that singletons (variants where there is only one 1 or only one 0) are present in the loaded `haps`.  Defaults to `TRUE`.  See Details.
 #' @param format the file format that `haps` is stored in, or `"auto"` to
 #'   detect the format based on the file extension.  Recognised options are `"hapgz"` (format used by IMPUTE2 and SHAPEIT) or
 #'   `"hdf5"` (custom).  See Details section for more information and easy conversion from VCF/BCF and other formats.

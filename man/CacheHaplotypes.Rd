@@ -24,7 +24,7 @@ into the cache, indexed from 1.}
 \item{hap.idx}{an optional vector of incidies specifying the haplotypes to load
 into the cache, indexed from 1.}
 
-\item{warn.singletons}{a logical, if \code{TRUE}, suppress warning that singletons (variants where there is only one 1 or only one 0) are present in the loaded \code{haps}.  Defaults to \code{FALSE}.  See Details.}
+\item{warn.singletons}{a logical, if \code{FALSE}, suppress warning that singletons (variants where there is only one 1 or only one 0) are present in the loaded \code{haps}.  Defaults to \code{TRUE}.  See Details.}
 
 \item{format}{the file format that \code{haps} is stored in, or \code{"auto"} to
 detect the format based on the file extension.  Recognised options are \code{"hapgz"} (format used by IMPUTE2 and SHAPEIT) or

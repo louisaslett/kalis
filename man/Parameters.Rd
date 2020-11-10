@@ -29,6 +29,10 @@ Hence, (a) the diagonal must be zero; and (b) the columns of Pi must sum to
 Note: each column corresponds to an independent Li and Stephens
 hidden Markov model.}
 
+\item{use.speidel}{a logical, if TRUE, use the asymmetric mutation model used by RELATE (Speidel et al., 2019).
+WARNING: this model assumes that the cached haplotypes have an ancestral/derived encoding --
+zeros denote ancestral variant carriers and ones denote derived variant carriers. Defaults to FALSE.}
+
 \item{check.rho}{if \code{TRUE}, a check that rho is within machine precision
 will be performed.
 If you have created rho using \code{\link{CalcRho}} with \code{floor=TRUE}
@@ -119,6 +123,9 @@ Forward(fwd, pars, 10, nthreads = 8)
 \references{
 Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
 population structure using dense haplotype data. \emph{PLoS genetics}, \strong{8}(1).
+
+Speidel, L., Forest, M., Shi, S., & Myers, S. (2019). A method for
+genome-wide genealogy estimation for thousands of samples. \emph{Nature Genetics}, \strong{51}(1321–1329).
 }
 \seealso{
 \code{\link{MakeForwardTable}} and \code{\link{MakeForwardTable}}

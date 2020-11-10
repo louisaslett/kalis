@@ -153,6 +153,9 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
 #'   1.
 #'   Note: each column corresponds to an independent Li and Stephens
 #'   hidden Markov model.
+#' @param use.speidel a logical, if TRUE, use the asymmetric mutation model used by RELATE (Speidel et al., 2019).
+#'   WARNING: this model assumes that the cached haplotypes have an ancestral/derived encoding --
+#'   zeros denote ancestral variant carriers and ones denote derived variant carriers. Defaults to FALSE.
 #' @param check.rho if \code{TRUE}, a check that rho is within machine precision
 #'   will be performed.
 #'   If you have created rho using \code{\link{CalcRho}} with \code{floor=TRUE}
@@ -176,6 +179,9 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
 #' @references
 #'   Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
 #'   population structure using dense haplotype data. *PLoS genetics*, **8**(1).
+#'
+#'   Speidel, L., Forest, M., Shi, S., & Myers, S. (2019). A method for
+#'   genome-wide genealogy estimation for thousands of samples. *Nature Genetics*, **51**(1321–1329).
 #'
 #' @examples
 #' \dontrun{

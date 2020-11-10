@@ -32,7 +32,7 @@ source("../../AutoTune2_local.R")
 data("SmallHaps")
 CacheHaplotypes(SmallHaps)
 m <- rbeta(nrow(SmallHaps)-1,1,10)*1e-6
-pars <- Parameters(CalcRho(morgan.dist = m, Ne = 1e-250, gamma = 1), mu = 1e-250)
+pars <- Parameters(CalcRho(cM = m, s = 1e-250, gamma = 1), mu = 1e-250)
 
 polymorphic.sites <- rowSums(SmallHaps)!=0 & rowSums(SmallHaps)!=1
 G <- tcrossprod(scale(t(SmallHaps[polymorphic.sites,])))

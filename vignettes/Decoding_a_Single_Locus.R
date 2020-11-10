@@ -13,7 +13,7 @@ CacheHaplotypes(SmallHaps)
 
 ## ------------------------------------------------------------------------
 m <- rbeta(500-1,1,10)*1e-6
-pars <- Parameters(CalcRho(morgan.dist = m, Ne = 1, gamma = 1), mu = 1e-8)
+pars <- Parameters(CalcRho(cM = m, s = 1, gamma = 1), mu = 1e-8)
 
 ## ------------------------------------------------------------------------
 fwd <- MakeForwardTable(pars)
