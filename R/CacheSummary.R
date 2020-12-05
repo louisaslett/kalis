@@ -17,8 +17,8 @@ CacheSummary <- function() {
     cat("Cache currently empty.")
   } else {
     L <- get("L", envir = pkgVars)
-    cat(glue("Cache currently loaded with {N} haplotypes, each with {L} variants."))
-    cat(glue("  Memory consumed ≈ {signif((L*ceiling((N/32.0)/8.0)*8*4)/1073741824.0, 4)}."))
+    cat(glue("Cache currently loaded with {N} haplotypes, each with {L} variants."), "\n")
+    cat(glue("  Memory consumed ≈ {signif((L*ceiling((N/32.0)/8.0)*8*4)/1073741824.0, 4)} GB."), "\n")
   }
 }
 
