@@ -45,7 +45,13 @@ follows:
 }
 \examples{
 \dontrun{
-rho <- CalcRho(...)
+# Load the mini example recombination map from package:
+small.map <- read.table(system.file("small_example/small.map", package = "kalis"), header = TRUE)
+# Or, from the package built-in dataset
+data(SmallMap)
+
+# Compute the recombination probabilities
+rho <- CalcRho(diff(SmallMap))
 }
 
 }

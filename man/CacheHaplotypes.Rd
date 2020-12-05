@@ -126,11 +126,15 @@ CacheSummary()
 
 # If starting directly from a hap.gz file on disk (HAP/LEGEND/SAMPLE format), see http://samtools.github.io/bcftools/bcftools.html#convert .
 CacheHaplotypes("my.hap.gz")
+# eg: loading the mini example built into the package:
+CacheHaplotypes(system.file("small_example/small.hap.gz", package = "kalis"))
 CacheSummary()
 
 
 # If starting from a HDF5 file on disk
 CacheHaplotypes("my.h5")
+# eg: loading the mini example built into the package:
+CacheHaplotypes(system.file("small_example/small.h5", package = "kalis"))
 CacheSummary()
 
 
@@ -151,6 +155,9 @@ haps <- matrix(sample(0:1, n.haps*n.loci, replace = TRUE),
                nrow = n.loci,
                ncol = n.haps)
 CacheHaplotypes(haps)
+# eg: loading the mini example built into the package:
+data(SmallHaps)
+CacheHaplotypes(SmallHaps)
 }
 
 }
