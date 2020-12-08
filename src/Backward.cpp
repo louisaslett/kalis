@@ -22,7 +22,7 @@ void Backward_densePi_densemu_cpp(List bck,
                                   NumericVector mu,
                                   NumericVector rho,
                                   const bool use_speidel,
-                                  const int nthreads) {
+                                  IntegerVector nthreads) {
   const int L = hap_size;
   const int N = num_inds;
   NumericMatrix beta           = as<NumericMatrix>(bck["beta"]);
@@ -39,7 +39,18 @@ void Backward_densePi_densemu_cpp(List bck,
   if(l==t && !(!cur_beta_theta[0] && end_beta_theta[0])) {
     return;
   }
-  if(nthreads>1) {
+
+  int numthreads;
+  if(nthreads.length() > 1) {
+    numthreads = nthreads.length();
+#if !defined(KALIS_PTHREAD_H)
+    Rcout << "Thread affinity not supported on this platform, running on " << numthreads << " cores without setting affinity.\n";
+#endif
+  } else {
+    numthreads = nthreads[0];
+  }
+
+  if(numthreads>1) {
     if(use_speidel)
       ParExactBackward_speidel_cpp(beta,
                                    beta_g,
@@ -117,7 +128,7 @@ void Backward_scalarPi_densemu_cpp(List bck,
                                    NumericVector mu,
                                    NumericVector rho,
                                    const bool use_speidel,
-                                   const int nthreads) {
+                                   IntegerVector nthreads) {
   const int L = hap_size;
   const int N = num_inds;
   NumericMatrix beta           = as<NumericMatrix>(bck["beta"]);
@@ -134,7 +145,18 @@ void Backward_scalarPi_densemu_cpp(List bck,
   if(l==t && !(!cur_beta_theta[0] && end_beta_theta[0])) {
     return;
   }
-  if(nthreads>1) {
+
+  int numthreads;
+  if(nthreads.length() > 1) {
+    numthreads = nthreads.length();
+#if !defined(KALIS_PTHREAD_H)
+    Rcout << "Thread affinity not supported on this platform, running on " << numthreads << " cores without setting affinity.\n";
+#endif
+  } else {
+    numthreads = nthreads[0];
+  }
+
+  if(numthreads>1) {
     if(use_speidel)
       ParExactBackward_speidel_scPi_cpp(beta,
                                         beta_g,
@@ -212,7 +234,7 @@ void Backward_densePi_scalarmu_cpp(List bck,
                                    const double mu,
                                    NumericVector rho,
                                    const bool use_speidel,
-                                   const int nthreads) {
+                                   IntegerVector nthreads) {
   const int L = hap_size;
   const int N = num_inds;
   NumericMatrix beta           = as<NumericMatrix>(bck["beta"]);
@@ -229,7 +251,18 @@ void Backward_densePi_scalarmu_cpp(List bck,
   if(l==t && !(!cur_beta_theta[0] && end_beta_theta[0])) {
     return;
   }
-  if(nthreads>1) {
+
+  int numthreads;
+  if(nthreads.length() > 1) {
+    numthreads = nthreads.length();
+#if !defined(KALIS_PTHREAD_H)
+    Rcout << "Thread affinity not supported on this platform, running on " << numthreads << " cores without setting affinity.\n";
+#endif
+  } else {
+    numthreads = nthreads[0];
+  }
+
+  if(numthreads>1) {
     if(use_speidel)
       ParExactBackward_speidel_scmu_cpp(beta,
                                         beta_g,
@@ -307,7 +340,7 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
                                     const double mu,
                                     NumericVector rho,
                                     const bool use_speidel,
-                                    const int nthreads) {
+                                    IntegerVector nthreads) {
   const int L = hap_size;
   const int N = num_inds;
   NumericMatrix beta           = as<NumericMatrix>(bck["beta"]);
@@ -324,7 +357,18 @@ void Backward_scalarPi_scalarmu_cpp(List bck,
   if(l==t && !(!cur_beta_theta[0] && end_beta_theta[0])) {
     return;
   }
-  if(nthreads>1) {
+
+  int numthreads;
+  if(nthreads.length() > 1) {
+    numthreads = nthreads.length();
+#if !defined(KALIS_PTHREAD_H)
+    Rcout << "Thread affinity not supported on this platform, running on " << numthreads << " cores without setting affinity.\n";
+#endif
+  } else {
+    numthreads = nthreads[0];
+  }
+
+  if(numthreads>1) {
     if(use_speidel)
       ParExactBackward_speidel_scmuPi_cpp(beta,
                                           beta_g,

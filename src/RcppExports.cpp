@@ -16,7 +16,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // Backward_densePi_densemu_cpp
-void Backward_densePi_densemu_cpp(List bck, LogicalVector end_beta_theta, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const bool use_speidel, const int nthreads);
+void Backward_densePi_densemu_cpp(List bck, LogicalVector end_beta_theta, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const bool use_speidel, IntegerVector nthreads);
 RcppExport SEXP _kalis_Backward_densePi_densemu_cpp(SEXP bckSEXP, SEXP end_beta_thetaSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP use_speidelSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -27,13 +27,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const bool >::type use_speidel(use_speidelSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nthreads(nthreadsSEXP);
     Backward_densePi_densemu_cpp(bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads);
     return R_NilValue;
 END_RCPP
 }
 // Backward_scalarPi_densemu_cpp
-void Backward_scalarPi_densemu_cpp(List bck, LogicalVector end_beta_theta, const int t, const double Pi, NumericVector mu, NumericVector rho, const bool use_speidel, const int nthreads);
+void Backward_scalarPi_densemu_cpp(List bck, LogicalVector end_beta_theta, const int t, const double Pi, NumericVector mu, NumericVector rho, const bool use_speidel, IntegerVector nthreads);
 RcppExport SEXP _kalis_Backward_scalarPi_densemu_cpp(SEXP bckSEXP, SEXP end_beta_thetaSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP use_speidelSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -44,13 +44,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const bool >::type use_speidel(use_speidelSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nthreads(nthreadsSEXP);
     Backward_scalarPi_densemu_cpp(bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads);
     return R_NilValue;
 END_RCPP
 }
 // Backward_densePi_scalarmu_cpp
-void Backward_densePi_scalarmu_cpp(List bck, LogicalVector end_beta_theta, const int t, NumericMatrix Pi, const double mu, NumericVector rho, const bool use_speidel, const int nthreads);
+void Backward_densePi_scalarmu_cpp(List bck, LogicalVector end_beta_theta, const int t, NumericMatrix Pi, const double mu, NumericVector rho, const bool use_speidel, IntegerVector nthreads);
 RcppExport SEXP _kalis_Backward_densePi_scalarmu_cpp(SEXP bckSEXP, SEXP end_beta_thetaSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP use_speidelSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -61,13 +61,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const bool >::type use_speidel(use_speidelSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nthreads(nthreadsSEXP);
     Backward_densePi_scalarmu_cpp(bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads);
     return R_NilValue;
 END_RCPP
 }
 // Backward_scalarPi_scalarmu_cpp
-void Backward_scalarPi_scalarmu_cpp(List bck, LogicalVector end_beta_theta, const int t, const double Pi, const double mu, NumericVector rho, const bool use_speidel, const int nthreads);
+void Backward_scalarPi_scalarmu_cpp(List bck, LogicalVector end_beta_theta, const int t, const double Pi, const double mu, NumericVector rho, const bool use_speidel, IntegerVector nthreads);
 RcppExport SEXP _kalis_Backward_scalarPi_scalarmu_cpp(SEXP bckSEXP, SEXP end_beta_thetaSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP use_speidelSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -78,7 +78,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const bool >::type use_speidel(use_speidelSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nthreads(nthreadsSEXP);
     Backward_scalarPi_scalarmu_cpp(bck, end_beta_theta, t, Pi, mu, rho, use_speidel, nthreads);
     return R_NilValue;
 END_RCPP
@@ -431,7 +431,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // Forward_densePi_densemu_cpp
-void Forward_densePi_densemu_cpp(List fwd, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const bool use_speidel, const int nthreads);
+void Forward_densePi_densemu_cpp(List fwd, const int t, NumericMatrix Pi, NumericVector mu, NumericVector rho, const bool use_speidel, IntegerVector nthreads);
 RcppExport SEXP _kalis_Forward_densePi_densemu_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP use_speidelSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -441,13 +441,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const bool >::type use_speidel(use_speidelSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nthreads(nthreadsSEXP);
     Forward_densePi_densemu_cpp(fwd, t, Pi, mu, rho, use_speidel, nthreads);
     return R_NilValue;
 END_RCPP
 }
 // Forward_scalarPi_densemu_cpp
-void Forward_scalarPi_densemu_cpp(List fwd, const int t, const double Pi, NumericVector mu, NumericVector rho, const bool use_speidel, const int nthreads);
+void Forward_scalarPi_densemu_cpp(List fwd, const int t, const double Pi, NumericVector mu, NumericVector rho, const bool use_speidel, IntegerVector nthreads);
 RcppExport SEXP _kalis_Forward_scalarPi_densemu_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP use_speidelSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -457,13 +457,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const bool >::type use_speidel(use_speidelSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nthreads(nthreadsSEXP);
     Forward_scalarPi_densemu_cpp(fwd, t, Pi, mu, rho, use_speidel, nthreads);
     return R_NilValue;
 END_RCPP
 }
 // Forward_densePi_scalarmu_cpp
-void Forward_densePi_scalarmu_cpp(List fwd, const int t, NumericMatrix Pi, const double mu, NumericVector rho, const bool use_speidel, const int nthreads);
+void Forward_densePi_scalarmu_cpp(List fwd, const int t, NumericMatrix Pi, const double mu, NumericVector rho, const bool use_speidel, IntegerVector nthreads);
 RcppExport SEXP _kalis_Forward_densePi_scalarmu_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP use_speidelSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -473,13 +473,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const bool >::type use_speidel(use_speidelSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nthreads(nthreadsSEXP);
     Forward_densePi_scalarmu_cpp(fwd, t, Pi, mu, rho, use_speidel, nthreads);
     return R_NilValue;
 END_RCPP
 }
 // Forward_scalarPi_scalarmu_cpp
-void Forward_scalarPi_scalarmu_cpp(List fwd, const int t, const double Pi, const double mu, NumericVector rho, const bool use_speidel, const int nthreads);
+void Forward_scalarPi_scalarmu_cpp(List fwd, const int t, const double Pi, const double mu, NumericVector rho, const bool use_speidel, IntegerVector nthreads);
 RcppExport SEXP _kalis_Forward_scalarPi_scalarmu_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP use_speidelSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -489,13 +489,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const bool >::type use_speidel(use_speidelSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nthreads(nthreadsSEXP);
     Forward_scalarPi_scalarmu_cpp(fwd, t, Pi, mu, rho, use_speidel, nthreads);
     return R_NilValue;
 END_RCPP
 }
 // Forward1step_scalarPi_scalarmu_cpp
-void Forward1step_scalarPi_scalarmu_cpp(List fwd, const int t, const double Pi, const double mu, NumericVector rho, const bool use_speidel, const int nthreads);
+void Forward1step_scalarPi_scalarmu_cpp(List fwd, const int t, const double Pi, const double mu, NumericVector rho, const bool use_speidel, IntegerVector nthreads);
 RcppExport SEXP _kalis_Forward1step_scalarPi_scalarmu_cpp(SEXP fwdSEXP, SEXP tSEXP, SEXP PiSEXP, SEXP muSEXP, SEXP rhoSEXP, SEXP use_speidelSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -505,7 +505,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const bool >::type use_speidel(use_speidelSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type nthreads(nthreadsSEXP);
     Forward1step_scalarPi_scalarmu_cpp(fwd, t, Pi, mu, rho, use_speidel, nthreads);
     return R_NilValue;
 END_RCPP

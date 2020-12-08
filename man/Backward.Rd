@@ -4,7 +4,13 @@
 \alias{Backward}
 \title{Propagate a backward table}
 \usage{
-Backward(bck, pars, t = bck$l - 1, nthreads = 1, beta.theta = FALSE)
+Backward(
+  bck,
+  pars,
+  t = bck$l - 1,
+  nthreads = parallel::detectCores(logical = FALSE),
+  beta.theta = FALSE
+)
 }
 \arguments{
 \item{bck}{a \code{kalisBackwardTable} object, as returned by
@@ -18,7 +24,7 @@ Must be less than or equal to current variant of \code{bck}.
 By default, it simply advances to the variant immediately upstream.}
 
 \item{nthreads}{the number of CPU cores to use.
-By default no parallelism is used.}
+By default uses the \code{parallel} package to detect the number of physical cores.}
 
 \item{beta.theta}{logical indicating whether the table should be returned in
 beta-theta space or in the standard space upon reaching the target variant

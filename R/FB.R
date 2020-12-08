@@ -21,7 +21,7 @@
 #'   Must be greater than or equal to current variant of \code{fwd}.
 #'   By default, it simply advances to the next variant downstream.
 #' @param nthreads the number of CPU cores to use.
-#'   By default no parallelism is used.
+#'   By default uses the \code{parallel} package to detect the number of physical cores.
 #'
 #' @return
 #' There is nothing returned.
@@ -53,12 +53,17 @@
 #' }
 #'
 #' @export
-Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
+Forward <- function(fwd, pars, t = fwd$l+1, nthreads = parallel::detectCores(logical = FALSE)) {
   if(!("kalisForwardTable" %in% class(fwd))) {
     stop("The fwd argument is not a valid forward table.")
   }
   if(!("kalisParameters" %in% class(pars))) {
     stop("The pars argument is not a valid parameters object.")
+  }
+  maxthreads <- parallel::detectCores()
+  if(!test_integerish(nthreads, lower = 1, upper = maxthreads, any.missing = FALSE, len = 1) &&
+     !test_integerish(nthreads, lower = 0, upper = maxthreads-1, any.missing = FALSE, min.len = 2, unique = TRUE)) {
+    stop("The nthreads argument must either be a single scalar indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run.")
   }
   if(fwd$pars.sha256 != pars$sha256) {
     stop("The forward table provided was created with different parameter values (SHA-256 mismatch).")
@@ -135,7 +140,7 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
 #'   Must be less than or equal to current variant of \code{bck}.
 #'   By default, it simply advances to the variant immediately upstream.
 #' @param nthreads the number of CPU cores to use.
-#'   By default no parallelism is used.
+#'   By default uses the \code{parallel} package to detect the number of physical cores.
 #' @param beta.theta logical indicating whether the table should be returned in
 #'   beta-theta space or in the standard space upon reaching the target variant
 #'   \code{t}.  See the details section.
@@ -181,13 +186,19 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = 1) {
 #' }
 #'
 #' @export Backward
-Backward <- function(bck, pars, t = bck$l-1, nthreads = 1, beta.theta = FALSE) {
+Backward <- function(bck, pars, t = bck$l-1, nthreads = parallel::detectCores(logical = FALSE), beta.theta = FALSE) {
   if(!("kalisBackwardTable" %in% class(bck))) {
     stop("The bck argument is not a valid backward table.")
   }
   if(!("kalisParameters" %in% class(pars))) {
     stop("The pars argument is not a valid parameters object.")
   }
+  maxthreads <- parallel::detectCores()
+  if(!test_integerish(nthreads, lower = 1, upper = maxthreads, any.missing = FALSE, len = 1) &&
+     !test_integerish(nthreads, lower = 0, upper = maxthreads-1, any.missing = FALSE, min.len = 2, unique = TRUE)) {
+    stop("The nthreads argument must either be a single scalar indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run.")
+  }
+
   L <- get("L", envir = pkgVars)
   N <- get("N", envir = pkgVars)
   if(!is.vector(t) || !is.numeric(t) || length(t) != 1 || is.na(t)) {

@@ -42,7 +42,7 @@ void ParExactForward_speidel_cpp(NumericMatrix alpha,
                                  NumericMatrix Pi,
                                  NumericVector mu,
                                  NumericVector rho,
-                                 const int nthreads);
+                                 IntegerVector nthreads);
 
 void ParExactForward_cpp(NumericMatrix alpha,
                          NumericVector alpha_f,
@@ -56,7 +56,7 @@ void ParExactForward_cpp(NumericMatrix alpha,
                          NumericMatrix Pi,
                          NumericVector mu,
                          NumericVector rho,
-                         const int nthreads);
+                         IntegerVector nthreads);
 
 void ExactForward_speidel_scmu_cpp(NumericMatrix alpha,
                                    NumericVector alpha_f,
@@ -96,7 +96,7 @@ void ParExactForward_speidel_scmu_cpp(NumericMatrix alpha,
                                       NumericMatrix Pi,
                                       const double mu,
                                       NumericVector rho,
-                                      const int nthreads);
+                                      IntegerVector nthreads);
 
 void ParExactForward_scmu_cpp(NumericMatrix alpha,
                               NumericVector alpha_f,
@@ -110,7 +110,7 @@ void ParExactForward_scmu_cpp(NumericMatrix alpha,
                               NumericMatrix Pi,
                               const double mu,
                               NumericVector rho,
-                              const int nthreads);
+                              IntegerVector nthreads);
 
 void ExactForward_speidel_scPi_cpp(NumericMatrix alpha,
                                    NumericVector alpha_f,
@@ -150,7 +150,7 @@ void ParExactForward_speidel_scPi_cpp(NumericMatrix alpha,
                                       const double Pi,
                                       NumericVector mu,
                                       NumericVector rho,
-                                      const int nthreads);
+                                      IntegerVector nthreads);
 
 void ParExactForward_scPi_cpp(NumericMatrix alpha,
                               NumericVector alpha_f,
@@ -164,7 +164,7 @@ void ParExactForward_scPi_cpp(NumericMatrix alpha,
                               const double Pi,
                               NumericVector mu,
                               NumericVector rho,
-                              const int nthreads);
+                              IntegerVector nthreads);
 
 void ExactForward_speidel_scmuPi_cpp(NumericMatrix alpha,
                                      NumericVector alpha_f,
@@ -204,7 +204,7 @@ void ParExactForward_speidel_scmuPi_cpp(NumericMatrix alpha,
                                         const double Pi,
                                         const double mu,
                                         NumericVector rho,
-                                        const int nthreads);
+                                        IntegerVector nthreads);
 
 void ParExactForward_scmuPi_cpp(NumericMatrix alpha,
                                 NumericVector alpha_f,
@@ -218,7 +218,7 @@ void ParExactForward_scmuPi_cpp(NumericMatrix alpha,
                                 const double Pi,
                                 const double mu,
                                 NumericVector rho,
-                                const int nthreads);
+                                IntegerVector nthreads);
 
 void ExactForward1step_speidel_scmuPi_cpp(NumericMatrix alpha,
                                           NumericVector alpha_f,
@@ -258,7 +258,7 @@ void ParExactForward1step_speidel_scmuPi_cpp(NumericMatrix alpha,
                                              const double Pi,
                                              const double mu,
                                              NumericVector rho,
-                                             const int nthreads);
+                                             IntegerVector nthreads);
 
 void ParExactForward1step_scmuPi_cpp(NumericMatrix alpha,
                                      NumericVector alpha_f,
@@ -272,6 +272,6 @@ void ParExactForward1step_scmuPi_cpp(NumericMatrix alpha,
                                      const double Pi,
                                      const double mu,
                                      NumericVector rho,
-                                     const int nthreads);
+                                     IntegerVector nthreads);
 
 #endif

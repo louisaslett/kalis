@@ -4,7 +4,12 @@
 \alias{Forward}
 \title{Propagate a forward table}
 \usage{
-Forward(fwd, pars, t = fwd$l + 1, nthreads = 1)
+Forward(
+  fwd,
+  pars,
+  t = fwd$l + 1,
+  nthreads = parallel::detectCores(logical = FALSE)
+)
 }
 \arguments{
 \item{fwd}{a \code{kalisForwardTable} object, as returned by
@@ -18,7 +23,7 @@ Must be greater than or equal to current variant of \code{fwd}.
 By default, it simply advances to the next variant downstream.}
 
 \item{nthreads}{the number of CPU cores to use.
-By default no parallelism is used.}
+By default uses the \code{parallel} package to detect the number of physical cores.}
 }
 \value{
 There is nothing returned.

@@ -48,7 +48,7 @@ void ParExactBackward_speidel_cpp(NumericMatrix beta,
                                   NumericMatrix Pi,
                                   NumericVector mu,
                                   NumericVector rho,
-                                  const int nthreads);
+                                  IntegerVector nthreads);
 
 void ParExactBackward_cpp(NumericMatrix beta,
                           NumericVector beta_g,
@@ -64,7 +64,7 @@ void ParExactBackward_cpp(NumericMatrix beta,
                           NumericMatrix Pi,
                           NumericVector mu,
                           NumericVector rho,
-                          const int nthreads);
+                          IntegerVector nthreads);
 
 void ExactBackward_speidel_scmu_cpp(NumericMatrix beta,
                                     NumericVector beta_g,
@@ -110,7 +110,7 @@ void ParExactBackward_speidel_scmu_cpp(NumericMatrix beta,
                                        NumericMatrix Pi,
                                        const double mu,
                                        NumericVector rho,
-                                       const int nthreads);
+                                       IntegerVector nthreads);
 
 void ParExactBackward_scmu_cpp(NumericMatrix beta,
                                NumericVector beta_g,
@@ -126,7 +126,7 @@ void ParExactBackward_scmu_cpp(NumericMatrix beta,
                                NumericMatrix Pi,
                                const double mu,
                                NumericVector rho,
-                               const int nthreads);
+                               IntegerVector nthreads);
 
 void ExactBackward_speidel_scPi_cpp(NumericMatrix beta,
                                     NumericVector beta_g,
@@ -172,7 +172,7 @@ void ParExactBackward_speidel_scPi_cpp(NumericMatrix beta,
                                        const double Pi,
                                        NumericVector mu,
                                        NumericVector rho,
-                                       const int nthreads);
+                                       IntegerVector nthreads);
 
 void ParExactBackward_scPi_cpp(NumericMatrix beta,
                                NumericVector beta_g,
@@ -188,7 +188,7 @@ void ParExactBackward_scPi_cpp(NumericMatrix beta,
                                const double Pi,
                                NumericVector mu,
                                NumericVector rho,
-                               const int nthreads);
+                               IntegerVector nthreads);
 
 void ExactBackward_speidel_scmuPi_cpp(NumericMatrix beta,
                                       NumericVector beta_g,
@@ -234,7 +234,7 @@ void ParExactBackward_speidel_scmuPi_cpp(NumericMatrix beta,
                                          const double Pi,
                                          const double mu,
                                          NumericVector rho,
-                                         const int nthreads);
+                                         IntegerVector nthreads);
 
 void ParExactBackward_scmuPi_cpp(NumericMatrix beta,
                                  NumericVector beta_g,
@@ -250,6 +250,6 @@ void ParExactBackward_scmuPi_cpp(NumericMatrix beta,
                                  const double Pi,
                                  const double mu,
                                  NumericVector rho,
-                                 const int nthreads);
+                                 IntegerVector nthreads);
 
 #endif

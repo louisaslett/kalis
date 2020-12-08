@@ -15,6 +15,11 @@ using namespace Rcpp;
 #include <arm_neon.h>
 #endif
 
+#if defined(KALIS_PTHREAD_H)
+#include <pthread.h>
+#endif
+
+
 // #include <iacaMarks.h>
 
 #ifdef EXACTBACKWARDNOEXP
@@ -588,17 +593,27 @@ void PAR_CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
                 PI_TYPE_CPP Pi,
                 MU_TYPE_CPP mu,
                 NumericVector rho,
-                const int nthreads) {
+                IntegerVector nthreads) {
   std::vector<std::thread> threads;
 
-  if(nthreads < 2) {
+  int numthreads;
+  bool affinity;
+  if(nthreads.length() > 1) {
+    numthreads = nthreads.length();
+    affinity = TRUE;
+  } else {
+    numthreads = nthreads[0];
+    affinity = FALSE;
+  }
+
+  if(numthreads < 2) {
     Rcout << "Only use parallel function with at least 2 threads";
   }
 
   // round(hap(0, nthreads) * double(to_rec-from_rec) / double(nthreads)) + from_rec;
-  double spacing = double(to_rec-from_rec) / double(nthreads);
+  double spacing = double(to_rec-from_rec) / double(numthreads);
 
-  for(int_fast32_t i=0; i<nthreads; ++i) {
+  for(int_fast32_t i=0; i<numthreads; ++i) {
     threads.push_back(std::thread(CPP_RAW_FN(EXACTBACKWARDNOEXP),
                                   &(beta[0]),
                                   &(beta_g[0]),
@@ -615,6 +630,17 @@ void PAR_CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
                                   MU_ARG_CPP,
                                   &(rho[0])));
     // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
+
+#if defined(KALIS_PTHREAD_H)
+    if(affinity) {
+      cpu_set_t cpus;
+      CPU_ZERO(&cpus);
+      CPU_SET(nthreads[i], &cpus);
+      int afer = pthread_setaffinity_np(threads[i].native_handle(), sizeof(cpu_set_t), &cpus);
+      if(afer != 0)
+        Rcout << "Error setting thread affinity: " << afer << "\n";
+    }
+#endif
   }
 
   for(auto& th : threads) {
