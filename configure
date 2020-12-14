@@ -75,8 +75,8 @@ else
 fi
 
 # Check if we have access to pthreads
-# NB: MacOS has pthreads but not pthread_setaffinity_np, so we need to check for function not just header
-echo -e "#include <pthread.h>\nmain() { pthread_setaffinity_np(); }" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -pthread -xc - >/dev/null 2>&1
+# NB: MacOS has pthreads but not pthread_setaffinity_np, so we need to check for function not just header (drop -E on compiler)
+echo -e "#include <pthread.h>\nmain() { pthread_setaffinity_np(0,0,0); }" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -pthread -xc - >/dev/null 2>&1
 if [ $? -eq 0 ]; then
   PKG_CFLAGS="$PKG_CFLAGS -DKALIS_PTHREAD_H -pthread"
   PKG_LIBS="$PKG_LIBS -lpthread -pthread"
