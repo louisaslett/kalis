@@ -178,22 +178,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// CalcTraces
-List CalcTraces(NumericMatrix M, NumericMatrix tX, NumericMatrix tQ, NumericMatrix J, size_t from_recipient, size_t nthreads);
-RcppExport SEXP _kalis_CalcTraces(SEXP MSEXP, SEXP tXSEXP, SEXP tQSEXP, SEXP JSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type tX(tXSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type tQ(tQSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type J(JSEXP);
-    Rcpp::traits::input_parameter< size_t >::type from_recipient(from_recipientSEXP);
-    Rcpp::traits::input_parameter< size_t >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(CalcTraces(M, tX, tQ, J, from_recipient, nthreads));
-    return rcpp_result_gen;
-END_RCPP
-}
 // ComputeStatus
 std::string ComputeStatus();
 RcppExport SEXP _kalis_ComputeStatus() {
@@ -201,222 +185,6 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     rcpp_result_gen = Rcpp::wrap(ComputeStatus());
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dedip_min
-NumericVector Dedip_min(NumericMatrix fwd, NumericMatrix bck, NumericVector s);
-RcppExport SEXP _kalis_Dedip_min(SEXP fwdSEXP, SEXP bckSEXP, SEXP sSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dedip_min(fwd, bck, s));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dedip_2nd_min
-NumericVector Dedip_2nd_min(NumericMatrix fwd, NumericMatrix bck, NumericVector s);
-RcppExport SEXP _kalis_Dedip_2nd_min(SEXP fwdSEXP, SEXP bckSEXP, SEXP sSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dedip_2nd_min(fwd, bck, s));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dedip_max
-NumericVector Dedip_max(NumericMatrix fwd, NumericMatrix bck, NumericVector s);
-RcppExport SEXP _kalis_Dedip_max(SEXP fwdSEXP, SEXP bckSEXP, SEXP sSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dedip_max(fwd, bck, s));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dedip_dom
-NumericVector Dedip_dom(NumericMatrix fwd, NumericMatrix bck, NumericVector s);
-RcppExport SEXP _kalis_Dedip_dom(SEXP fwdSEXP, SEXP bckSEXP, SEXP sSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dedip_dom(fwd, bck, s));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dedip_add
-NumericVector Dedip_add(NumericMatrix fwd, NumericMatrix bck, NumericVector s);
-RcppExport SEXP _kalis_Dedip_add(SEXP fwdSEXP, SEXP bckSEXP, SEXP sSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dedip_add(fwd, bck, s));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dedip_mean
-NumericVector Dedip_mean(NumericMatrix fwd, NumericMatrix bck, NumericVector s);
-RcppExport SEXP _kalis_Dedip_mean(SEXP fwdSEXP, SEXP bckSEXP, SEXP sSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dedip_mean(fwd, bck, s));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dedip_all
-List Dedip_all(NumericMatrix fwd, NumericMatrix bck, NumericVector s);
-RcppExport SEXP _kalis_Dedip_all(SEXP fwdSEXP, SEXP bckSEXP, SEXP sSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dedip_all(fwd, bck, s));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dedip2_min
-NumericVector Dedip2_min(NumericMatrix M);
-RcppExport SEXP _kalis_Dedip2_min(SEXP MSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dedip2_min(M));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dedip2_2nd_min
-NumericVector Dedip2_2nd_min(NumericMatrix M);
-RcppExport SEXP _kalis_Dedip2_2nd_min(SEXP MSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dedip2_2nd_min(M));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dedip2_dom
-NumericVector Dedip2_dom(NumericMatrix M);
-RcppExport SEXP _kalis_Dedip2_dom(SEXP MSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dedip2_dom(M));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dedip2_all
-List Dedip2_all(NumericMatrix M);
-RcppExport SEXP _kalis_Dedip2_all(SEXP MSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dedip2_all(M));
-    return rcpp_result_gen;
-END_RCPP
-}
-// DedipAndMul
-NumericVector DedipAndMul(NumericMatrix M, NumericMatrix alpha, NumericMatrix beta, NumericVector x, int from_recipient, int nthreads);
-RcppExport SEXP _kalis_DedipAndMul(SEXP MSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
-    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(DedipAndMul(M, alpha, beta, x, from_recipient, nthreads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// DedipOnlyMul
-NumericVector DedipOnlyMul(NumericMatrix M, NumericVector x, size_t from_recipient, size_t nthreads);
-RcppExport SEXP _kalis_DedipOnlyMul(SEXP MSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< size_t >::type from_recipient(from_recipientSEXP);
-    Rcpp::traits::input_parameter< size_t >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(DedipOnlyMul(M, x, from_recipient, nthreads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// DedipParAtVarScalarPi
-List DedipParAtVarScalarPi(List M, List fwd, List bck, NumericVector x, int from_recipient, int nthreads);
-RcppExport SEXP _kalis_DedipParAtVarScalarPi(SEXP MSEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type M(MSEXP);
-    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
-    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(DedipParAtVarScalarPi(M, fwd, bck, x, from_recipient, nthreads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// DedipParBtwVarScalarPi
-List DedipParBtwVarScalarPi(List M, List fwd, List bck, NumericVector x, double fwd_rho, double bck_rho, int from_recipient, int nthreads);
-RcppExport SEXP _kalis_DedipParBtwVarScalarPi(SEXP MSEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP fwd_rhoSEXP, SEXP bck_rhoSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type M(MSEXP);
-    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double >::type fwd_rho(fwd_rhoSEXP);
-    Rcpp::traits::input_parameter< double >::type bck_rho(bck_rhoSEXP);
-    Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
-    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(DedipParBtwVarScalarPi(M, fwd, bck, x, fwd_rho, bck_rho, from_recipient, nthreads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// DoubleMatAndMul
-List DoubleMatAndMul(NumericMatrix M, NumericMatrix M2, List fwd, List bck, NumericVector x, int from_recipient, int nthreads);
-RcppExport SEXP _kalis_DoubleMatAndMul(SEXP MSEXP, SEXP M2SEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type M2(M2SEXP);
-    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
-    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(DoubleMatAndMul(M, M2, fwd, bck, x, from_recipient, nthreads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -510,60 +278,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// MatAndMul
-NumericVector MatAndMul(NumericMatrix M, List fwd, List bck, NumericVector x, LogicalVector standardize, LogicalVector calcprobs, LogicalVector unifonunderflow, size_t from_recipient, size_t nthreads);
-RcppExport SEXP _kalis_MatAndMul(SEXP MSEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP standardizeSEXP, SEXP calcprobsSEXP, SEXP unifonunderflowSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< LogicalVector >::type standardize(standardizeSEXP);
-    Rcpp::traits::input_parameter< LogicalVector >::type calcprobs(calcprobsSEXP);
-    Rcpp::traits::input_parameter< LogicalVector >::type unifonunderflow(unifonunderflowSEXP);
-    Rcpp::traits::input_parameter< size_t >::type from_recipient(from_recipientSEXP);
-    Rcpp::traits::input_parameter< size_t >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(MatAndMul(M, fwd, bck, x, standardize, calcprobs, unifonunderflow, from_recipient, nthreads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// MatOnlyMul
-NumericVector MatOnlyMul(NumericMatrix M, NumericVector x, size_t from_recipient, size_t nthreads);
-RcppExport SEXP _kalis_MatOnlyMul(SEXP MSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< size_t >::type from_recipient(from_recipientSEXP);
-    Rcpp::traits::input_parameter< size_t >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(MatOnlyMul(M, x, from_recipient, nthreads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// MatAndMulBtwVar
-NumericVector MatAndMulBtwVar(NumericMatrix M, List fwd, List bck, NumericVector x, LogicalVector standardize, LogicalVector calcprobs, LogicalVector unifonunderflow, double fwd_rho, double bck_rho, int from_recipient, int nthreads);
-RcppExport SEXP _kalis_MatAndMulBtwVar(SEXP MSEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP standardizeSEXP, SEXP calcprobsSEXP, SEXP unifonunderflowSEXP, SEXP fwd_rhoSEXP, SEXP bck_rhoSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< LogicalVector >::type standardize(standardizeSEXP);
-    Rcpp::traits::input_parameter< LogicalVector >::type calcprobs(calcprobsSEXP);
-    Rcpp::traits::input_parameter< LogicalVector >::type unifonunderflow(unifonunderflowSEXP);
-    Rcpp::traits::input_parameter< double >::type fwd_rho(fwd_rhoSEXP);
-    Rcpp::traits::input_parameter< double >::type bck_rho(bck_rhoSEXP);
-    Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
-    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(MatAndMulBtwVar(M, fwd, bck, x, standardize, calcprobs, unifonunderflow, fwd_rho, bck_rho, from_recipient, nthreads));
-    return rcpp_result_gen;
-END_RCPP
-}
 // ResetTable
 void ResetTable(List tbl);
 RcppExport SEXP _kalis_ResetTable(SEXP tblSEXP) {
@@ -596,52 +310,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// TrippleMatAndMul
-List TrippleMatAndMul(NumericMatrix M, NumericMatrix M2, NumericMatrix M3, List fwd, List bck, NumericVector x, int from_recipient, int nthreads);
-RcppExport SEXP _kalis_TrippleMatAndMul(SEXP MSEXP, SEXP M2SEXP, SEXP M3SEXP, SEXP fwdSEXP, SEXP bckSEXP, SEXP xSEXP, SEXP from_recipientSEXP, SEXP nthreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type M2(M2SEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type M3(M3SEXP);
-    Rcpp::traits::input_parameter< List >::type fwd(fwdSEXP);
-    Rcpp::traits::input_parameter< List >::type bck(bckSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type from_recipient(from_recipientSEXP);
-    Rcpp::traits::input_parameter< int >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(TrippleMatAndMul(M, M2, M3, fwd, bck, x, from_recipient, nthreads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// calc_tables_cpp_original_v1
-void calc_tables_cpp_original_v1(NumericMatrix& cost_table, IntegerMatrix& index_table, NumericVector s, int maxcpt, int maxn);
-RcppExport SEXP _kalis_calc_tables_cpp_original_v1(SEXP cost_tableSEXP, SEXP index_tableSEXP, SEXP sSEXP, SEXP maxcptSEXP, SEXP maxnSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix& >::type cost_table(cost_tableSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix& >::type index_table(index_tableSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
-    Rcpp::traits::input_parameter< int >::type maxcpt(maxcptSEXP);
-    Rcpp::traits::input_parameter< int >::type maxn(maxnSEXP);
-    calc_tables_cpp_original_v1(cost_table, index_table, s, maxcpt, maxn);
-    return R_NilValue;
-END_RCPP
-}
-// calc_tables_cpp_new_v2
-void calc_tables_cpp_new_v2(NumericMatrix& cost_table, IntegerMatrix& index_table, NumericVector s, int maxcpt, int maxn);
-RcppExport SEXP _kalis_calc_tables_cpp_new_v2(SEXP cost_tableSEXP, SEXP index_tableSEXP, SEXP sSEXP, SEXP maxcptSEXP, SEXP maxnSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix& >::type cost_table(cost_tableSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix& >::type index_table(index_tableSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
-    Rcpp::traits::input_parameter< int >::type maxcpt(maxcptSEXP);
-    Rcpp::traits::input_parameter< int >::type maxn(maxnSEXP);
-    calc_tables_cpp_new_v2(cost_table, index_table, s, maxcpt, maxn);
-    return R_NilValue;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_kalis_ResetBackwardTable", (DL_FUNC) &_kalis_ResetBackwardTable, 1},
@@ -657,39 +325,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"_kalis_QueryCache2_ind", (DL_FUNC) &_kalis_QueryCache2_ind, 1},
     {"_kalis_QueryCache2_loc", (DL_FUNC) &_kalis_QueryCache2_loc, 1},
     {"_kalis_ClearHaplotypeCache2", (DL_FUNC) &_kalis_ClearHaplotypeCache2, 0},
-    {"_kalis_CalcTraces", (DL_FUNC) &_kalis_CalcTraces, 6},
     {"_kalis_ComputeStatus", (DL_FUNC) &_kalis_ComputeStatus, 0},
-    {"_kalis_Dedip_min", (DL_FUNC) &_kalis_Dedip_min, 3},
-    {"_kalis_Dedip_2nd_min", (DL_FUNC) &_kalis_Dedip_2nd_min, 3},
-    {"_kalis_Dedip_max", (DL_FUNC) &_kalis_Dedip_max, 3},
-    {"_kalis_Dedip_dom", (DL_FUNC) &_kalis_Dedip_dom, 3},
-    {"_kalis_Dedip_add", (DL_FUNC) &_kalis_Dedip_add, 3},
-    {"_kalis_Dedip_mean", (DL_FUNC) &_kalis_Dedip_mean, 3},
-    {"_kalis_Dedip_all", (DL_FUNC) &_kalis_Dedip_all, 3},
-    {"_kalis_Dedip2_min", (DL_FUNC) &_kalis_Dedip2_min, 1},
-    {"_kalis_Dedip2_2nd_min", (DL_FUNC) &_kalis_Dedip2_2nd_min, 1},
-    {"_kalis_Dedip2_dom", (DL_FUNC) &_kalis_Dedip2_dom, 1},
-    {"_kalis_Dedip2_all", (DL_FUNC) &_kalis_Dedip2_all, 1},
-    {"_kalis_DedipAndMul", (DL_FUNC) &_kalis_DedipAndMul, 6},
-    {"_kalis_DedipOnlyMul", (DL_FUNC) &_kalis_DedipOnlyMul, 4},
-    {"_kalis_DedipParAtVarScalarPi", (DL_FUNC) &_kalis_DedipParAtVarScalarPi, 6},
-    {"_kalis_DedipParBtwVarScalarPi", (DL_FUNC) &_kalis_DedipParBtwVarScalarPi, 8},
-    {"_kalis_DoubleMatAndMul", (DL_FUNC) &_kalis_DoubleMatAndMul, 7},
     {"_kalis_ResetForwardTable", (DL_FUNC) &_kalis_ResetForwardTable, 1},
     {"_kalis_Forward_densePi_densemu_cpp", (DL_FUNC) &_kalis_Forward_densePi_densemu_cpp, 7},
     {"_kalis_Forward_scalarPi_densemu_cpp", (DL_FUNC) &_kalis_Forward_scalarPi_densemu_cpp, 7},
     {"_kalis_Forward_densePi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward_densePi_scalarmu_cpp, 7},
     {"_kalis_Forward_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward_scalarPi_scalarmu_cpp, 7},
     {"_kalis_Forward1step_scalarPi_scalarmu_cpp", (DL_FUNC) &_kalis_Forward1step_scalarPi_scalarmu_cpp, 7},
-    {"_kalis_MatAndMul", (DL_FUNC) &_kalis_MatAndMul, 9},
-    {"_kalis_MatOnlyMul", (DL_FUNC) &_kalis_MatOnlyMul, 4},
-    {"_kalis_MatAndMulBtwVar", (DL_FUNC) &_kalis_MatAndMulBtwVar, 11},
     {"_kalis_ResetTable", (DL_FUNC) &_kalis_ResetTable, 1},
     {"_kalis_CopyForwardTable_cpp", (DL_FUNC) &_kalis_CopyForwardTable_cpp, 2},
     {"_kalis_CopyBackwardTable_cpp", (DL_FUNC) &_kalis_CopyBackwardTable_cpp, 2},
-    {"_kalis_TrippleMatAndMul", (DL_FUNC) &_kalis_TrippleMatAndMul, 8},
-    {"_kalis_calc_tables_cpp_original_v1", (DL_FUNC) &_kalis_calc_tables_cpp_original_v1, 5},
-    {"_kalis_calc_tables_cpp_new_v2", (DL_FUNC) &_kalis_calc_tables_cpp_new_v2, 5},
     {NULL, NULL, 0}
 };
 

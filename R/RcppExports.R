@@ -53,76 +53,8 @@ ClearHaplotypeCache2 <- function() {
     invisible(.Call('_kalis_ClearHaplotypeCache2', PACKAGE = 'kalis'))
 }
 
-CalcTraces <- function(M, tX, tQ, J, from_recipient, nthreads) {
-    .Call('_kalis_CalcTraces', PACKAGE = 'kalis', M, tX, tQ, J, from_recipient, nthreads)
-}
-
 ComputeStatus <- function() {
     .Call('_kalis_ComputeStatus', PACKAGE = 'kalis')
-}
-
-Dedip_min <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip_min', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip_2nd_min <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip_2nd_min', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip_max <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip_max', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip_dom <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip_dom', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip_add <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip_add', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip_mean <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip_mean', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip_all <- function(fwd, bck, s) {
-    .Call('_kalis_Dedip_all', PACKAGE = 'kalis', fwd, bck, s)
-}
-
-Dedip2_min <- function(M) {
-    .Call('_kalis_Dedip2_min', PACKAGE = 'kalis', M)
-}
-
-Dedip2_2nd_min <- function(M) {
-    .Call('_kalis_Dedip2_2nd_min', PACKAGE = 'kalis', M)
-}
-
-Dedip2_dom <- function(M) {
-    .Call('_kalis_Dedip2_dom', PACKAGE = 'kalis', M)
-}
-
-Dedip2_all <- function(M) {
-    .Call('_kalis_Dedip2_all', PACKAGE = 'kalis', M)
-}
-
-DedipAndMul <- function(M, alpha, beta, x, from_recipient, nthreads) {
-    .Call('_kalis_DedipAndMul', PACKAGE = 'kalis', M, alpha, beta, x, from_recipient, nthreads)
-}
-
-DedipOnlyMul <- function(M, x, from_recipient, nthreads) {
-    .Call('_kalis_DedipOnlyMul', PACKAGE = 'kalis', M, x, from_recipient, nthreads)
-}
-
-DedipParAtVarScalarPi <- function(M, fwd, bck, x, from_recipient, nthreads) {
-    .Call('_kalis_DedipParAtVarScalarPi', PACKAGE = 'kalis', M, fwd, bck, x, from_recipient, nthreads)
-}
-
-DedipParBtwVarScalarPi <- function(M, fwd, bck, x, fwd_rho, bck_rho, from_recipient, nthreads) {
-    .Call('_kalis_DedipParBtwVarScalarPi', PACKAGE = 'kalis', M, fwd, bck, x, fwd_rho, bck_rho, from_recipient, nthreads)
-}
-
-DoubleMatAndMul <- function(M, M2, fwd, bck, x, from_recipient, nthreads) {
-    .Call('_kalis_DoubleMatAndMul', PACKAGE = 'kalis', M, M2, fwd, bck, x, from_recipient, nthreads)
 }
 
 ResetForwardTable <- function(fwd) {
@@ -149,18 +81,6 @@ Forward1step_scalarPi_scalarmu_cpp <- function(fwd, t, Pi, mu, rho, use_speidel,
     invisible(.Call('_kalis_Forward1step_scalarPi_scalarmu_cpp', PACKAGE = 'kalis', fwd, t, Pi, mu, rho, use_speidel, nthreads))
 }
 
-MatAndMul <- function(M, fwd, bck, x, standardize, calcprobs, unifonunderflow, from_recipient, nthreads) {
-    .Call('_kalis_MatAndMul', PACKAGE = 'kalis', M, fwd, bck, x, standardize, calcprobs, unifonunderflow, from_recipient, nthreads)
-}
-
-MatOnlyMul <- function(M, x, from_recipient, nthreads) {
-    .Call('_kalis_MatOnlyMul', PACKAGE = 'kalis', M, x, from_recipient, nthreads)
-}
-
-MatAndMulBtwVar <- function(M, fwd, bck, x, standardize, calcprobs, unifonunderflow, fwd_rho, bck_rho, from_recipient, nthreads) {
-    .Call('_kalis_MatAndMulBtwVar', PACKAGE = 'kalis', M, fwd, bck, x, standardize, calcprobs, unifonunderflow, fwd_rho, bck_rho, from_recipient, nthreads)
-}
-
 ResetTable <- function(tbl) {
     invisible(.Call('_kalis_ResetTable', PACKAGE = 'kalis', tbl))
 }
@@ -171,17 +91,5 @@ CopyForwardTable_cpp <- function(to, from) {
 
 CopyBackwardTable_cpp <- function(to, from) {
     invisible(.Call('_kalis_CopyBackwardTable_cpp', PACKAGE = 'kalis', to, from))
-}
-
-TrippleMatAndMul <- function(M, M2, M3, fwd, bck, x, from_recipient, nthreads) {
-    .Call('_kalis_TrippleMatAndMul', PACKAGE = 'kalis', M, M2, M3, fwd, bck, x, from_recipient, nthreads)
-}
-
-calc_tables_cpp_original_v1 <- function(cost_table, index_table, s, maxcpt, maxn) {
-    invisible(.Call('_kalis_calc_tables_cpp_original_v1', PACKAGE = 'kalis', cost_table, index_table, s, maxcpt, maxn))
-}
-
-calc_tables_cpp_new_v2 <- function(cost_table, index_table, s, maxcpt, maxn) {
-    invisible(.Call('_kalis_calc_tables_cpp_new_v2', PACKAGE = 'kalis', cost_table, index_table, s, maxcpt, maxn))
 }
 
