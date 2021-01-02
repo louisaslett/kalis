@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -36,9 +40,8 @@
 
 
 <meta property="og:title" content="Propagate a backward table — Backward" />
-<meta property="og:description" content="Propagates a kalisBackwardTable to an upstream locus position.
+<meta property="og:description" content="Propagates a kalisBackwardTable to an upstream variant.
 The table is updated in-place." />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -56,7 +59,7 @@ The table is updated in-place." />
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -70,7 +73,7 @@ The table is updated in-place." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">kalis</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.8</span>
       </span>
     </div>
 
@@ -93,7 +96,7 @@ The table is updated in-place." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/AutoTuning.html">UNKNOWN TITLE</a>
+      <a href="../articles/AutoTuning.html">Auto-tuning HMM Parameters for Local Phylogeny Inference</a>
     </li>
     <li>
       <a href="../articles/Decoding_a_Single_Locus.html">Decoding a Single Locus</a>
@@ -128,11 +131,17 @@ The table is updated in-place." />
     </div>
 
     <div class="ref-description">
-    <p>Propagates a <code>kalisBackwardTable</code> to an upstream locus position.
+    <p>Propagates a <code>kalisBackwardTable</code> to an upstream variant.
 The table is updated in-place.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>Backward</span>(<span class='no'>bck</span>, <span class='no'>pars</span>, <span class='kw'>t</span> <span class='kw'>=</span> <span class='no'>bck</span>$<span class='no'>l</span> - <span class='fl'>1</span>, <span class='kw'>nthreads</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>beta.theta</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>Backward</span><span class='op'>(</span>
+  <span class='va'>bck</span>,
+  <span class='va'>pars</span>,
+  t <span class='op'>=</span> <span class='va'>bck</span><span class='op'>$</span><span class='va'>l</span> <span class='op'>-</span> <span class='fl'>1</span>,
+  nthreads <span class='op'>=</span> <span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span><span class='op'>(</span>logical <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>,
+  beta.theta <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,24 +154,24 @@ The table is updated in-place.</p>
     <tr>
       <th>pars</th>
       <td><p>a <code>kalisParameters</code> object, as returned by
-<code>Parameters</code>.</p></td>
+<code><a href='Parameters.html'>Parameters</a></code>.</p></td>
     </tr>
     <tr>
       <th>t</th>
-      <td><p>a locus position to move the backward table to.
-Must be less than or equal to current locus position of <code>bck</code>.
-By default, it simply advances to the locus immediately before.</p></td>
+      <td><p>a variant to move the backward table to.
+Must be less than or equal to current variant of <code>bck</code>.
+By default, it simply advances to the variant immediately upstream.</p></td>
     </tr>
     <tr>
       <th>nthreads</th>
       <td><p>the number of CPU cores to use.
-By default no parallelism is used.</p></td>
+By default uses the <code>parallel</code> package to detect the number of physical cores.</p></td>
     </tr>
     <tr>
       <th>beta.theta</th>
       <td><p>logical indicating whether the table should be returned in
-beta-theta space or in the standard space upon reaching the target locus
-<code>t</code>.</p></td>
+beta-theta space or in the standard space upon reaching the target variant
+<code>t</code>.  See the details section.</p></td>
     </tr>
     </table>
 
@@ -172,33 +181,72 @@ beta-theta space or in the standard space upon reaching the target locus
 For performance reasons, <code>bck</code> is updated in-place.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>Backward</code> implements the backward algorithm to advance the Li and
+    <p><code>Backward</code> implements the backward algorithm to propagate the Li and
 Stephens rescaled hidden Markov model backward probabilities to a new target
-locus.</p>
+variant.  Naturally, this can only propagate a table to variants upstream
+of its current position.</p>
+<p>For mathematical details please see Section 2 of the kalis paper (TODO: ref).
+Note that the precise formulation of the backward equation is determined by
+whether the flag <code>use.spiedel</code> is set in the parameters provided in
+<code>pars</code>.</p>
+<p><strong>Beta-theta space</strong></p>
+<p>The rescaled HMM backward probabilities incorporate
+all of the haplotype relatedness information downstream from but NOT including the
+target variant, as is standard in the definition of HMM backward probabilities -- we refer to this as "beta space."
+In contrast, the rescaled forward probabilities, naturally incorporate all of the
+haplotype relatedness information upstream from AND including the target variant.
+Setting <code>beta.theta = TRUE</code> incorporates the target variant (analogous to the rescaled forward probabilities) --
+we refer to this as "beta-theta space".</p>
+<p>A backward table in beta-theta space (with <code>beta.theta = TRUE</code>) can be propagated
+to an upstream variant without incorporating that variant, thereby moving to beta space (<code>beta.theta = FALSE</code>), and vice versa.
+However, while a backward table in beta space (<code>beta.theta = FALSE</code>)
+can be updated to incorporate the current variant, a backward table
+that is already in beta-theta space can not move to beta space
+without changing variants -- that would involve "forgetting" the current variant (see Examples).</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='MakeBackwardTable.html'>MakeBackwardTable</a></code> to generate a backward table;
-<code><a href='Forward.html'>Forward</a></code> for the analagous forward propagation function;
+<code><a href='Forward.html'>Forward</a></code> for the analogous forward propagation function;
 <code><a href='CopyTable.html'>CopyTable</a></code> to create a copy of table.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='co'># Assuming that pars already contains a Parameters object, we can create a</span>
-<span class='co'># new backward table and propagate to locus 100 using 8-core parallelsim:</span>
-<span class='no'>bck</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='MakeBackwardTable.html'>MakeBackwardTable</a></span>()
-<span class='fu'>Backward</span>(<span class='no'>bck</span>, <span class='no'>pars</span>, <span class='fl'>100</span>, <span class='kw'>nthreads</span> <span class='kw'>=</span> <span class='fl'>8</span>)
-}</div></pre>
-  </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='co'># Load the toy haplotype example and set toy parameters</span>
+<span class='fu'><a href='CacheHaplotypes.html'>CacheHaplotypes</a></span><span class='op'>(</span><span class='va'>SmallHaplotypes</span><span class='op'>)</span>
+<span class='va'>pars</span> <span class='op'>&lt;-</span> <span class='fu'><a href='Parameters.html'>Parameters</a></span><span class='op'>(</span>rho <span class='op'>=</span> <span class='fu'><a href='CalcRho.html'>CalcRho</a></span><span class='op'>(</span>cM <span class='op'>=</span> <span class='va'>SmallMap</span><span class='op'>)</span><span class='op'>)</span>
 
+<span class='co'># Create a backward table for the hidden Markov model incorporating all</span>
+<span class='co'># recipient and donor haplotypes</span>
+<span class='va'>bck</span> <span class='op'>&lt;-</span> <span class='fu'><a href='MakeBackwardTable.html'>MakeBackwardTable</a></span><span class='op'>(</span><span class='va'>pars</span><span class='op'>)</span>
+
+<span class='co'># Create a backward table for the hidden Markov model incorporating only</span>
+<span class='co'># recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.</span>
+<span class='va'>bck</span> <span class='op'>&lt;-</span> <span class='fu'><a href='MakeBackwardTable.html'>MakeBackwardTable</a></span><span class='op'>(</span><span class='va'>pars</span>, <span class='fl'>100</span>, <span class='fl'>200</span><span class='op'>)</span>
+
+<span class='co'># This table is uninitialised, but ready to pass to the Backward function</span>
+<span class='co'># which will trigger initialisation and propagation from the last variant.</span>
+<span class='co'># For example, initialise and propagate backward to the 10th variant:</span>
+<span class='fu'>Backward</span><span class='op'>(</span><span class='va'>bck</span>, <span class='va'>pars</span>, <span class='fl'>10</span>, nthreads <span class='op'>=</span> <span class='fl'>8</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>bck</span><span class='op'>)</span>
+
+<span class='co'>#### Beta-theta space example ####</span>
+<span class='co'># Now moving to beta-theta space</span>
+<span class='fu'>Backward</span><span class='op'>(</span><span class='va'>bck</span>, <span class='va'>pars</span>, <span class='fl'>8</span>, beta.theta<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+
+<span class='co'># Now moving to beta space (can be done with or without propagating to a new variant)</span>
+<span class='fu'>Backward</span><span class='op'>(</span><span class='va'>bck</span>, <span class='va'>pars</span>, <span class='fl'>8</span>, beta.theta<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+
+<span class='co'># Attempting to move from beta space to beta-theta space without propagating</span>
+<span class='co'># is not possible (see Details).</span>
+<span class='fu'>Backward</span><span class='op'>(</span><span class='va'>bck</span>, <span class='va'>pars</span>, <span class='fl'>8</span>, beta.theta<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+</div></pre>
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -209,7 +257,7 @@ locus.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

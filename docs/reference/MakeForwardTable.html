@@ -6,27 +6,31 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create a <code>kalisForwardTable</code> — MakeForwardTable • kalis</title>
+<title>Create a kalisForwardTable — MakeForwardTable • kalis</title>
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -35,9 +39,8 @@
 
 
 
-<meta property="og:title" content="Create a <code>kalisForwardTable</code> — MakeForwardTable" />
+<meta property="og:title" content="Create a kalisForwardTable — MakeForwardTable" />
 <meta property="og:description" content="Allocates the memory for and initializes a forward table." />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -55,7 +58,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">kalis</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.8</span>
       </span>
     </div>
 
@@ -92,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/AutoTuning.html">UNKNOWN TITLE</a>
+      <a href="../articles/AutoTuning.html">Auto-tuning HMM Parameters for Local Phylogeny Inference</a>
     </li>
     <li>
       <a href="../articles/Decoding_a_Single_Locus.html">Decoding a Single Locus</a>
@@ -130,7 +133,7 @@
     <p>Allocates the memory for and initializes a forward table.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>MakeForwardTable</span>(<span class='no'>pars</span>, <span class='kw'>from_recipient</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>to_recipient</span> <span class='kw'>=</span> <span class='fl'>Inf</span>)</pre>
+    <pre class="usage"><span class='fu'>MakeForwardTable</span><span class='op'>(</span><span class='va'>pars</span>, from_recipient <span class='op'>=</span> <span class='fl'>1</span>, to_recipient <span class='op'>=</span> <span class='cn'>Inf</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -143,29 +146,32 @@ be set up by using the <code><a href='Parameters.html'>Parameters</a></code> fun
     </tr>
     <tr>
       <th>from_recipient</th>
-      <td><p>first recipient haplotype if creating a partial forward
-table.  By default includes from the first recipient haplotype.</p></td>
+      <td><p>first recipient haplotype included if creating a partial forward
+table.  By default includes from the first recipient haplotype.  Haplotypes are
+indexed from 1.</p></td>
     </tr>
     <tr>
       <th>to_recipient</th>
-      <td><p>last recipient haplotype if creating a partial forward
-table.  By default includes to the last recipient haplotype.</p></td>
+      <td><p>last recipient haplotype included if creating a partial forward
+table.  By default includes to the last recipient haplotype.  Haplotypes are
+indexed from 1.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A specialized list of class <code>kalisForwardTable</code>.
-The elements of the forward table list are:</p><dl class='dl-horizontal'>
-<dt><code>l</code></dt><dd><p>denotes the current locus position.</p></dd>
+The elements of the forward table list are:</p><dl>
+<dt><code>l</code></dt><dd><p>denotes the current variant position.  Zero indicates a
+newly created forward table which has not yet been propagated to any variant.</p></dd>
 <dt><code>alpha</code></dt><dd><p>is a matrix of rescaled forward probabilities under
-the Li \&amp; Stephens HMM.
+the Li and Stephens HMM.
 Each column of <code>alpha</code> corresponds to an independent HMM such
 that \(\alpha^l_{ji}\) is proportional to the probability that
-haplotype \(j\) is copied by haplotype \(i\) at locus \(l\) and
-observing haplotype \(i\) from locus 1 up through locus \(l\).</p></dd>
+haplotype \(j\) is copied by haplotype \(i\) at variant \(l\) and
+observing haplotype \(i\) from variant 1 up through variant \(l\).</p></dd>
 <dt><code>alpha.f</code></dt><dd><p>is a vector containing scaling constants needed to
-continue propagating the HMM (please see kalis paper for details).</p></dd>
+continue propagating the HMM (TODO: add ref please see kalis paper for details).</p></dd>
 
 </dl>
 
@@ -176,52 +182,51 @@ If one attempts to interact a <code>kalisForwardTable</code> with a
 thrown.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>MakeForwardTable</code> returns a <code>kalisForwardTable</code> object appropriate
-for a given set of haplotypes (that must have already been cached by
-<code><a href='CacheHaplotypes.html'>CacheHaplotypes</a></code>) and a given set of Li and Stephens hidden
-Markov model parameters created by <code><a href='Parameters.html'>Parameters</a></code>.
-The returned <code>kalisForwardTable</code> is initialized at locus 0 and is ready
-to be propagated to a given target locus with the function
+    <p><code>MakeForwardTable</code> initializes a <code>kalisForwardTable</code> object that will
+store the rescaled forward probabilities for each recipient haplotype.  Note: since all
+other haplotypes loaded by <code><a href='CacheHaplotypes.html'>CacheHaplotypes</a></code> into the kalis cache
+are taken as potential donor haplotypes, this
+table will be of size (total # haplotypes in cache)x(# recipients).
+Also note that this table object is linked to a given set of Li and Stephens hidden
+Markov model parameters, created by <code><a href='Parameters.html'>Parameters</a></code>, to ensure consistency
+for any given HMM run.</p>
+<p>The returned <code>kalisForwardTable</code> is ready
+to be propagated to a given target variant with the function
 <code><a href='Forward.html'>Forward</a></code>.</p>
-<p>Since there is an independent hidden Markov model run for each recipient
-haplotype, it is possible to create a partial forward table object which
+<p>Note: each column corresponds to an independent Li and Stephens
+hidden Markov model (ie for each recipient).  Therefore, it is possible to
+create a partial forward table object which
 corresponds to a subset of recipients using the <code>from_recipient</code> and
 <code>to_recipient</code> arguments.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='Forward.html'>Forward</a></code> to propagate the newly created
-<code>kalisForwardTable</code>.</p></div>
+<code>kalisForwardTable</code>.
+<code><a href='MakeBackwardTable.html'>MakeBackwardTable</a></code> to create a corresponding
+<code>kalisBackwardTable</code>.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Examples</span>
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='co'># This code assumes you have already created the parameter set in a variable</span>
-<span class='co'># called pars</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='co'># Load the toy haplotype example and set toy parameters</span>
+<span class='fu'><a href='CacheHaplotypes.html'>CacheHaplotypes</a></span><span class='op'>(</span><span class='va'>SmallHaplotypes</span><span class='op'>)</span>
+<span class='va'>pars</span> <span class='op'>&lt;-</span> <span class='fu'><a href='Parameters.html'>Parameters</a></span><span class='op'>(</span>rho <span class='op'>=</span> <span class='fu'><a href='CalcRho.html'>CalcRho</a></span><span class='op'>(</span>cM <span class='op'>=</span> <span class='va'>SmallMap</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># Create a forward table for the hidden Markov model incorporating all</span>
 <span class='co'># recipient and donor haplotypes</span>
-<span class='no'>fwd</span> <span class='kw'>&lt;-</span> <span class='fu'>MakeForwardTable</span>(<span class='no'>pars</span>)
+<span class='va'>fwd</span> <span class='op'>&lt;-</span> <span class='fu'>MakeForwardTable</span><span class='op'>(</span><span class='va'>pars</span><span class='op'>)</span>
 
-<span class='co'># Create a forward table for the hidden Markov model incorporating only</span>
+<span class='co'># OR, create a forward table for the hidden Markov model incorporating only</span>
 <span class='co'># recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.</span>
-<span class='no'>fwd</span> <span class='kw'>&lt;-</span> <span class='fu'>MakeForwardTable</span>(<span class='no'>pars</span>, <span class='fl'>100</span>, <span class='fl'>200</span>)
+<span class='va'>fwd</span> <span class='op'>&lt;-</span> <span class='fu'>MakeForwardTable</span><span class='op'>(</span><span class='va'>pars</span>, <span class='fl'>100</span>, <span class='fl'>200</span><span class='op'>)</span>
+<span class='op'>}</span>
 
-<span class='co'># This table is uninitialised, but ready to pass to the Forward function</span>
-<span class='co'># which will trigger initialisation and propagation from the first locus.</span>
-<span class='co'># For example, initialise and propagate forward to locus 10:</span>
-<span class='fu'><a href='Forward.html'>Forward</a></span>(<span class='no'>fwd</span>, <span class='no'>pars</span>, <span class='fl'>10</span>, <span class='kw'>nthreads</span> <span class='kw'>=</span> <span class='fl'>8</span>)
-}</div></pre>
+</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -232,7 +237,7 @@ corresponds to a subset of recipients using the <code>from_recipient</code> and
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

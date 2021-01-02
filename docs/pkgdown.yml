@@ -1,9 +1,10 @@
-pandoc: 2.3.1
-pkgdown: 1.4.1
+pandoc: 2.7.3
+pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   AutoTuning: AutoTuning.html
   Decoding_a_Single_Locus: Decoding_a_Single_Locus.html
   SimpleGWAS: SimpleGWAS.html
   testing_new_dedip: testing_new_dedip.html
+last_built: 2021-01-02T11:04Z
 
