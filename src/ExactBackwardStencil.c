@@ -1,54 +1,94 @@
-#include <Rcpp.h>
-using namespace Rcpp;
-#include <stdlib.h>
-#include <thread>
-#include <vector>
-#include <functional>
+#define _GNU_SOURCE
+#include <pthread.h>
+#include <stdio.h>
+#include <math.h>
 
 #include "Cache.h"
+
 
 
 #if defined(KALIS_IMMINTRIN_H)
 #include <immintrin.h>
 #endif
+
 #if defined(KALIS_ARM_NEON_H)
 #include <arm_neon.h>
 #endif
 
-#if defined(KALIS_PTHREAD_H)
-#include <pthread.h>
-#endif
 
 
-// #include <iacaMarks.h>
-
-#ifdef EXACTBACKWARDNOEXP
+#if defined(KALIS_MU) && defined(KALIS_PI)
 
 #include "Stencil2.h"
 
-void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
-                double *const __restrict__ beta_g,
-                const int *const __restrict__ cur_beta_theta,
-                const int *const __restrict__ end_beta_theta,
-                const int beta_from_rec,
-                const int beta_t,
-                const int t,
-                const int from_rec,
-                const int to_rec,
-                const int L,
-                const int N,
-                PI_TYPE_C Pi,
-                const MU_TYPE_C mu,
-                const double *const __restrict__ rho) {
-  int_fast32_t l = beta_t;
-  // DEBUG: Rcout << "Backward called" << std::endl;
+// Use stencil variables to setup macro arguments for constructing function names
+#ifdef KALIS_SPEIDEL
+#define SP_FN _speidel
+#else
+#define SP_FN
+#endif
+
+#if KALIS_MU == MU_SCALAR
+#define MU_FN _scalarMu
+#else
+#define MU_FN
+#endif
+
+#if KALIS_PI == PI_SCALAR
+#define PI_FN _scalarPi
+#else
+#define PI_FN
+#endif
+
+
+
+struct BCK_CORE_ARGS(SP_FN,MU_FN,PI_FN) {
+  double *const restrict beta;
+  double *const restrict beta_g;
+  const int *const restrict cur_beta_theta;
+  const int *const restrict end_beta_theta;
+  const size_t beta_from_rec;
+  const size_t beta_t;
+  const size_t t;
+  const size_t L;
+  const size_t N;
+  PI_TYPE_C Pi;
+  const MU_TYPE_C mu;
+  const double *const restrict rho;
+};
+struct BCK_ARGS(SP_FN,MU_FN,PI_FN) {
+  struct BCK_CORE_ARGS(SP_FN,MU_FN,PI_FN) *core_args;
+  size_t from_rec;
+  size_t to_rec;
+};
+
+void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
+  struct BCK_ARGS(SP_FN,MU_FN,PI_FN) *bck_args;
+  bck_args = (struct BCK_ARGS(SP_FN,MU_FN,PI_FN) *) args;
+  double *const restrict beta = bck_args->core_args->beta;
+  double *const restrict beta_g = bck_args->core_args->beta_g;
+  const int *const restrict cur_beta_theta = bck_args->core_args->cur_beta_theta;
+  const int *const restrict end_beta_theta = bck_args->core_args->end_beta_theta;
+  const size_t beta_from_rec = bck_args->core_args->beta_from_rec;
+  const size_t beta_t = bck_args->core_args->beta_t;
+  const size_t t = bck_args->core_args->t;
+  const size_t from_rec = bck_args->from_rec;
+  const size_t to_rec = bck_args->to_rec;
+  const size_t L = bck_args->core_args->L;
+  const size_t N = bck_args->core_args->N;
+  PI_TYPE_C Pi = bck_args->core_args->Pi;
+  const MU_TYPE_C mu = bck_args->core_args->mu;
+  const double *const restrict rho = bck_args->core_args->rho;
+
+  size_t l = beta_t;
+
   double g;
-  double *__restrict__ gold;
+  double *restrict gold;
   gold    = &(beta_g[0]);
 
 #if KALIS_PI == PI_SCALAR
-  double *__restrict__ const PiRow = (double*) malloc(sizeof(double)*N);
-  for(int_fast32_t i=0; i<N; i++) {
+  double *const restrict PiRow = (double*) malloc(sizeof(double)*N);
+  for(size_t i=0; i<N; i++) {
     PiRow[i] = Pi;
   }
 #endif
@@ -56,14 +96,14 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
   // Locus L setup
   if(l>L-1) {
     l = L-1;
-    for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
-      int_fast32_t recipient_beta = recipient-beta_from_rec;
+    for(size_t recipient=from_rec; recipient<to_rec; ++recipient) {
+      size_t recipient_beta = recipient-beta_from_rec;
       int32_t recipient_hap = (hap_locus[l][recipient/32] >> recipient%32) & 1;
       recipient_hap = 1-recipient_hap; // So H below will now be 1-H
 
       gold[recipient_beta] = 0.0;
 
-      for(int_fast32_t donor=0; donor<N; ++donor) {
+      for(size_t donor=0; donor<N; ++donor) {
         int32_t donor_hap = (hap_locus[l][donor/32] >> donor%32) & 1;
 #ifdef KALIS_SPEIDEL
         int32_t H = (recipient_hap & ~donor_hap) & 1;
@@ -100,11 +140,11 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
     }
   }
 
-  const int_fast32_t reset_l = l;
+  const size_t reset_l = l;
 
-#if KALIS_PI == PI_SCALAR
-  const KALIS_DOUBLE _Pi = KALIS_SET_DOUBLE(Pi);
-#endif
+//#if KALIS_PI == PI_SCALAR
+//  const KALIS_DOUBLE _Pi = KALIS_SET_DOUBLE(Pi);
+//#endif
 
 #if KALIS_MU == MU_SCALAR
   // Some temps to help computing (H * mu[l] + (1-H) * (1.0 - mu[l])) == H * (2*mu - 1) - mu + 1
@@ -114,8 +154,8 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
   if(l == t && !*cur_beta_theta && *end_beta_theta) {
     // DEBUG: Rcout << "B -> BT (no move, l=" << l << ", all rec)" << std::endl;
-    for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
-      int_fast32_t recipient_beta = recipient-beta_from_rec;
+    for(size_t recipient=from_rec; recipient<to_rec; ++recipient) {
+      size_t recipient_beta = recipient-beta_from_rec;
 #if KALIS_PI == PI_SCALAR
       PiRow[recipient] = 0.0;
 #endif
@@ -125,9 +165,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
       // TODO: for larger problems break this down into L1 cachable chunks of
       //       donors at a time
-      double *__restrict__ const betaRow = &(beta[N*recipient_beta]);
+      double *const restrict betaRow = &(beta[N*recipient_beta]);
 #if KALIS_PI == PI_MATRIX
-      double *__restrict__ const PiRow = &(Pi[N*recipient]);
+      double *const restrict PiRow = &(Pi[N*recipient]);
       // The diagonal should be zero ... we can fix that after the loop, but in order to avoid accumulating
       // incorrectly in g, we want to force the diagonal of Pi to zero
       PiRow[recipient] = 0.0;
@@ -145,23 +185,25 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
       const KALIS_DOUBLE _muTmp1a = KALIS_SET_DOUBLE(muTmp1a), _muTmp2a = KALIS_SET_DOUBLE(muTmp2a);
 #endif
 
-      for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
+      for(size_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
         // Load next 256 donors and XOR/ANDNOT with recipients
 #ifdef KALIS_SPEIDEL
         KALIS_INT32 _HA = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #else
         KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
-        uint32_t *HA = (uint32_t*) &_HA;
+        int HA[8];
+        __m256i mask = _mm256_set1_epi32(-1);
+        _mm256_maskstore_epi32(HA, mask, _HA);
 
-        for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
+        for(size_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
           // IACA_START
 #include KALIS_BACKWARD_INNER_UNROLLED(KALIS_UNROLL,E)
         }
         // IACA_END
       }
       // Tidy up any ragged end past a multiple of 256 ...
-      for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
+      for(size_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
         int32_t donor_hapA = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
         int32_t HA = (recipient_hap & ~donor_hapA) & 1;
@@ -169,7 +211,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
         int32_t HA = (recipient_hap ^ donor_hapA) & 1;
 #endif
 
-        const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
+        const size_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
 
 #if KALIS_MU == MU_SCALAR
         betaRow[donornum] = (HA * muTmp1 + muTmp2) * betaRow[donornum];
@@ -199,8 +241,8 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
     //   beta = theta[l]*(beta*theta[l+1] / g...)
     //   g += beta*pi
     // DEBUG: Rcout << "B -> B (l=" << l << ", all r, one step)" << std::endl;
-    for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
-      int_fast32_t recipient_beta = recipient-beta_from_rec;
+    for(size_t recipient=from_rec; recipient<to_rec; ++recipient) {
+      size_t recipient_beta = recipient-beta_from_rec;
 #if KALIS_PI == PI_SCALAR
       PiRow[recipient] = 0.0;
 #endif
@@ -226,9 +268,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
         // TODO: for larger problems break this down into L1 cachable chunks of
         //       donors at a time
-        double *__restrict__ const betaRow = &(beta[N*recipient_beta]);
+        double *const restrict betaRow = &(beta[N*recipient_beta]);
 #if KALIS_PI == PI_MATRIX
-        double *__restrict__ const PiRow = &(Pi[N*recipient]);
+        double *const restrict PiRow = &(Pi[N*recipient]);
         // The diagonal should be zero ... we can fix that after the loop, but in order to avoid accumulating
         // incorrectly in g, we want to force the diagonal of Pi to zero
         PiRow[recipient] = 0.0;
@@ -244,7 +286,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
         // Setup rho for AVX ops
         KALIS_DOUBLE _rho = KALIS_SET_DOUBLE(rho[l]);
-        for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
+        for(size_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
           // Load next 256 donors and XOR/ANDNOT with recipients
 #ifdef KALIS_SPEIDEL
           KALIS_INT32 _HA = KALIS_ANDNOT_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
@@ -253,17 +295,19 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
           KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
-          uint32_t *HA = (uint32_t*) &_HA;
-          uint32_t *HB = (uint32_t*) &_HB;
+          int HA[8], HB[8];
+          __m256i mask = _mm256_set1_epi32(-1);
+          _mm256_maskstore_epi32(HA, mask, _HA);
+          _mm256_maskstore_epi32(HB, mask, _HB);
 
-          for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
+          for(size_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
             // IACA_START
 #include KALIS_BACKWARD_INNER_UNROLLED(KALIS_UNROLL,A)
           }
           // IACA_END
         }
         // Tidy up any ragged end past a multiple of 256 ...
-        for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
+        for(size_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
           int32_t donor_hap = (hap_locus[l+1][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
           int32_t H = (recipient_hap_prev & ~donor_hap) & 1;
@@ -271,7 +315,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           int32_t H = (recipient_hap_prev ^ donor_hap) & 1;
 #endif
 
-          const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
+          const size_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
 
 #if KALIS_MU == MU_SCALAR
           betaRow[donornum] = rho[l] + (H * muTmp1 + muTmp2) * betaRow[donornum] * omRhoDivG;
@@ -312,8 +356,8 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
     //   locus step; then march back staying in theta*beta space; then on
     //   final step move back to beta space at the same time as the locus step
     // See if clauses below for detail
-    for(int_fast32_t recipient=from_rec; recipient<to_rec; ++recipient) {
-      int_fast32_t recipient_beta = recipient-beta_from_rec;
+    for(size_t recipient=from_rec; recipient<to_rec; ++recipient) {
+      size_t recipient_beta = recipient-beta_from_rec;
 #if KALIS_PI == PI_SCALAR
       PiRow[recipient] = 0.0;
 #endif
@@ -330,9 +374,9 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 
         // TODO: for larger problems break this down into L1 cachable chunks of
         //       donors at a time
-        double *__restrict__ const betaRow = &(beta[N*recipient_beta]);
+        double *const restrict betaRow = &(beta[N*recipient_beta]);
 #if KALIS_PI == PI_MATRIX
-        double *__restrict__ const PiRow = &(Pi[N*recipient]);
+        double *const restrict PiRow = &(Pi[N*recipient]);
         // The diagonal should be zero ... we can fix that after the loop, but in order to avoid accumulating
         // incorrectly in g, we want to force the diagonal of Pi to zero
         PiRow[recipient] = 0.0;
@@ -360,23 +404,25 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           const KALIS_DOUBLE _muTmp1b = KALIS_SET_DOUBLE(muTmp1b), _muTmp2b = KALIS_SET_DOUBLE(muTmp2b);
 #endif
 
-          for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
+          for(size_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
             // Load next 256 donors and XOR/ANDNOT with recipients
 #ifdef KALIS_SPEIDEL
             KALIS_INT32 _HB = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #else
             KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
-            uint32_t *HB = (uint32_t*) &_HB;
+            int HB[8];
+            __m256i mask = _mm256_set1_epi32(-1);
+            _mm256_maskstore_epi32(HB, mask, _HB);
 
-            for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
+            for(size_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
               // IACA_START
 #include KALIS_BACKWARD_INNER_UNROLLED(KALIS_UNROLL,B)
             }
             // IACA_END
           }
           // Tidy up any ragged end past a multiple of 256 ...
-          for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
+          for(size_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
             int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
             int32_t H = (recipient_hap & ~donor_hap) & 1;
@@ -384,7 +430,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
 
-            const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
+            const size_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
 
 #if KALIS_MU == MU_SCALAR
             betaRow[donornum] = (rho[l] + betaRow[donornum] * omRhoDivG) * (H * muTmp1 + muTmp2);
@@ -421,7 +467,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           const KALIS_DOUBLE _muTmp1b = KALIS_SET_DOUBLE(muTmp1b), _muTmp2b = KALIS_SET_DOUBLE(muTmp2b);
 #endif
 
-          for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
+          for(size_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
             // Load next 256 donors and XOR/ANDNOT with recipients
 #ifdef KALIS_SPEIDEL
             KALIS_INT32 _HA = KALIS_ANDNOT_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
@@ -430,17 +476,19 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
             KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
-            uint32_t *HA = (uint32_t*) &_HA;
-            uint32_t *HB = (uint32_t*) &_HB;
+            int HA[8], HB[8];
+            __m256i mask = _mm256_set1_epi32(-1);
+            _mm256_maskstore_epi32(HA, mask, _HA);
+            _mm256_maskstore_epi32(HB, mask, _HB);
 
-            for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
+            for(size_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
               // IACA_START
 #include KALIS_BACKWARD_INNER_UNROLLED(KALIS_UNROLL,C)
             }
             // IACA_END
           }
           // Tidy up any ragged end past a multiple of 256 ...
-          for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
+          for(size_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
             int32_t donor_hapA = (hap_locus[l+1][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
             int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
@@ -451,7 +499,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             int32_t H  = (recipient_hap ^ donor_hap) & 1;
 #endif
 
-            const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
+            const size_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
 
 #if KALIS_MU == MU_SCALAR
             betaRow[donornum] = (rho[l] + (HA * muTmp1 + muTmp2) * betaRow[donornum] * omRhoDivG) * (H * muTmp1 + muTmp2);
@@ -483,23 +531,25 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
           const KALIS_DOUBLE _muTmp1b = KALIS_SET_DOUBLE(muTmp1b), _muTmp2b = KALIS_SET_DOUBLE(muTmp2b);
 #endif
 
-          for(int_fast32_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
+          for(size_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
             // Load next 256 donors and XOR/ANDNOT with recipients
 #ifdef KALIS_SPEIDEL
             KALIS_INT32 _HB = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #else
             KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
-            uint32_t *HB = (uint32_t*) &_HB;
+            int HB[8];
+            __m256i mask = _mm256_set1_epi32(-1);
+            _mm256_maskstore_epi32(HB, mask, _HB);
 
-            for(int_fast32_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
+            for(size_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
               // IACA_START
 #include KALIS_BACKWARD_INNER_UNROLLED(KALIS_UNROLL,D)
             }
             // IACA_END
           }
           // Tidy up any ragged end past a multiple of 256 ...
-          for(int32_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
+          for(size_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
             int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
             int32_t H = (recipient_hap & ~donor_hap) & 1;
@@ -507,7 +557,7 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
             int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
 
-            const int32_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
+            const size_t donornum = (N/(32*KALIS_INTVEC_SIZE))*32*KALIS_INTVEC_SIZE+donor;
 
 #if KALIS_MU == MU_SCALAR
             betaRow[donornum] = (rho[l] + betaRow[donornum] * omRhoDivG);
@@ -542,109 +592,92 @@ void CPP_RAW_FN(EXACTBACKWARDNOEXP)(double *const __restrict__ beta,
 #if KALIS_PI == PI_SCALAR
   free(PiRow);
 #endif
+
+  return(NULL);
 }
 
 
 
-void CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
-            NumericVector beta_g,
-            LogicalVector cur_beta_theta,
-            LogicalVector end_beta_theta,
-            const int beta_from_rec,
-            const int beta_t,
-            const int t,
-            const int from_rec,
-            const int to_rec,
-            const int L,
-            const int N,
-            PI_TYPE_CPP Pi,
-            MU_TYPE_CPP mu,
-            NumericVector rho) {
-  CPP_RAW_FN(EXACTBACKWARDNOEXP)(&(beta[0]),
-             &(beta_g[0]),
-             &(cur_beta_theta[0]),
-             &(end_beta_theta[0]),
-             beta_from_rec,
-             beta_t,
-             t,
-             from_rec,
-             to_rec,
-             L,
-             N,
-             PI_ARG_CPP,
-             MU_ARG_CPP,
-             &(rho[0]));
-  *(&(cur_beta_theta[0])) = *(&(end_beta_theta[0]));
-}
-
-
-
-void PAR_CPP_FN(EXACTBACKWARDNOEXP)(NumericMatrix beta,
-                NumericVector beta_g,
-                LogicalVector cur_beta_theta,
-                LogicalVector end_beta_theta,
-                const int beta_from_rec,
-                const int beta_t,
-                const int t,
-                const int from_rec,
-                const int to_rec,
-                const int L,
-                const int N,
-                PI_TYPE_CPP Pi,
-                MU_TYPE_CPP mu,
-                NumericVector rho,
-                IntegerVector nthreads) {
-  std::vector<std::thread> threads;
-
-  int numthreads;
-  bool affinity;
-  if(nthreads.length() > 1) {
-    numthreads = nthreads.length();
-    affinity = TRUE;
+void BCK_FN(SP_FN,MU_FN,PI_FN)(double *const restrict beta,
+                               double *const restrict beta_g,
+                               int *const restrict cur_beta_theta,
+                               int *const restrict end_beta_theta,
+                               const size_t beta_from_rec,
+                               const size_t beta_t,
+                               const size_t t,
+                               const size_t from_rec,
+                               const size_t to_rec,
+                               const size_t L,
+                               const size_t N,
+                               PI_TYPE_C Pi,
+                               const MU_TYPE_C mu,
+                               const double *const restrict rho,
+                               const int *const restrict nthreads,
+                               const int nthreads_len) {
+  int numthreads, affinity;
+  if(nthreads_len > 1) {
+    numthreads = nthreads_len;
+    affinity = 1;
   } else {
-    numthreads = nthreads[0];
-    affinity = FALSE;
+    numthreads = *nthreads;
+    affinity = 0;
   }
 
-  if(numthreads < 2) {
-    Rcout << "Only use parallel function with at least 2 threads";
+  struct BCK_CORE_ARGS(SP_FN,MU_FN,PI_FN) bck_core_args = {
+    .beta = beta,
+    .beta_g = beta_g,
+    .cur_beta_theta = cur_beta_theta,
+    .end_beta_theta = end_beta_theta,
+    .beta_from_rec = beta_from_rec,
+    .beta_t = beta_t,
+    .t = t,
+    .L = L,
+    .N = N,
+    .Pi = Pi,
+    .mu = mu,
+    .rho = rho
+  };
+
+  struct BCK_ARGS(SP_FN,MU_FN,PI_FN) bck_args[numthreads];
+  for(int i=0; i<numthreads; i++) {
+    bck_args[i].core_args = &bck_core_args;
+    bck_args[i].from_rec = from_rec;
+    bck_args[i].to_rec = to_rec;
   }
 
-  // round(hap(0, nthreads) * double(to_rec-from_rec) / double(nthreads)) + from_rec;
-  double spacing = double(to_rec-from_rec) / double(numthreads);
+  if(numthreads == 1) {
+    BCK_RAW_FN(SP_FN,MU_FN,PI_FN)((void*) &bck_args[0]);
+  } else {
+    pthread_t threads[numthreads];
+    pthread_attr_t attr;
 
-  for(int_fast32_t i=0; i<numthreads; ++i) {
-    threads.push_back(std::thread(CPP_RAW_FN(EXACTBACKWARDNOEXP),
-                                  &(beta[0]),
-                                  &(beta_g[0]),
-                                  &(cur_beta_theta[0]),
-                                  &(end_beta_theta[0]),
-                                  beta_from_rec,
-                                  beta_t,
-                                  t,
-                                  round(from_rec + i*spacing),
-                                  round(from_rec + (i+1)*spacing),
-                                  L,
-                                  N,
-                                  PI_ARG_CPP,
-                                  MU_ARG_CPP,
-                                  &(rho[0])));
-    // Rcout << "From: " << round(from_rec + i*spacing) << ", To: " << round(from_rec + (i+1)*spacing) << "\n";
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
-#if defined(KALIS_PTHREAD_H)
-    if(affinity) {
-      cpu_set_t cpus;
-      CPU_ZERO(&cpus);
-      CPU_SET(nthreads[i], &cpus);
-      int afer = pthread_setaffinity_np(threads[i].native_handle(), sizeof(cpu_set_t), &cpus);
-      if(afer != 0)
-        Rcout << "Error setting thread affinity: " << afer << "\n";
-    }
+    // round(hap(0, nthreads) * double(to_rec-from_rec) / double(nthreads)) + from_rec;
+    double spacing = ((double) to_rec-from_rec) / ((double) numthreads);
+
+    for(int i=0; i<numthreads; i++) {
+      bck_args[i].from_rec = (size_t) round(from_rec + i*spacing);
+      bck_args[i].to_rec = (size_t) round(from_rec + (i+1)*spacing);
+      pthread_create(&threads[i], &attr, BCK_RAW_FN(SP_FN,MU_FN,PI_FN), (void*) &bck_args[i]);
+
+#if defined(KALIS_AFFINITY)
+      if(affinity) {
+        cpu_set_t cpus;
+        CPU_ZERO(&cpus);
+        CPU_SET(nthreads[i], &cpus);
+        int afer = pthread_setaffinity_np(threads[i], sizeof(cpu_set_t), &cpus);
+        if(afer != 0)
+          printf("Error setting thread affinity!\n");
+        }
 #endif
-  }
+    }
 
-  for(auto& th : threads) {
-    th.join();
+    for(int i=0; i<numthreads; i++) {
+      pthread_join(threads[i], NULL);
+    }
+    pthread_attr_destroy(&attr);
   }
 
   *(&(cur_beta_theta[0])) = *(&(end_beta_theta[0]));

@@ -1,13 +1,13 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
 collapse = TRUE,
 comment = "#>"
 )
 
-## ----run.dir, eval=FALSE-------------------------------------------------
+## ----run.dir, eval=FALSE------------------------------------------------------
 #  run.dir <- "~/Desktop/autotuning_test_files/"
 
-## ----load.data, results = "hide", message=FALSE, eval=FALSE--------------
+## ----load.data, results = "hide", message=FALSE, eval=FALSE-------------------
 #  require(kalis)
 #  require(RSpectra)
 #  require(mlrMBO)
@@ -29,12 +29,12 @@ comment = "#>"
 #  G <- tcrossprod(scale(t(SmallHaps[polymorphic.sites,])))
 #  bg.vecs <- RSpectra::eigs(G,10)$vectors
 
-## ----autotuning_pars, eval=FALSE-----------------------------------------
+## ----autotuning_pars, eval=FALSE----------------------------------------------
 #  nthreads <- 2
 #  num.target.loci <- 10
 #  targets <- InvRecombMap(m,num.target.loci = num.target.loci)
 
-## ----autotuning_targets, results="hide", eval=FALSE----------------------
+## ----autotuning_targets, results="hide", eval=FALSE---------------------------
 #  
 #  
 #  # Define Bounds on Parameters and Objective Function
@@ -72,7 +72,7 @@ comment = "#>"
 #  
 #  
 
-## ----plot.autotune, eval = F, echo = F, results='asis', eval=FALSE-------
+## ----plot.autotune, eval = F, echo = F, results='asis', eval=FALSE------------
 #  PlotAutotuneSurf(x = res$opt.path$env$path$neg.log10.Ne,
 #                   y = res$opt.path$env$path$neg.log10.mu,
 #                   z = - res$opt.path$env$path$y,

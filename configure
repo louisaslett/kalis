@@ -30,14 +30,13 @@ fi
 # Find compiler
 CC=`${R_HOME}/bin/R CMD config CC`
 CFLAGS=`${R_HOME}/bin/R CMD config CFLAGS`
-CPPFLAGS=`${R_HOME}/bin/R CMD config CPPFLAGS`
 
 # Debug info
 echo "Using PKG_CFLAGS=$PKG_CFLAGS"
 echo "Using PKG_LIBS=$PKG_LIBS"
 
 # Test configuration
-echo "#include $PKG_TEST_HEADER" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1 || R_CONFIG_ERROR=1;
+echo "#include $PKG_TEST_HEADER" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1 || R_CONFIG_ERROR=1;
 
 # Customize the error
 if [ $R_CONFIG_ERROR ]; then
@@ -55,13 +54,13 @@ if [ $R_CONFIG_ERROR ]; then
 fi
 
 # Check if we're on an x86 system with intrinsics
-echo "#include <immintrin.h>" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1
+echo "#include <immintrin.h>" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1
 if [ $? -eq 0 ]; then
   PKG_CFLAGS="$PKG_CFLAGS -DKALIS_IMMINTRIN_H"
 fi
 
 # Check if we're on an ARM system with intrinsics
-echo "#include <arm_neon.h>" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1
+echo "#include <arm_neon.h>" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1
 if [ $? -eq 0 ]; then
   PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ARM_NEON_H"
 fi
@@ -75,10 +74,10 @@ else
 fi
 
 # Check if we have access to pthreads
-# NB: MacOS has pthreads but not pthread_setaffinity_np, so we need to check for function not just header (drop -E on compiler)
-echo -e "#include <pthread.h>\nmain() { pthread_setaffinity_np(0,0,0); }" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -pthread -xc - >/dev/null 2>&1
+# NB: MacOS has pthreads but not pthread_setaffinity_np, so we need to check for functions not just header (drop -E on compiler)
+echo -e "#define _GNU_SOURCE\n#include <pthread.h>\nmain() { cpu_set_t cpus; CPU_ZERO(&cpus); CPU_SET(1, &cpus); pthread_setaffinity_np(0,0,0); }" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -pthread -xc - >/dev/null 2>&1
 if [ $? -eq 0 ]; then
-  PKG_CFLAGS="$PKG_CFLAGS -DKALIS_PTHREAD_H -pthread"
+  PKG_CFLAGS="$PKG_CFLAGS -DKALIS_AFFINITY -pthread"
   PKG_LIBS="$PKG_LIBS -lpthread -pthread"
 fi
 

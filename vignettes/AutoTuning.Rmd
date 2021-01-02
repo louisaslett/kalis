@@ -4,12 +4,12 @@ author: "Louis Aslett & Ryan Christ"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-%\VignetteIndexEntry{Auto-tuning HMM Parameters for Local Phylogeny Inference}
+  %\VignetteIndexEntry{Auto-tuning HMM Parameters for Local Phylogeny Inference}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  ---
-  
-  ```{r setup, include = FALSE}
+---
+
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
 collapse = TRUE,
 comment = "#>"

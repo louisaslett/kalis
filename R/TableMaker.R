@@ -117,7 +117,7 @@ MakeForwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   # Define core table, duplicating where relevant to ensure unique to this forward table
   fwd$alpha          <- duplicate(matrix(0, N, delN))
   fwd$alpha.f        <- duplicate(rep(0, delN))
-  fwd$l              <- duplicate(c(0L))
+  fwd$l              <- duplicate(c(2147483647L))
   fwd$from_recipient <- duplicate(from_recipient)
   fwd$to_recipient   <- duplicate(to_recipient)
   fwd$pars.sha256    <- duplicate(pars$sha256)
@@ -143,7 +143,7 @@ print.kalisForwardTable <- function(x, ...) {
     cat(glue("  Recipients {x$from_recipient} to {x$to_recipient}"), "\n")
   }
 
-  if(x$l == 0) {
+  if(x$l == 2147483647L) {
     cat("  Newly created table, currently uninitialised to any variant (ready for Forward function next).\n")
   } else {
     cat(glue("  Current variant = {x$l}"), "\n")
@@ -270,11 +270,11 @@ MakeBackwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   # Define core table, duplicating where relevant to ensure unique to this forward table
   bck$beta           <- duplicate(matrix(0, N, delN))
   bck$beta.g         <- duplicate(rep(0, delN))
-  bck$beta.theta     <- duplicate(FALSE)
   bck$l              <- duplicate(c(2147483647L))
   bck$from_recipient <- duplicate(from_recipient)
   bck$to_recipient   <- duplicate(to_recipient)
   bck$pars.sha256    <- duplicate(pars$sha256)
+  bck$beta.theta     <- duplicate(FALSE)
 
   class(bck) <- c("kalisBackwardTable", class(bck))
 
@@ -390,10 +390,59 @@ CopyTable <- function(to, from) {
     stop("from and to are pointing to the same memory space.  Please make a new table before copying.")
   }
 
+  .Call(CCall_CopyFBTable, to, from)
+}
+
+#' Reset Forward/Backward tables
+#'
+#' Resets the provided forward/backward table so it can propagate from the start/end of the Li and Stephens hidden Markov model.
+#'
+#' It will usually be faster to reset a forward/backward table rather than remove and make a new one.  This function marks a table as reset so that it will be propagated as if freshly allocated.
+#'
+#' @param tbl a \code{kalisForwardTable} or \code{kalisBackwardTable} object
+#'   which is to be reset.
+#'
+#' @seealso \code{\link{MakeForwardTable}}, \code{\link{MakeBackwardTable}} to
+#' create fresh tables.
+#'
+#' @examples
+#' # Examples
+#' \dontrun{
+#' # Create a forward table for the hidden Markov model incorporating all
+#' # recipient and donor haplotypes
+#' fwd <- MakeForwardTable()
+#'
+#' # Propagate forward to variant 10:
+#' Forward(fwd, pars, 10, nthreads = 8)
+#'
+#' # This does **NOT** work as intended, cannot reverse from variant 10:
+#' Forward(fwd, pars, 5, nthreads = 8)
+#'
+#' # Could reset the table though:
+#' ResetTable(fwd)
+#' Forward(fwd, pars, 5, nthreads = 8)
+#' }
+#'
+#' @export
+ResetTable <- function(tbl) {
+  if(!("kalisForwardTable" %in% class(tbl)) && !("kalisBackwardTable" %in% class(tbl))) {
+    stop("The tbl argument is not a valid forward or backward table.")
+  }
+
+  type <- NULL
+  if("kalisForwardTable" %in% class(tbl))
+    type <- "fwd"
+  else if("kalisBackwardTable" %in% class(tbl))
+    type <- "bck"
+
+  if(is.null(type)) {
+    stop("Error identifying type of table")
+  }
+
   if(type == "fwd") {
-    CopyForwardTable_cpp(to, from)
+    .Call(CCall_ResetForwardTable, tbl)
   }
   if(type == "bck") {
-    CopyBackwardTable_cpp(to, from)
+    .Call(CCall_ResetBackwardTable, tbl)
   }
 }

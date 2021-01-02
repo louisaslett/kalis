@@ -95,6 +95,7 @@ CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file,
     ClearHaplotypeCache()
   }
   assign("N", as.integer(N), envir = pkgVars)
+  assign("L", as.integer(L), envir = pkgVars)
 
   # Create a closure for easy access of HDF5 file
   # We'll read in 10MB (raw size) chunks
@@ -116,7 +117,8 @@ CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file,
   }
 
   # Cache it!
-  assign("L", CacheHaplotypes_hdf5_2(make.hdf5.access(h5.haps, loci.idx, hap.idx, transpose, L, N), N, L), envir = pkgVars)
+  fn <- make.hdf5.access(h5.haps, loci.idx, hap.idx, transpose, L, N)
+  .Call(CCall_CacheHaplotypes_hdf5_2, quote(fn()), new.env(), N, L)
   h5$close_all()
   invisible(NULL)
 }
@@ -186,6 +188,7 @@ CacheHaplotypes.hdf5.rhdf5 <- function(hdf5.file,
     ClearHaplotypeCache()
   }
   assign("N", as.integer(N), envir = pkgVars)
+  assign("L", as.integer(L), envir = pkgVars)
 
   # Create a closure for easy access of HDF5 file
   # We'll read in 10MB (raw size) chunks
@@ -207,6 +210,7 @@ CacheHaplotypes.hdf5.rhdf5 <- function(hdf5.file,
   }
 
   # Cache it!
-  assign("L", as.integer(CacheHaplotypes_hdf5_2(make.hdf5.access(hdf5.file, loci.idx, hap.idx, transpose, L, N, haps.path), N, L)), envir = pkgVars)
+  fn <- make.hdf5.access(hdf5.file, loci.idx, hap.idx, transpose, L, N, haps.path)
+  .Call(CCall_CacheHaplotypes_hdf5_2, quote(fn()), new.env(), N, L)
   invisible(NULL)
 }

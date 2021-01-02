@@ -299,11 +299,11 @@ QueryCache <- function(loci.idx = NULL, hap.idx = NULL) {
 
   if(length(loci.idx) < length(hap.idx)) {
     for(i in 1:length(loci.idx)) {
-      res[i,] <- as.integer(intToBits(QueryCache2_loc(loci.idx[i]-1)))[hap.idx]
+      res[i,] <- as.integer(intToBits(.Call(CCall_QueryCache2_loc, loci.idx[i]-1)))[hap.idx]
     }
   } else {
     for(i in 1:length(hap.idx)) {
-      res[,i] <- as.integer(intToBits(QueryCache2_ind(hap.idx[i]-1)))[loci.idx]
+      res[,i] <- as.integer(intToBits(.Call(CCall_QueryCache2_ind, hap.idx[i]-1)))[loci.idx]
     }
   }
   res
@@ -337,7 +337,7 @@ QueryCache <- function(loci.idx = NULL, hap.idx = NULL) {
 ClearHaplotypeCache <- function() {
   assign("N", NA, envir = pkgVars)
   assign("L", NA, envir = pkgVars)
-  ClearHaplotypeCache2()
+  .Call(CCall_ClearHaplotypeCache2)
 }
 
 

@@ -1,11 +1,10 @@
+#include "ExactForward.h"
 #include "Stencil.h"
 
-#define EXACTFORWARDNOEXP ExactForward_scmuPi
 #define KALIS_MU MU_SCALAR
 #define KALIS_PI PI_SCALAR
 
-#include "ExactForwardStencil.cpp"
+#include "ExactForwardStencil.c"
 
-#undef EXACTFORWARDNOEXP
 #undef KALIS_MU
 #undef KALIS_PI

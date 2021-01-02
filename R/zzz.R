@@ -1,3 +1,3 @@
 .onAttach <- function(libname, pkgname){
-  packageStartupMessage(ComputeStatus())
+  packageStartupMessage(.Call(CCall_ComputeStatus))
 }

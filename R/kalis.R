@@ -5,7 +5,7 @@
 #' @importFrom digest digest
 #' @importFrom stringr str_split_fixed
 #'
-#' @useDynLib kalis
+#' @useDynLib kalis, .registration = TRUE, .fixes = "CCall_"
 NULL
 
 

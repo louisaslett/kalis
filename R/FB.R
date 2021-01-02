@@ -65,37 +65,24 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = parallel::detectCores(log
      !test_integerish(nthreads, lower = 0, upper = maxthreads-1, any.missing = FALSE, min.len = 2, unique = TRUE)) {
     stop("The nthreads argument must either be a single scalar indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run.")
   }
+  nthreads <- as.integer(nthreads)
   if(fwd$pars.sha256 != pars$sha256) {
     stop("The forward table provided was created with different parameter values (SHA-256 mismatch).")
   }
   L <- get("L", envir = pkgVars)
   N <- get("N", envir = pkgVars)
-  if(!is.vector(t) || !is.numeric(t) || length(t) != 1 || is.na(t)) {
-    stop("t must be a scalar.")
+  if(!test_integerish(t, lower = 1, upper = L, any.missing = FALSE, len = 1)) {
+    stop(glue("t must be a scalar integer in the range from 1 to {L}."))
   }
-  if(t < 1 || t > L) {
-    stop(glue("Valid target loci range from 1 to {L} ... cannot move forward to locus {t}."))
-  }
-  if(fwd$l > t) {
+  t <- as.integer(t)
+  if(fwd$l <= L && fwd$l > t) {
     stop(glue("The forward table provided is for locus position {fwd$l} which is already past requested locus {t}"))
   }
   if(nrow(fwd$alpha) != N || ncol(fwd$alpha) != fwd$to_recipient-fwd$from_recipient+1) {
     stop("Forward table is of the wrong dimensions for this problem.")
   }
 
-  if(is.matrix(pars$pars$Pi)) {
-    if(length(pars$pars$mu) == 1) {
-      Forward_densePi_scalarmu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
-    } else {
-      Forward_densePi_densemu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
-    }
-  } else {
-    if(length(pars$pars$mu) == 1) {
-      Forward_scalarPi_scalarmu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
-    } else {
-      Forward_scalarPi_densemu_cpp(fwd, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
-    }
-  }
+  invisible(.Call(CCall_Forward, fwd, FALSE, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads))
 }
 
 
@@ -198,20 +185,21 @@ Backward <- function(bck, pars, t = bck$l-1, nthreads = parallel::detectCores(lo
      !test_integerish(nthreads, lower = 0, upper = maxthreads-1, any.missing = FALSE, min.len = 2, unique = TRUE)) {
     stop("The nthreads argument must either be a single scalar indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run.")
   }
-
+  nthreads <- as.integer(nthreads)
+  if(bck$pars.sha256 != pars$sha256) {
+    stop("The backward table provided was created with different parameter values (SHA-256 mismatch).")
+  }
   L <- get("L", envir = pkgVars)
   N <- get("N", envir = pkgVars)
-  if(!is.vector(t) || !is.numeric(t) || length(t) != 1 || is.na(t)) {
-    stop("t must be a scalar.")
+  if(!test_integerish(t, lower = 1, upper = L, any.missing = FALSE, len = 1)) {
+    stop(glue("t must be a scalar integer in the range from 1 to {L}."))
+  }
+  t <- as.integer(t)
+  if(bck$l < t) {
+    stop(glue("The backward table provided is for locus position {bck$l} which is already before requested locus {t}"))
   }
   if(!is.vector(beta.theta) || !is.logical(beta.theta) || length(beta.theta) != 1 || is.na(beta.theta)) {
     stop("beta.theta must be a single logical value.")
-  }
-  if(t < 1 || t > L) {
-    stop(glue("Valid target loci range from 1 to {L} ... cannot move backward to locus {t}."))
-  }
-  if(bck$l < t) {
-    stop(glue("The backward table provided is for locus position {bck$l} which is already before requested locus {t}"))
   }
   if(nrow(bck$beta) != N || ncol(bck$beta) != bck$to_recipient-bck$from_recipient+1) {
     stop("Backward table is of the wrong dimensions for this problem.")
@@ -220,17 +208,5 @@ Backward <- function(bck, pars, t = bck$l-1, nthreads = parallel::detectCores(lo
     stop("Cannot move from beta-theta space to beta space without moving at least one locus.")
   }
 
-  if(is.matrix(pars$pars$Pi)) {
-    if(length(pars$pars$mu) == 1) {
-      Backward_densePi_scalarmu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
-    } else {
-      Backward_densePi_densemu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
-    }
-  } else {
-    if(length(pars$pars$mu) == 1) {
-      Backward_scalarPi_scalarmu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
-    } else {
-      Backward_scalarPi_densemu_cpp(bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads)
-    }
-  }
+  invisible(.Call(CCall_Backward, bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads))
 }

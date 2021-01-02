@@ -51,18 +51,18 @@ Now that \code{fwd} and \code{bck} are at the same locus, they can be combined t
 ```{r}
 
 #p <- PostProbs(fwd,bck)
-M <- DistMat(fwd,bck)
+#M <- DistMat(fwd,bck)
 
 ```
 
 The distance matrix can be easily clustered and visualized just by calling 
 
 ```{r, results='asis'}
-plot(M)
+#plot(M)
 ```
 
 In some applications, one might want to symmetrize the matrix before plotting as follows.  
 ```{r, results='asis'}
-M <- 0.5*(M + t(M))
-plot(M)
+#M <- 0.5*(M + t(M))
+#plot(M)
 ```

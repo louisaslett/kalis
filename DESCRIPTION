@@ -1,7 +1,7 @@
 Package: kalis
 Type: Package
 Title: High Performance Li & Stephens Local Ancestry Inference
-Version: 0.9.6
+Version: 0.9.8
 Authors@R: c(person("Louis", "Aslett", role = c("aut", "cre"),
                     email = "louis.aslett@durham.ac.uk"),
              person("Ryan", "Christ", role = "aut",
@@ -27,7 +27,6 @@ Imports:
     methods,
     stats,
     parallel,
-    Rcpp (>= 0.12.19),
     dplyr,
     stringr,
     glue (>= 1.3.0),
@@ -38,10 +37,6 @@ Imports:
     lattice,
     RColorBrewer,
     lobstr
-LinkingTo:
-    Rcpp
-SystemRequirements:
-    C++11
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Suggests: rhdf5,

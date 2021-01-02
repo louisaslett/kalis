@@ -287,5 +287,5 @@ print.kalisParameters <- function(x, ...) {
   cat(glue("Parameters object with:\n",
            "{'  '}rho   = ({glue_collapse(head(x$pars$rho, 3), ', ')}, ..., {glue_collapse(tail(x$pars$rho, 3), ', ')})\n",
            "{'  '}mu    = {mu}\n",
-           "{'  '}Pi    = {Pi}"))
+           "{'  '}Pi    = {Pi}"), "\n")
 }

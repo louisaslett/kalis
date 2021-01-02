@@ -1,5 +1,4 @@
-CXX_STD = CXX11
-PKG_CXXFLAGS=@cflags@ -fno-strict-aliasing
+PKG_CFLAGS=@cflags@
 PKG_LIBS=@libs@
 
 all: $(SHLIB)

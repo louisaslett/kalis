@@ -61,9 +61,10 @@ CacheHaplotypes.matrix <- function(x, loci.idx, hap.idx, transpose = FALSE) {
     L <- dim(x)[2]
   }
   assign("N", as.integer(N), envir = pkgVars)
+  assign("L", as.integer(L), envir = pkgVars)
   assign("hap.ids", as.integer(1:N), envir = pkgVars)
   assign("loci.ids", as.integer(1:L), envir = pkgVars)
 
   # Cache it!
-  assign("L", as.integer(CacheHaplotypes_matrix_2(x, N, L, transpose)), envir = pkgVars)
+  .Call(CCall_CacheHaplotypes_matrix_2, x, N, L, transpose)
 }
