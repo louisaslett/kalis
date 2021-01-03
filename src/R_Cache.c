@@ -51,8 +51,14 @@ SEXP CacheHaplotypes_matrix_2(SEXP Rx, SEXP RN, SEXP RL, SEXP Rtranspose) {
   //   (size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE ints worth of space in total
   // The size is 4 bytes times #ints, ie align to 4*KALIS_INTVEC_SIZE
   // aligned_alloc is newer, but posix_memalign supported on older platforms (and older MacOS)
-  if(posix_memalign((void**) &hap_data, 4*KALIS_INTVEC_SIZE, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE)*sizeof(uint32_t)) != 0) {
-    REprintf("Error: Unable to assign aligned memory for cache storage\n");
+  size_t alignment = 4*KALIS_INTVEC_SIZE;
+  while(alignment < sizeof(void*)) { // POSIX alignment must be at least sizeof(void*)
+    alignment *= 2;
+  }
+  //REprintf("Alignment: %d\n", alignment);
+  int err = posix_memalign((void**) &hap_data, alignment, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE)*sizeof(uint32_t));
+  if(err != 0) {
+    REprintf("Error: Unable to assign aligned memory for cache storage (err # %d)\n", err);
     ClearHaplotypeCache2();
     KALIS_RETURN;
   }
@@ -100,8 +106,14 @@ SEXP CacheHaplotypes_hdf5_2(SEXP Rnexthaps, SEXP Rnexthapsenv, SEXP RN, SEXP RL)
   //   (size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE ints worth of space in total
   // The size is 4 bytes times #ints, ie align to 4*KALIS_INTVEC_SIZE
   // aligned_alloc is newer, but posix_memalign supported on older platforms (and older MacOS)
-  if(posix_memalign((void**) &hap_data, 4*KALIS_INTVEC_SIZE, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE)*sizeof(uint32_t)) != 0) {
-    REprintf("Error: Unable to assign aligned memory for cache storage\n");
+  size_t alignment = 4*KALIS_INTVEC_SIZE;
+  while(alignment < sizeof(void*)) { // POSIX alignment must be at least sizeof(void*)
+    alignment *= 2;
+  }
+  //REprintf("Alignment: %d\n", alignment);
+  int err = posix_memalign((void**) &hap_data, alignment, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE)*sizeof(uint32_t));
+  if(err != 0) {
+    REprintf("Error: Unable to assign aligned memory for cache storage (err # %d)\n", err);
     ClearHaplotypeCache2();
     KALIS_RETURN;
   }
@@ -236,8 +248,14 @@ SEXP CacheHaplotypes_hapgz_2(SEXP Rfile, SEXP Rloci_idx, SEXP Rhap_idx, SEXP RL,
   //   (size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE ints worth of space in total
   // The size is 4 bytes times #ints, ie align to 4*KALIS_INTVEC_SIZE
   // aligned_alloc is newer, but posix_memalign supported on older platforms (and older MacOS)
-  if(posix_memalign((void**) &hap_data, 4*KALIS_INTVEC_SIZE, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE)*sizeof(uint32_t)) != 0) {
-    REprintf("Error: Unable to assign aligned memory for cache storage\n");
+  size_t alignment = 4*KALIS_INTVEC_SIZE;
+  while(alignment < sizeof(void*)) { // POSIX alignment must be at least sizeof(void*)
+    alignment *= 2;
+  }
+  //REprintf("Alignment: %d\n", alignment);
+  int err = posix_memalign((void**) &hap_data, alignment, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE)*sizeof(uint32_t));
+  if(err != 0) {
+    REprintf("Error: Unable to assign aligned memory for cache storage (err # %d)\n", err);
     ClearHaplotypeCache2();
     gzclose(fd);
     KALIS_RETURN;
