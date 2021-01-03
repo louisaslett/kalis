@@ -89,7 +89,7 @@ void* FWD_RAW_FN(OS_FN,SP_FN,MU_FN,PI_FN)(void *args) {
   fold    = &(alpha_f[0]);
 
 #if KALIS_PI == PI_SCALAR
-  double *const restrict PiRow = (double*) malloc(sizeof(double)*N);
+  double PiRow[N];
   for(size_t i=0; i<N; i++) {
     PiRow[i] = Pi;
   }
@@ -108,7 +108,7 @@ void* FWD_RAW_FN(OS_FN,SP_FN,MU_FN,PI_FN)(void *args) {
       for(size_t donor=0; donor<N; ++donor) {
         int32_t donor_hap = (hap_locus[0][donor/32] >> donor%32) & 1;
 #ifdef KALIS_SPEIDEL
-        int32_t H = (recipient_hap & ~donor_hap) & 1;
+        int32_t H = (recipient_hap | donor_hap) & 1;
 #else
         int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
@@ -194,7 +194,7 @@ void* FWD_RAW_FN(OS_FN,SP_FN,MU_FN,PI_FN)(void *args) {
 #if !defined(KALIS_1STEP)
         // Load next 256 donors and XOR or ANDNOT with recipients
 #ifdef KALIS_SPEIDEL
-        KALIS_INT32 _HA = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+        KALIS_INT32 _HA = KALIS_OR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #else
         KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
@@ -215,13 +215,15 @@ void* FWD_RAW_FN(OS_FN,SP_FN,MU_FN,PI_FN)(void *args) {
 #if !defined(KALIS_1STEP)
         int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
-        int32_t H = (recipient_hap & ~donor_hap) & 1;
+        int32_t H = (recipient_hap | donor_hap) & 1;
 #else
         int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
 #endif
         const size_t donornum = (N/(32*KALIS_INTVEC_SIZE))*(32*KALIS_INTVEC_SIZE)+donor;
 
+        if(donor<3 && recipient==0)
+          printf("%a\n", PiRow[donornum] * rho[l-1]);
 #if !defined(KALIS_1STEP)
         f += alphaRow[donornum] = (H * muTmp1 + muTmp2) * (PiRow[donornum] * rho[l-1] + omRhoDivF * alphaRow[donornum]);
 #elif defined(KALIS_1STEP)
@@ -242,10 +244,6 @@ void* FWD_RAW_FN(OS_FN,SP_FN,MU_FN,PI_FN)(void *args) {
     PiRow[recipient] = Pi;
 #endif
   }
-
-#if KALIS_PI == PI_SCALAR
-  free(PiRow);
-#endif
 
   return(NULL);
 }

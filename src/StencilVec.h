@@ -26,7 +26,7 @@
 { __m256i mask = _mm256_set1_epi32(-1);                          \
   _mm256_maskstore_epi32(X, mask, Y); }
 #define KALIS_XOR_INT(X, Y) _mm256_xor_si256(X, Y)
-#define KALIS_ANDNOT_INT(X, Y) _mm256_andnot_si256(Y, X)
+#define KALIS_OR_INT(X, Y) _mm256_or_si256(X, Y)
 #define KALIS_LOADU_DOUBLE(X) _mm256_loadu_pd(X)
 #define KALIS_STOREU_DOUBLE(X, Y) _mm256_storeu_pd(X, Y)
 #define KALIS_ADD_DOUBLE(X, Y) _mm256_add_pd(X, Y)
@@ -51,7 +51,8 @@
 #define KALIS_STORE_INT_VEC(X, Y)                              \
 TODO!
 #define KALIS_XOR_INT(X, Y) veorq_s32(X, Y)
-#define KALIS_ANDNOT_INT(X, Y) vandq_s32(X, vmvnq_s32(Y))
+#define KALIS_OR_INT(X, Y)                                 \
+TODO!
 #define KALIS_LOADU_DOUBLE(X) vld1q_f64((float64_t const *) X)
 #define KALIS_STOREU_DOUBLE(X, Y) vst1q_f64((float64_t*) X, Y)
 #define KALIS_ADD_DOUBLE(X, Y) vaddq_f64(X, Y)
@@ -74,7 +75,7 @@ TODO!
 #define KALIS_LOAD_INT_VEC(X) (X)
 #define KALIS_STORE_INT_VEC(X, Y) *(X) = (Y);
 #define KALIS_XOR_INT(X, Y) (X) ^ (Y)
-#define KALIS_ANDNOT_INT(X, Y) (X) & ~(Y)
+#define KALIS_OR_INT(X, Y) (X) | (Y)
 #define KALIS_LOADU_DOUBLE(X) *(X)
 #define KALIS_STOREU_DOUBLE(X, Y) *(X) = (Y)
 #define KALIS_ADD_DOUBLE(X, Y) (X) + (Y)

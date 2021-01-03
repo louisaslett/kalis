@@ -87,7 +87,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
   gold    = &(beta_g[0]);
 
 #if KALIS_PI == PI_SCALAR
-  double *const restrict PiRow = (double*) malloc(sizeof(double)*N);
+  double PiRow[N];
   for(size_t i=0; i<N; i++) {
     PiRow[i] = Pi;
   }
@@ -106,7 +106,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
       for(size_t donor=0; donor<N; ++donor) {
         int32_t donor_hap = (hap_locus[l][donor/32] >> donor%32) & 1;
 #ifdef KALIS_SPEIDEL
-        int32_t H = (recipient_hap & ~donor_hap) & 1;
+        int32_t H = (recipient_hap | donor_hap) & 1;
 #else
         int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
@@ -188,7 +188,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
       for(size_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
         // Load next 256 donors and XOR/ANDNOT with recipients
 #ifdef KALIS_SPEIDEL
-        KALIS_INT32 _HA = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+        KALIS_INT32 _HA = KALIS_OR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #else
         KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
@@ -205,7 +205,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
       for(size_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
         int32_t donor_hapA = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
-        int32_t HA = (recipient_hap & ~donor_hapA) & 1;
+        int32_t HA = (recipient_hap | donor_hapA) & 1;
 #else
         int32_t HA = (recipient_hap ^ donor_hapA) & 1;
 #endif
@@ -288,8 +288,8 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
         for(size_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
           // Load next 256 donors and XOR/ANDNOT with recipients
 #ifdef KALIS_SPEIDEL
-          KALIS_INT32 _HA = KALIS_ANDNOT_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
-          KALIS_INT32 _HB = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+          KALIS_INT32 _HA = KALIS_OR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
+          KALIS_INT32 _HB = KALIS_OR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #else
           KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
           KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
@@ -308,7 +308,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
         for(size_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
           int32_t donor_hap = (hap_locus[l+1][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
-          int32_t H = (recipient_hap_prev & ~donor_hap) & 1;
+          int32_t H = (recipient_hap_prev | donor_hap) & 1;
 #else
           int32_t H = (recipient_hap_prev ^ donor_hap) & 1;
 #endif
@@ -323,7 +323,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
 
           donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
-          H = (recipient_hap & ~donor_hap) & 1;
+          H = (recipient_hap | donor_hap) & 1;
 #else
           H = (recipient_hap ^ donor_hap) & 1;
 #endif
@@ -405,7 +405,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
           for(size_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
             // Load next 256 donors and XOR/ANDNOT with recipients
 #ifdef KALIS_SPEIDEL
-            KALIS_INT32 _HB = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+            KALIS_INT32 _HB = KALIS_OR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #else
             KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
@@ -422,7 +422,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
           for(size_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
             int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
-            int32_t H = (recipient_hap & ~donor_hap) & 1;
+            int32_t H = (recipient_hap | donor_hap) & 1;
 #else
             int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
@@ -467,8 +467,8 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
           for(size_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
             // Load next 256 donors and XOR/ANDNOT with recipients
 #ifdef KALIS_SPEIDEL
-            KALIS_INT32 _HA = KALIS_ANDNOT_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
-            KALIS_INT32 _HB = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+            KALIS_INT32 _HA = KALIS_OR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
+            KALIS_INT32 _HB = KALIS_OR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #else
             KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
             KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
@@ -488,8 +488,8 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
             int32_t donor_hapA = (hap_locus[l+1][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
             int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
-            int32_t HA = (recipient_hap_prev & ~donor_hapA) & 1;
-            int32_t H  = (recipient_hap & ~donor_hap) & 1;
+            int32_t HA = (recipient_hap_prev | donor_hapA) & 1;
+            int32_t H  = (recipient_hap | donor_hap) & 1;
 #else
             int32_t HA = (recipient_hap_prev ^ donor_hapA) & 1;
             int32_t H  = (recipient_hap ^ donor_hap) & 1;
@@ -530,7 +530,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
           for(size_t donoroff=0; donoroff<N/(32*KALIS_INTVEC_SIZE); ++donoroff) {
             // Load next 256 donors and XOR/ANDNOT with recipients
 #ifdef KALIS_SPEIDEL
-            KALIS_INT32 _HB = KALIS_ANDNOT_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
+            KALIS_INT32 _HB = KALIS_OR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #else
             KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
@@ -547,7 +547,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
           for(size_t donor=0; donor<N%(32*KALIS_INTVEC_SIZE); ++donor) {
             int32_t donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
-            int32_t H = (recipient_hap & ~donor_hap) & 1;
+            int32_t H = (recipient_hap | donor_hap) & 1;
 #else
             int32_t H = (recipient_hap ^ donor_hap) & 1;
 #endif
@@ -583,10 +583,6 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
 #endif
     }
   }
-
-#if KALIS_PI == PI_SCALAR
-  free(PiRow);
-#endif
 
   return(NULL);
 }
