@@ -198,9 +198,8 @@ void* FWD_RAW_FN(OS_FN,SP_FN,MU_FN,PI_FN)(void *args) {
 #else
         KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
-        int HA[8];
-        __m256i mask = _mm256_set1_epi32(-1);
-        _mm256_maskstore_epi32(HA, mask, _HA);
+        int32_t HA[KALIS_INTVEC_SIZE];
+        KALIS_STORE_INT_VEC(HA, _HA);
 #endif
 
         // __asm volatile("# LLVM-MCA-BEGIN");

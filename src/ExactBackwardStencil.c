@@ -192,9 +192,8 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
 #else
         KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
-        int HA[8];
-        __m256i mask = _mm256_set1_epi32(-1);
-        _mm256_maskstore_epi32(HA, mask, _HA);
+        int32_t HA[KALIS_INTVEC_SIZE];
+        KALIS_STORE_INT_VEC(HA, _HA);
 
         for(size_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
           // IACA_START
@@ -295,10 +294,9 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
           KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
           KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
-          int HA[8], HB[8];
-          __m256i mask = _mm256_set1_epi32(-1);
-          _mm256_maskstore_epi32(HA, mask, _HA);
-          _mm256_maskstore_epi32(HB, mask, _HB);
+          int32_t HA[KALIS_INTVEC_SIZE], HB[KALIS_INTVEC_SIZE];
+          KALIS_STORE_INT_VEC(HA, _HA);
+          KALIS_STORE_INT_VEC(HB, _HB);
 
           for(size_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
             // IACA_START
@@ -411,9 +409,8 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
 #else
             KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
-            int HB[8];
-            __m256i mask = _mm256_set1_epi32(-1);
-            _mm256_maskstore_epi32(HB, mask, _HB);
+            int32_t HB[KALIS_INTVEC_SIZE];
+            KALIS_STORE_INT_VEC(HB, _HB);
 
             for(size_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
               // IACA_START
@@ -476,10 +473,9 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
             KALIS_INT32 _HA = KALIS_XOR_INT(_recipient_hap_prev, KALIS_LOAD_INT_VEC(hap_locus[l+1][donoroff*KALIS_INTVEC_SIZE]));
             KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
-            int HA[8], HB[8];
-            __m256i mask = _mm256_set1_epi32(-1);
-            _mm256_maskstore_epi32(HA, mask, _HA);
-            _mm256_maskstore_epi32(HB, mask, _HB);
+            int32_t HA[KALIS_INTVEC_SIZE], HB[KALIS_INTVEC_SIZE];
+            KALIS_STORE_INT_VEC(HA, _HA);
+            KALIS_STORE_INT_VEC(HB, _HB);
 
             for(size_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
               // IACA_START
@@ -538,9 +534,8 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
 #else
             KALIS_INT32 _HB = KALIS_XOR_INT(_recipient_hap, KALIS_LOAD_INT_VEC(hap_locus[l][donoroff*KALIS_INTVEC_SIZE]));
 #endif
-            int HB[8];
-            __m256i mask = _mm256_set1_epi32(-1);
-            _mm256_maskstore_epi32(HB, mask, _HB);
+            int32_t HB[KALIS_INTVEC_SIZE];
+            KALIS_STORE_INT_VEC(HB, _HB);
 
             for(size_t donor=0; donor<((32*KALIS_INTVEC_SIZE)/KALIS_DOUBLEVEC_SIZE)/KALIS_UNROLL; ++donor) {
               // IACA_START
