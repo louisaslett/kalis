@@ -110,21 +110,9 @@ MakeForwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   }
   from_recipient <- as.integer(from_recipient)
   to_recipient <- as.integer(to_recipient)
-  delN <- to_recipient-from_recipient+1
 
-  fwd <- list()
-
-  # Define core table, duplicating where relevant to ensure unique to this forward table
-  fwd$alpha          <- duplicate(matrix(0, N, delN))
-  fwd$alpha.f        <- duplicate(rep(0, delN))
-  fwd$l              <- duplicate(c(2147483647L))
-  fwd$from_recipient <- duplicate(from_recipient)
-  fwd$to_recipient   <- duplicate(to_recipient)
-  fwd$pars.sha256    <- duplicate(pars$sha256)
-
-  class(fwd) <- c("kalisForwardTable", class(fwd))
-
-  fwd
+  # Create table in C to ensure new memory allocated and no references where not wanted
+  .Call(CCall_MakeForwardTable, from_recipient, to_recipient, pars$sha256)
 }
 
 
@@ -263,22 +251,9 @@ MakeBackwardTable <- function(pars, from_recipient = 1, to_recipient = Inf) {
   }
   from_recipient <- as.integer(from_recipient)
   to_recipient <- as.integer(to_recipient)
-  delN <- to_recipient-from_recipient+1
 
-  bck <- list()
-
-  # Define core table, duplicating where relevant to ensure unique to this forward table
-  bck$beta           <- duplicate(matrix(0, N, delN))
-  bck$beta.g         <- duplicate(rep(0, delN))
-  bck$l              <- duplicate(c(2147483647L))
-  bck$from_recipient <- duplicate(from_recipient)
-  bck$to_recipient   <- duplicate(to_recipient)
-  bck$pars.sha256    <- duplicate(pars$sha256)
-  bck$beta.theta     <- duplicate(FALSE)
-
-  class(bck) <- c("kalisBackwardTable", class(bck))
-
-  bck
+  # Create table in C to ensure new memory allocated and no references where not wanted
+  .Call(CCall_MakeBackwardTable, from_recipient, to_recipient, pars$sha256)
 }
 
 #' @export

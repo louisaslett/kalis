@@ -5,6 +5,7 @@
 #include "R_ComputeStatus.h"
 #include "R_Forward.h"
 #include "R_TableCache.h"
+#include "R_TableMaker.h"
 
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
@@ -23,6 +24,8 @@ static const R_CallMethodDef callMethods[] = {
   CALLDEF(ResetForwardTable, 1),
   CALLDEF(Forward, 8),
   CALLDEF(CopyFBTable, 2),
+  CALLDEF(MakeForwardTable, 3),
+  CALLDEF(MakeBackwardTable, 3),
   { NULL, NULL, 0 }
 };
 
