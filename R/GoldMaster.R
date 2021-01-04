@@ -139,7 +139,7 @@ Exact_Backward_GMmatLS_R_speidel <- function(t, L, N, H, Pi, mu, rho) {
 
   l <- L
 
-  indH <- 1-outer(1-H[,l], H[,l], "*"); diag(indH) <- 0
+  indH <- outer(1-H[,l], H[,l], "|"); diag(indH) <- 0
   theta <- indH * (1-mu[l])
   indH <- 1-indH; diag(indH) <- 0
   theta <- theta + indH * mu[l]
@@ -154,7 +154,7 @@ Exact_Backward_GMmatLS_R_speidel <- function(t, L, N, H, Pi, mu, rho) {
     beta.new <- log(1.0 + (1-rho[l])*theta*exp(beta.old+g)) - g
     diag(beta.new) <- -g
 
-    indH <- 1-outer(1-H[,l], H[,l], "*"); diag(indH) <- 0
+    indH <- outer(1-H[,l], H[,l], "|"); diag(indH) <- 0
     theta <- indH * (1-mu[l])
     indH <- 1-indH; diag(indH) <- 0
     theta <- theta + indH * mu[l]
@@ -175,7 +175,7 @@ Exact_Forward_GMmatLS_R_speidel <- function(t, L, N, H, Pi, mu, rho) {
 
   l <- 1
 
-  indH <- 1-outer(1-H[,l], H[,l], "*"); diag(indH) <- 0
+  indH <- outer(1-H[,l], H[,l], "|"); diag(indH) <- 0
   theta <- indH * (1-mu[l])
   indH <- 1-indH; diag(indH) <- 0
   theta <- theta + indH * mu[l]
@@ -187,7 +187,7 @@ Exact_Forward_GMmatLS_R_speidel <- function(t, L, N, H, Pi, mu, rho) {
   while(l<t) {
     l <- l+1
 
-    indH <- 1-outer(1-H[,l], H[,l], "*"); diag(indH) <- 0
+    indH <- outer(1-H[,l], H[,l], "|"); diag(indH) <- 0
     theta <- indH * (1-mu[l])
     indH <- 1-indH; diag(indH) <- 0
     theta <- theta + indH * mu[l]
