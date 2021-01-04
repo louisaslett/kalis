@@ -10,7 +10,7 @@ SEXP MakeForwardTable(SEXP Rfrom_r, SEXP Rto_r, SEXP Rpars_sha) {
     REprintf("Error: Cache is empty.\n");
     KALIS_RETURN;
   }
-  if(INTEGER(Rfrom_r)[0] > num_inds || INTEGER(Rto_r)[0] > num_inds || INTEGER(Rfrom_r)[0] > INTEGER(Rto_r)[0]) {
+  if((size_t) INTEGER(Rfrom_r)[0] > num_inds || (size_t) INTEGER(Rto_r)[0] > num_inds || INTEGER(Rfrom_r)[0] > INTEGER(Rto_r)[0]) {
     REprintf("Error: Invalid from/to receipient arguments.\n");
     KALIS_RETURN;
   }
@@ -43,7 +43,7 @@ SEXP MakeBackwardTable(SEXP Rfrom_r, SEXP Rto_r, SEXP Rpars_sha) {
     REprintf("Error: Cache is empty.\n");
     KALIS_RETURN;
   }
-  if(INTEGER(Rfrom_r)[0] > num_inds || INTEGER(Rto_r)[0] > num_inds || INTEGER(Rfrom_r)[0] > INTEGER(Rto_r)[0]) {
+  if((size_t) INTEGER(Rfrom_r)[0] > num_inds || (size_t) INTEGER(Rto_r)[0] > num_inds || INTEGER(Rfrom_r)[0] > INTEGER(Rto_r)[0]) {
     REprintf("Error: Invalid from/to receipient arguments.\n");
     KALIS_RETURN;
   }

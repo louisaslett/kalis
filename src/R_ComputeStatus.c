@@ -18,14 +18,16 @@ SEXP ComputeStatus() {
     "\nRunning on unknown architecture.\n"
 #endif
     "Loops unrolled to depth " STRINGIFY_MACRO(KALIS_UNROLL) ".\n"
-#if !defined(KALIS_NOASM) && defined(__SSE2__) && defined(__SSE4_1__) && defined(__AVX__) && defined(__AVX2__) && defined(__FMA__) && defined(__BMI2__)
-    "Currently using SSE2, SSE4.1, AVX, AVX2, FMA and BMI2 CPU instruction set extensions.\n"
-#elif !defined(KALIS_NOASM) && defined(__ARM_NEON) && defined(__ARM_FEATURE_FMA)
+#if defined(KALIS_ISA_AVX512)
+    "Currently using AVX-512, AVX2, SSE2 and BMI2 CPU instruction set extensions.\n"
+#elif defined(KALIS_ISA_AVX2)
+    "Currently using AVX2, AVX, SSE4.1, SSE2, FMA and BMI2 CPU instruction set extensions.\n"
+#elif defined(KALIS_ISA_NEON)
     "Currently using ARM NEON and NEON FMA CPU instruction set extensions.\n"
 #else
     "\nCurrently not using any special instruction sets (WARNING: poor performance likely).\n"
-    "If this is unexpected (e.g. your CPU is Intel Haswell or newer architecture), then ensure that you are targeting the native architecture in compilation.  The easiest method is to add/change the following line in ~/.R/Makevars\n"
-    "CXX11FLAGS=-march=native -mtune=native -O3\n"
+    "If this is unexpected (e.g. your CPU is Intel Haswell or newer architecture, or ARMv7+ with NEON support), then ensure that you are targeting the native architecture in compilation.  The easiest method is to add/change the following line in ~/.R/Makevars\n"
+    "CFLAGS=-march=native -mtune=native -O3\n"
 #endif
   ;
   SET_STRING_ELT(res, 0, Rf_mkChar(status));

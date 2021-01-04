@@ -7,11 +7,11 @@
 
 
 
-#if defined(KALIS_IMMINTRIN_H)
+#if defined(KALIS_ISA_AVX512) || defined(KALIS_ISA_AVX2)
 #include <immintrin.h>
 #endif
 
-#if defined(KALIS_ARM_NEON_H)
+#if defined(KALIS_ISA_NEON)
 #include <arm_neon.h>
 #endif
 
@@ -222,8 +222,6 @@ void* FWD_RAW_FN(OS_FN,SP_FN,MU_FN,PI_FN)(void *args) {
 #endif
         const size_t donornum = (N/(32*KALIS_INTVEC_SIZE))*(32*KALIS_INTVEC_SIZE)+donor;
 
-        if(donor<3 && recipient==0)
-          printf("%a\n", PiRow[donornum] * rho[l-1]);
 #if !defined(KALIS_1STEP)
         f += alphaRow[donornum] = (H * muTmp1 + muTmp2) * (PiRow[donornum] * rho[l-1] + omRhoDivF * alphaRow[donornum]);
 #elif defined(KALIS_1STEP)
@@ -232,10 +230,7 @@ void* FWD_RAW_FN(OS_FN,SP_FN,MU_FN,PI_FN)(void *args) {
       }
 
       // Accumulate row sum into f
-      KALIS_HSUM_DOUBLE(_f);
-      f += ((double*)&_f)[0];
-      //_f = _mm256_hadd_pd(_f, _f);
-      //f += ((double*)&_f)[0] + ((double*)&_f)[2];
+      KALIS_HSUM_DOUBLE(f, _f);
 
       fold[recipient_alpha] = f;
     }
@@ -264,13 +259,20 @@ void FWD_FN(OS_FN,SP_FN,MU_FN,PI_FN)(double *const restrict alpha,
                                const double *const restrict rho,
                                const int *const restrict nthreads,
                                const int nthreads_len) {
-  int numthreads, affinity;
+  int numthreads;
+#if defined(KALIS_AFFINITY)
+  int affinity;
+#endif
   if(nthreads_len > 1) {
     numthreads = nthreads_len;
+#if defined(KALIS_AFFINITY)
     affinity = 1;
+#endif
   } else {
     numthreads = *nthreads;
+#if defined(KALIS_AFFINITY)
     affinity = 0;
+#endif
   }
 
   struct FWD_CORE_ARGS(OS_FN,SP_FN,MU_FN,PI_FN) fwd_core_args = {

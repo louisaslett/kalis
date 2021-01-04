@@ -36,7 +36,7 @@ echo "Using PKG_CFLAGS=$PKG_CFLAGS"
 echo "Using PKG_LIBS=$PKG_LIBS"
 
 # Test configuration
-echo "#include $PKG_TEST_HEADER" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1 || R_CONFIG_ERROR=1;
+echo "#include $PKG_TEST_HEADER" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -E -xc - >/dev/null 2>&1 || R_CONFIG_ERROR=1;
 
 # Customize the error
 if [ $R_CONFIG_ERROR ]; then
@@ -53,36 +53,103 @@ if [ $R_CONFIG_ERROR ]; then
   exit 1;
 fi
 
-# Check if we're on an x86 system with intrinsics
-echo "#include <immintrin.h>" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-  PKG_CFLAGS="$PKG_CFLAGS -DKALIS_IMMINTRIN_H"
+# Check combinations of intrinsics flags
+counter=0
+intrinsics=""
+[[ ! -z ${NOASM+isset} ]] && ((counter+=1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_NOASM" && intrinsics="No special assembly"
+[[ ! -z ${AVX512+isset} ]] && ((counter+=1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_AVX512" && intrinsics="AVX-512 family of"
+[[ ! -z ${AVX2+isset} ]] && ((counter+=1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_AVX2" && intrinsics="AVX2 family of"
+[[ ! -z ${NEON+isset} ]] && ((counter+=1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_NEON" && intrinsics="NEON family of"
+# Were zero/one options chosen?
+if ((counter > 1)); then
+  echo "ERROR: At most one set of instructions can be specified (NOASM, AVX512, AVX2 or NEON)"
+  exit 1
+fi
+# Was an option forced?
+if ((counter == 1)); then
+  echo "$intrinsics instruction set extentions will by used (forced by user)."
+fi
+# If no option force by user, then attempt to auto-detect
+if ((counter == 0)); then
+
+  intrindetected=0
+
+  # Check if we're on an x86 system with AVX-512 family ISA
+  intrin=0
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__AVX512F__" > /dev/null
+  intrin=$((intrin+$?))
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__AVX2__" > /dev/null
+  intrin=$((intrin+$?))
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__SSE2__" > /dev/null
+  intrin=$((intrin+$?))
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__BMI2__" > /dev/null
+  intrin=$((intrin+$?))
+  echo "#include <immintrin.h>" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -E -xc - >/dev/null 2>&1
+  intrin=$((intrin+$?))
+  if ((intrindetected == 0 && intrin == 0)); then
+    PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_AVX512"
+    intrinsics="AVX-512 family of"
+    intrindetected=1
+  fi
+
+  # Check if we're on an x86 system with AVX2 family ISA
+  intrin=0
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__AVX2__" > /dev/null
+  intrin=$((intrin+$?))
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__AVX__" > /dev/null
+  intrin=$((intrin+$?))
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__SSE4_1__" > /dev/null
+  intrin=$((intrin+$?))
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__SSE2__" > /dev/null
+  intrin=$((intrin+$?))
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__FMA__" > /dev/null
+  intrin=$((intrin+$?))
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__BMI2__" > /dev/null
+  intrin=$((intrin+$?))
+  echo "#include <immintrin.h>" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -E -xc - >/dev/null 2>&1
+  intrin=$((intrin+$?))
+  if ((intrindetected == 0 && intrin == 0)); then
+    PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_AVX2"
+    intrinsics="AVX2 family of"
+    intrindetected=1
+  fi
+
+  # Check if we're on an ARM system with NEON intrinsics
+  intrin=0
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__ARM_NEON" > /dev/null
+  intrin=$((intrin+$?))
+  ${CC} ${PKG_CFLAGS} ${CFLAGS} -dM -E - < /dev/null | grep "__ARM_FEATURE_FMA" > /dev/null
+  intrin=$((intrin+$?))
+  echo "#include <arm_neon.h>" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -E -xc - >/dev/null 2>&1
+  intrin=$((intrin+$?))
+  if ((intrindetected == 0 && intrin == 0)); then
+    PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_NEON"
+    intrinsics="NEON family of"
+    intrindetected=1
+  fi
+
+  if ((intrindetected == 0)); then
+    PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_NOASM"
+    intrinsics="No special assembly"
+  fi
+
+  echo "$intrinsics instruction set extentions will by used (auto-detected)."
 fi
 
-# Check if we're on an ARM system with intrinsics
-echo "#include <arm_neon.h>" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>&1
+# Check if we have access to pthreads (checking functions and headers, so no -E on compiler)
+echo -e "#define _GNU_SOURCE\n#include <pthread.h>\nmain() { pthread_t threads[2]; pthread_attr_t attr; pthread_attr_init(&attr); pthread_create(&threads[0], &attr, NULL, NULL); }" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -pthread -xc - >/dev/null 2>&1
 if [ $? -eq 0 ]; then
-  PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ARM_NEON_H"
-fi
-
-# To disable using assembly intrinsics even when available
-if [ "$NOASM" ]; then
-  PKG_CFLAGS="$PKG_CFLAGS -DKALIS_NOASM"
-  echo "Assembly intrinsics disabled by NOASM configure-vars flag"
-else
-  echo "Assembly intrinsics will be used if available"
-fi
-
-# Check if we have access to pthreads
-# NB: MacOS has pthreads but not pthread_setaffinity_np, so we need to check for functions not just header (drop -E on compiler)
-echo -e "#define _GNU_SOURCE\n#include <pthread.h>\nmain() { cpu_set_t cpus; CPU_ZERO(&cpus); CPU_SET(1, &cpus); pthread_setaffinity_np(0,0,0); }" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -pthread -xc - >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-  PKG_CFLAGS="$PKG_CFLAGS -DKALIS_AFFINITY -pthread"
+  PKG_CFLAGS="$PKG_CFLAGS -pthread"
   PKG_LIBS="$PKG_LIBS -lpthread -pthread"
+fi
+# NB: MacOS has pthreads but not pthread_setaffinity_np
+echo -e "#define _GNU_SOURCE\n#include <pthread.h>\nmain() { cpu_set_t cpus; CPU_ZERO(&cpus); CPU_SET(1, &cpus); pthread_setaffinity_np(0,0,0); }" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -pthread -xc - >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+  PKG_CFLAGS="$PKG_CFLAGS -DKALIS_AFFINITY"
 fi
 
 # To customise unroll depth
-if [ "$UNROLL" ]; then
+if [ ! -z ${UNROLL+isset} ]; then
   PKG_CFLAGS="$PKG_CFLAGS -DKALIS_UNROLL=$UNROLL"
   echo "Loop unrolling default overridden by UNROLL configure-vars flag to depth $UNROLL"
 else

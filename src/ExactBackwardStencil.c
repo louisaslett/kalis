@@ -7,11 +7,11 @@
 
 
 
-#if defined(KALIS_IMMINTRIN_H)
+#if defined(KALIS_ISA_AVX512) || defined(KALIS_ISA_AVX2)
 #include <immintrin.h>
 #endif
 
-#if defined(KALIS_ARM_NEON_H)
+#if defined(KALIS_ISA_NEON)
 #include <arm_neon.h>
 #endif
 
@@ -224,8 +224,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
       betaRow[recipient] = 0.0;
 
       // Accumulate row sum into g
-      KALIS_HSUM_DOUBLE(_g);
-      g += ((double*)&_g)[0];
+      KALIS_HSUM_DOUBLE(g, _g);
 
       gold[recipient_beta] = g;
 
@@ -337,8 +336,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
         betaRow[recipient] = 0.0;
 
         // Accumulate row sum into g
-        KALIS_HSUM_DOUBLE(_g);
-        g += ((double*)&_g)[0];
+        KALIS_HSUM_DOUBLE(g, _g);
 
         gold[recipient_beta] = g;
       }
@@ -572,8 +570,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
         }
 
         // Accumulate row sum into g
-        KALIS_HSUM_DOUBLE(_g);
-        g += ((double*)&_g)[0];
+        KALIS_HSUM_DOUBLE(g, _g);
 
         gold[recipient_beta] = g;
       }
@@ -605,13 +602,20 @@ void BCK_FN(SP_FN,MU_FN,PI_FN)(double *const restrict beta,
                                const double *const restrict rho,
                                const int *const restrict nthreads,
                                const int nthreads_len) {
-  int numthreads, affinity;
+  int numthreads;
+#if defined(KALIS_AFFINITY)
+  int affinity;
+#endif
   if(nthreads_len > 1) {
     numthreads = nthreads_len;
+#if defined(KALIS_AFFINITY)
     affinity = 1;
+#endif
   } else {
     numthreads = *nthreads;
+#if defined(KALIS_AFFINITY)
     affinity = 0;
+#endif
   }
 
   struct BCK_CORE_ARGS(SP_FN,MU_FN,PI_FN) bck_core_args = {
