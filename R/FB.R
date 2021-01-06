@@ -60,12 +60,6 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = parallel::detectCores(log
   if(!("kalisParameters" %in% class(pars))) {
     stop("The pars argument is not a valid parameters object.")
   }
-  maxthreads <- parallel::detectCores()
-  if(!test_integerish(nthreads, lower = 1, upper = maxthreads, any.missing = FALSE, len = 1) &&
-     !test_integerish(nthreads, lower = 0, upper = maxthreads-1, any.missing = FALSE, min.len = 2, unique = TRUE)) {
-    stop("The nthreads argument must either be a single scalar indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run.")
-  }
-  nthreads <- as.integer(nthreads)
   if(fwd$pars.sha256 != pars$sha256) {
     stop("The forward table provided was created with different parameter values (SHA-256 mismatch).")
   }
@@ -81,6 +75,17 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = parallel::detectCores(log
   if(nrow(fwd$alpha) != N || ncol(fwd$alpha) != fwd$to_recipient-fwd$from_recipient+1) {
     stop("Forward table is of the wrong dimensions for this problem.")
   }
+
+  if(identical(nthreads, "R")) {
+    warning("Warning: using gold master R implementation.")
+    return(invisible(Forward.GM(fwd, pars, t)))
+  }
+  maxthreads <- parallel::detectCores()
+  if(!test_integerish(nthreads, lower = 1, upper = maxthreads, any.missing = FALSE, len = 1) &&
+     !test_integerish(nthreads, lower = 0, upper = maxthreads-1, any.missing = FALSE, min.len = 2, unique = TRUE)) {
+    stop("The nthreads argument must either be a single scalar (between 1 and your number of cores) indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run.")
+  }
+  nthreads <- as.integer(nthreads)
 
   invisible(.Call(CCall_Forward, fwd, FALSE, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads))
 }
@@ -180,12 +185,6 @@ Backward <- function(bck, pars, t = bck$l-1, nthreads = parallel::detectCores(lo
   if(!("kalisParameters" %in% class(pars))) {
     stop("The pars argument is not a valid parameters object.")
   }
-  maxthreads <- parallel::detectCores()
-  if(!test_integerish(nthreads, lower = 1, upper = maxthreads, any.missing = FALSE, len = 1) &&
-     !test_integerish(nthreads, lower = 0, upper = maxthreads-1, any.missing = FALSE, min.len = 2, unique = TRUE)) {
-    stop("The nthreads argument must either be a single scalar indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run.")
-  }
-  nthreads <- as.integer(nthreads)
   if(bck$pars.sha256 != pars$sha256) {
     stop("The backward table provided was created with different parameter values (SHA-256 mismatch).")
   }
@@ -207,6 +206,17 @@ Backward <- function(bck, pars, t = bck$l-1, nthreads = parallel::detectCores(lo
   if(t == bck$l && bck$beta.theta && !beta.theta) {
     stop("Cannot move from beta-theta space to beta space without moving at least one locus.")
   }
+
+  if(identical(nthreads, "R")) {
+    warning("Warning: using gold master R implementation (without beta.theta functionality).")
+    return(invisible(Backward.GM(bck, pars, t)))
+  }
+  maxthreads <- parallel::detectCores()
+  if(!test_integerish(nthreads, lower = 1, upper = maxthreads, any.missing = FALSE, len = 1) &&
+     !test_integerish(nthreads, lower = 0, upper = maxthreads-1, any.missing = FALSE, min.len = 2, unique = TRUE)) {
+    stop("The nthreads argument must either be a single scalar (between 1 and your number of cores) indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run.")
+  }
+  nthreads <- as.integer(nthreads)
 
   invisible(.Call(CCall_Backward, bck, beta.theta, t, pars$pars$Pi, pars$pars$mu, pars$pars$rho, pars$pars$use.speidel, nthreads))
 }
