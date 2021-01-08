@@ -8,14 +8,14 @@
 # especially where operations may be reordered in the the high-performance C
 # versions.
 
-Theta.GM <- function(pars,locus){
+Theta.GM <- function(pars,locus,from,to){
   mu <- ifelse(length(pars$pars$mu)>1, pars$pars$mu[locus], pars$pars$mu[1])
 
-  H <- t(QueryCache(loci.idx = locus))
+  H <- c(QueryCache(loci.idx = locus))
   if(pars$pars$use.speidel) {
-    indH <- outer(H[,1], 1-H[,1], "|")*1; diag(indH) <- 0
+    indH <- outer(H, 1-H[from:to], "|")*1; diag(indH[from:to,]) <- 0
   } else {
-    indH <- outer(H[,1], H[,1], "==")*1; diag(indH) <- 0
+    indH <- outer(H, H[from:to], "==")*1; diag(indH[from:to,]) <- 0
   }
 
   theta <- indH*(1-2*mu) + mu
@@ -27,16 +27,22 @@ Forward.GM <- function(fwd, pars, t) {
   CopyTable(res, fwd)
   res$l = ifelse(fwd$l > L(), 0L, fwd$l)
 
+  if(is.matrix(pars$pars$Pi)) {
+    Pi <- pars$pars$Pi[,fwd$from_recipient:fwd$to_recipient]
+  } else {
+    Pi <- pars$pars$Pi
+  }
+
   while(res$l < t) {
     res$l <- res$l+1L
 
     if(res$l == 1) {
-      res$alpha <- Theta.GM(pars,res$l) * pars$pars$Pi
+      res$alpha <- Theta.GM(pars,res$l, fwd$from_recipient, fwd$to_recipient) * Pi
     } else {
       rho <- pars$pars$rho[res$l-1]
-      res$alpha <- Theta.GM(pars,res$l) * (pars$pars$Pi*rho + sweep(res$alpha, 2, (1-rho)/colSums(res$alpha), "*"))
+      res$alpha <- Theta.GM(pars,res$l, fwd$from_recipient, fwd$to_recipient) * (Pi*rho + sweep(res$alpha, 2, (1-rho)/colSums(res$alpha), "*"))
     }
-    diag(res$alpha) <- 0 # strictly only needed if scalar Pi is being used
+    diag(res$alpha[fwd$from_recipient:fwd$to_recipient,]) <- 0 # strictly only needed if scalar Pi is being used
   }
 
   res$alpha.f <- colSums(res$alpha)
@@ -58,6 +64,11 @@ Backward.GM <- function(bck, pars, t, beta.theta = FALSE) {
     return(invisible(NULL))
   }
 
+  if(is.matrix(pars$pars$Pi)) {
+    Pi <- pars$pars$Pi[,bck$from_recipient:bck$to_recipient]
+  } else {
+    Pi <- pars$pars$Pi
+  }
 
   res <- MakeBackwardTable(pars, bck$from_recipient, bck$to_recipient)
   CopyTable(res, bck)
@@ -67,22 +78,22 @@ Backward.GM <- function(bck, pars, t, beta.theta = FALSE) {
     res$l <- res$l-1L
 
     if(res$l == L()) {
-      res$beta <- matrix(1, nrow = N(), ncol = N())
+      res$beta <- matrix(1, nrow = N(), ncol = bck$to_recipient - bck$from_recipient + 1)
     } else {
       if(!(res$l == (bck$l - 1) & bck$beta.theta)){ # if it's the first backward step off from a table in beta.theta space, beta is already in beta.theta space
                                                     # so this mutation step is already done.
-        res$beta <- Theta.GM(pars,res$l+1) * res$beta
+        res$beta <- Theta.GM(pars,res$l+1, bck$from_recipient, bck$to_recipient) * res$beta
       }
       rho <- pars$pars$rho[res$l]
-      res$beta <- (1-rho) * sweep(res$beta, 2, colSums(res$beta * pars$pars$Pi), "/") + rho
+      res$beta <- (1-rho) * sweep(res$beta, 2, colSums(res$beta * Pi), "/") + rho
     }
-    diag(res$beta) <- 0
+    diag(res$beta[bck$from_recipient:bck$to_recipient,]) <- 0
   }
 
-  res$beta.g <- colSums(Theta.GM(pars,res$l) * res$beta * pars$pars$Pi) # FIX ME! beta.g is not right here
+  res$beta.g <- colSums(Theta.GM(pars,res$l, bck$from_recipient, bck$to_recipient) * res$beta * Pi) # FIX ME! beta.g is not right here
 
   if(beta.theta){
-    res$beta <- Theta.GM(pars,res$l) * res$beta
+    res$beta <- Theta.GM(pars,res$l, bck$from_recipient, bck$to_recipient) * res$beta
     res$beta.theta <- TRUE
   }
 
