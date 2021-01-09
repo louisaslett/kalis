@@ -65,7 +65,7 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
   if(bck$beta.theta){
     vector.biproduct <- kalis:::MatAndMulBtwVar(M,fwd,bck,rep(1,nrow(M)),FALSE,TRUE,unif.on.underflow, rho.list$rho.fwd, rho.list$rho.bck, from_recipient,nthreads)
   } else {
-    vector.biproduct <- kalis:::MatAndMul(M,fwd,bck,rep(1,nrow(M)),FALSE,TRUE,unif.on.underflow,from_recipient,nthreads)
+    vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), FALSE, TRUE, unif.on.underflow, from_recipient, nthreads)
   }
 
   invisible(M)
@@ -164,7 +164,7 @@ DistMat <- function(fwd, bck, standardize = FALSE, M = NULL, beta.theta.opts = N
   if(bck$beta.theta){
     vector.biproduct <- kalis:::MatAndMulBtwVar(M,fwd,bck,rep(1,nrow(M)),standardize, FALSE, FALSE, rho.list$rho.fwd, rho.list$rho.bck, from_recipient,nthreads)
   } else {
-    vector.biproduct <- kalis:::MatAndMul(M,fwd,bck,rep(1,nrow(M)),standardize, FALSE, FALSE, from_recipient,nthreads)
+    vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), standardize, FALSE, FALSE, from_recipient, nthreads)
   }
 
   invisible(M)
