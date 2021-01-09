@@ -10,6 +10,7 @@ SEXP MatAndMul(SEXP RM,
                SEXP Rbck,
                SEXP Rx,
                SEXP Rstd,
+               SEXP Rminus_min,
                SEXP Rcalc_probs,
                SEXP Runif_underflow,
                SEXP Rnthreads);

@@ -63,9 +63,9 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 
   # All clear to calculate distance matrices
   if(bck$beta.theta){
-    vector.biproduct <- .Call(CCall_MatAndMulBtwVar, M, fwd, bck, rep(1, nrow(M)), FALSE, TRUE, unif.on.underflow, rho.list$rho.fwd, rho.list$rho.bck, nthreads)
+    vector.biproduct <- .Call(CCall_MatAndMulBtwVar, M, fwd, bck, rep(1, nrow(M)), FALSE, FALSE, TRUE, unif.on.underflow, rho.list$rho.fwd, rho.list$rho.bck, nthreads)
   } else {
-    vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), FALSE, TRUE, unif.on.underflow, nthreads)
+    vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), FALSE, FALSE, TRUE, unif.on.underflow, nthreads)
   }
 
   invisible(M)
@@ -92,13 +92,19 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #'
 #' By convention, \eqn{d_{ii} = 0}{d_(i,i) = 0} for all \eqn{i}.
 #'
+#' The above is returned when \code{type} is "raw" (the default).
+#' However, for convenience, a user may change \code{type} to "std" in order for the distances
+#' to be mean and variance normalized before returning.  Changing \code{type} to "minus.min"
+#' will subtract the min distance in each column from that column before returning
+#' (this is the default in RELATE, see bottom of the RELATE paper Supplement Page 7 (Speidel et al, 2019))
+#'
 #' This function also allows users to calculate distance matrices in between variants and also to calculate matrices that exclude a set of consecutive variants by passing a
 #' backward table in beta.theta space.  If in beta.theta space, \code{bck$l} may be greater than but not equal to \code{fwd$l}.  \code{beta.theta.opts} provides is required in this case to
 #' set how much of a recombination distance to propagate each matrix before combining them into distances.  See Details below.
 #'
 #' @param fwd a forward table as returned by \code{\link{MakeForwardTable}}
 #' @param bck a backward table as returned by \code{\link{MakeBackwardTable}}
-#' @param standardize a logical; should the columns be centered and scaled to have unit variance
+#' @param type a string; must be one of "raw", "std" or "minus.min".  See details.
 #' @param M an pre-existing matrix into which to write the distances, can yield substantial speed up but requires special attention (see Details)
 #' @param beta.theta.opts a list; see Details.
 #' @param from_recipient offset for distributed problems, see kalis distributed.
@@ -136,6 +142,11 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #'      - \code{"pars"}: a \code{kalisParameters} object that implicitly defines the recombination distance \eqn{\rho^\star} between \code{fwd$l} and \code{bck$l}
 #'      - \code{"bias"} \eqn{\in (0,1)}.  The forward table is propagated a distance of \code{bias}\eqn{\rho^\star} and the backward table is propagated a distance of \code{(1-bias)}\eqn{\rho^\star}.
 #'
+#' @references
+#'
+#'   Speidel, L., Forest, M., Shi, S., & Myers, S. (2019). A method for
+#'   genome-wide genealogy estimation for thousands of samples. *Nature Genetics*, **51**(1321–1329).
+
 #'
 #' @seealso
 #'   \code{\link{PostProbs}} to calculate the posterior marginal probabilities
@@ -152,19 +163,31 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #' }
 #'
 #' @export DistMat
-DistMat <- function(fwd, bck, standardize = FALSE, M = NULL, beta.theta.opts = NULL, nthreads = 1){
+DistMat <- function(fwd, bck, type = "raw", M = NULL, beta.theta.opts = NULL, nthreads = 1){
 
   rho.list <- input_checks_for_probs_and_dist_mat(fwd,bck,beta.theta.opts)
 
   # Make M if needed
   if(is.null(M)){ M <- matrix(0,nrow=nrow(fwd$alpha),ncol=ncol(fwd$alpha)) }
 
+  if(type == "raw") {
+    stdz <- FALSE
+    minus.min <- FALSE
+  } else if(type == "std") {
+    stdz <- TRUE
+    minus.min <- FALSE
+  } else if(type == "minus.min") {
+    stdz <- FALSE
+    minus.min <- TRUE
+  } else {
+    stop(glue("argument type '{type}' is not a recognised option"))
+  }
 
   # All clear to calculate distance matrices
   if(bck$beta.theta){
-    vector.biproduct <- .Call(CCall_MatAndMulBtwVar, M, fwd, bck, rep(1, nrow(M)), standardize, FALSE, FALSE, rho.list$rho.fwd, rho.list$rho.bck, nthreads)
+    vector.biproduct <- .Call(CCall_MatAndMulBtwVar, M, fwd, bck, rep(1, nrow(M)), stdz, minus.min, FALSE, FALSE, rho.list$rho.fwd, rho.list$rho.bck, nthreads)
   } else {
-    vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), standardize, FALSE, FALSE, nthreads)
+    vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), stdz, minus.min, FALSE, FALSE, nthreads)
   }
 
   invisible(M)

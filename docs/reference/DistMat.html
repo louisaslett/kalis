@@ -133,14 +133,7 @@
     <p>Utility for calculating posterior marginal probabilities and distance matrices at, in between, or excluding variants.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>DistMat</span><span class='op'>(</span>
-  <span class='va'>fwd</span>,
-  <span class='va'>bck</span>,
-  standardize <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  M <span class='op'>=</span> <span class='cn'>NULL</span>,
-  beta.theta.opts <span class='op'>=</span> <span class='cn'>NULL</span>,
-  nthreads <span class='op'>=</span> <span class='fl'>1</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>DistMat</span><span class='op'>(</span><span class='va'>fwd</span>, <span class='va'>bck</span>, type <span class='op'>=</span> <span class='st'>"raw"</span>, M <span class='op'>=</span> <span class='cn'>NULL</span>, beta.theta.opts <span class='op'>=</span> <span class='cn'>NULL</span>, nthreads <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,8 +147,8 @@
       <td><p>a backward table as returned by <code><a href='MakeBackwardTable.html'>MakeBackwardTable</a></code></p></td>
     </tr>
     <tr>
-      <th>standardize</th>
-      <td><p>a logical; should the columns be centered and scaled to have unit variance</p></td>
+      <th>type</th>
+      <td><p>a string; must be one of "raw", "std" or "minus.min".  See details.</p></td>
     </tr>
     <tr>
       <th>M</th>
@@ -218,9 +211,18 @@ whole sequence).</p>
 \(j\) is coped by \(i\) at the current locus of the two tables, \(l\),
 given the haplotypes observed (over the whole sequence).</p>
 <p>By convention, \(d_{ii} = 0\) for all \(i\).</p>
+<p>The above is returned when <code>type</code> is "raw" (the default).
+However, for convenience, a user may change <code>type</code> to "std" in order for the distances
+to be mean and variance normalized before returning.  Changing <code>type</code> to "minus.min"
+will subtract the min distance in each column from that column before returning
+(this is the default in RELATE, see bottom of the RELATE paper Supplement Page 7 (Speidel et al, 2019))</p>
 <p>This function also allows users to calculate distance matrices in between variants and also to calculate matrices that exclude a set of consecutive variants by passing a
 backward table in beta.theta space.  If in beta.theta space, <code>bck$l</code> may be greater than but not equal to <code>fwd$l</code>.  <code>beta.theta.opts</code> provides is required in this case to
 set how much of a recombination distance to propagate each matrix before combining them into distances.  See Details below.</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Speidel, L., Forest, M., Shi, S., &amp; Myers, S. (2019). A method for
+genome-wide genealogy estimation for thousands of samples. <em>Nature Genetics</em>, <strong>51</strong>(1321–1329).</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='PostProbs.html'>PostProbs</a></code> to calculate the posterior marginal probabilities

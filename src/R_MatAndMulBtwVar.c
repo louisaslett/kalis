@@ -79,7 +79,8 @@ void MatAndMulBtwVar_C_raw_dist(const double* restrict alpha,
                                 size_t r,
                                 size_t from_off,
                                 double fwd_rho,
-                                double bck_rho) {
+                                double bck_rho,
+                                int minus_min) {
   double z0 = 0.0;
   double rd = (double) (r - 1);
 
@@ -90,8 +91,15 @@ void MatAndMulBtwVar_C_raw_dist(const double* restrict alpha,
     double alpha_offset = fwd_rho / rd;
 
     // We will assume in this accumulation that alpha * beta is always 0 along the matrix diagonal
-    for(size_t i = 0; i < r; i++) {
-      z0 += c_1[i] = (alpha_coeff_c1 * *(alpha++) + alpha_offset) * (beta_coeff_c1 * *(beta++) + bck_rho) ;
+    if(minus_min) {
+      for(size_t i = 0; i < r; i++) {
+        c_1[i] = (alpha_coeff_c1 * *(alpha++) + alpha_offset) * (beta_coeff_c1 * *(beta++) + bck_rho);
+        z0 = (z0>c_1[i])?z0:c_1[i];
+      }
+    } else {
+      for(size_t i = 0; i < r; i++) {
+        z0 += c_1[i] = (alpha_coeff_c1 * *(alpha++) + alpha_offset) * (beta_coeff_c1 * *(beta++) + bck_rho) ;
+      }
     }
   }
 
@@ -224,6 +232,7 @@ struct MatAndMulBtwVar_B_core_args {
   const double* restrict g;
   const double* restrict x;
   int standardize;
+  int minus_min;
   int probs;
   int useunif;
   size_t r;
@@ -248,6 +257,7 @@ void* MatAndMulBtwVar_B(void *args) {
   const double* restrict g = mat_args->core_args->g;
   const double* restrict x = mat_args->core_args->x;
   int standardize = mat_args->core_args->standardize;
+  int minus_min = mat_args->core_args->minus_min;
   int probs = mat_args->core_args->probs;
   int useunif = mat_args->core_args->useunif;
   size_t r = mat_args->core_args->r;
@@ -306,7 +316,8 @@ void* MatAndMulBtwVar_B(void *args) {
                                    r,
                                    from_off,
                                    fwd_rho,
-                                   bck_rho);
+                                   bck_rho,
+                                   minus_min);
       }
     }
 
@@ -325,6 +336,7 @@ void MatAndMulBtwVar_A(double* restrict res,
                        const double* restrict g,
                        const double* restrict x,
                        int standardize,
+                       int minus_min,
                        int probs,
                        int useunif,
                        size_t from_off,
@@ -344,6 +356,7 @@ void MatAndMulBtwVar_A(double* restrict res,
     .g = g,
     .x = x,
     .standardize = standardize,
+    .minus_min = minus_min,
     .probs = probs,
     .useunif = useunif,
     .r = r,
@@ -425,6 +438,7 @@ SEXP MatAndMulBtwVar(SEXP RM,
                      SEXP Rbck,
                      SEXP Rx,
                      SEXP Rstdz,
+                     SEXP Rminus_min,
                      SEXP Rcalc_probs,
                      SEXP Runif_underflow,
                      SEXP Rfwd_rho,
@@ -463,6 +477,7 @@ SEXP MatAndMulBtwVar(SEXP RM,
   Rf_setAttrib(RM, R_ClassSymbol, Mclass);
 
   int stdz = Rf_asLogical(Rstdz);
+  int minus_min = Rf_asLogical(Rminus_min);
   int probs = Rf_asLogical(Rcalc_probs);
   int useunif = Rf_asLogical(Runif_underflow);
 
@@ -485,6 +500,7 @@ SEXP MatAndMulBtwVar(SEXP RM,
                     g,
                     x,
                     stdz,
+                    minus_min,
                     probs,
                     useunif,
                     (size_t) *from_rec,

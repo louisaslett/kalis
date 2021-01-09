@@ -66,12 +66,20 @@ void MatAndMul_C_raw_dist(const double* restrict alpha,
                           double* restrict res,
                           size_t j,
                           size_t r,
-                          size_t from_off) {
+                          size_t from_off,
+                          int minus_min) {
   double z0 = 0.0;
 
   // We will assume in this accumulation that alpha * beta is always 0 along the matrix diagonal
-  for(size_t i = 0; i < r; i++) {
-    z0 += c_1[i] = *(alpha++) * *(beta++);
+  if(minus_min) {
+    for(size_t i = 0; i < r; i++) {
+      c_1[i] = *(alpha++) * *(beta++);
+      z0 = (z0>c_1[i])?z0:c_1[i];
+    }
+  } else {
+    for(size_t i = 0; i < r; i++) {
+      z0 += c_1[i] = *(alpha++) * *(beta++);
+    }
   }
 
   if(z0 <= 0) {
@@ -186,6 +194,7 @@ struct MatAndMul_B_core_args {
   const double* restrict beta;
   const double* restrict x;
   int standardize;
+  int minus_min;
   int probs;
   int useunif;
   size_t r;
@@ -206,6 +215,7 @@ void* MatAndMul_B(void *args) {
   const double* restrict beta = mat_args->core_args->beta;
   const double* restrict x = mat_args->core_args->x;
   int standardize = mat_args->core_args->standardize;
+  int minus_min = mat_args->core_args->minus_min;
   int probs = mat_args->core_args->probs;
   int useunif = mat_args->core_args->useunif;
   size_t r = mat_args->core_args->r;
@@ -250,7 +260,8 @@ void* MatAndMul_B(void *args) {
                              res,
                              j,
                              r,
-                             from_off);
+                             from_off,
+                             minus_min);
       }
     }
 
@@ -265,6 +276,7 @@ void MatAndMul_A(double* restrict res,
                  const double* restrict beta,
                  const double* restrict x,
                  int standardize,
+                 int minus_min,
                  int probs,
                  int useunif,
                  size_t from_off,
@@ -280,6 +292,7 @@ void MatAndMul_A(double* restrict res,
     .beta = beta,
     .x = x,
     .standardize = standardize,
+    .minus_min = minus_min,
     .probs = probs,
     .useunif = useunif,
     .r = r,
@@ -359,6 +372,7 @@ SEXP MatAndMul(SEXP RM,
                SEXP Rbck,
                SEXP Rx,
                SEXP Rstdz,
+               SEXP Rminus_min,
                SEXP Rcalc_probs,
                SEXP Runif_underflow,
                SEXP Rnthreads) {
@@ -393,6 +407,7 @@ SEXP MatAndMul(SEXP RM,
   Rf_setAttrib(RM, R_ClassSymbol, Mclass);
 
   int stdz = Rf_asLogical(Rstdz);
+  int minus_min = Rf_asLogical(Rminus_min);
   int probs = Rf_asLogical(Rcalc_probs);
   int useunif = Rf_asLogical(Runif_underflow);
 
@@ -413,6 +428,7 @@ SEXP MatAndMul(SEXP RM,
               beta,
               x,
               stdz,
+              minus_min,
               probs,
               useunif,
               (size_t) *from_rec,

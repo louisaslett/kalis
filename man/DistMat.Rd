@@ -4,21 +4,14 @@
 \alias{DistMat}
 \title{Distance matrix}
 \usage{
-DistMat(
-  fwd,
-  bck,
-  standardize = FALSE,
-  M = NULL,
-  beta.theta.opts = NULL,
-  nthreads = 1
-)
+DistMat(fwd, bck, type = "raw", M = NULL, beta.theta.opts = NULL, nthreads = 1)
 }
 \arguments{
 \item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
 
 \item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}
 
-\item{standardize}{a logical; should the columns be centered and scaled to have unit variance}
+\item{type}{a string; must be one of "raw", "std" or "minus.min".  See details.}
 
 \item{M}{an pre-existing matrix into which to write the distances, can yield substantial speed up but requires special attention (see Details)}
 
@@ -83,6 +76,12 @@ given the haplotypes observed (over the whole sequence).
 
 By convention, \eqn{d_{ii} = 0}{d_(i,i) = 0} for all \eqn{i}.
 
+The above is returned when \code{type} is "raw" (the default).
+However, for convenience, a user may change \code{type} to "std" in order for the distances
+to be mean and variance normalized before returning.  Changing \code{type} to "minus.min"
+will subtract the min distance in each column from that column before returning
+(this is the default in RELATE, see bottom of the RELATE paper Supplement Page 7 (Speidel et al, 2019))
+
 This function also allows users to calculate distance matrices in between variants and also to calculate matrices that exclude a set of consecutive variants by passing a
 backward table in beta.theta space.  If in beta.theta space, \code{bck$l} may be greater than but not equal to \code{fwd$l}.  \code{beta.theta.opts} provides is required in this case to
 set how much of a recombination distance to propagate each matrix before combining them into distances.  See Details below.
@@ -95,6 +94,10 @@ Backward(bck, pars, 10, nthreads = 8)
 d <- DistMat(fwd, bck)
 }
 
+}
+\references{
+Speidel, L., Forest, M., Shi, S., & Myers, S. (2019). A method for
+genome-wide genealogy estimation for thousands of samples. \emph{Nature Genetics}, \strong{51}(1321–1329).
 }
 \seealso{
 \code{\link{PostProbs}} to calculate the posterior marginal probabilities
