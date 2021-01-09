@@ -8,7 +8,8 @@ Backward(
   bck,
   pars,
   t = bck$l - 1,
-  nthreads = parallel::detectCores(logical = FALSE),
+  nthreads = min(parallel::detectCores(logical = FALSE), bck$to_recipient -
+    bck$from_recipient + 1),
   beta.theta = FALSE
 )
 }

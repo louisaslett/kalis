@@ -270,7 +270,7 @@ print.kalisBackwardTable <- function(x, ...) {
     cat(glue("  Recipients {x$from_recipient} to {x$to_recipient}"), "\n")
   }
 
-  if(x$l == 2147483647) {
+  if(x$l == 2147483647L) {
     cat("  Newly created table, currently uninitialised to any variant (ready for Backward function next).\n")
   } else {
     cat(glue("  Current variant = {x$l}"), "\n")

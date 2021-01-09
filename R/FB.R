@@ -53,7 +53,10 @@
 #' }
 #'
 #' @export
-Forward <- function(fwd, pars, t = fwd$l+1, nthreads = parallel::detectCores(logical = FALSE)) {
+Forward <- function(fwd,
+                    pars,
+                    t = fwd$l+1,
+                    nthreads = min(parallel::detectCores(logical = FALSE), fwd$to_recipient-fwd$from_recipient+1)) {
   if(!("kalisForwardTable" %in% class(fwd))) {
     stop("The fwd argument is not a valid forward table.")
   }
@@ -83,7 +86,10 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = parallel::detectCores(log
   maxthreads <- parallel::detectCores()
   if(!test_integerish(nthreads, lower = 1, upper = maxthreads, any.missing = FALSE, len = 1) &&
      !test_integerish(nthreads, lower = 0, upper = maxthreads-1, any.missing = FALSE, min.len = 2, unique = TRUE)) {
-    stop("The nthreads argument must either be a single scalar (between 1 and your number of cores) indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run.")
+    stop(glue("The nthreads argument must either be a single scalar (between 1 and your number of logical cores (which is {maxthreads})) indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run."))
+  }
+  if((length(nthreads) > 1 && length(nthreads) > fwd$to_recipient-fwd$from_recipient+1) || (length(nthreads) == 1 && nthreads > fwd$to_recipient-fwd$from_recipient+1)) {
+    stop(glue("Cannot launch more threads than there are recipients in the forward table (here to_recipient to from_recipient covers {fwd$to_recipient-fwd$from_recipient+1} recipients)."))
   }
   nthreads <- as.integer(nthreads)
 
@@ -178,7 +184,11 @@ Forward <- function(fwd, pars, t = fwd$l+1, nthreads = parallel::detectCores(log
 #' }
 #'
 #' @export Backward
-Backward <- function(bck, pars, t = bck$l-1, nthreads = parallel::detectCores(logical = FALSE), beta.theta = FALSE) {
+Backward <- function(bck,
+                     pars,
+                     t = bck$l-1,
+                     nthreads = min(parallel::detectCores(logical = FALSE), bck$to_recipient-bck$from_recipient+1),
+                     beta.theta = FALSE) {
   if(!("kalisBackwardTable" %in% class(bck))) {
     stop("The bck argument is not a valid backward table.")
   }
@@ -214,7 +224,10 @@ Backward <- function(bck, pars, t = bck$l-1, nthreads = parallel::detectCores(lo
   maxthreads <- parallel::detectCores()
   if(!test_integerish(nthreads, lower = 1, upper = maxthreads, any.missing = FALSE, len = 1) &&
      !test_integerish(nthreads, lower = 0, upper = maxthreads-1, any.missing = FALSE, min.len = 2, unique = TRUE)) {
-    stop("The nthreads argument must either be a single scalar (between 1 and your number of cores) indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run.")
+    stop(glue("The nthreads argument must either be a single scalar (between 1 and your number of logical cores (which is {maxthreads})) indicating the number of threads, or a vector indicating the core number to run each thread on (so in total length(nthreads) threads) are run."))
+  }
+  if((length(nthreads) > 1 && length(nthreads) > bck$to_recipient-bck$from_recipient+1) || (length(nthreads) == 1 && nthreads > bck$to_recipient-bck$from_recipient+1)) {
+    stop(glue("Cannot launch more threads than there are recipients in the forward table (here to_recipient to from_recipient covers {bck$to_recipient-bck$from_recipient+1} recipients)."))
   }
   nthreads <- as.integer(nthreads)
 

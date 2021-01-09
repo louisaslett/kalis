@@ -8,7 +8,8 @@ Forward(
   fwd,
   pars,
   t = fwd$l + 1,
-  nthreads = parallel::detectCores(logical = FALSE)
+  nthreads = min(parallel::detectCores(logical = FALSE), fwd$to_recipient -
+    fwd$from_recipient + 1)
 )
 }
 \arguments{

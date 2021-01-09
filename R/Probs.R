@@ -175,8 +175,8 @@ DistMat <- function(fwd, bck, standardize = FALSE, M = NULL, beta.theta.opts = N
 input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
 
   # RUN GENERAL CHECKS
-  if(fwd$l == 0){stop("forward table has not been initialized but not propagated to a locus in {1,...,L}.")}
-  if(bck$l == 2147483647){stop("backward table has not been initialized but not propagated to a locus in {1,...,L}.")}
+  if(fwd$l == 2147483647L){stop("forward table has not been initialized but not propagated to a locus in {1,...,L}.")}
+  if(bck$l == 2147483647L){stop("backward table has not been initialized but not propagated to a locus in {1,...,L}.")}
 
   if(fwd$pars.sha256 != bck$pars.sha256) {
     stop("parameters used to calculate the forward table and backward table do not match.")
