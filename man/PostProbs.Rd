@@ -10,7 +10,6 @@ PostProbs(
   unif.on.underflow = FALSE,
   M = NULL,
   beta.theta.opts = NULL,
-  from_recipient = 1,
   nthreads = 1
 )
 }
@@ -25,9 +24,9 @@ PostProbs(
 
 \item{beta.theta.opts}{a list; see Details.}
 
-\item{from_recipient}{offset for distributed problems, see kalis distributed.}
-
 \item{nthreads}{the number of CPU cores to use. By default no parallelism is used.}
+
+\item{from_recipient}{offset for distributed problems, see kalis distributed.}
 }
 \value{
 Matrix of posterior marginal probabilities.

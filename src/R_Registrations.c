@@ -24,7 +24,7 @@ static const R_CallMethodDef callMethods[] = {
   CALLDEF(ComputeStatus, 0),
   CALLDEF(ResetForwardTable, 1),
   CALLDEF(Forward, 8),
-  CALLDEF(MatAndMul, 9),
+  CALLDEF(MatAndMul, 8),
   CALLDEF(CopyFBTable, 2),
   CALLDEF(MakeForwardTable, 3),
   CALLDEF(MakeBackwardTable, 3),

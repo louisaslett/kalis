@@ -361,22 +361,13 @@ SEXP MatAndMul(SEXP RM,
                SEXP Rstdz,
                SEXP Rcalc_probs,
                SEXP Runif_underflow,
-               SEXP Rfrom,
                SEXP Rnthreads) {
-//NumericVector MatAndMul(NumericMatrix M,
-//                        List fwd,
-//                        List bck,
-//                        NumericVector x,
-//                        LogicalVector standardize,
-//                        LogicalVector calcprobs,
-//                        LogicalVector unifonunderflow,
-//                        size_t from_recipient,
-//                        size_t nthreads) {
-
   double *restrict alpha, *restrict beta, *restrict M, *restrict x, *restrict res;
+  int *restrict from_rec;
 
   KALIS_GET_TABLE(alpha, Rfwd);
   KALIS_GET_TABLE(beta, Rbck);
+  KALIS_GET_TABLE_FROM(from_rec, Rfwd);
 
   size_t r = (size_t) Rf_nrows(VECTOR_ELT(Rfwd, KALIS_IDX_TABLE)); // we need to make p=r and c2 = c
   size_t c = (size_t) Rf_ncols(VECTOR_ELT(Rfwd, KALIS_IDX_TABLE));
@@ -424,7 +415,7 @@ SEXP MatAndMul(SEXP RM,
               stdz,
               probs,
               useunif,
-              (size_t) Rf_asInteger(Rfrom),
+              (size_t) *from_rec,
               (size_t) Rf_asInteger(Rnthreads),
               r,
               c);

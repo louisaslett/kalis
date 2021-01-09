@@ -54,7 +54,7 @@
 #' }
 #'
 #' @export
-PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.opts = NULL, from_recipient = 1, nthreads = 1) {
+PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.opts = NULL, nthreads = 1) {
 
   rho.list <- input_checks_for_probs_and_dist_mat(fwd,bck,beta.theta.opts)
 
@@ -65,7 +65,7 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
   if(bck$beta.theta){
     vector.biproduct <- kalis:::MatAndMulBtwVar(M,fwd,bck,rep(1,nrow(M)),FALSE,TRUE,unif.on.underflow, rho.list$rho.fwd, rho.list$rho.bck, from_recipient,nthreads)
   } else {
-    vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), FALSE, TRUE, unif.on.underflow, from_recipient, nthreads)
+    vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), FALSE, TRUE, unif.on.underflow, nthreads)
   }
 
   invisible(M)
@@ -152,7 +152,7 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #' }
 #'
 #' @export DistMat
-DistMat <- function(fwd, bck, standardize = FALSE, M = NULL, beta.theta.opts = NULL, from_recipient = 1, nthreads = 1){
+DistMat <- function(fwd, bck, standardize = FALSE, M = NULL, beta.theta.opts = NULL, nthreads = 1){
 
   rho.list <- input_checks_for_probs_and_dist_mat(fwd,bck,beta.theta.opts)
 
@@ -164,7 +164,7 @@ DistMat <- function(fwd, bck, standardize = FALSE, M = NULL, beta.theta.opts = N
   if(bck$beta.theta){
     vector.biproduct <- kalis:::MatAndMulBtwVar(M,fwd,bck,rep(1,nrow(M)),standardize, FALSE, FALSE, rho.list$rho.fwd, rho.list$rho.bck, from_recipient,nthreads)
   } else {
-    vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), standardize, FALSE, FALSE, from_recipient, nthreads)
+    vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), standardize, FALSE, FALSE, nthreads)
   }
 
   invisible(M)
@@ -180,6 +180,9 @@ input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
 
   if(fwd$pars.sha256 != bck$pars.sha256) {
     stop("parameters used to calculate the forward table and backward table do not match.")
+  }
+  if(fwd$from_recipient != bck$from_recipient || fwd$to_recipient != bck$to_recipient) {
+    stop("forward and backward tables cover different from/to recipient windows.")
   }
 
   if(fwd$l > bck$l){stop("fwd$l > bck$l.  The forward table cannot be past the backward table.")}
