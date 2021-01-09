@@ -288,7 +288,7 @@ void MatAndMul_A(double* restrict res,
 
   if(nthreads > 1) {
 
-    pthread_t threads[nthreads+1];
+    pthread_t threads[nthreads];
     pthread_attr_t attr;
 
     pthread_attr_init(&attr);
@@ -303,7 +303,7 @@ void MatAndMul_A(double* restrict res,
     size_t num_perth = c/nthreads;
     size_t rag_end   = c%nthreads;
 
-    struct MatAndMul_B_args args[nthreads];
+    struct MatAndMul_B_args args[nthreads+1];
     for(size_t i=0; i<nthreads; i++) {
       args[i].core_args = &core_args;
       args[i].res = res_perth + i*r;
