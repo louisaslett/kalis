@@ -63,7 +63,7 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 
   # All clear to calculate distance matrices
   if(bck$beta.theta){
-    vector.biproduct <- kalis:::MatAndMulBtwVar(M,fwd,bck,rep(1,nrow(M)),FALSE,TRUE,unif.on.underflow, rho.list$rho.fwd, rho.list$rho.bck, from_recipient,nthreads)
+    vector.biproduct <- .Call(CCall_MatAndMulBtwVar, M, fwd, bck, rep(1, nrow(M)), FALSE, TRUE, unif.on.underflow, rho.list$rho.fwd, rho.list$rho.bck, nthreads)
   } else {
     vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), FALSE, TRUE, unif.on.underflow, nthreads)
   }
@@ -162,7 +162,7 @@ DistMat <- function(fwd, bck, standardize = FALSE, M = NULL, beta.theta.opts = N
 
   # All clear to calculate distance matrices
   if(bck$beta.theta){
-    vector.biproduct <- kalis:::MatAndMulBtwVar(M,fwd,bck,rep(1,nrow(M)),standardize, FALSE, FALSE, rho.list$rho.fwd, rho.list$rho.bck, from_recipient,nthreads)
+    vector.biproduct <- .Call(CCall_MatAndMulBtwVar, M, fwd, bck, rep(1, nrow(M)), standardize, FALSE, FALSE, rho.list$rho.fwd, rho.list$rho.bck, nthreads)
   } else {
     vector.biproduct <- .Call(CCall_MatAndMul, M, fwd, bck, rep(1, nrow(M)), standardize, FALSE, FALSE, nthreads)
   }

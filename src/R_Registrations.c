@@ -5,6 +5,7 @@
 #include "R_ComputeStatus.h"
 #include "R_Forward.h"
 #include "R_MatAndMul.h"
+#include "R_MatAndMulBtwVar.h"
 #include "R_TableCache.h"
 #include "R_TableMaker.h"
 
@@ -25,6 +26,7 @@ static const R_CallMethodDef callMethods[] = {
   CALLDEF(ResetForwardTable, 1),
   CALLDEF(Forward, 8),
   CALLDEF(MatAndMul, 8),
+  CALLDEF(MatAndMulBtwVar, 10),
   CALLDEF(CopyFBTable, 2),
   CALLDEF(MakeForwardTable, 3),
   CALLDEF(MakeBackwardTable, 3),
