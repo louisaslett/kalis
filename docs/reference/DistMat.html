@@ -133,7 +133,15 @@
     <p>Utility for calculating posterior marginal probabilities and distance matrices at, in between, or excluding variants.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>DistMat</span><span class='op'>(</span><span class='va'>fwd</span>, <span class='va'>bck</span>, type <span class='op'>=</span> <span class='st'>"raw"</span>, M <span class='op'>=</span> <span class='cn'>NULL</span>, beta.theta.opts <span class='op'>=</span> <span class='cn'>NULL</span>, nthreads <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>DistMat</span><span class='op'>(</span>
+  <span class='va'>fwd</span>,
+  <span class='va'>bck</span>,
+  type <span class='op'>=</span> <span class='st'>"raw"</span>,
+  M <span class='op'>=</span> <span class='cn'>NULL</span>,
+  beta.theta.opts <span class='op'>=</span> <span class='cn'>NULL</span>,
+  nthreads <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span><span class='op'>(</span>logical <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>, <span class='va'>fwd</span><span class='op'>$</span><span class='va'>to_recipient</span> <span class='op'>-</span>
+    <span class='va'>fwd</span><span class='op'>$</span><span class='va'>from_recipient</span> <span class='op'>+</span> <span class='fl'>1</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

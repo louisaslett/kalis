@@ -141,7 +141,8 @@ forward and backward tables propagated to that position.</p>
   unif.on.underflow <span class='op'>=</span> <span class='cn'>FALSE</span>,
   M <span class='op'>=</span> <span class='cn'>NULL</span>,
   beta.theta.opts <span class='op'>=</span> <span class='cn'>NULL</span>,
-  nthreads <span class='op'>=</span> <span class='fl'>1</span>
+  nthreads <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span><span class='op'>(</span>logical <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>, <span class='va'>fwd</span><span class='op'>$</span><span class='va'>to_recipient</span> <span class='op'>-</span>
+    <span class='va'>fwd</span><span class='op'>$</span><span class='va'>from_recipient</span> <span class='op'>+</span> <span class='fl'>1</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
