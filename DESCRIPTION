@@ -20,6 +20,7 @@ Description: kalis provides a high performance implementation of the Li &
   prior copying probabilities for each recipient haplotype.  Extensive use is 
   made of low level threading and CPU vector instructions.
 License: GPL (>= 3)
+URL: https://kalis.louisaslett.com/, https://github.com/louisaslett/kalis
 LazyData: TRUE
 Depends: R (>= 3.5.0)
 Imports:
