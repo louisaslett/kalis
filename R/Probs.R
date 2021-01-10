@@ -277,10 +277,11 @@ input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
 #' @return There is nothing returned.
 #'
 #' @export
-plot.kalisDistanceMatrix <- function(x, ...) {
-  perm <- fastcluster::hclust(stats::as.dist(x),method="average")$order
+plot.kalisDistanceMatrix <- function(x, cluster.method = "average", ...) {
+
+  perm <- fastcluster::hclust(stats::as.dist(x),method=cluster.method)$order
   print(lattice::levelplot(x[perm,][,rev(perm)],
                            useRaster = TRUE,
                            col.regions = grDevices::colorRampPalette(RColorBrewer::brewer.pal(9,name = "BuPu"))(100),
-                           yaxt = "n", xaxt = "n", xlab = "", ylab = "", xaxt = "n"))
+                           yaxt = "n", xaxt = "n", xlab = "", ylab = "", xaxt = "n", ...))
 }

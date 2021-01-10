@@ -34,7 +34,7 @@ void MatAndMul_C_probs(const double* restrict alpha,
     // if the sum is zero (all of the alpha*beta entries = 0), then all of the of the entries are set to either uniform or all 0
 
     for(size_t i = 0; i < r; i++) {
-      if(i==j) {
+      if(i==j + from_off) {
         c_1[i] = 0.0;
       } else {
         c_1[i] = ccc;
@@ -44,7 +44,7 @@ void MatAndMul_C_probs(const double* restrict alpha,
   } else { // z0 > 0
 
     for(size_t i = 0; i < r; i++) {
-      if(i==j) {
+      if(i==j + from_off) {
         c_1[i] = 0.0;
       } else {
 
@@ -87,7 +87,7 @@ void MatAndMul_C_raw_dist(const double* restrict alpha,
     // of numerical precision, so we set all of the distances to the -log of the smallest respresentable double
 
     for(size_t i = 0; i < r; i++) {
-      if(i==j) {
+      if(i==j + from_off) {
         c_1[i] = 0.0;
       } else {
         c_1[i] = 744.4400719213812180897;
@@ -97,7 +97,7 @@ void MatAndMul_C_raw_dist(const double* restrict alpha,
   } else { // z0 > 0
 
     for(size_t i = 0; i < r; i++) {
-      if(i==j) {
+      if(i==j + from_off) {
         c_1[i] = 0.0;
       } else {
 
@@ -144,7 +144,7 @@ void MatAndMul_C_standardize_dist(const double* restrict alpha,
   } else { // z0 > 0
 
     for(size_t i=0; i < r; i++) {
-      if(i==j) {
+      if(i==j + from_off) {
         continue;
       } else {
         c_1[i] = c_1[i] / z0;
@@ -175,7 +175,7 @@ void MatAndMul_C_standardize_dist(const double* restrict alpha,
       z1 = -z1 * z2;
 
       for(size_t i = 0; i < r; i++) {
-        if(i==j) {
+        if(i==j + from_off) {
           c_1[i] = 0.0;
         } else {
           c_1[i] = c_1[i] * z2 + z1; // this is the final value for M[i,j]
