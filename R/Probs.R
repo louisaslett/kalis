@@ -54,7 +54,14 @@
 #' }
 #'
 #' @export
-PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.opts = NULL, nthreads = 1) {
+PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.opts = NULL,
+                      nthreads = min(parallel::detectCores(logical = FALSE), fwd$to_recipient-fwd$from_recipient+1)){
+
+  if(identical(nthreads, "R")) {
+    if(!is.null(M)){stop("M cannot be NULL when requesting the gold master R version with R nthreads")}
+    warning("Warning: using gold master R implementation.")
+    return(invisible(PostProbs.GM(fwd, bck, unif.on.underflow, beta.theta.opts)))
+  }
 
   rho.list <- input_checks_for_probs_and_dist_mat(fwd,bck,beta.theta.opts)
 
@@ -163,7 +170,14 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #' }
 #'
 #' @export DistMat
-DistMat <- function(fwd, bck, type = "raw", M = NULL, beta.theta.opts = NULL, nthreads = 1){
+DistMat <- function(fwd, bck, type = "raw", M = NULL, beta.theta.opts = NULL,
+                    nthreads = min(parallel::detectCores(logical = FALSE), fwd$to_recipient-fwd$from_recipient+1)){
+
+  if(identical(nthreads, "R")) {
+    if(!is.null(M)){stop("M cannot be NULL when requesting the gold master R version with R nthreads")}
+    warning("Warning: using gold master R implementation.")
+    return(invisible(DistMat.GM(fwd, bck, type, beta.theta.opts)))
+  }
 
   rho.list <- input_checks_for_probs_and_dist_mat(fwd,bck,beta.theta.opts)
 

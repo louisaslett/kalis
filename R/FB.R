@@ -218,7 +218,7 @@ Backward <- function(bck,
   }
 
   if(identical(nthreads, "R")) {
-    warning("Warning: using gold master R implementation (without beta.theta functionality).")
+    warning("Warning: using gold master R implementation.")
     return(invisible(Backward.GM(bck, pars, t, beta.theta)))
   }
   maxthreads <- parallel::detectCores()

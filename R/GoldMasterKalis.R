@@ -81,7 +81,7 @@ Backward.GM <- function(bck, pars, t, beta.theta = FALSE) {
       res$beta <- matrix(1, nrow = N(), ncol = bck$to_recipient - bck$from_recipient + 1)
     } else {
       if(!(res$l == (bck$l - 1) & bck$beta.theta)){ # if it's the first backward step off from a table in beta.theta space, beta is already in beta.theta space
-                                                    # so this mutation step is already done.
+        # so this mutation step is already done.
         res$beta <- Theta.GM(pars,res$l+1, bck$from_recipient, bck$to_recipient) * res$beta
       }
       rho <- pars$pars$rho[res$l]
@@ -101,3 +101,95 @@ Backward.GM <- function(bck, pars, t, beta.theta = FALSE) {
 
   invisible(NULL)
 }
+
+
+
+PostProbs.GM <- function(fwd, bck, unif.on.underflow = FALSE, beta.theta.opts = NULL) {
+
+  N <- nrow(fwd$alpha)
+
+  rho.list <- input_checks_for_probs_and_dist_mat(fwd,bck,beta.theta.opts)
+
+  if(!is.null(beta.theta.opts) && !is.null(beta.theta.opts$pars)){
+    Pi <- beta.theta.opts$pars$pars$Pi
+  } else {
+    Pi <- 1/(N-1)
+  }
+
+  if(bck$beta.theta){
+    # propagate fwd and bck as done in our standard Forward/Backward recursions
+    probs <- (sweep(fwd$alpha,2,fwd$alpha.f,"/") * (1-rho.list$rho.fwd) + rho.list$rho.fwd * Pi) *
+      (sweep(bck$beta,2,bck$beta.g,"/") * (1-rho.list$rho.bck) + rho.list$rho.bck)
+
+    probs[!is.finite(probs)] <- 0 # covers all cases of the input being NaN or Inf, or dividing any finite numbers or 0 by 0.
+    diag(probs[fwd$from_recipient:fwd$to_recipient,]) <- 0
+  } else {
+    probs <- fwd$alpha * bck$beta
+  }
+
+
+  z0 <- colSums(probs)
+  probs <- sweep(probs,2,z0,"/")
+
+  if(unif.on.underflow){
+    probs[!is.finite(probs)] <- 1/(N-1) # covers all cases of the input being NaN or Inf, or dividing any finite numbers or 0 by 0.
+    diag(probs[fwd$from_recipient:fwd$to_recipient,]) <- 0
+  } else {
+    probs[!is.finite(probs)] <- 0
+  }
+
+  probs
+}
+
+
+DistMat.GM <- function(fwd, bck, type = "raw", beta.theta.opts = NULL) {
+
+  N <- nrow(fwd$alpha)
+
+  rho.list <- input_checks_for_probs_and_dist_mat(fwd,bck,beta.theta.opts)
+
+  if(!is.null(beta.theta.opts) && !is.null(beta.theta.opts$pars)){
+    Pi <- beta.theta.opts$pars$pars$Pi
+  } else {
+    Pi <- 1/(N-1)
+  }
+
+
+  if(bck$beta.theta){
+    # propagate fwd and bck as done in our standard Forward/Backward recursions
+    probs <- (sweep(fwd$alpha,2,fwd$alpha.f,"/") * (1-rho.list$rho.fwd) + rho.list$rho.fwd * Pi) *
+      (sweep(bck$beta,2,bck$beta.g,"/") * (1-rho.list$rho.bck) + rho.list$rho.bck)
+
+    probs[!is.finite(probs)] <- 0 # covers all cases of the input being NaN or Inf, or dividing any finite numbers or 0 by 0.
+    diag(probs[fwd$from_recipient:fwd$to_recipient,]) <- 0
+  } else {
+    probs <- fwd$alpha * bck$beta
+  }
+
+  if(type == "raw" | type == "std"){
+    z0 <- colSums(probs)
+  } else {
+    z0 <- c(apply(probs,2,max))
+  }
+
+  probs <- sweep(probs,2,z0,"/")
+  dists <- -log(probs)
+
+  dists[!is.finite(dists)] <- 744.4400719213812180897 # covers all cases of the input being NaN or Inf, or dividing any finite numbers or 0 by 0.
+  diag(dists[fwd$from_recipient:fwd$to_recipient,]) <- 0
+
+  if(type == "raw" | type == "minus.min"){ return(dists) }
+
+  diag(dists[fwd$from_recipient:fwd$to_recipient,]) <- NA
+
+  dm <- colMeans(dists,na.rm = T)
+  ds <- apply(dists,2,sd,na.rm = TRUE)
+
+  dists <- sweep(dists,2,dm,"-")
+  dists <- sweep(dists,2,ds,"/")
+  dists[!is.finite(dists)] <- 0 # covers dividing any finite numbers or 0 by 0.
+  diag(dists[fwd$from_recipient:fwd$to_recipient,]) <- 0
+
+  dists
+}
+
