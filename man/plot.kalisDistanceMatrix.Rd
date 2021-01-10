@@ -4,7 +4,7 @@
 \alias{plot.kalisDistanceMatrix}
 \title{Plotting function for a kalisDistanceMatrix object}
 \usage{
-\method{plot}{kalisDistanceMatrix}(x, ...)
+\method{plot}{kalisDistanceMatrix}(x, cluster.method = "average", ...)
 }
 \arguments{
 \item{d}{a kalisDistanceMatrix}

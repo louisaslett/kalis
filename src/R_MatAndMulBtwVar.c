@@ -473,8 +473,13 @@ SEXP MatAndMulBtwVar(SEXP RM,
     KALIS_RETURN;
   }
   M = REAL(RM);
-  SEXP Mclass = PROTECT(Rf_mkString("kalisDistanceMatrix"));
-  Rf_setAttrib(RM, R_ClassSymbol, Mclass);
+
+  SEXP Mattrib = PROTECT(Rf_allocVector(STRSXP, 2));
+  SEXP Mclass1 = PROTECT(Rf_mkChar("kalisDistanceMatrix"));
+  SEXP Mclass2 = PROTECT(Rf_mkChar("matrix"));
+  SET_STRING_ELT(Mattrib, 0, Mclass1);
+  SET_STRING_ELT(Mattrib, 1, Mclass2);
+  Rf_setAttrib(RM, R_ClassSymbol, Mattrib);
 
   int stdz = Rf_asLogical(Rstdz);
   int minus_min = Rf_asLogical(Rminus_min);
@@ -510,6 +515,6 @@ SEXP MatAndMulBtwVar(SEXP RM,
                     Rf_asReal(Rfwd_rho),
                     Rf_asReal(Rbck_rho));
 
-  UNPROTECT(2);
+  UNPROTECT(4);
   return(Rres);
 }

@@ -4,7 +4,15 @@
 \alias{DistMat}
 \title{Distance matrix}
 \usage{
-DistMat(fwd, bck, type = "raw", M = NULL, beta.theta.opts = NULL, nthreads = 1)
+DistMat(
+  fwd,
+  bck,
+  type = "raw",
+  M = NULL,
+  beta.theta.opts = NULL,
+  nthreads = min(parallel::detectCores(logical = FALSE), fwd$to_recipient -
+    fwd$from_recipient + 1)
+)
 }
 \arguments{
 \item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}

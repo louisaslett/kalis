@@ -10,7 +10,8 @@ PostProbs(
   unif.on.underflow = FALSE,
   M = NULL,
   beta.theta.opts = NULL,
-  nthreads = 1
+  nthreads = min(parallel::detectCores(logical = FALSE), fwd$to_recipient -
+    fwd$from_recipient + 1)
 )
 }
 \arguments{
