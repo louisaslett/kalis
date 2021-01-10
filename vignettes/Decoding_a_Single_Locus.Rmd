@@ -46,23 +46,23 @@ Forward(fwd, pars, 250)
 Backward(bck, pars, 250)
 ```
 
-Now that \code{fwd} and \code{bck} are at the same locus, they can be combined to obtain $p^\ell$ or $d^\ell$ as follows.
+Now that \code{fwd} and \code{bck} are at the same locus, they can be combined to obtain the posterior marginal copying probabilities, $p^\ell$, or a matrix of distances based on the negative log of those copying probabilities, $d^\ell$, as follows.
 
 ```{r}
 
-#p <- PostProbs(fwd,bck)
-#M <- DistMat(fwd,bck)
+p <- PostProbs(fwd,bck)
+d <- DistMat(fwd,bck)
 
 ```
 
 The distance matrix can be easily clustered and visualized just by calling 
 
 ```{r, results='asis'}
-#plot(M)
+plot(d)
 ```
 
 In some applications, one might want to symmetrize the matrix before plotting as follows.  
 ```{r, results='asis'}
-#M <- 0.5*(M + t(M))
-#plot(M)
+d <- 0.5*(d + t(d))
+plot(d)
 ```

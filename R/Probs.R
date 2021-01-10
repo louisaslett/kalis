@@ -122,7 +122,7 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #'   The \eqn{(j,i)}-th element of of the returned matrix is the inferred
 #'   distance \eqn{d_{ji}}{d_(j,i)} to haplotype \eqn{j} from haplotype \eqn{i} at
 #'   the current locus.  Each column encodes the output of an independent HMM: in column \eqn{i}, haplotype \eqn{i} is taken as the observed recipient haplotype and painted as a mosaic of the other \eqn{N-1} haplotypes.
-#'   Hence, the distances are asymmetric.
+#'   Hence, the distances are asymmetric.  If you wish to plot this matrix or perform clustering, you may want to symmetrize the matrix first.
 #'
 #'   If calculating many distance matrices in succession, providing a pre-existing matrix \code{M} that can be updated in-place can drastically increase speed by eliminating the time needed for memory allocation.
 #'   Be warned, since the matrix is updated in-place, if any other variables point to the same memory address, they will also be simultaneously overwritten.  For example, writing
