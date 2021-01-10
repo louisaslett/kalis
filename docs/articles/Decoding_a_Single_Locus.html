@@ -115,18 +115,24 @@
 
 <span class="fu"><a href="../reference/Forward.html">Forward</a></span><span class="op">(</span><span class="va">fwd</span>, <span class="va">pars</span>, <span class="fl">250</span><span class="op">)</span>
 <span class="fu"><a href="../reference/Backward.html">Backward</a></span><span class="op">(</span><span class="va">bck</span>, <span class="va">pars</span>, <span class="fl">250</span><span class="op">)</span></code></pre></div>
-<p>Now that  and  are at the same locus, they can be combined to obtain <span class="math inline">\(p^\ell\)</span> or <span class="math inline">\(d^\ell\)</span> as follows.</p>
+<p>Now that  and  are at the same locus, they can be combined to obtain the posterior marginal copying probabilities, <span class="math inline">\(p^\ell\)</span>, or a matrix of distances based on the negative log of those copying probabilities, <span class="math inline">\(d^\ell\)</span>, as follows.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="co">#p &lt;- PostProbs(fwd,bck)</span>
-<span class="co">#M &lt;- DistMat(fwd,bck)</span></code></pre></div>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PostProbs.html">PostProbs</a></span><span class="op">(</span><span class="va">fwd</span>,<span class="va">bck</span><span class="op">)</span>
+<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DistMat.html">DistMat</a></span><span class="op">(</span><span class="va">fwd</span>,<span class="va">bck</span><span class="op">)</span></code></pre></div>
 <p>The distance matrix can be easily clustered and visualized just by calling</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#plot(M)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>
+<span class="co">#&gt; Warning in levelplot.formula(form, data, aspect = aspect, xlim = xlim, ylim =</span>
+<span class="co">#&gt; ylim, : device support for raster images unknown, ignoring 'raster=TRUE'</span></code></pre></div>
+<p><img src="Decoding_a_Single_Locus_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>In some applications, one might want to symmetrize the matrix before plotting as follows.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#M &lt;- 0.5*(M + t(M))</span>
-<span class="co">#plot(M)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fl">0.5</span><span class="op">*</span><span class="op">(</span><span class="va">d</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>
+<span class="co">#&gt; Warning in levelplot.formula(form, data, aspect = aspect, xlim = xlim, ylim =</span>
+<span class="co">#&gt; ylim, : device support for raster images unknown, ignoring 'raster=TRUE'</span></code></pre></div>
+<p><img src="Decoding_a_Single_Locus_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
