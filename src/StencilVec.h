@@ -90,19 +90,15 @@
 #define KALIS_SET_DOUBLE(X) vdupq_n_f64((float64_t) X)
 #define KALIS_SET_INT32(X) vdupq_n_s32(X)
 #define KALIS_LOAD_INT_VEC(X) vld1q_s32((int32_t const *) &(X))
-#define KALIS_STORE_INT_VEC(X, Y)                              \
-TODO!
+#define KALIS_STORE_INT_VEC(X, Y) vst1q_s32((int32_t const *) &(X), Y)
 #define KALIS_XOR_INT(X, Y) veorq_s32(X, Y)
-#define KALIS_OR_INT(X, Y)                                 \
-TODO!
+#define KALIS_OR_INT(X, Y) vorrq_s32(X, Y)
 #define KALIS_LOADU_DOUBLE(X) vld1q_f64((float64_t const *) X)
 #define KALIS_STOREU_DOUBLE(X, Y) vst1q_f64((float64_t*) X, Y)
 #define KALIS_ADD_DOUBLE(X, Y) vaddq_f64(X, Y)
 #define KALIS_MUL_DOUBLE(X, Y) vmulq_f64(X, Y)
 #define KALIS_FMA_DOUBLE(X, Y, Z) vfmaq_f64(Z, X, Y)
-#define KALIS_HSUM_DOUBLE(X, Y)                             \
-((double *) &Y)[0] += ((double *) &Y)[1];                   \
-(X) += ((double *) &Y)[0];
+#define KALIS_HSUM_DOUBLE(X, Y) (X) += (double) vaddvq_f64(Y)
 #define KALIS_SPREADBITSTO_DOUBLE(X) ((float64x2_t) {(double) ((X)&1), (double) (((X)>>1)&1)});
 
 
