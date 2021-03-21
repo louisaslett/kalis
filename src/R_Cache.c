@@ -146,6 +146,7 @@ SEXP CacheHaplotypes_hdf5_2(SEXP Rnexthaps, SEXP Rnexthapsenv, SEXP RN, SEXP RL)
     Rnexthapmat = PROTECT(Rf_eval(Rnexthaps, Rnexthapsenv));
   }
 
+  UNPROTECT(1);
   KALIS_RETURN;
 }
 
