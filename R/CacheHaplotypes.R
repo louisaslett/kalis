@@ -209,6 +209,7 @@ CacheHaplotypes <- function(haps, loci.idx = NULL, hap.idx = NULL, warn.singleto
   } else {
     stop("Unable to load haplotypes from the provided object.")
   }
+  invisible(c(N(), L()))
 }
 
 
