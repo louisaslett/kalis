@@ -40,10 +40,13 @@ Imports:
     lobstr
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
-Suggests: rhdf5,
+Suggests: 
+    rhdf5,
     hdf5r,
     knitr,
     rmarkdown,
-    rstudioapi
+    rstudioapi,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Encoding: UTF-8
+Config/testthat/edition: 3
