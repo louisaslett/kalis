@@ -7,4 +7,6 @@
 
 SEXP ComputeStatus();
 
+SEXP VectorBitWidth();
+
 #endif

@@ -35,3 +35,7 @@ SEXP ComputeStatus() {
   UNPROTECT(1);
   return(res);
 }
+
+SEXP VectorBitWidth() {
+  return(Rf_ScalarInteger(KALIS_INTVEC_SIZE*32));
+}

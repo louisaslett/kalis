@@ -23,6 +23,7 @@ static const R_CallMethodDef callMethods[] = {
   CALLDEF(QueryCache2_ind, 1),
   CALLDEF(QueryCache2_loc, 1),
   CALLDEF(ComputeStatus, 0),
+  CALLDEF(VectorBitWidth, 0),
   CALLDEF(ResetForwardTable, 1),
   CALLDEF(Forward, 8),
   CALLDEF(MatAndMul, 9),
