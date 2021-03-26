@@ -10,7 +10,7 @@ start.new.example <- function(N, L, mut.rate = 0.3, Ne = 1, gamma = 1) {
     Morgan.dist[Morgan.dist > 0.008] <- exp(rlogis(sum(Morgan.dist > 0.008), -8.8384, 1.0920))
   rho <- CalcRho(cM = 100.0*Morgan.dist, s = Ne, gamma = gamma)
 
-  mu <- rnorm(L, 1e-8, 1e-8)
+  mu <- abs(rnorm(L, 1e-8, 1e-8))
   mu[1] <- 1e-8
 
   Pi <- matrix(abs(rnorm(N*N, 1/(N-1), 1/(10*N-1))), nrow = N, ncol = N)
