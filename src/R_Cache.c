@@ -56,7 +56,7 @@ SEXP CacheHaplotypes_matrix_2(SEXP Rx, SEXP RN, SEXP RL, SEXP Rtranspose) {
     alignment *= 2;
   }
   //REprintf("Alignment: %d\n", alignment);
-  int err = posix_memalign((void**) &hap_data, alignment, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE)*sizeof(uint32_t));
+  int err = posix_memalign((void**) &hap_data, alignment, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) (alignment/4)))*(alignment/4))*sizeof(uint32_t));
   if(err != 0) {
     REprintf("Error: Unable to assign aligned memory for cache storage (err # %d)\n", err);
     ClearHaplotypeCache2();
@@ -64,7 +64,7 @@ SEXP CacheHaplotypes_matrix_2(SEXP Rx, SEXP RN, SEXP RL, SEXP Rtranspose) {
   }
   hap_locus = (uint32_t**) R_Calloc(hap_size, uint32_t*);
   for(size_t l=0; l<hap_size; l++) {
-    hap_locus[l] = hap_data + l*((size_t) (ceil((num_inds/32.0)/8.0)))*8;
+    hap_locus[l] = hap_data + l*((size_t) (ceil((num_inds/32.0)/((double) (alignment/4)))*(alignment/4)));
   }
 
   // Process haplotypes in chunks from input function
@@ -111,7 +111,7 @@ SEXP CacheHaplotypes_hdf5_2(SEXP Rnexthaps, SEXP Rnexthapsenv, SEXP RN, SEXP RL)
     alignment *= 2;
   }
   //REprintf("Alignment: %d\n", alignment);
-  int err = posix_memalign((void**) &hap_data, alignment, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE)*sizeof(uint32_t));
+  int err = posix_memalign((void**) &hap_data, alignment, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) (alignment/4)))*(alignment/4))*sizeof(uint32_t));
   if(err != 0) {
     REprintf("Error: Unable to assign aligned memory for cache storage (err # %d)\n", err);
     ClearHaplotypeCache2();
@@ -119,7 +119,7 @@ SEXP CacheHaplotypes_hdf5_2(SEXP Rnexthaps, SEXP Rnexthapsenv, SEXP RN, SEXP RL)
   }
   hap_locus = (uint32_t**) R_Calloc(hap_size, uint32_t*);
   for(size_t l=0; l<hap_size; l++) {
-    hap_locus[l] = hap_data + l*((size_t) (ceil((num_inds/32.0)/8.0)))*8;
+    hap_locus[l] = hap_data + l*((size_t) (ceil((num_inds/32.0)/((double) (alignment/4)))*(alignment/4)));
   }
 
   // Process haplotypes in chunks from input function
@@ -256,7 +256,7 @@ SEXP CacheHaplotypes_hapgz_2(SEXP Rfile, SEXP Rloci_idx, SEXP Rhap_idx, SEXP RL,
     alignment *= 2;
   }
   //REprintf("Alignment: %d\n", alignment);
-  int err = posix_memalign((void**) &hap_data, alignment, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE)*sizeof(uint32_t));
+  int err = posix_memalign((void**) &hap_data, alignment, hap_size*((size_t) ceil((((double) num_inds)/32.0)/((double) (alignment/4)))*(alignment/4))*sizeof(uint32_t));
   if(err != 0) {
     REprintf("Error: Unable to assign aligned memory for cache storage (err # %d)\n", err);
     ClearHaplotypeCache2();
@@ -265,7 +265,7 @@ SEXP CacheHaplotypes_hapgz_2(SEXP Rfile, SEXP Rloci_idx, SEXP Rhap_idx, SEXP RL,
   }
   hap_locus = (uint32_t**) R_Calloc(hap_size, uint32_t*);
   for(size_t l=0; l<hap_size; l++) {
-    hap_locus[l] = hap_data + l*((size_t) (ceil((num_inds/32.0)/8.0)))*8;
+    hap_locus[l] = hap_data + l*((size_t) (ceil((num_inds/32.0)/((double) (alignment/4)))*(alignment/4)));
   }
 
   int bufsize = CacheHaplotypes_hapgz_ncols_2(fd) + 2;
