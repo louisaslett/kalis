@@ -1,3 +1,4 @@
+#!/bin/bash
 # Anticonf (tm, Jeroen Ooms) style alternative to autoconf written by Louis
 # Aslett based on work by Jeroen Ooms (cf github: jeroen/curl & jeroen/openssl)
 
