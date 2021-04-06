@@ -29,7 +29,7 @@ void MatAndMulBtwVar_C_probs(const double* restrict alpha,
     ccc = 1/rd;
   }
 
-  if(*g != 0 & *f != 0) {
+  if((*g != 0) & (*f != 0)) {
     double beta_coeff_c1 = (1 - bck_rho) / (*g);
     double alpha_coeff_c1 = (1 - fwd_rho) / (*f);
 
@@ -84,7 +84,7 @@ void MatAndMulBtwVar_C_raw_dist(const double* restrict alpha,
   double z0 = 0.0;
   double rd = (double) (r - 1);
 
-  if(*g != 0 & *f != 0) {
+  if((*g != 0) & (*f != 0)) {
     double beta_coeff_c1 = (1 - bck_rho) / (*g);
     double alpha_coeff_c1 = (1 - fwd_rho) / (*f);
 
@@ -155,7 +155,7 @@ void MatAndMulBtwVar_C_standardize_dist(const double* restrict alpha,
   double z2 = 0.0;
   double rd = (double) (r - 1);
 
-  if(*g != 0 & *f != 0) {
+  if((*g != 0) & (*f != 0)) {
 
     double beta_coeff_c1 = (1 - bck_rho) / (*g);
     double alpha_coeff_c1 = (1 - fwd_rho) / (*f);
