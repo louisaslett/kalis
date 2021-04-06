@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">kalis</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.91.1</span>
       </span>
     </div>
 
@@ -178,7 +178,7 @@
 The \((j,i)\)-th element of of the returned matrix is the inferred
 distance \(d_{ji}\) to haplotype \(j\) from haplotype \(i\) at
 the current locus.  Each column encodes the output of an independent HMM: in column \(i\), haplotype \(i\) is taken as the observed recipient haplotype and painted as a mosaic of the other \(N-1\) haplotypes.
-Hence, the distances are asymmetric.</p>
+Hence, the distances are asymmetric.  If you wish to plot this matrix or perform clustering, you may want to symmetrize the matrix first.</p>
 <p>If calculating many distance matrices in succession, providing a pre-existing matrix <code>M</code> that can be updated in-place can drastically increase speed by eliminating the time needed for memory allocation.
 Be warned, since the matrix is updated in-place, if any other variables point to the same memory address, they will also be simultaneously overwritten.  For example, writing</p><pre><span class='va'>M</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>fwd</span><span class='op'>$</span><span class='va'>alpha</span><span class='op'>)</span>,<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>fwd</span><span class='op'>$</span><span class='va'>alpha</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>P</span> <span class='op'>&lt;-</span> <span class='va'>M</span>
