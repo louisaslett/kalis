@@ -160,5 +160,9 @@ fi
 # Gen Makevars
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
 
+if [ -f a.out ] ; then
+    rm a.out
+fi
+
 # Success
 exit 0
