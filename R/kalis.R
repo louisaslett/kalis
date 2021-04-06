@@ -3,7 +3,6 @@
 #' @importFrom glue glue glue_collapse
 #' @importFrom rlang duplicate
 #' @importFrom digest digest
-#' @importFrom stringr str_split_fixed
 #'
 #' @useDynLib kalis, .registration = TRUE, .fixes = "CCall_"
 NULL

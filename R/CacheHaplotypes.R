@@ -174,8 +174,10 @@ CacheHaplotypes <- function(haps, loci.idx = NULL, hap.idx = NULL, warn.singleto
     }
 
     cached <- FALSE
-    ext <- stringr::str_to_lower(stringr::str_extract(haps, stringr::regex("\\.[0-9a-z]+$")))
-    ext2 <- stringr::str_to_lower(stringr::str_extract(haps, stringr::regex("\\.[0-9a-z]+\\.[0-9a-z]+$")))
+    ext.pos <- regexpr("\\.[[:alnum:]]+$", haps)
+    ext <- if(ext.pos > -1L) { regmatches(haps, ext.pos) } else { "" }
+    ext2.pos <- regexpr("\\.[[:alnum:]]+\\.[[:alnum:]]+$", haps)
+    ext2 <- if(ext2.pos > -1L) { regmatches(haps, ext2.pos) } else { "" }
 
     if(format == "hdf5" ||
        (format == "auto" && (ext == ".h5" ||

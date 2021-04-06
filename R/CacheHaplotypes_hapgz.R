@@ -8,6 +8,9 @@ CacheHaplotypes.hapgz <- function(hapgz.file,
     CacheHaplotypes.err(checkFile(hapgz.file, access = "r"))
   }
 
+  ext.pos <- regexpr("\\.[[:alnum:]]+\\.[[:alnum:]]+$", hapgz.file)
+  ext <- if(ext.pos > -1L) { regmatches(hapgz.file, ext.pos) } else { "" }
+
   # Figure out L, favouring fastest available option
   if(testCount(L, positive = TRUE)) {
     # use L directly
@@ -17,8 +20,9 @@ CacheHaplotypes.hapgz <- function(hapgz.file,
     }
 
     L <- .Call(CCall_CacheHaplotypes_hapgz_nlines, legendgz.file) - 1
-  } else if(stringr::str_to_lower(stringr::str_extract(hapgz.file, stringr::regex("\\.[0-9a-z]+\\.[0-9a-z]+$"))) == ".hap.gz") {
-    legendgz.file <- stringr::str_replace(hapgz.file, stringr::regex("\\.hap\\.gz$"), ".legend.gz")
+  } else if(ext == ".hap.gz") {
+    legendgz.file <- hapgz.file
+    regmatches(legendgz.file, ext.pos) <- ".legend.gz"
     if(!testFile(legendgz.file, access = "r")) {
       CacheHaplotypes.err(glue("Problem with file {legendgz.file} ... {checkFile(legendgz.file, access = 'r')}\n  TIP: specify the location of the legend gzip file using 'legendgz.file' argument, or specify number of loci directly with 'L' argument."))
     }
