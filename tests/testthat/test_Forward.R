@@ -111,7 +111,7 @@ run.test <- expression({
 })
 
 vecwidth <- .Call(kalis:::CCall_VectorBitWidth)
-Ns <- c(10,(vecwidth-4):(vecwidth+4),(vecwidth+32-3):(vecwidth+32+3))
+Ns <- c(10,(vecwidth-2):(vecwidth+2),(vecwidth+32-2):(vecwidth+32+2),(2*vecwidth-2):(2*vecwidth+2))
 
 for(N in Ns) {
   if(N > Ns[1]) {
