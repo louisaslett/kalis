@@ -120,23 +120,12 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
         beta[recipient + N*recipient_beta] = 0.0;
 
 #if KALIS_PI == PI_SCALAR
-        gold[recipient_beta] += Pi * theta;
+        if(recipient != donor)
+          gold[recipient_beta] += Pi * theta;
 #elif KALIS_PI == PI_MATRIX
         gold[recipient_beta] += Pi[donor + N*recipient] * theta;
 #endif
       }
-
-#if KALIS_PI == PI_SCALAR
-      // Adjust due to scalar Pi for recipient/receipient locus
-      // We can do this at the first locus but not later due to
-      // numerical stability problems if (1-mu)*Pi is large
-      // compared to all other contributions
-#if KALIS_MU == MU_SCALAR
-      gold[recipient_beta] -= (1.0-mu)*Pi;
-#elif KALIS_MU == MU_VECTOR
-      gold[recipient_beta] -= (1.0-mu[0])*Pi;
-#endif
-#endif
     }
   }
 
