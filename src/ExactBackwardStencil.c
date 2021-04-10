@@ -309,7 +309,7 @@ void* BCK_RAW_FN(SP_FN,MU_FN,PI_FN)(void *args) {
           betaRow[donornum] = rho[l] + (H * muTmp1a + muTmp2a) * betaRow[donornum] * omRhoDivG;
 #endif
 
-          donor_hap = (hap_locus[l][(N/(32*8))*8 + donor/32] >> (donor%32)) & 1;
+          donor_hap = (hap_locus[l][(N/(32*KALIS_INTVEC_SIZE))*KALIS_INTVEC_SIZE + donor/32] >> (donor%32)) & 1;
 #ifdef KALIS_SPEIDEL
           H = (recipient_hap | donor_hap) & 1;
 #else
