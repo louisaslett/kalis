@@ -90,7 +90,7 @@
 #define KALIS_SET_DOUBLE(X) vdupq_n_f64((float64_t) X)
 #define KALIS_SET_INT32(X) vdupq_n_s32(X)
 #define KALIS_LOAD_INT_VEC(X) vld1q_s32((int32_t const *) &(X))
-#define KALIS_STORE_INT_VEC(X, Y) vst1q_s32((int32_t const *) &(X), Y)
+#define KALIS_STORE_INT_VEC(X, Y) vst1q_s32((int32_t*) &(X), Y)
 #define KALIS_XOR_INT(X, Y) veorq_s32(X, Y)
 #define KALIS_OR_INT(X, Y) vorrq_s32(X, Y)
 #define KALIS_LOADU_DOUBLE(X) vld1q_f64((float64_t const *) X)
