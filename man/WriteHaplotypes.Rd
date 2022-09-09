@@ -69,9 +69,9 @@ Note that if \code{hdf5.file} exists but does not contain a dataset named
 }
 \section{Functions}{
 \itemize{
-\item \code{ReadHaplotypes}: Read haplotype matrix from HDF5 file
-}}
+\item \code{ReadHaplotypes()}: Read haplotype matrix from HDF5 file
 
+}}
 \examples{
 # Examples
 \dontrun{

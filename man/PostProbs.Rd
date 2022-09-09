@@ -36,10 +36,12 @@ that \eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two
 tables, given the haplotypes observed (over the whole sequence).
 
 If calculating many posterior probability matrices in succession, providing a pre-existing matrix \code{M} that can be updated in-place can drastically increase speed by eliminating the time needed for memory allocation.
-Be warned, since the matrix is updated in-place, if any other variables point to the same memory address, they will also be simultaneously overwritten.  For example, writing\preformatted{M <- matrix(0,nrow(fwd$alpha),ncol(fwd$alpha))
+Be warned, since the matrix is updated in-place, if any other variables point to the same memory address, they will also be simultaneously overwritten.  For example, writing
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{M <- matrix(0,nrow(fwd$alpha),ncol(fwd$alpha))
 P <- M
 PostProbs(fwd,bck,M=M)
-}
+}\if{html}{\out{</div>}}
 
 will update M and P simultaneously.
 }
