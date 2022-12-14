@@ -7,8 +7,8 @@ PKG_DEB_NAME="zlib1g-dev"
 PKG_RPM_NAME="zlib-devel"
 PKG_CSW_NAME="libz_dev"
 PKG_TEST_HEADER="<zlib.h>"
-PKG_LIBS="-lz"
-PKG_CFLAGS=""
+PKG_LIBS="-lz $PKG_LIBS"
+PKG_CFLAGS="$PKG_CFLAGS"
 
 # Try using pkg-config if it exists
 pkg-config --version >/dev/null 2>&1
@@ -24,8 +24,8 @@ if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
   PKG_LIBS="-L$LIB_DIR $PKG_LIBS"
 elif [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
   echo "Found pkg-config cflags and libs!"
-  PKG_CFLAGS=${PKGCONFIG_CFLAGS}
-  PKG_LIBS=${PKGCONFIG_LIBS}
+  PKG_CFLAGS="$PKGCONFIG_CFLAGS $PKG_CFLAGS"
+  PKG_LIBS="$PKGCONFIG_LIBS $PKG_LIBS"
 fi
 
 # Find compiler
