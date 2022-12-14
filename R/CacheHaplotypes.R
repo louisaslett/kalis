@@ -204,7 +204,7 @@ CacheHaplotypes <- function(haps, loci.idx = NULL, hap.idx = NULL, warn.singleto
     if(!is.integer(haps)) {
       stop("Haplotype matrix must be integer.")
     }
-    if(any(!(haps == 1 || haps == 0))) {
+    if(any(!(haps == 1 | haps == 0))) {
       stop("All entries in haplotype matrix must be zero or one.")
     }
     CacheHaplotypes.matrix(haps, loci.idx, hap.idx, ...)
