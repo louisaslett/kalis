@@ -1,0 +1,8 @@
+url: https://kalis.louisaslett.com/
+template:
+  bootstrap: 5
+  bootswatch: spacelab
+  bslib:
+    base_font: {google: "PT Serif"}
+    heading_font: {google: "Roboto Slab"}
+    code_font: {google: "JetBrains Mono"}
