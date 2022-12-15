@@ -245,8 +245,8 @@ CacheHaplotypes.err <- function(err) {
 #'   they were loaded into the cache (from 1 to the number of loci).
 #'   Cannot be specified at the same time as `loci.ids`
 #'
-#' @return A matrix of 0/1 integers with `length` rows and
-#'   `length(ids)` columns, such that haplotypes appear in columns.
+#' @return A matrix of 0/1 integers with `length(loci.idx)` rows and
+#'   `length(hap.idx)` columns, such that haplotypes appear in columns.
 #'
 #' @seealso \code{\link{CacheHaplotypes}} to fill the memory cache with
 #'   haplotypes.

@@ -17,8 +17,8 @@ Cannot be specified at the same time as \code{loci.ids}}
 they were loaded into the cache (from 1 to the number of haplotypes).}
 }
 \value{
-A matrix of 0/1 integers with \code{length} rows and
-\code{length(ids)} columns, such that haplotypes appear in columns.
+A matrix of 0/1 integers with \code{length(loci.idx)} rows and
+\code{length(hap.idx)} columns, such that haplotypes appear in columns.
 }
 \description{
 Retrieve haplotypes from the memory cache, converting the raw binary into
