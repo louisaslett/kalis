@@ -93,10 +93,7 @@ as a <span class="math inline">\(L = 500\)</span> by <span class="math inline">\
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Running in 64-bit mode using x86-64 architecture.</span></span>
 <span><span class="co">#&gt; Loops unrolled to depth 4.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Currently not using any special instruction sets (WARNING: poor performance likely).</span></span>
-<span><span class="co">#&gt; If this is unexpected (e.g. your CPU is Intel Haswell or newer architecture, or ARMv7+ with NEON support), then ensure that you are targeting the native architecture in compilation.  The easiest method is to add/change the following line in ~/.R/Makevars</span></span>
-<span><span class="co">#&gt; CFLAGS=-march=native -mtune=native -O3</span></span>
+<span><span class="co">#&gt; Currently using AVX2, AVX, SSE4.1, SSE2, FMA and BMI2 CPU instruction set extensions.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"SmallHaps"</span><span class="op">)</span></span></code></pre></div>
 <p> maintains a special cache for loading a haplotype dataset (see next
 section for details). Since is designed for much larger datasets than

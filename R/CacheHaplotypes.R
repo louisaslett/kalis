@@ -243,7 +243,6 @@ CacheHaplotypes.err <- function(err) {
 #' @param loci.idx which loci to retrieve from the cache, specified as a
 #'   (vector) index.  This enables specifying loci by offset in the order
 #'   they were loaded into the cache (from 1 to the number of loci).
-#'   Cannot be specified at the same time as `loci.ids`
 #'
 #' @return A matrix of 0/1 integers with `length(loci.idx)` rows and
 #'   `length(hap.idx)` columns, such that haplotypes appear in columns.
@@ -264,7 +263,7 @@ CacheHaplotypes.err <- function(err) {
 #'
 #' # ... and confirm we can read a chosen portion back.  Try to read back
 #' # the 10th and 11th haplotypes from loci 50 to 250 inclusive
-#' res <- QueryCache(10:11, 50, 201)
+#' res <- QueryCache(50:250, 10:11)
 #' all(res == haps[50:250, 10:11])
 #' }
 #'
