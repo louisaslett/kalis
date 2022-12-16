@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-In order to demonstrate how to use \pkg{kalis} to calculate and plot a local distance matrix $d^{\ell}$, the package comes with an toy dataset of 100 simulated haplotypes, \code{SmallHaps}, stored as a $L = 500$ by $N=100$ \code{matrix}. 
+In order to demonstrate how to use \pkg{kalis} to calculate and plot a local distance matrix $d^{\ell}$, the package comes with an toy dataset of 300 simulated haplotypes, \code{SmallHaps}, stored as a $L = 400$ by $N = 300$ \code{matrix}. 
 
 ```{r}
 require(kalis)
@@ -32,7 +32,7 @@ CacheHaplotypes(SmallHaps)
 From \code{R} we can inspect the haplotype cache to ensure that the data has loaded correctly using \code{QueryCache}.  With the haplotypes loaded, next we must specify our model parameters.  First we supply a recombination map, $m$, where $m^\ell$ is the distance between locus $\ell$ and $\ell + 1$ in Morgans.  Here we randomly generate a recombination map and set the remaining parameters to their default values.  
 
 ```{r}
-m <- rbeta(500-1,1,10)*1e-6
+m <- rbeta(400-1,1,10)*1e-6
 pars <- Parameters(CalcRho(cM = m, s = 1, gamma = 1), mu = 1e-8)
 ```
 

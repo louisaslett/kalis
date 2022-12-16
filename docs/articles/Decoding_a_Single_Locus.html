@@ -75,7 +75,7 @@
                         <h4 data-toc-skip class="author">Louis Aslett
 &amp; Ryan Christ</h4>
             
-            <h4 data-toc-skip class="date">2022-12-15</h4>
+            <h4 data-toc-skip class="date">2022-12-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/louisaslett/kalis/blob/HEAD/vignettes/Decoding_a_Single_Locus.Rmd" class="external-link"><code>vignettes/Decoding_a_Single_Locus.Rmd</code></a></small>
       <div class="d-none name"><code>Decoding_a_Single_Locus.Rmd</code></div>
@@ -85,8 +85,8 @@
     
 <p>In order to demonstrate how to use to calculate and plot a local
 distance matrix <span class="math inline">\(d^{\ell}\)</span>, the
-package comes with an toy dataset of 100 simulated haplotypes, , stored
-as a <span class="math inline">\(L = 500\)</span> by <span class="math inline">\(N=100\)</span> .</p>
+package comes with an toy dataset of 300 simulated haplotypes, , stored
+as a <span class="math inline">\(L = 400\)</span> by <span class="math inline">\(N = 300\)</span> .</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://kalis.louisaslett.com/">kalis</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: kalis</span></span>
@@ -115,7 +115,7 @@ specify our model parameters. First we supply a recombination map, <span class="
 generate a recombination map and set the remaining parameters to their
 default values.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="fl">500</span><span class="op">-</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">10</span><span class="op">)</span><span class="op">*</span><span class="fl">1e-6</span></span>
+<code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="fl">400</span><span class="op">-</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">10</span><span class="op">)</span><span class="op">*</span><span class="fl">1e-6</span></span>
 <span><span class="va">pars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Parameters.html">Parameters</a></span><span class="op">(</span><span class="fu"><a href="../reference/CalcRho.html">CalcRho</a></span><span class="op">(</span>cM <span class="op">=</span> <span class="va">m</span>, s <span class="op">=</span> <span class="fl">1</span>, gamma <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, mu <span class="op">=</span> <span class="fl">1e-8</span><span class="op">)</span></span></code></pre></div>
 <p>Next we must initialize a forward table object with our parameters
 that will start at locus <span class="math inline">\(0\)</span> and a

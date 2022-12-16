@@ -13,12 +13,12 @@ This is suitable for passing directly to \code{\link{CacheHaplotypes}}.
 data(SmallHaps)
 }
 \description{
-Simulated dataset with N=100 haplotypes at L=500 loci generated using msprime
+Simulated dataset with N=300 haplotypes at L=400 loci generated using msprime
 (Kelleher et al., 2016).
 }
 \examples{
 \dontrun{
-data(SmallHaps)
+data("SmallHaps")
 # Plot Allele Frequencies
 hist(rowMeans(SmallHaps),breaks=20)
 

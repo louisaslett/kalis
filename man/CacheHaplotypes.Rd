@@ -156,7 +156,7 @@ haps <- matrix(sample(0:1, n.haps*n.loci, replace = TRUE),
                ncol = n.haps)
 CacheHaplotypes(haps)
 # eg: loading the mini example built into the package:
-data(SmallHaps)
+data("SmallHaps")
 CacheHaplotypes(SmallHaps)
 }
 

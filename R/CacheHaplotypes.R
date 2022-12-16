@@ -144,7 +144,7 @@ assign("L", NA, envir = pkgVars) # must be integer
 #'                ncol = n.haps)
 #' CacheHaplotypes(haps)
 #' # eg: loading the mini example built into the package:
-#' data(SmallHaps)
+#' data("SmallHaps")
 #' CacheHaplotypes(SmallHaps)
 #' }
 #'
