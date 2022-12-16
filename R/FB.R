@@ -68,6 +68,9 @@ Forward <- function(fwd,
   }
   L <- get("L", envir = pkgVars)
   N <- get("N", envir = pkgVars)
+  if(t == 2147483647L + 1) {
+    t <- 1L
+  }
   if(!test_integerish(t, lower = 1, upper = L, any.missing = FALSE, len = 1)) {
     stop(glue("t must be a scalar integer in the range from 1 to {L}."))
   }
@@ -200,6 +203,9 @@ Backward <- function(bck,
   }
   L <- get("L", envir = pkgVars)
   N <- get("N", envir = pkgVars)
+  if(t == 2147483647L - 1) {
+    t <- L
+  }
   if(!test_integerish(t, lower = 1, upper = L, any.missing = FALSE, len = 1)) {
     stop(glue("t must be a scalar integer in the range from 1 to {L}."))
   }
