@@ -45,14 +45,14 @@ If you wish to plot this matrix or perform clustering, you may want to symmetriz
 Utility for calculating distance matrices at, in between, or excluding variants.
 }
 \details{
-This computes a local probability or distance matrix based on the forward and backward tables at a certain locus.
-The default usage is provide forward and backward tables at the same locus \eqn{l} so that the \eqn{(j,i)}-th element of of the returned matrix is the inferred distance \eqn{d_{ji}}{d_(j,i)} between haplotypes \eqn{j} and \eqn{i} at the current variant, \eqn{l}, of the two tables given the haplotypes observed (over the whole sequence).
+This computes a local probability or distance matrix based on the forward and backward tables at a certain variant.
+The default usage is provide forward and backward tables at the same variant \eqn{l} so that the \eqn{(j,i)}-th element of of the returned matrix is the inferred distance \eqn{d_{ji}}{d_(j,i)} between haplotypes \eqn{j} and \eqn{i} at the current variant, \eqn{l}, of the two tables given the haplotypes observed (over the whole sequence).
 
 In particular,
 
 \deqn{d_{ji} = -log(p_{ji})}{d_(j,i) = - log(p_(j,i)) }
 
-where \eqn{p_{ji}}{p_(j,i)} is the posterior marginal probability that \eqn{j} is coped by \eqn{i} at the current locus of the two tables, \eqn{l}, given the haplotypes observed (over the whole sequence).
+where \eqn{p_{ji}}{p_(j,i)} is the posterior marginal probability that \eqn{j} is coped by \eqn{i} at the current variant of the two tables, \eqn{l}, given the haplotypes observed (over the whole sequence).
 
 By convention, \eqn{d_{ii} = 0}{d_(i,i) = 0} for all \eqn{i}.
 
@@ -133,6 +133,6 @@ Speidel, L., Forest, M., Shi, S., & Myers, S. (2019). A method for genome-wide g
 }
 \seealso{
 \code{\link[=PostProbs]{PostProbs()}} to calculate the posterior marginal probabilities \eqn{p_{ji}}{p_(j,i)};
-\code{\link[=Forward]{Forward()}} to propogate a Forward table to a new locus;
-\code{\link[=Backward]{Backward()}} to propogate a Backward table to a new locus.
+\code{\link[=Forward]{Forward()}} to propagate a Forward table to a new variant;
+\code{\link[=Backward]{Backward()}} to propagate a Backward table to a new variant.
 }

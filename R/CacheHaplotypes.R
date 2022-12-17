@@ -220,7 +220,7 @@ CacheHaplotypes.err <- function(err) {
 #' This function enables you to copy whole or partial views of haplotypes/variants out of this low-level format and into a standard R matrix of 0's and 1's.
 #'
 #' @param loci.idx which variants to retrieve from the cache, specified as a (vector) index.
-#'   This enables specifying loci by offset in the order they were loaded into the cache (from 1 to the number of variants).
+#'   This enables specifying variants by offset in the order they were loaded into the cache (from 1 to the number of variants).
 #' @param hap.idx which haplotypes to retrieve from the cache, specified as a (vector) index.
 #'   This enables specifying haplotypes by offset in the order they were loaded into the cache (from 1 to the number of haplotypes).
 #'

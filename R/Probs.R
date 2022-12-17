@@ -1,9 +1,9 @@
 #' Posterior marginal probabilities
 #'
-#' Calculate the posterior marginal probabilities at a given locus using forward and backward tables propagated to that position.
+#' Calculate the posterior marginal probabilities at a given variant using forward and backward tables propagated to that position.
 #'
-#' The forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities at locus \eqn{l}.
-#' The \eqn{(j,i)}-th element of of the returned matrix is the probability that \eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two tables, given the haplotypes observed (over the whole sequence).
+#' The forward and backward tables must be at the same variant in order for them to be combined to yield the posterior marginal probabilities at variant \eqn{l}.
+#' The \eqn{(j,i)}-th element of of the returned matrix is the probability that \eqn{j} is copied by \eqn{i} at the current variant, \eqn{l}, of the two tables, given the haplotypes observed (over the whole sequence).
 #'
 #' Note that each column represents an independent HMM.
 #'
@@ -55,12 +55,12 @@
 #'
 #' @return
 #'   Matrix of posterior marginal probabilities.
-#'   The \eqn{(j,i)}-th element of of the returned matrix is the probability that \eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two tables, given the haplotypes observed (over the whole sequence).
+#'   The \eqn{(j,i)}-th element of of the returned matrix is the probability that \eqn{j} is copied by \eqn{i} at the current variant, \eqn{l}, of the two tables, given the haplotypes observed (over the whole sequence).
 #'
 #' @seealso
 #'   [DistMat()] to generate calculate \eqn{d_{ji}}{d_(j,i)} distances directly;
-#'   [Forward()] to propogate a Forward table to a new locus;
-#'   [Backward()] to propogate a Backward table to a new locus.
+#'   [Forward()] to propagate a Forward table to a new variant;
+#'   [Backward()] to propagate a Backward table to a new variant
 #'
 #' @examples
 #' # To get the posterior probabilities at, say, variants 100 of the toy data
@@ -111,14 +111,14 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #'
 #' Utility for calculating distance matrices at, in between, or excluding variants.
 #'
-#' This computes a local probability or distance matrix based on the forward and backward tables at a certain locus.
-#' The default usage is provide forward and backward tables at the same locus \eqn{l} so that the \eqn{(j,i)}-th element of of the returned matrix is the inferred distance \eqn{d_{ji}}{d_(j,i)} between haplotypes \eqn{j} and \eqn{i} at the current variant, \eqn{l}, of the two tables given the haplotypes observed (over the whole sequence).
+#' This computes a local probability or distance matrix based on the forward and backward tables at a certain variant.
+#' The default usage is provide forward and backward tables at the same variant \eqn{l} so that the \eqn{(j,i)}-th element of of the returned matrix is the inferred distance \eqn{d_{ji}}{d_(j,i)} between haplotypes \eqn{j} and \eqn{i} at the current variant, \eqn{l}, of the two tables given the haplotypes observed (over the whole sequence).
 #'
 #' In particular,
 #'
 #' \deqn{d_{ji} = -log(p_{ji})}{d_(j,i) = - log(p_(j,i)) }
 #'
-#' where \eqn{p_{ji}}{p_(j,i)} is the posterior marginal probability that \eqn{j} is coped by \eqn{i} at the current locus of the two tables, \eqn{l}, given the haplotypes observed (over the whole sequence).
+#' where \eqn{p_{ji}}{p_(j,i)} is the posterior marginal probability that \eqn{j} is coped by \eqn{i} at the current variant of the two tables, \eqn{l}, given the haplotypes observed (over the whole sequence).
 #'
 #' By convention, \eqn{d_{ii} = 0}{d_(i,i) = 0} for all \eqn{i}.
 #'
@@ -189,8 +189,8 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #'
 #' @seealso
 #'   [PostProbs()] to calculate the posterior marginal probabilities \eqn{p_{ji}}{p_(j,i)};
-#'   [Forward()] to propogate a Forward table to a new locus;
-#'   [Backward()] to propogate a Backward table to a new locus.
+#'   [Forward()] to propagate a Forward table to a new variant;
+#'   [Backward()] to propagate a Backward table to a new variant.
 #'
 #' @examples
 #' # To get the posterior probabilities at, say, variants 100 of the toy data
@@ -259,8 +259,8 @@ DistMat <- function(fwd, bck, type = "raw", M = NULL, beta.theta.opts = NULL,
 input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
 
   # RUN GENERAL CHECKS
-  if(fwd$l == 2147483647L){stop("forward table has not been initialized but not propagated to a locus in {1,...,L}.")}
-  if(bck$l == 2147483647L){stop("backward table has not been initialized but not propagated to a locus in {1,...,L}.")}
+  if(fwd$l == 2147483647L){stop("forward table has not been initialized but not propagated to a variant in {1,...,L}.")}
+  if(bck$l == 2147483647L){stop("backward table has not been initialized but not propagated to a variant in {1,...,L}.")}
 
   if(fwd$pars.sha256 != bck$pars.sha256) {
     stop("parameters used to calculate the forward table and backward table do not match.")
@@ -275,7 +275,7 @@ input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
   # RUN BTW LOCI and AT LOCI specific checks
   if(bck$beta.theta){
 
-    if(fwd$l == bck$l){stop("A forward table cannot be combined with a backward table at the same locus if the backward table is in beta.theta space.")}
+    if(fwd$l == bck$l){stop("A forward table cannot be combined with a backward table at the same variant if the backward table is in beta.theta space.")}
 
     if(!((!is.null(beta.theta.opts$rho.fwd) & !is.null(beta.theta.opts$rho.bck)) | (!is.null(beta.theta.opts$pars) & !is.null(beta.theta.opts$bias)))){
       stop("beta.theta.opts must be a named list containing either pars and bias OR rho.fwd and rho.bck.")
@@ -308,7 +308,7 @@ input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
 
   }else{
 
-    if(bck$l != fwd$l){stop("locus position of the forward table and backward table do not match.")}
+    if(bck$l != fwd$l){stop("variant position of the forward table and backward table do not match.")}
     return(NULL)
   }
 }

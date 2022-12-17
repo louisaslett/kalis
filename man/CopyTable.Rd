@@ -38,7 +38,7 @@ pars <- Parameters(rho)
 # Create the forward table we want to propagate
 fwd <- MakeForwardTable(pars)
 
-# Move to varient 10
+# Move to variant 10
 Forward(fwd, pars, 10)
 fwd
 

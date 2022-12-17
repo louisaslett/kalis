@@ -106,7 +106,7 @@ WriteHaplotypes <- function(hdf5.file, haps,
       if(!any(is.na(hap.ids)) && rhdf5::H5Lexists(h5, hap.ids.name))
         stop(glue("HDF5 file exists and does not contain haplotype data, but already has a data set at {hap.ids.name} so cannot create haplotype IDs."))
       if(!any(is.na(loci.ids)) && rhdf5::H5Lexists(h5, loci.ids.name))
-        stop(glue("HDF5 file exists and does not contain haplotype data, but already has a data set at {loci.ids.name} so cannot create locus IDs."))
+        stop(glue("HDF5 file exists and does not contain haplotype data, but already has a data set at {loci.ids.name} so cannot create variant IDs."))
       message(glue("HDF5 file already exists but does not contain haplotype data at {haps.name}, now adding."))
       if(!rhdf5::h5createDataset(file = hdf5.file,
                                  dataset = haps.name,
@@ -172,7 +172,7 @@ WriteHaplotypes <- function(hdf5.file, haps,
 
         if(!any(is.na(loci.ids))) {
           if(!rhdf5::H5Lexists(h5, loci.ids.name)) {
-            stop("locus IDs have been provided, but the existing loci in the HDF5 file do not already have IDs.")
+            stop("variant IDs have been provided, but the existing variants in the HDF5 file do not already have IDs.")
           }
           h5.loci.ids <- rhdf5::H5Dopen(h5, loci.ids.name)
           h5.loci.ids.S <- rhdf5::H5Dget_space(h5.loci.ids)
@@ -180,7 +180,7 @@ WriteHaplotypes <- function(hdf5.file, haps,
           if(length(loci.ids.dims) != 1)
             stop(glue("The data set {loci.ids.name} does not contain 1-dimensional data ... invalid IDs."))
           if(loci.ids.dims[1] != L)
-            stop(glue("The length of locus IDs in the {loci.ids.name} data set is not {L} ... invalid IDs."))
+            stop(glue("The length of variant IDs in the {loci.ids.name} data set is not {L} ... invalid IDs."))
           h5.loci <- rhdf5::h5read(h5, loci.ids.name)
           if(any(as.character(loci.ids) != h5.loci))
             stop("The loci IDs provided and those in the HDF5 file differ.")

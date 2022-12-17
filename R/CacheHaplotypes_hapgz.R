@@ -24,12 +24,12 @@ CacheHaplotypes.hapgz <- function(hapgz.file,
     legendgz.file <- hapgz.file
     regmatches(legendgz.file, ext.pos) <- ".legend.gz"
     if(!testFile(legendgz.file, access = "r")) {
-      CacheHaplotypes.err(glue("Problem with file {legendgz.file} ... {checkFile(legendgz.file, access = 'r')}\n  TIP: specify the location of the legend gzip file using 'legendgz.file' argument, or specify number of loci directly with 'L' argument."))
+      CacheHaplotypes.err(glue("Problem with file {legendgz.file} ... {checkFile(legendgz.file, access = 'r')}\n  TIP: specify the location of the legend gzip file using 'legendgz.file' argument, or specify number of variants directly with 'L' argument."))
     }
 
     L <- .Call(CCall_CacheHaplotypes_hapgz_nlines, legendgz.file) - 1
   } else {
-    warning("legendgz.file not specified, cannot auto-detect it, and L not separately specified.  Performing slower scan of haplotype gz file to determine number of loci.\n  TIP: specify the location of the legend gzip file using 'legendgz.file' argument, or specify number of loci directly with 'L' argument to avoid this.")
+    warning("legendgz.file not specified, cannot auto-detect it, and L not separately specified.  Performing slower scan of haplotype gz file to determine number of loci.\n  TIP: specify the location of the legend gzip file using 'legendgz.file' argument, or specify number of variants directly with 'L' argument to avoid this.")
 
     L <- .Call(CCall_CacheHaplotypes_hapgz_nlines, hapgz.file)
   }

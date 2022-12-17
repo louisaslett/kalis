@@ -32,14 +32,14 @@ By default uses the \code{parallel} package to detect the number of physical cor
 }
 \value{
 Matrix of posterior marginal probabilities.
-The \eqn{(j,i)}-th element of of the returned matrix is the probability that \eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two tables, given the haplotypes observed (over the whole sequence).
+The \eqn{(j,i)}-th element of of the returned matrix is the probability that \eqn{j} is copied by \eqn{i} at the current variant, \eqn{l}, of the two tables, given the haplotypes observed (over the whole sequence).
 }
 \description{
-Calculate the posterior marginal probabilities at a given locus using forward and backward tables propagated to that position.
+Calculate the posterior marginal probabilities at a given variant using forward and backward tables propagated to that position.
 }
 \details{
-The forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities at locus \eqn{l}.
-The \eqn{(j,i)}-th element of of the returned matrix is the probability that \eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two tables, given the haplotypes observed (over the whole sequence).
+The forward and backward tables must be at the same variant in order for them to be combined to yield the posterior marginal probabilities at variant \eqn{l}.
+The \eqn{(j,i)}-th element of of the returned matrix is the probability that \eqn{j} is copied by \eqn{i} at the current variant, \eqn{l}, of the two tables, given the haplotypes observed (over the whole sequence).
 
 Note that each column represents an independent HMM.
 
@@ -107,6 +107,6 @@ d <- DistMat(fwd, bck)
 }
 \seealso{
 \code{\link[=DistMat]{DistMat()}} to generate calculate \eqn{d_{ji}}{d_(j,i)} distances directly;
-\code{\link[=Forward]{Forward()}} to propogate a Forward table to a new locus;
-\code{\link[=Backward]{Backward()}} to propogate a Backward table to a new locus.
+\code{\link[=Forward]{Forward()}} to propagate a Forward table to a new variant;
+\code{\link[=Backward]{Backward()}} to propagate a Backward table to a new variant
 }

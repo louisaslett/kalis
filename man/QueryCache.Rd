@@ -8,7 +8,7 @@ QueryCache(loci.idx = NULL, hap.idx = NULL)
 }
 \arguments{
 \item{loci.idx}{which variants to retrieve from the cache, specified as a (vector) index.
-This enables specifying loci by offset in the order they were loaded into the cache (from 1 to the number of variants).}
+This enables specifying variants by offset in the order they were loaded into the cache (from 1 to the number of variants).}
 
 \item{hap.idx}{which haplotypes to retrieve from the cache, specified as a (vector) index.
 This enables specifying haplotypes by offset in the order they were loaded into the cache (from 1 to the number of haplotypes).}

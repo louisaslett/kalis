@@ -1,10 +1,10 @@
 ---
-title: "Decoding a Single Locus"
+title: "Decoding a Single Variant"
 author: "Louis Aslett & Ryan Christ"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Decoding a Single Locus}
+  %\VignetteIndexEntry{Decoding a Single Variant}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -29,14 +29,14 @@ data("SmallHaps")
 CacheHaplotypes(SmallHaps)
 ```
 
-From \code{R} we can inspect the haplotype cache to ensure that the data has loaded correctly using \code{QueryCache}.  With the haplotypes loaded, next we must specify our model parameters.  First we supply a recombination map, $m$, where $m^\ell$ is the distance between locus $\ell$ and $\ell + 1$ in Morgans.  Here we randomly generate a recombination map and set the remaining parameters to their default values.  
+From \code{R} we can inspect the haplotype cache to ensure that the data has loaded correctly using \code{QueryCache}.  With the haplotypes loaded, next we must specify our model parameters.  First we supply a recombination map, $m$, where $m^\ell$ is the distance between variant $\ell$ and $\ell + 1$ in Morgans.  Here we randomly generate a recombination map and set the remaining parameters to their default values.  
 
 ```{r}
 m <- rbeta(400-1,1,10)*1e-6
 pars <- Parameters(CalcRho(cM = m, s = 1, gamma = 1), mu = 1e-8)
 ```
 
-Next we must initialize a forward table object with our parameters that will start at locus $0$ and a backward table object that will start at the locus $L+1$.  We then use the function \code{Forward} to propagate the forward table \code{fwd} using parameters \code{pars} to target locus $250$.  We do the same with the backward table using the \code{Backward} function.  Note that \code{Forward} and \code{Backward} do not return anything, the tables \code{fwd} and \code{bck} are updated in place.
+Next we must initialize a forward table object with our parameters that will start at variant $0$ and a backward table object that will start at the variant $L+1$.  We then use the function \code{Forward} to propagate the forward table \code{fwd} using parameters \code{pars} to target variant $250$.  We do the same with the backward table using the \code{Backward} function.  Note that \code{Forward} and \code{Backward} do not return anything, the tables \code{fwd} and \code{bck} are updated in place.
 
 ```{r}
 fwd <- MakeForwardTable(pars)
@@ -46,7 +46,7 @@ Forward(fwd, pars, 250)
 Backward(bck, pars, 250)
 ```
 
-Now that \code{fwd} and \code{bck} are at the same locus, they can be combined to obtain the posterior marginal copying probabilities, $p^\ell$, or a matrix of distances based on the negative log of those copying probabilities, $d^\ell$, as follows.
+Now that \code{fwd} and \code{bck} are at the same variant, they can be combined to obtain the posterior marginal copying probabilities, $p^\ell$, or a matrix of distances based on the negative log of those copying probabilities, $d^\ell$, as follows.
 
 ```{r}
 

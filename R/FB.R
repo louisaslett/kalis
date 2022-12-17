@@ -78,7 +78,7 @@ Forward <- function(fwd,
   }
   t <- as.integer(t)
   if(fwd$l <= L && fwd$l > t) {
-    stop(glue("The forward table provided is for locus position {fwd$l} which is already past requested locus {t}"))
+    stop(glue("The forward table provided is for variant position {fwd$l} which is already past requested variant {t}"))
   }
   if(nrow(fwd$alpha) != N || ncol(fwd$alpha) != fwd$to_recipient-fwd$from_recipient+1) {
     stop("Forward table is of the wrong dimensions for this problem.")
@@ -213,7 +213,7 @@ Backward <- function(bck,
   }
   t <- as.integer(t)
   if(bck$l < t) {
-    stop(glue("The backward table provided is for locus position {bck$l} which is already before requested locus {t}"))
+    stop(glue("The backward table provided is for variant position {bck$l} which is already before requested variant {t}"))
   }
   if(!is.vector(beta.theta) || !is.logical(beta.theta) || length(beta.theta) != 1 || is.na(beta.theta)) {
     stop("beta.theta must be a single logical value.")
@@ -222,7 +222,7 @@ Backward <- function(bck,
     stop("Backward table is of the wrong dimensions for this problem.")
   }
   if(t == bck$l && bck$beta.theta && !beta.theta) {
-    stop("Cannot move from beta-theta space to beta space without moving at least one locus.")
+    stop("Cannot move from beta-theta space to beta space without moving at least one variant.")
   }
 
   if(identical(nthreads, "R")) {
