@@ -99,6 +99,10 @@ WriteHaplotypes <- function(hdf5.file, haps,
     write.loci.ids <- TRUE
   }
 
+  if(length(find.package("rhdf5", quiet = TRUE)) == 0) {
+    stop("The WriteHaplotypes function requires the optional rhdf5 package to be installed (see Bioconductor https://bioconductor.org/packages/rhdf5)")
+  }
+
   if(file.exists(hdf5.file)) {
     h5 <- rhdf5::H5Fopen(hdf5.file)
 
@@ -346,6 +350,9 @@ ReadHaplotypes <- function(hdf5.file,
   }
   if(!identical(loci.ids, NA) && !identical(loci.idx, NA)) {
     stop("Can only specify one of loci.ids or loci.idx argument.")
+  }
+  if(length(find.package("rhdf5", quiet = TRUE)) == 0) {
+    stop("The ReadHaplotypes function requires the optional rhdf5 package to be installed (see Bioconductor https://bioconductor.org/packages/rhdf5)")
   }
 
   # Get dimensions of hap data
