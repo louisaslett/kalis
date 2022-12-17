@@ -38,7 +38,7 @@ CacheSummary <- function() {
       alignment <- alignment*2;
     }
     x <- alignment/4
-    cat(glue("  Memory consumed ≈ {signif((L*ceiling((N/32.0)/x)*x*4)/1073741824.0, 4)} GB."), "\n")
+    cat(glue("  Memory consumed: {prettyunits::pretty_bytes(L*ceiling((N/32.0)/x)*x*4)}."), "\n")
     invisible(c(L(), N()))
   }
 }

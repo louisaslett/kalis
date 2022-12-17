@@ -113,7 +113,7 @@ print.kalisForwardTable <- function(x, ...) {
   } else {
     cat(glue("  Current variant = {x$l}"), "\n")
   }
-  cat("  Memory consumed: ", ceiling(utils::object.size(x)/1e6)/1e3, "GB.\n")
+  cat("  Memory consumed:", format(lobstr::obj_size(x)), "\n")
 }
 
 
@@ -233,7 +233,7 @@ print.kalisBackwardTable <- function(x, ...) {
   } else {
     cat(glue("  Current variant = {x$l}"), "\n")
   }
-  cat("  Memory consumed: ", ceiling(utils::object.size(x)/1e6)/1e3, "GB.\n")
+  cat("  Memory consumed:", format(lobstr::obj_size(x)), "\n")
 }
 
 #' Copy Forward/Backward tables
@@ -291,7 +291,6 @@ print.kalisBackwardTable <- function(x, ...) {
 #' fwd
 #' fwd2
 #'
-#' @importFrom lobstr ref
 #' @export
 CopyTable <- function(to, from) {
   if(!("kalisForwardTable" %in% class(to)) && !("kalisBackwardTable" %in% class(to))) {
@@ -326,7 +325,7 @@ CopyTable <- function(to, from) {
     stop("The two tables provided were created with different parameter values (SHA-256 mismatch).")
   }
 
-  if(all(ref(from) == ref(to))) {
+  if(all(lobstr::ref(from) == lobstr::ref(to))) {
     stop("from and to are pointing to the same memory space.  Please make a new table before copying.")
   }
 
