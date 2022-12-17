@@ -33,8 +33,7 @@ Imports:
     rlang,
     digest (>= 0.6.18),
     checkmate,
-    fastcluster,
-    lattice,
+    grDevices,
     RColorBrewer,
     lobstr,
     prettyunits
@@ -43,9 +42,11 @@ Roxygen: list(markdown = TRUE)
 Suggests: 
     rhdf5,
     hdf5r,
+    rstudioapi,
     knitr,
     rmarkdown,
-    rstudioapi,
+    fastcluster,
+    lattice,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Encoding: UTF-8
