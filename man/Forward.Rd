@@ -14,61 +14,63 @@ Forward(
 }
 \arguments{
 \item{fwd}{a \code{kalisForwardTable} object, as returned by
-\code{\link{MakeForwardTable}}.}
+\code{\link[=MakeForwardTable]{MakeForwardTable()}}.}
 
 \item{pars}{a \code{kalisParameters} object, as returned by
-\code{\link{Parameters}}.}
+\code{\link[=Parameters]{Parameters()}}.}
 
 \item{t}{a variant to move the forward table to.
 Must be greater than or equal to current variant of \code{fwd}.
-By default, it simply advances to the next variant downstream.}
+By default, it advances to the next variant downstream (or if an uninitialised table, to the first variant).}
 
-\item{nthreads}{the number of CPU cores to use.
+\item{nthreads}{if a scalar, the number of CPU cores to use.
+If a vector, launch as many threads as the length of the vector and attempt to pin the threads to those CPU cores (requires system to support thread affinity).
 By default uses the \code{parallel} package to detect the number of physical cores.}
 }
 \value{
 There is nothing returned.
-For performance reasons, \code{fwd} is updated in-place.
+
+\strong{NOTE:} for performance reasons, \code{fwd} is updated in-place.
 }
 \description{
 Propagates a \code{kalisForwardTable} to a downstream variant.
 The table is updated in-place.
 }
 \details{
-\code{Forward} implements the forward algorithm to advance the Li and
-Stephens rescaled hidden Markov model forward probabilities to a new target
-variant.  Naturally, this can only propagate a table to variants downstream
-of its current position.
+\code{Forward} implements the forward algorithm to advance the Li and Stephens rescaled hidden Markov model forward probabilities to a new target variant.
+Naturally, this can only propagate a table to variants downstream of its current position.
 
 For mathematical details please see Section 2 of the kalis paper (TODO: ref).
-Note that the precise formulation of the forward equation is determined by
-whether the flag \code{use.spiedel} is set in the parameters provided in
-\code{pars}.
+Note that the precise formulation of the forward equation is determined by whether the flag \code{use.spiedel} is set in the parameters provided in \code{pars}.
 }
 \examples{
-\dontrun{
 # Load the toy haplotype example and set toy parameters
-CacheHaplotypes(SmallHaplotypes)
-pars <- Parameters(rho = CalcRho(cM = SmallMap))
+data("SmallHaps")
+data("SmallMap")
 
-# Create a forward table for the hidden Markov model incorporating all
-# recipient and donor haplotypes
+CacheHaplotypes(SmallHaps)
+
+rho <- CalcRho(diff(SmallMap))
+pars <- Parameters(rho)
+
+# Create the forward table we want to propagate
 fwd <- MakeForwardTable(pars)
 
-# Create a forward table for the hidden Markov model incorporating only
-# recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.
-fwd <- MakeForwardTable(pars, 100, 200)
+# Calling Forward on this uninitialised table moves it to the first variant
+Forward(fwd, pars)
+fwd
 
-# This table is uninitialised, but ready to pass to the Forward function
-# which will trigger initialisation and propagation.
-# For example, initialise and propagate forward to the 10th variant:
-Forward(fwd, pars, 10, nthreads = 8)
-print(fwd)
-}
+# And again moves it to the next variant (etcetera)
+Forward(fwd, pars)
+fwd
+
+# Or zoom to a particular variant
+Forward(fwd, pars, 50)
+fwd
 
 }
 \seealso{
-\code{\link{MakeForwardTable}} to generate a forward table;
-\code{\link{Backward}} for the analogous backward propagation function;
-\code{\link{CopyTable}} to create a copy of table.
+\code{\link[=MakeForwardTable]{MakeForwardTable()}} to generate a forward table;
+\code{\link[=Backward]{Backward()}} for the analogous backward propagation function;
+\code{\link[=CopyTable]{CopyTable()}} to create a copy of table.
 }

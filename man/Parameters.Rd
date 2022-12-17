@@ -13,111 +13,88 @@ Parameters(
 )
 }
 \arguments{
-\item{rho}{recombination probability vector (must be L-1 long).
-See \code{\link{CalcRho}} for assistance constructing this from a recombination
-map.}
+\item{rho}{recombination probability vector (must be \eqn{L-1} long).
+See \code{\link[=CalcRho]{CalcRho()}} for assistance constructing this from a recombination
+map/distances.}
 
 \item{mu}{a scalar (for uniform) or vector (for varying) mutation probabilities.}
 
 \item{Pi}{leaving the default of uniform copying probabilities is recommended
 for computational efficiency.
-If desired, a full matrix of background copying probabilities can be
-provided, such that the (j,i)-th element is the background probability that
-i copies from j.
-Hence, (a) the diagonal must be zero; and (b) the columns of Pi must sum to
-1.
-Note: each column corresponds to an independent Li and Stephens
-hidden Markov model.}
+If desired, a full matrix of background copying probabilities can be provided, such that the \verb{[j,i]}-th element is the background probability that \code{i} copies from \code{j}.
+Hence, (a) the diagonal must be zero; and (b) the columns of \code{Pi} must sum to 1.
+Note: each column corresponds to an independent Li and Stephens hidden Markov model.}
 
-\item{use.speidel}{a logical, if TRUE, use the asymmetric mutation model used by RELATE (Speidel et al., 2019).
-WARNING: this model assumes that the cached haplotypes have an ancestral/derived encoding --
-zeros denote ancestral variant carriers and ones denote derived variant carriers. Defaults to FALSE.}
+\item{use.speidel}{a logical, if \code{TRUE}, use the asymmetric mutation model used by RELATE (Speidel et al., 2019).
+\strong{WARNING:} this model assumes that the cached haplotypes have an ancestral/derived encoding -- zeros denote ancestral variant carriers and ones denote derived variant carriers. Defaults to \code{FALSE}.}
 
-\item{check.rho}{if \code{TRUE}, a check that rho is within machine precision
-will be performed.
-If you have created rho using \code{\link{CalcRho}} with \code{floor=TRUE}
-then this will be satisfied automatically.
-This can be important to ensure that the convex combination rho and (1-rho)
-normalises to 1 within machine precision, but an advanced user may wish to
-override this requirement.}
+\item{check.rho}{if \code{TRUE}, a check that rho is within machine precision will be performed.
+If you have created rho using \code{\link[=CalcRho]{CalcRho()}} with \code{floor = TRUE} then this will be satisfied automatically.
+This can be important to ensure that the convex combination \code{rho} and \code{(1-rho)} normalises to 1 within machine precision, but an advanced user may wish to override this requirement.}
 }
 \value{
-A \code{kalisParameters} object, suitable for use to create the
-standard forward and backward recursion tables with
-\code{\link{MakeForwardTable}} and \code{\link{MakeBackwardTable}}.
-Note you will also need to provide this parameters object when propagating
-those tables using either \code{\link{Forward}} or \code{\link{Backward}}.
+A \code{kalisParameters} object, suitable for use to create the standard forward and backward recursion tables with \code{\link[=MakeForwardTable]{MakeForwardTable()}} and \code{\link[=MakeBackwardTable]{MakeBackwardTable()}}.
+Note you will also need to provide this parameters object when propagating those tables using either \code{\link[=Forward]{Forward()}} or \code{\link[=Backward]{Backward()}}.
 }
 \description{
-Specify a parameter set to be used for a particular Li and Stephens hidden
-Markov model run.
+Specify a parameter set to be used for a particular Li and Stephens hidden Markov model run.
 }
 \details{
-There are 3 parameters which must be specified before the forward or backward
-equations in the Li and Stephens hidden Markov model can be run.  These are
-the vector of recombination probabilities, the mutation probabilities, and the
-prior copying probabilities.
+There are 3 parameters which must be specified before the forward or backward equations in the Li and Stephens hidden Markov model can be run.
+These are the vector of recombination probabilities, the mutation probabilities, and the prior copying probabilities.
+
+\strong{NOTE:} the corresponding haplotype data \emph{must} have already been inserted into the kalis cache by a call to \code{\link[=CacheHaplotypes]{CacheHaplotypes()}}, since this function performs checks to confirm the dimensionality matches.
 
 \strong{Recombination probabilities, \code{rho}}
 
-This is a vector parameter which must have length \code{L-1}, where \code{L}
-is the number of variants that have been
-loaded into the kalis memory cache (using \code{\link{CacheHaplotypes}}).
-Note that element i of this vector should be the recombination probability
-between variants \code{i} and \code{i+1}.
+This is a vector parameter which must have length \eqn{L-1}, where \eqn{L} is the number of variants that have been loaded into the kalis memory cache (using \code{\link[=CacheHaplotypes]{CacheHaplotypes()}}).
+Note that element \code{i} of this vector should be the recombination probability between variants \code{i} and \code{i+1}.
 
-There is a utility function, \code{\link{CalcRho}}, to assist with creating
-these recombination probabilities from a recombination map.
+There is a utility function, \code{\link[=CalcRho]{CalcRho()}}, to assist with creating these recombination probabilities from a recombination map.
 
 By default, the recombination probabilities are set to zero everywhere.
 
 \strong{Mutation probabilities, \code{mu}}
 
-The mutation probabilities may be specified either as uniform across all
-variants (by providing a single scalar value), or may be varying
-at each variant (by providing a vector of length equal to the number of
-variants, \code{L}, which have been loaded into the kalis memory cache).
+The mutation probabilities may be specified either as uniform across all variants (by providing a single scalar value), or may be varying at each variant (by providing a vector of length equal to the number of variants, \eqn{L}, which have been loaded into the kalis memory cache).
 
 By default, mutation probabilities are set to \eqn{10^{-8}}{10^-8}.
 
 \strong{Copying probabilities, \code{Pi}}
 
-The original Li and Stephens model assumed that each haplotype has an equal
-prior probability of copying from any other.
-However, in the spirit of ChromoPainter (Lawson et al., 2012) we allow a
-matrix of prior copying probabilities.
+The original Li and Stephens model assumed that each haplotype has an equal prior probability of copying from any other.
+However, in the spirit of ChromoPainter (Lawson et al., 2012) we allow a matrix of prior copying probabilities.
 
-The copying probabilities may be specified as a standard R matrix of size
-\eqn{N \times N}{N * N}
-(where \eqn{N} is the number of haplotypes which have been loaded into the
-kalis memory cache).  The element at row j, column i corresponds to the prior
-(background) probability that haplotype i copies from haplotype j.
-Note that the diagonal must by definition be zero and columns must sum to
-one.
-Alternatively, for uniform copying probabilities, this argument need not be specified
-(resulting in copying probability \eqn{\frac{1}{N-1}}{1/(N-1)} everywhere).
+The copying probabilities may be specified as a standard R matrix of size \eqn{N \times N}{N x N} (where \eqn{N} is the number of haplotypes which have been loaded into the kalis memory cache).
+The element at row \code{j}, column \code{i} corresponds to the prior (background) probability that haplotype \code{i} copies from haplotype \code{j}.
+Note that the diagonal must by definition be zero and columns must sum to one.
+Alternatively, for uniform copying probabilities, this argument need not be specified (resulting in copying probability \eqn{\frac{1}{N-1}}{1/(N-1)} everywhere).
 
-Note that there is a computational cost associated with non-uniform copying
-probabilities, so it is recommended to leave the
-default of uniform probabilities when appropriate
-(Note: \emph{do not} specify a uniform matrix when uniform probabilities are intended, since this
-would end up incurring the computational cost of non-uniform probabilities).
+Note that there is a computational cost associated with non-uniform copying probabilities, so it is recommended to leave the default of uniform probabilities when appropriate (\strong{Note:} \emph{do not} specify a uniform matrix when uniform probabilities are intended, since this would end up incurring the computational cost of non-uniform probabilities).
 }
 \examples{
-\dontrun{
+# Load the mini example data and recombination map from the package built-in #' # dataset
+data("SmallHaps")
+data("SmallMap")
+
+# Load haplotypes into cache
+CacheHaplotypes(SmallHaps)
+
 # To use all the defaults
 pars <- Parameters()
+pars
 
-# To use indirect genetics parameters which you have already specified in
-# morgan.dist, Ne and gamma variables to specify rho, leaving mu and Pi as
-# defaults
-pars <- Parameters(CalcRho(morgan.dist, Ne, gamma))
+# Or perhaps use SmallMap to compute the recombination probabilities, leaving
+# s and gamma as default
+rho <- CalcRho(diff(SmallMap))
+pars <- Parameters(rho)
+pars
 
-# Then use to create a table (eg for forward) ...
+# Then use these parameters to create a table (eg for forward) ...
 fwd <- MakeForwardTable(pars)
 # ... and to propagate it
-Forward(fwd, pars, 10, nthreads = 8)
-}
+Forward(fwd, pars, 10)
+fwd
 
 }
 \references{
@@ -128,9 +105,6 @@ Speidel, L., Forest, M., Shi, S., & Myers, S. (2019). A method for
 genome-wide genealogy estimation for thousands of samples. \emph{Nature Genetics}, \strong{51}(1321–1329).
 }
 \seealso{
-\code{\link{MakeForwardTable}} and \code{\link{MakeForwardTable}}
-which construct table objects which internally reference a parameters
-environment.
-\code{\link{Forward}} and \code{\link{Backward}} which propagate those
-tables according to the Li and Stephens model.
+\code{\link[=MakeForwardTable]{MakeForwardTable()}} and \code{\link[=MakeBackwardTable]{MakeBackwardTable()}} which construct table objects which internally reference a parameters environment;
+\code{\link[=Forward]{Forward()}} and \code{\link[=Backward]{Backward()}} which propagate those tables according to the Li and Stephens model.
 }

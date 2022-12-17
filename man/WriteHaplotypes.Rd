@@ -3,7 +3,7 @@
 \name{WriteHaplotypes}
 \alias{WriteHaplotypes}
 \alias{ReadHaplotypes}
-\title{Write haplotype matrix to HDF5 file}
+\title{I/O for haplotype matrices in HDF5 files}
 \usage{
 WriteHaplotypes(
   hdf5.file,
@@ -29,69 +29,71 @@ ReadHaplotypes(
 )
 }
 \arguments{
-\item{hdf5.file}{the name of the file which the haplotypes are to be
-written to.}
+\item{hdf5.file}{the name of the file which the haplotypes are to be written to.}
 
-\item{haps}{a vector or a matrix where each column is a haplotype to be
-stored in the file \code{hdf5.file}.}
+\item{haps}{a vector or a matrix where each column is a haplotype to be stored in the file \code{hdf5.file}.}
 
-\item{append}{a logical indicating whether overwrite (default) or append to
-an existing \code{haps} dataset if it already exists in \code{hdf5.file}.}
+\item{hap.ids}{a character vector naming haplotypes when writing, or which haplotypes are to be read.}
 
-\item{ids}{a vector of the indices of which haplotypes are to be read.}
+\item{loci.ids}{a character vector naming variants when writing, or which variants are to be read.}
+
+\item{haps.name}{a string providing the full path and object name where the haplotype matrix should be read/written.}
+
+\item{hap.ids.name}{a string providing the full path and object name where the haplotype names (in \code{haps.ids}) should be read/written.}
+
+\item{loci.ids.name}{a string providing the full path and object name where the variant names (in \code{loci.ids}) should be read/written.}
+
+\item{append}{a logical indicating whether overwrite (default) or append to an existing \code{haps} dataset if it already exists in \code{hdf5.file}.}
+
+\item{loci.idx}{an integer vector of the indices of which variants are to be read (for naming, use \code{hap.ids}).}
+
+\item{hap.idx}{an integer vector of the indices of which haplotypes are to be read (for naming, use \code{hap.ids}).}
+
+\item{transpose}{a logical indicating whether to transpose the logic of haplotypes/variants when reading.}
 }
 \value{
-\code{WriteIndividualHaplotypeH5} does not return anything.
+\code{WriteHaplotypes} does not return anything.
 
-\code{ReadIndividualHaplotypeH5} returns a binary matrix containing the
+\code{ReadHaplotypes} returns a binary matrix containing the
 haplotypes that were specified in \code{ids}.
 }
 \description{
-Writes an R matrix of 0/1s to the HDF5 format which is used for reading to
-optimised in memory cache.  If you're working with a large haplotype dataset,
-we recommend that you convert it directly to this HDF5 format (see vignette)
-rather than read it into R.
+Reads/writes an R matrix of 0/1s to the HDF5 format which is used for reading to the kalis optimised memory cache.
+If you're working with a large haplotype dataset, we recommend that you convert it directly to this HDF5 format (see vignette) rather than read it into R.
 }
 \details{
-The primary method to load data into kalis' internal optimised cache is from
-an HDF5 storage file.  If the user has a collection of haplotypes already
-represented as a matrix of 0's and 1's in R, this function can be used to
-write to HDF5 in the format required to load into cache.
+The primary method to load data into kalis' internal optimised cache is from an HDF5 storage file.
+If the user has a collection of haplotypes already represented as a matrix of 0's and 1's in R, this function can be used to write to HDF5 in the format required to load into cache.
 
-kalis expects a 2-dimensional object named \code{haps} at the root
-level of the HDF5 file.  Haplotypes should be stored in the slowest changing
-dimension as defined in the HDF5 specification (note that different languages
-treat this as rows or columns).
+kalis expects a 2-dimensional object named \code{haps} at the root level of the HDF5 file.
+Haplotypes should be stored in the slowest changing dimension as defined in the HDF5 specification (note that different languages treat this as rows or columns).
 
-Note that if \code{hdf5.file} exists but does not contain a dataset named
-\code{haps}, then \code{WriteIndividualHaplotypeH5} will simply create a
-\code{haps} dataset within the existing file.
+Note that if \code{hdf5.file} exists but does not contain a dataset named \code{haps}, then \code{WriteHaplotypes} will simply create a \code{haps} dataset within the existing file.
 }
-\section{Functions}{
-\itemize{
-\item \code{ReadHaplotypes()}: Read haplotype matrix from HDF5 file
-
-}}
 \examples{
-# Examples
-\dontrun{
-# For the purposes of an example, generate random haplotypes ...
-n.haps <- 100
-n.loci <- 20000
-haps <- matrix(sample(0:1, n.haps*n.loci, replace = TRUE),
-               nrow = n.loci,
-               ncol = n.haps)
+\donttest{
+# Generate a random mini set of haplotypes to write
+n.haps <- 20
+n.vars <- 200
+haps <- matrix(sample(0:1, n.haps*n.vars, replace = TRUE),
+               nrow = n.vars, ncol = n.haps)
 
-# ... write them to a file ...
-WriteIndividualHaplotypeH5("myhaps.h5", haps)
+# ... write them to a file, giving alphabetic letters "A" through "T" as the #' # haplotype names ...
+WriteHaplotypes("~/myhaps.h5", haps, hap.ids = LETTERS[1:20])
 
 # ... and confirm we can read a chosen portion back.  Try to read back
-# the 10th and 11th haplotypes
-res <- ReadIndividualHaplotypeH5("myhaps.h5", 10:11)
-all(res == haps[, 10:11])
+# the 10th and 11th haplotypes by using their name (J and K are 10th and 11th
+# letter of the alphabet)
+h5 <- ReadHaplotypes("~/myhaps.h5", hap.ids = c("J","K"))
+all(h5$haps == haps[, 10:11])
+
+# Read from the .h5 file into the kalis cache and confirm that what we wrote
+# out to the HDF5 file matches the original matrix we generated in R
+CacheHaplotypes("~/myhaps.h5")
+all(haps == QueryCache())
 }
 
 }
 \seealso{
-\code{\link{CacheHaplotypes}} to fill the kalis cache with haplotypes
+\code{\link[=CacheHaplotypes]{CacheHaplotypes()}} to fill the kalis cache with haplotypes.
 }

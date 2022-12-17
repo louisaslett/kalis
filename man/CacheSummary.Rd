@@ -13,15 +13,30 @@ N()
 L()
 }
 \value{
-\code{CacheSummary()} prints information about the current state of the kalis
-cache.
+\code{CacheSummary()} prints information about the current state of the kalis cache.
+Also invisibly returns a vector giving the dimensions of the cached haplotype data (num variants, num haplotypes), or \code{NULL} if the cache is empty.
 
-\code{N()} returns the number of haplotypes currently in the kalis cache, or
-\code{NULL} if the cache is empty.
+\code{N()} returns the number of haplotypes currently in the kalis cache, or \code{NULL} if the cache is empty.
 
-\code{L()} returns the number of variants currently in the kalis cache, or
-\code{NULL} if the cache is empty.
+\code{L()} returns the number of variants currently in the kalis cache, or \code{NULL} if the cache is empty.
 }
 \description{
 Retrieve information about the haplotype cache
+}
+\examples{
+# First fill the cache with the toy data included in the package
+data("SmallHaps")
+CacheHaplotypes(SmallHaps)
+
+# View full summary
+CacheSummary()
+
+# Also note the invisible return
+dims <- CacheSummary()
+dims
+
+# Get just numbers of haplotypes and variants separately
+N()
+L()
+
 }

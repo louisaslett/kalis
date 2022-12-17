@@ -10,24 +10,29 @@ ClearHaplotypeCache()
 Nothing is returned.
 }
 \description{
-Remove all the haplotypes that were cached by a previous caching call and
-free up the memory that was allocated for future use.
+Remove all the haplotypes that were cached by a previous caching call and free up the memory that was allocated for future use.
 }
 \details{
-To achieve higher performance, kalis internally represents haplotypes
-in an efficient raw binary format in memory which cannot be directly viewed
-or manipulated in R.  In particular, this cache sits outside R's memory
-management and will never be garbage collected (unless R is quit or the
-package is unloaded).  Therefore, this function is provided to enable freeing
-the memory used by this cache.
+To achieve higher performance, kalis internally represents haplotypes in an efficient raw binary format in memory which cannot be directly viewed or manipulated in R, though you can extract a view from it using \code{\link[=QueryCache]{QueryCache()}}.
+In particular, this cache sits outside R's memory management and will never be garbage collected (unless R is quit or the package is unloaded).
+Therefore, this function is provided to enable freeing the memory used by this cache.
 }
 \examples{
-# Examples
-\dontrun{
+# First fill the cache with the toy data included in the package
+data("SmallHaps")
+CacheHaplotypes(SmallHaps)
+
+# Verify it is there
+CacheSummary()
+
+# Now clear
 ClearHaplotypeCache()
-}
+
+# Verify it is gone
+CacheSummary()
 
 }
 \seealso{
-\code{\link{CacheHaplotypes}} to create a haplotype cache.
+\code{\link[=CacheHaplotypes]{CacheHaplotypes()}} to create a haplotype cache;
+\code{\link[=QueryCache]{QueryCache()}} to view the cache contents in an R matrix.
 }

@@ -14,28 +14,35 @@ which is to be reset.}
 Resets the provided forward/backward table so it can propagate from the start/end of the Li and Stephens hidden Markov model.
 }
 \details{
-It will usually be faster to reset a forward/backward table rather than remove and make a new one.  This function marks a table as reset so that it will be propagated as if freshly allocated.
+It is \emph{much} faster to reset a forward/backward table rather than remove and make a new one.
+This function marks a table as reset so that it will be propagated as if freshly allocated.
 }
 \examples{
-# Examples
-\dontrun{
-# Create a forward table for the hidden Markov model incorporating all
-# recipient and donor haplotypes
-fwd <- MakeForwardTable()
+# Load the toy haplotype example and set toy parameters
+data("SmallHaps")
+data("SmallMap")
 
-# Propagate forward to variant 10:
-Forward(fwd, pars, 10, nthreads = 8)
+CacheHaplotypes(SmallHaps)
+
+rho <- CalcRho(diff(SmallMap))
+pars <- Parameters(rho)
+
+# Create the forward table we want to propagate
+fwd <- MakeForwardTable(pars)
+
+# Move to varient 10
+Forward(fwd, pars, 10)
+fwd
 
 # This does **NOT** work as intended, cannot reverse from variant 10:
-Forward(fwd, pars, 5, nthreads = 8)
+try(Forward(fwd, pars, 5))
 
 # Could reset the table though:
 ResetTable(fwd)
-Forward(fwd, pars, 5, nthreads = 8)
-}
+Forward(fwd, pars, 5)
+fwd
 
 }
 \seealso{
-\code{\link{MakeForwardTable}}, \code{\link{MakeBackwardTable}} to
-create fresh tables.
+\code{\link[=MakeForwardTable]{MakeForwardTable()}}, \code{\link[=MakeBackwardTable]{MakeBackwardTable()}} to create fresh tables.
 }

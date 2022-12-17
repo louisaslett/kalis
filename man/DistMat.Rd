@@ -15,103 +15,124 @@ DistMat(
 )
 }
 \arguments{
-\item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
+\item{fwd}{a forward table as returned by \code{\link[=MakeForwardTable]{MakeForwardTable()}} and propagated to a target variant by \code{\link[=Forward]{Forward()}}.
+Must be at the same variant as \code{bck} (unless \code{bck} is in "beta-theta space" in which case if must be downstream ... see \code{\link[=Backward]{Backward()}} for details).}
 
-\item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}
+\item{bck}{a backward table as returned by \code{\link[=MakeBackwardTable]{MakeBackwardTable()}} and propagated to a target variant by \code{\link[=Backward]{Backward()}}.
+Must be at the same variant as \code{fwd} (unless \code{bck} is in "beta-theta space" in which case if must be downstream ... see \code{\link[=Backward]{Backward()}} for details).}
 
-\item{type}{a string; must be one of "raw", "std" or "minus.min".  See details.}
+\item{type}{a string; must be one of \code{"raw"}, \code{"std"} or \code{"minus.min"}.
+See Details.}
 
-\item{M}{an pre-existing matrix into which to write the distances, can yield substantial speed up but requires special attention (see Details)}
+\item{M}{a pre-existing matrix into which to write the distances.
+This can yield substantial speed up but requires special attention, see Details.}
 
 \item{beta.theta.opts}{a list; see Details.}
 
-\item{nthreads}{the number of CPU cores to use. By default no parallelism is used.}
-
-\item{from_recipient}{offset for distributed problems, see kalis distributed.}
+\item{nthreads}{the number of CPU cores to use. By default no parallelism is used.
+By default uses the \code{parallel} package to detect the number of physical cores.}
 }
 \value{
-Matrix of distances.
+A matrix of distances.
 The \eqn{(j,i)}-th element of of the returned matrix is the inferred
-distance \eqn{d_{ji}}{d_(j,i)} to haplotype \eqn{j} from haplotype \eqn{i} at
-the current locus.  Each column encodes the output of an independent HMM: in column \eqn{i}, haplotype \eqn{i} is taken as the observed recipient haplotype and painted as a mosaic of the other \eqn{N-1} haplotypes.
-Hence, the distances are asymmetric.  If you wish to plot this matrix or perform clustering, you may want to symmetrize the matrix first.
+distance \eqn{d_{ji}}{d_(j,i)} to haplotype \eqn{j} from haplotype \eqn{i} at the current variant.
+Each column encodes the output of an independent HMM: in column \eqn{i}, haplotype \eqn{i} is taken as the observed recipient haplotype and painted as a mosaic of the other \eqn{N-1} haplotypes.
+Hence, the distances are asymmetric.
 
-If calculating many distance matrices in succession, providing a pre-existing matrix \code{M} that can be updated in-place can drastically increase speed by eliminating the time needed for memory allocation.
-Be warned, since the matrix is updated in-place, if any other variables point to the same memory address, they will also be simultaneously overwritten.  For example, writing
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{M <- matrix(0,nrow(fwd$alpha),ncol(fwd$alpha))
-P <- M
-DistMat(fwd,bck,M=M)
-}\if{html}{\out{</div>}}
-
-will update M and P simultaneously.
-
-When provided, \code{M} must have dimensions matching that of \code{fwd$alpha}.  Typically, that is simply \eqn{N} x \eqn{N} for \eqn{N} haplotypes.
-However, if kalis is being run distributed, \code{M} will be a \eqn{N} x \eqn{R} matrix where \eqn{R} is the number of recipient haplotypes on the given machine.
-
-In order to obtain distance matrices between variants \code{fwd$l} and \code{bck$l}, then \code{bck} must be in \code{beta.theta} space.  This allows the forward and backward tables to be transitioning both tables to some genomic position between \code{fwd$l} and \code{bck$l}.
-The precise recombination distance by which each table is propagated can be controlled by passing optional arguments in a list via \code{beta.theta.opts}.
-The recombination distances used can be specified in one of two ways.
-\enumerate{
-\item Manually.  In this case, \code{beta.theta.opts} is a list containing two named elements:
-\itemize{
-\item \code{"rho.fwd"} \eqn{\in (0,1)} specifies the transition probability \eqn{rho} for propagating the forward table
-\item \code{"rho.bck"} \eqn{\in (0,1)} specifies the transition probability \eqn{rho} for propagating the backward table.
-}
-\item Implicitly.  In this case, \code{beta.theta.opts} is a list containing two named elements:
-\itemize{
-\item \code{"pars"}: a \code{kalisParameters} object that implicitly defines the recombination distance \eqn{\rho^\star} between \code{fwd$l} and \code{bck$l}
-\item \code{"bias"} \eqn{\in (0,1)}.  The forward table is propagated a distance of \code{bias}\eqn{\rho^\star} and the backward table is propagated a distance of \code{(1-bias)}\eqn{\rho^\star}.
-}
-}
+If you wish to plot this matrix or perform clustering, you may want to symmetrize the matrix first.
 }
 \description{
-Utility for calculating posterior marginal probabilities and distance matrices at, in between, or excluding variants.
+Utility for calculating distance matrices at, in between, or excluding variants.
 }
 \details{
-This computes a local probability or distance matrix based on the forward and backward
-tables at a certain locus.  The default usage is provide forward and backward tables at the same locus \eqn{l}.
-so that the \eqn{(j,i)}-th element of of the returned matrix is the inferred distance
-\eqn{d_{ji}}{d_(j,i)} between haplotypes \eqn{j} and \eqn{i} at the current
-locus, \eqn{l}, of the two tables given the haplotypes observed (over the
-whole sequence).
+This computes a local probability or distance matrix based on the forward and backward tables at a certain locus.
+The default usage is provide forward and backward tables at the same locus \eqn{l} so that the \eqn{(j,i)}-th element of of the returned matrix is the inferred distance \eqn{d_{ji}}{d_(j,i)} between haplotypes \eqn{j} and \eqn{i} at the current variant, \eqn{l}, of the two tables given the haplotypes observed (over the whole sequence).
 
 In particular,
 
 \deqn{d_{ji} = -log(p_{ji})}{d_(j,i) = - log(p_(j,i)) }
 
-where \eqn{p_{ji}}{p_(j,i)} is the posterior marginal probability that
-\eqn{j} is coped by \eqn{i} at the current locus of the two tables, \eqn{l},
-given the haplotypes observed (over the whole sequence).
+where \eqn{p_{ji}}{p_(j,i)} is the posterior marginal probability that \eqn{j} is coped by \eqn{i} at the current locus of the two tables, \eqn{l}, given the haplotypes observed (over the whole sequence).
 
 By convention, \eqn{d_{ii} = 0}{d_(i,i) = 0} for all \eqn{i}.
 
-The above is returned when \code{type} is "raw" (the default).
-However, for convenience, a user may change \code{type} to "std" in order for the distances
-to be mean and variance normalized before returning.  Changing \code{type} to "minus.min"
-will subtract the min distance in each column from that column before returning
-(this is the default in RELATE, see bottom of the RELATE paper Supplement Page 7 (Speidel et al, 2019))
+The above is returned when the \code{type} argument is \code{"raw"} (the default).
+However, for convenience, a user may change the \code{type} argument to \code{"std"} in order for the distances to be mean and variance normalized before returning.
+Changing \code{type} to \code{"minus.min"} will subtract the min distance in each column from that column before returning (this is the default in RELATE, see bottom of the RELATE paper Supplement Page 7 (Speidel et al, 2019)).
 
-This function also allows users to calculate distance matrices in between variants and also to calculate matrices that exclude a set of consecutive variants by passing a
-backward table in beta.theta space.  If in beta.theta space, \code{bck$l} may be greater than but not equal to \code{fwd$l}.  \code{beta.theta.opts} provides is required in this case to
-set how much of a recombination distance to propagate each matrix before combining them into distances.  See Details below.
+This function also allows users to calculate distance matrices in between variants and also to calculate matrices that exclude a set of consecutive variants by passing a backward table in "beta-theta space."
+If in "beta-theta space", \code{bck$l} may be greater than but not equal to \code{fwd$l}.
+\code{beta.theta.opts} provides is required in this case to set how much of a recombination distance to propagate each matrix before combining them into distances.  See Details below.
+
+\strong{Notes on \code{beta.theta.opts}}
+
+In order to obtain distance matrices between variants \code{fwd$l} and \code{bck$l}, then \code{bck} must be in "beta-theta space", see \code{\link[=Backward]{Backward()}} for details.
+This allows the forward and backward tables to be transitioning both tables to some genomic position between \code{fwd$l} and \code{bck$l}.
+The precise recombination distance by which each table is propagated can be controlled by passing optional arguments in a list via \code{beta.theta.opts}.
+The recombination distances used can be specified in one of two ways.
+\enumerate{
+\item Manually.
+In this case, \code{beta.theta.opts} is a list containing two named elements:
+\itemize{
+\item \code{"rho.fwd"} \eqn{\in (0,1)} specifies the transition probability \code{rho} for propagating the forward table.
+\item \code{"rho.bck"} \eqn{\in (0,1)} specifies the transition probability \code{rho} for propagating the backward table.
+}
+\item Implicitly.
+In this case, \code{beta.theta.opts} is a list containing two named elements:
+}
+\itemize{
+\item \code{"pars"}: a \code{kalisParameters} object that implicitly defines the recombination distance \eqn{\rho^\star} between \code{fwd$l} and \code{bck$l}
+\item \code{"bias"} \eqn{\in (0,1)}.
+The forward table is propagated a distance of \code{(bias)}\eqn{\rho^\star} and the backward table is propagated a distance of \code{(1-bias)}\eqn{\rho^\star}.
+}
+
+\strong{Performance notes}
+
+If calculating many posterior probability matrices in succession, providing a pre-existing matrix \code{M} that can be updated in-place can dramatically increase speed by eliminating the time needed for memory allocation.
+Be warned, since the matrix is updated in-place, if any other variables point to the same memory address, they will also be simultaneously overwritten.
+For example, writing
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{M <- matrix(0, nrow(fwd$alpha), ncol(fwd$alpha))
+P <- M
+PostProbs(fwd, bck, M = M)
+}\if{html}{\out{</div>}}
+
+will update \code{M} and \code{P} simultaneously.
+
+When provided, \code{M} must have dimensions matching that of \code{fwd$alpha}.
+Typically, that is simply \eqn{N \times N}{N x N} for \eqn{N} haplotypes.
+However, if kalis is being run in a distributed manner, \code{M} will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
 }
 \examples{
-\dontrun{
-# To get the distances at, say, locus 10 ...
-Forward(fwd, pars, 10, nthreads = 8)
-Backward(bck, pars, 10, nthreads = 8)
+# To get the posterior probabilities at, say, variants 100 of the toy data
+# built into kalis
+data("SmallHaps")
+data("SmallMap")
+
+CacheHaplotypes(SmallHaps)
+
+rho <- CalcRho(diff(SmallMap))
+pars <- Parameters(rho)
+
+fwd <- MakeForwardTable(pars)
+bck <- MakeBackwardTable(pars)
+
+Forward(fwd, pars, 100)
+Backward(bck, pars, 100)
+
+p <- PostProbs(fwd, bck)
 d <- DistMat(fwd, bck)
+
+\donttest{
+plot(d)
 }
 
 }
 \references{
-Speidel, L., Forest, M., Shi, S., & Myers, S. (2019). A method for
-genome-wide genealogy estimation for thousands of samples. \emph{Nature Genetics}, \strong{51}(1321–1329).
+Speidel, L., Forest, M., Shi, S., & Myers, S. (2019). A method for genome-wide genealogy estimation for thousands of samples. \emph{Nature Genetics}, \strong{51}(1321–1329).
 }
 \seealso{
-\code{\link{PostProbs}} to calculate the posterior marginal probabilities
-\eqn{p_{ji}}{p_(j,i)};
-\code{\link{Forward}} to propogate a Forward table to a new locus;
-\code{\link{Backward}} to propogate a Backward table to a new locus.
+\code{\link[=PostProbs]{PostProbs()}} to calculate the posterior marginal probabilities \eqn{p_{ji}}{p_(j,i)};
+\code{\link[=Forward]{Forward()}} to propogate a Forward table to a new locus;
+\code{\link[=Backward]{Backward()}} to propogate a Backward table to a new locus.
 }

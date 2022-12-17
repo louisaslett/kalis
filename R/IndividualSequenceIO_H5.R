@@ -1,58 +1,56 @@
-#' Write haplotype matrix to HDF5 file
+#' I/O for haplotype matrices in HDF5 files
 #'
-#' Writes an R matrix of 0/1s to the HDF5 format which is used for reading to
-#' optimised in memory cache.  If you're working with a large haplotype dataset,
-#' we recommend that you convert it directly to this HDF5 format (see vignette)
-#' rather than read it into R.
+#' Reads/writes an R matrix of 0/1s to the HDF5 format which is used for reading to the kalis optimised memory cache.
+#' If you're working with a large haplotype dataset, we recommend that you convert it directly to this HDF5 format (see vignette) rather than read it into R.
 #'
-#' The primary method to load data into kalis' internal optimised cache is from
-#' an HDF5 storage file.  If the user has a collection of haplotypes already
-#' represented as a matrix of 0's and 1's in R, this function can be used to
-#' write to HDF5 in the format required to load into cache.
+#' The primary method to load data into kalis' internal optimised cache is from an HDF5 storage file.
+#' If the user has a collection of haplotypes already represented as a matrix of 0's and 1's in R, this function can be used to write to HDF5 in the format required to load into cache.
 #'
-#' kalis expects a 2-dimensional object named \code{haps} at the root
-#' level of the HDF5 file.  Haplotypes should be stored in the slowest changing
-#' dimension as defined in the HDF5 specification (note that different languages
-#' treat this as rows or columns).
+#' kalis expects a 2-dimensional object named `haps` at the root level of the HDF5 file.
+#' Haplotypes should be stored in the slowest changing dimension as defined in the HDF5 specification (note that different languages treat this as rows or columns).
 #'
-#' Note that if \code{hdf5.file} exists but does not contain a dataset named
-#' \code{haps}, then \code{WriteIndividualHaplotypeH5} will simply create a
-#' \code{haps} dataset within the existing file.
+#' Note that if `hdf5.file` exists but does not contain a dataset named `haps`, then `WriteHaplotypes` will simply create a `haps` dataset within the existing file.
 #'
-#' @param hdf5.file the name of the file which the haplotypes are to be
-#'   written to.
-#' @param haps a vector or a matrix where each column is a haplotype to be
-#'   stored in the file \code{hdf5.file}.
-#' @param ids a vector of the indices of which haplotypes are to be read.
-#' @param append a logical indicating whether overwrite (default) or append to
-#'   an existing \code{haps} dataset if it already exists in \code{hdf5.file}.
+#' @param hdf5.file the name of the file which the haplotypes are to be written to.
+#' @param haps a vector or a matrix where each column is a haplotype to be stored in the file `hdf5.file`.
+#' @param hap.ids a character vector naming haplotypes when writing, or which haplotypes are to be read.
+#' @param loci.ids a character vector naming variants when writing, or which variants are to be read.
+#' @param hap.idx an integer vector of the indices of which haplotypes are to be read (for naming, use `hap.ids`).
+#' @param loci.idx an integer vector of the indices of which variants are to be read (for naming, use `hap.ids`).
+#' @param haps.name a string providing the full path and object name where the haplotype matrix should be read/written.
+#' @param hap.ids.name a string providing the full path and object name where the haplotype names (in `haps.ids`) should be read/written.
+#' @param loci.ids.name a string providing the full path and object name where the variant names (in `loci.ids`) should be read/written.
+#' @param append a logical indicating whether overwrite (default) or append to an existing `haps` dataset if it already exists in `hdf5.file`.
+#' @param transpose a logical indicating whether to transpose the logic of haplotypes/variants when reading.
 #'
-#' @return
-#' \code{WriteIndividualHaplotypeH5} does not return anything.
+#' @return `WriteHaplotypes` does not return anything.
 #'
-#' \code{ReadIndividualHaplotypeH5} returns a binary matrix containing the
-#' haplotypes that were specified in \code{ids}.
+#'   `ReadHaplotypes` returns a binary matrix containing the
+#' haplotypes that were specified in `ids`.
 #'
-#' @seealso
-#' \code{\link{CacheHaplotypes}} to fill the kalis cache with haplotypes
+#' @seealso [CacheHaplotypes()] to fill the kalis cache with haplotypes.
 #'
 #' @examples
-#' # Examples
-#' \dontrun{
-#' # For the purposes of an example, generate random haplotypes ...
-#' n.haps <- 100
-#' n.loci <- 20000
-#' haps <- matrix(sample(0:1, n.haps*n.loci, replace = TRUE),
-#'                nrow = n.loci,
-#'                ncol = n.haps)
+#' \donttest{
+#' # Generate a random mini set of haplotypes to write
+#' n.haps <- 20
+#' n.vars <- 200
+#' haps <- matrix(sample(0:1, n.haps*n.vars, replace = TRUE),
+#'                nrow = n.vars, ncol = n.haps)
 #'
-#' # ... write them to a file ...
-#' WriteIndividualHaplotypeH5("myhaps.h5", haps)
+#' # ... write them to a file, giving alphabetic letters "A" through "T" as the #' # haplotype names ...
+#' WriteHaplotypes("~/myhaps.h5", haps, hap.ids = LETTERS[1:20])
 #'
 #' # ... and confirm we can read a chosen portion back.  Try to read back
-#' # the 10th and 11th haplotypes
-#' res <- ReadIndividualHaplotypeH5("myhaps.h5", 10:11)
-#' all(res == haps[, 10:11])
+#' # the 10th and 11th haplotypes by using their name (J and K are 10th and 11th
+#' # letter of the alphabet)
+#' h5 <- ReadHaplotypes("~/myhaps.h5", hap.ids = c("J","K"))
+#' all(h5$haps == haps[, 10:11])
+#'
+#' # Read from the .h5 file into the kalis cache and confirm that what we wrote
+#' # out to the HDF5 file matches the original matrix we generated in R
+#' CacheHaplotypes("~/myhaps.h5")
+#' all(haps == QueryCache())
 #' }
 #'
 #' @export WriteHaplotypes
@@ -211,7 +209,7 @@ WriteHaplotypes <- function(hdf5.file, haps,
     }
   } else {
     message("Creating HDF5 file ...\n")
-    h5 <- rhdf5::H5Fcreate(hdf5.file)
+    rhdf5::h5createFile(hdf5.file)
 
     if(!rhdf5::h5createDataset(file = hdf5.file,
                                dataset = haps.name,
@@ -239,17 +237,19 @@ WriteHaplotypes <- function(hdf5.file, haps,
                              size = 100,
                              chunk = c(1000),
                              level = 7)
+
+    h5 <- rhdf5::H5Fopen(hdf5.file)
   }
 
   # Write
   message(glue("Writing {N} haplotype(s) of size {L} ...\n"))
 
-  rhdf5::h5write.default(as.array(haps), h5, haps.name, index = list(NULL, (N.old+1):(N.old+N)))
+  rhdf5::h5write(as.array(haps), h5, haps.name, index = list(NULL, (N.old+1):(N.old+N)))
   if(write.hap.ids) {
-    rhdf5::h5write.default(as.array(as.character(hap.ids)), h5, hap.ids.name, index = list((N.old+1):(N.old+N)))
+    rhdf5::h5write(as.array(as.character(hap.ids)), h5, hap.ids.name, index = list((N.old+1):(N.old+N)))
   }
   if(write.loci.ids) {
-    rhdf5::h5write.default(as.array(as.character(loci.ids)), h5, loci.ids.name, index = list(1:L))
+    rhdf5::h5write(as.array(as.character(loci.ids)), h5, loci.ids.name, index = list(1:L))
   }
 
   rhdf5::h5closeAll()
@@ -261,33 +261,33 @@ IDs.to.index <- function(hap.ids, loci.ids, hap.idx, loci.idx, all.hap.ids, all.
   if(!is.atomic(hap.ids) || !is.atomic(loci.ids) || !is.atomic(hap.idx) || !is.atomic(loci.idx)) {
     stop("Arguments can only be vectors.")
   }
-  if(is.na(hap.ids) && is.na(hap.idx)) {
+  if(identical(hap.ids, NA) && identical(hap.idx, NA)) {
     stop("At least one of hap.ids or hap.idx must be provided.")
   }
-  if(!is.na(hap.ids) && !is.na(hap.idx)) {
+  if(!identical(hap.ids, NA) && !identical(hap.idx, NA)) {
     stop("Only one of hap.ids or hap.idx may be provided.")
   }
-  if(is.na(loci.ids) && is.na(loci.idx)) {
+  if(identical(loci.ids, NA) && identical(loci.idx, NA)) {
     stop("At least one of loci.ids or loci.idx must be provided.")
   }
-  if(!is.na(loci.ids) && !is.na(loci.idx)) {
+  if(!identical(loci.ids, NA) && !identical(loci.idx, NA)) {
     stop("Only one of loci.ids or loci.idx may be provided.")
   }
 
   # Check IDs and argument compatibility
-  if(!is.na(hap.ids) && is.integer(all.hap.ids)) {
+  if(!identical(hap.ids, NA) && is.integer(all.hap.ids)) {
     hap.ids <- suppressWarnings(as.integer(hap.ids))
     if(any(is.na(hap.ids))) {
       stop("hap.ids supplied but no hap.ids are present ... failed when trying to interpret as an index.")
     }
     warning("hap.ids supplied but no hap.ids are present ... interpreting as an index.")
-  } else if(!is.na(hap.ids) && is.character(all.hap.ids)) {
+  } else if(!identical(hap.ids, NA) && is.character(all.hap.ids)) {
     hap.ids2 <- match(as.character(hap.ids), all.hap.ids)
     if(any(is.na(hap.ids2))) {
       stop(glue("Can't find haplotype IDs: {paste(as.character(hap.ids)[is.na(hap.ids2)], collapse = ', ')}"))
     }
     hap.ids <- hap.ids2
-  } else if(is.na(hap.ids)) {
+  } else if(identical(hap.ids, NA)) {
     hap.ids <- suppressWarnings(as.integer(hap.idx))
     if(any(is.na(hap.ids))) {
       stop("Failed when trying to interpret hap.idx as an integer.")
@@ -296,19 +296,19 @@ IDs.to.index <- function(hap.ids, loci.ids, hap.idx, loci.idx, all.hap.ids, all.
     stop("Unrecoverable error trying to interpret hap.ids/hap.idx arguments.")
   }
 
-  if(!is.na(loci.ids) && is.integer(all.loci.ids)) {
+  if(!identical(loci.ids, NA) && is.integer(all.loci.ids)) {
     loci.ids <- suppressWarnings(as.integer(loci.ids))
     if(any(is.na(loci.ids))) {
       stop("loci.ids supplied but no loci.ids are present ... failed when trying to interpret as an index.")
     }
     warning("loci.ids supplied but no loci.ids are present ... interpreting as an index.")
-  } else if(!is.na(loci.ids) && is.character(all.loci.ids)) {
+  } else if(!identical(loci.ids, NA) && is.character(all.loci.ids)) {
     loci.ids2 <- match(as.character(loci.ids), all.loci.ids)
     if(any(is.na(loci.ids2))) {
       stop(glue("loci IDs: {paste(as.character(loci.ids)[is.na(loci.ids2)], collapse = ', ')} not found."))
     }
     loci.ids <- loci.ids2
-  } else if(is.na(loci.ids)) {
+  } else if(identical(loci.ids, NA)) {
     loci.ids <- suppressWarnings(as.integer(loci.idx))
     if(any(is.na(loci.ids))) {
       stop("Failed when trying to interpret loci.idx as an integer.")
@@ -330,7 +330,7 @@ IDs.to.index <- function(hap.ids, loci.ids, hap.idx, loci.idx, all.hap.ids, all.
 
 
 
-#' @describeIn WriteHaplotypes Read haplotype matrix from HDF5 file
+#' @rdname WriteHaplotypes
 #' @export ReadHaplotypes
 ReadHaplotypes <- function(hdf5.file,
                            loci.idx = NA, hap.idx = NA,

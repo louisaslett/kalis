@@ -7,54 +7,61 @@
 CopyTable(to, from)
 }
 \arguments{
-\item{to}{a \code{kalisForwardTable} or \code{kalisBackwardTable} object
-which is to be copied into.}
+\item{to}{a \code{kalisForwardTable} or \code{kalisBackwardTable} object which is to be copied into.}
 
-\item{from}{a \code{kalisForwardTable} or \code{kalisBackwardTable} object
-which is to be copied from.}
+\item{from}{a \code{kalisForwardTable} or \code{kalisBackwardTable} object which is to be copied from.}
 }
 \description{
 Copies the contents of one forward/backward table into another.
 }
 \details{
-The core code in kalis operates on forward and backward tables at a very low
-level, both for speed (using low level CPU vector instructions) but also to
-avoid unnecessary memory copies since these tables will tend to be very large
-in serious genetics applications.  As a result, if you attempt to copy a table
-in the standard idomatic way in R:
+The core code in kalis operates on forward and backward tables at a very low level, both for speed (using low level CPU vector instructions) but also to avoid unnecessary memory copies since these tables will tend to be very large in serious genetics applications.
+As a result, if you attempt to copy a table in the standard idomatic way in R:
 
-\code{fwd2 <- fwd}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{fwd2 <- fwd
+}\if{html}{\out{</div>}}
 
-then these two variables merely point to the \emph{same} table: running the
-forward algorithm on \code{fwd} would result in \code{fwd2} also changing.
+then these two variables merely point to the \emph{same} table: running the forward algorithm on \code{fwd} would result in \code{fwd2} also changing.
 
 This function is therefore designed to enable explicit copying of tables.
 }
 \examples{
-# Examples
-\dontrun{
-# Create a forward table for the hidden Markov model incorporating all
-# recipient and donor haplotypes
-fwd <- MakeForwardTable()
+# Load the toy haplotype example and set toy parameters
+data("SmallHaps")
+data("SmallMap")
 
-# Propagate forward to variant 10:
-Forward(fwd, pars, 10, nthreads = 8)
+CacheHaplotypes(SmallHaps)
+
+rho <- CalcRho(diff(SmallMap))
+pars <- Parameters(rho)
+
+# Create the forward table we want to propagate
+fwd <- MakeForwardTable(pars)
+
+# Move to varient 10
+Forward(fwd, pars, 10)
+fwd
 
 # This does **NOT** work as intended:
 fwd2 <- fwd
-Forward(fwd, pars, 20, nthreads = 8)
+Forward(fwd, pars, 20)
 
 # Both tables are now at variant 20
 fwd
 fwd2
 
 # Instead, to copy we create another table and use this function
-fwd2 <- MakeForwardTable()
+fwd2 <- MakeForwardTable(pars)
 CopyTable(fwd2, fwd)
-}
+
+# Now propagate fwd again
+Forward(fwd, pars, 30)
+
+# But notice this fwd2 wasn't affected
+fwd
+fwd2
 
 }
 \seealso{
-\code{\link{MakeForwardTable}}, \code{\link{MakeForwardTable}} to
-create tables which can be copied into.
+\code{\link[=MakeForwardTable]{MakeForwardTable()}}, \code{\link[=MakeBackwardTable]{MakeBackwardTable()}} to create tables which can be copied into.
 }

@@ -15,64 +15,98 @@ PostProbs(
 )
 }
 \arguments{
-\item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
+\item{fwd}{a forward table as returned by \code{\link[=MakeForwardTable]{MakeForwardTable()}} and propagated to a target variant by \code{\link[=Forward]{Forward()}}.
+Must be at the same variant as \code{bck} (unless \code{bck} is in "beta-theta space" in which case if must be downstream ... see \code{\link[=Backward]{Backward()}} for details).}
 
-\item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}
+\item{bck}{a backward table as returned by \code{\link[=MakeBackwardTable]{MakeBackwardTable()}} and propagated to a target variant by \code{\link[=Backward]{Backward()}}.
+Must be at the same variant as \code{fwd} (unless \code{bck} is in "beta-theta space" in which case if must be downstream ... see \code{\link[=Backward]{Backward()}} for details).}
 
-\item{unif.on.underflow}{a logical; if TRUE, then if all probabilities in a column underflow, then they will be set to \eqn{1/(N-1)} instead of 0}
+\item{unif.on.underflow}{a logical; if \code{TRUE}, then if all probabilities in a column underflow, then they will be set to \eqn{\frac{1}{N-1}}{1/(N-1)} instead of 0}
 
-\item{M}{an pre-existing matrix into which to write the probabilities, can yield substantial speed up but requires special attention (see Details)}
+\item{M}{a pre-existing matrix into which to write the probabilities, can yield substantial speed up but requires special attention (see Details)}
 
 \item{beta.theta.opts}{a list; see Details.}
 
-\item{nthreads}{the number of CPU cores to use. By default no parallelism is used.}
-
-\item{from_recipient}{offset for distributed problems, see kalis distributed.}
+\item{nthreads}{the number of CPU cores to use.
+By default uses the \code{parallel} package to detect the number of physical cores.}
 }
 \value{
 Matrix of posterior marginal probabilities.
-The \eqn{(j,i)}-th element of of the returned matrix is the probability
-that \eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two
-tables, given the haplotypes observed (over the whole sequence).
-
-If calculating many posterior probability matrices in succession, providing a pre-existing matrix \code{M} that can be updated in-place can drastically increase speed by eliminating the time needed for memory allocation.
-Be warned, since the matrix is updated in-place, if any other variables point to the same memory address, they will also be simultaneously overwritten.  For example, writing
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{M <- matrix(0,nrow(fwd$alpha),ncol(fwd$alpha))
-P <- M
-PostProbs(fwd,bck,M=M)
-}\if{html}{\out{</div>}}
-
-will update M and P simultaneously.
+The \eqn{(j,i)}-th element of of the returned matrix is the probability that \eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two tables, given the haplotypes observed (over the whole sequence).
 }
 \description{
-Calculated the posterior marginal probabilities at a given locus using
-forward and backward tables propagated to that position.
+Calculate the posterior marginal probabilities at a given locus using forward and backward tables propagated to that position.
 }
 \details{
-The forward and backward tables must be at the same locus in order for them
-to be combined to yield the posterior marginal probabilities at locus
-\eqn{l}.
-The \eqn{(j,i)}-th element of of the returned matrix is the probability that
-\eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two
-tables, given the haplotypes observed (over the whole sequence).
+The forward and backward tables must be at the same locus in order for them to be combined to yield the posterior marginal probabilities at locus \eqn{l}.
+The \eqn{(j,i)}-th element of of the returned matrix is the probability that \eqn{j} is copied by \eqn{i} at the current locus, \eqn{l}, of the two tables, given the haplotypes observed (over the whole sequence).
 
 Note that each column represents an independent HMM.
 
 By convention, every diagonal element is zero.
+
+\strong{Notes on \code{beta.theta.opts}}
+
+In order to obtain posterior marginal probability matrices between variants \code{fwd$l} and \code{bck$l}, then \code{bck} must be in "beta-theta space", see \code{\link[=Backward]{Backward()}} for details.
+This allows the forward and backward tables to be transitioning both tables to some genomic position between \code{fwd$l} and \code{bck$l}.
+The precise recombination distance by which each table is propagated can be controlled by passing optional arguments in a list via \code{beta.theta.opts}.
+The recombination distances used can be specified in one of two ways.
+\enumerate{
+\item Manually.
+In this case, \code{beta.theta.opts} is a list containing two named elements:
+\itemize{
+\item \code{"rho.fwd"} \eqn{\in (0,1)} specifies the transition probability \code{rho} for propagating the forward table.
+\item \code{"rho.bck"} \eqn{\in (0,1)} specifies the transition probability \code{rho} for propagating the backward table.
+}
+\item Implicitly.
+In this case, \code{beta.theta.opts} is a list containing two named elements:
+}
+\itemize{
+\item \code{"pars"}: a \code{kalisParameters} object that implicitly defines the recombination distance \eqn{\rho^\star} between \code{fwd$l} and \code{bck$l}
+\item \code{"bias"} \eqn{\in (0,1)}.
+The forward table is propagated a distance of \code{(bias)}\eqn{\rho^\star} and the backward table is propagated a distance of \code{(1-bias)}\eqn{\rho^\star}.
+}
+
+\strong{Performance notes}
+
+If calculating many posterior probability matrices in succession, providing a pre-existing matrix \code{M} that can be updated in-place can dramatically increase speed by eliminating the time needed for memory allocation.
+Be warned, since the matrix is updated in-place, if any other variables point to the same memory address, they will also be simultaneously overwritten.
+For example, writing
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{M <- matrix(0, nrow(fwd$alpha), ncol(fwd$alpha))
+P <- M
+PostProbs(fwd, bck, M = M)
+}\if{html}{\out{</div>}}
+
+will update \code{M} and \code{P} simultaneously.
+
+When provided, \code{M} must have dimensions matching that of \code{fwd$alpha}.
+Typically, that is simply \eqn{N \times N}{N x N} for \eqn{N} haplotypes.
+However, if kalis is being run in a distributed manner, \code{M} will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
 }
 \examples{
-\dontrun{
-# To get the posterior probabilities at, say, locus 10 ...
-Forward(fwd, pars, 10, nthreads = 8)
-Backward(bck, pars, 10, nthreads = 8)
+# To get the posterior probabilities at, say, variants 100 of the toy data
+# built into kalis
+data("SmallHaps")
+data("SmallMap")
+
+CacheHaplotypes(SmallHaps)
+
+rho <- CalcRho(diff(SmallMap))
+pars <- Parameters(rho)
+
+fwd <- MakeForwardTable(pars)
+bck <- MakeBackwardTable(pars)
+
+Forward(fwd, pars, 100)
+Backward(bck, pars, 100)
+
 p <- PostProbs(fwd, bck)
-}
+d <- DistMat(fwd, bck)
 
 }
 \seealso{
-\code{\link{DistMat}} to generate calculate \eqn{d_{ji}}{d_(j,i)} distances
-directly;
-\code{\link{Forward}} to propogate a Forward table to a new locus;
-\code{\link{Backward}} to propogate a Backward table to a new locus.
+\code{\link[=DistMat]{DistMat()}} to generate calculate \eqn{d_{ji}}{d_(j,i)} distances directly;
+\code{\link[=Forward]{Forward()}} to propogate a Forward table to a new locus;
+\code{\link[=Backward]{Backward()}} to propogate a Backward table to a new locus.
 }

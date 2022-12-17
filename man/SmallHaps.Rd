@@ -3,38 +3,43 @@
 \docType{data}
 \name{SmallHaps}
 \alias{SmallHaps}
-\title{SmallHaps Example Phased Haplotype Dataset for kalis}
+\alias{SmallMap}
+\title{Small example phased haplotype dataset and recombination map}
 \format{
-An object of class \code{matrix} where each column is a
-simulated haplotype.
-This is suitable for passing directly to \code{\link{CacheHaplotypes}}.
+For \code{SmallHaps}, an object of class \code{matrix} of dimensions \eqn{400 \times 300}{400 x 300} where each column is a simulated haplotype.
+This is suitable for passing directly to \code{\link[=CacheHaplotypes]{CacheHaplotypes()}}.
+
+For \code{SmallMap}, a vector of length 400 representing the recombination map for the \code{SmallHaps} data.
+This can be used with \code{\link[=CalcRho]{CalcRho()}}, by converting to recombination distances using \code{diff(SmallMap)}.
 }
 \usage{
-data(SmallHaps)
+data("SmallHaps")
+
+data("SmallMap")
 }
 \description{
-Simulated dataset with N=300 haplotypes at L=400 loci generated using msprime
-(Kelleher et al., 2016).
+Simulated dataset with \eqn{N=300} haplotypes at \eqn{L=400} variants generated using msprime
+(Kelleher et al., 2016), together with the recombination map.
 }
 \examples{
-\dontrun{
 data("SmallHaps")
+
+\donttest{
 # Plot Allele Frequencies
 hist(rowMeans(SmallHaps),breaks=20)
-
-# Store in kalis hdf5 format
-WriteIndividualHaplotypeH5("SmallHaps.h5", SmallHaps)
+}
 
 # Import into kalis cache directly ...
 CacheHaplotypes(SmallHaps)
-# ... or via the HDF5 file written out above
-CacheHaplotypes("SmallHaps.h5")
-}
+
+data("SmallMap")
+
+# Find parameters
+pars <- Parameters(CalcRho(diff(SmallMap)))
+pars
 
 }
 \references{
-Kelleher, J., Etheridge, A. M., & McVean, G. (2016). Efficient coalescent
-simulation and genealogical analysis for large sample sizes.
-\emph{PLoS computational biology}, \strong{12}(5).
+Kelleher, J., Etheridge, A. M., & McVean, G. (2016). Efficient coalescent simulation and genealogical analysis for large sample sizes. \emph{PLoS computational biology}, \strong{12}(5).
 }
 \keyword{datasets}

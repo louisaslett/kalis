@@ -8,83 +8,61 @@
 MakeForwardTable(pars, from_recipient = 1, to_recipient = Inf)
 }
 \arguments{
-\item{pars}{a \code{kalisParameters} object specifying the genetics
-parameters to be associated with this forward table.  These parameters can
-be set up by using the \code{\link{Parameters}} function.}
+\item{pars}{a \code{kalisParameters} object specifying the genetics parameters to be associated with this forward table.
+These parameters can be set up by using the \code{\link[=Parameters]{Parameters()}} function.}
 
-\item{from_recipient}{first recipient haplotype included if creating a partial forward
-table.  By default includes from the first recipient haplotype.  Haplotypes are
-indexed from 1.}
+\item{from_recipient}{first recipient haplotype included if creating a partial forward table.
+By default all are included from the first recipient haplotype.
+Haplotypes are indexed from 1.}
 
-\item{to_recipient}{last recipient haplotype included if creating a partial forward
-table.  By default includes to the last recipient haplotype.  Haplotypes are
-indexed from 1.}
+\item{to_recipient}{last recipient haplotype included if creating a partial forward table.
+By default all are included upto the last recipient haplotype.
+Haplotypes are indexed from 1.}
 }
 \value{
 A specialized list of class \code{kalisForwardTable}.
 The elements of the forward table list are:
 \describe{
-\item{\code{l}}{denotes the current variant position.  Zero indicates a
-newly created forward table which has not yet been propagated to any variant.}
-\item{\code{alpha}}{is a matrix of rescaled forward probabilities under
-the Li and Stephens HMM.
-Each column of \code{alpha} corresponds to an independent HMM such
-that \eqn{\alpha^l_{ji}} is proportional to the probability that
-haplotype \eqn{j} is copied by haplotype \eqn{i} at variant \eqn{l} and
-observing haplotype \eqn{i} from variant 1 up through variant \eqn{l}.}
-\item{\code{alpha.f}}{is a vector containing scaling constants needed to
-continue propagating the HMM (TODO: add ref please see kalis paper for details).}
+\item{\code{l}}{denotes the current variant position.
+2147483647 indicates a newly created forward table which has not yet been propagated to any variant.}
+\item{\code{alpha}}{is a matrix of rescaled forward probabilities under the Li and Stephens HMM.
+Each column of \code{alpha} corresponds to an independent HMM such that \eqn{\alpha^l_{ji}} is proportional to the probability that haplotype \eqn{j} is copied by haplotype \eqn{i} at variant \eqn{l} and observing haplotype \eqn{i} from variant 1 up through variant \eqn{l}.}
+\item{\code{alpha.f}}{is a vector containing scaling constants needed to continue propagating the HMM (TODO: add ref please see kalis paper for details).}
 }
 
-A \code{kalisForwardTable} also carries with it a checksum key for the
-parameters \code{pars} it was provided.
-If one attempts to interact a \code{kalisForwardTable} with a
-\code{kalisBackwardTable} with mismatched parameters, an error will be
-thrown.
+A \code{kalisForwardTable} also carries with it a checksum key for the parameters \code{pars} it was provided.
+If one attempts to interact a \code{kalisForwardTable} with a \code{kalisBackwardTable} with mismatched parameters, an error will be thrown.
 }
 \description{
 Allocates the memory for and initializes a forward table.
 }
 \details{
-\code{MakeForwardTable} initializes a \code{kalisForwardTable} object that will
-store the rescaled forward probabilities for each recipient haplotype.  Note: since all
-other haplotypes loaded by \code{\link{CacheHaplotypes}} into the kalis cache
-are taken as potential donor haplotypes, this
-table will be of size (total # haplotypes in cache)x(# recipients).
-Also note that this table object is linked to a given set of Li and Stephens hidden
-Markov model parameters, created by \code{\link{Parameters}}, to ensure consistency
-for any given HMM run.
+\code{MakeForwardTable} initializes a \code{kalisForwardTable} object that will store the rescaled forward probabilities for each recipient haplotype.
+Note: since all other haplotypes loaded by \code{\link[=CacheHaplotypes]{CacheHaplotypes()}} into the kalis cache are taken as potential donor haplotypes, this table will be of size (total haplotypes in cache)x(number of recipients).
+Also note that this table object is linked to a given set of Li and Stephens hidden Markov model parameters, created by \code{\link[=Parameters]{Parameters()}}, to ensure consistency for any given HMM run.
 
-The returned \code{kalisForwardTable} is ready
-to be propagated to a given target variant with the function
-\code{\link{Forward}}.
+The returned \code{kalisForwardTable} is ready to be propagated to a given target variant with the function \code{\link[=Forward]{Forward()}}.
 
-Note: each column corresponds to an independent Li and Stephens
-hidden Markov model (ie for each recipient).  Therefore, it is possible to
-create a partial forward table object which
-corresponds to a subset of recipients using the \code{from_recipient} and
-\code{to_recipient} arguments.
+Since each column corresponds to an independent Li and Stephens hidden Markov model (ie for each recipient), it is possible to create a partial forward table object which corresponds to a subset of recipients using the \code{from_recipient} and \code{to_recipient} arguments.
 }
 \examples{
-# Examples
-\dontrun{
 # Load the toy haplotype example and set toy parameters
-CacheHaplotypes(SmallHaplotypes)
-pars <- Parameters(rho = CalcRho(cM = SmallMap))
+data("SmallHaps")
+data("SmallMap")
 
-# Create a forward table for the hidden Markov model incorporating all
-# recipient and donor haplotypes
+CacheHaplotypes(SmallHaps)
+
+rho <- CalcRho(diff(SmallMap))
+pars <- Parameters(rho)
+
+# Create the forward table we want to propagate
 fwd <- MakeForwardTable(pars)
+fwd
 
-# OR, create a forward table for the hidden Markov model incorporating only
-# recipient haplotypes 100 to 200 (inclusive) and all donor haplotypes.
-fwd <- MakeForwardTable(pars, 100, 200)
-}
+# Now ready to run the HMM forward recursions with Forward() ...
 
 }
 \seealso{
-\code{\link{Forward}} to propagate the newly created
-\code{kalisForwardTable}.
-\code{\link{MakeBackwardTable}} to create a corresponding
-\code{kalisBackwardTable}.
+\code{\link[=Forward]{Forward()}} to propagate the newly created \code{kalisForwardTable};
+\code{\link[=MakeBackwardTable]{MakeBackwardTable()}} to create a corresponding \code{kalisBackwardTable}.
 }

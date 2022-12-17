@@ -1,53 +1,45 @@
 #' Calculate recombination probabilities
 #'
-#' Calculate the recombination probabilities, rho, from a given recombination map.
+#' Calculate the recombination probabilities, rho, from a given recombination map for the haplotype data currently in the kalis cache.
 #'
-#' This convenient function to calculate the recombination probabilities rho
-#' (the Li and Stephens hidden Markov model transition probabilities) from
-#' a recombination map.
+#' This is a utility function to calculate the recombination probabilities rho (the Li and Stephens hidden Markov model transition probabilities) from a recombination map/distances.
+#'
+#' **NOTE:** the corresponding haplotype data *must* have already been inserted into the kalis cache by a call to [CacheHaplotypes()], since this function performs checks to confirm the dimensionality matches.
 #'
 #' TODO: add kalis paper cross ref.
-#' See page 3 in Supplemental Information for the original ChromoPainter paper
-#' (Lawson et al., 2012) for motivation behind our parameterization, which is as
-#' follows:
+#' See page 3 in Supplemental Information for the original ChromoPainter paper (Lawson et al., 2012) for motivation behind our parameterisation, which is as follows:
 #'
 #' \deqn{\rho = \exp(-s \times cM^\gamma) - 1}{\rho = exp(-s * cM^\gamma) - 1}
 #'
 #'
 #' @param cM a vector specifying the recombination distance between variants in centimorgans.
-#'   Note element i of this vector should be the distance between variants i and i+1
-#'   (not i and i-1), and thus length one less than the number of variants.
-#'   This can be easily obtained by applying \code{\link{diff}} to a
-#'   recombination map 'CDF'.
-#'   By default, recombination probabilities are zero, meaning that all variants
-#'   are perfectly linked.
+#'   Note element i of this vector should be the distance between variants `i` and `i+1` (not `i` and `i-1`), and thus length one less than the number of variants.
+#'   This can be easily obtained by applying [diff()] to a recombination map 'CDF'.
+#'   By default, recombination probabilities are zero, meaning that all variants are perfectly linked.
 #' @param s a scalar multiplier on the recombination map (related to effective population size).
 #' @param gamma a scalar power to which the Morgan distances are raised.
-#' @param floor if TRUE (default) any recombination probabilities below machine
-#'   precision (1e-16) will be zeroed out.
-#'   If \code{FALSE} raw recombination probabilities will be preserved.
+#' @param floor if `TRUE` (default) any recombination probabilities below machine precision (`1e-16`) will be zeroed out.
+#'   If `FALSE` raw recombination probabilities will be preserved.
 #'
-#' @return A vector of recombination probabilities which can be used as the
-#'   \code{rho} argument to the \code{\link{Parameters}} function when creating
-#'   a parameter set.
+#' @return A vector of recombination probabilities which can be used as the `rho` argument to the [Parameters()] function when creating a parameter set.
 #'
-#' @seealso \code{\link{Parameters}} to use the resulting recombination
-#'   probabilities to construct a \code{kalisParameters} object.
+#' @seealso [Parameters()] to use the resulting recombination probabilities to construct a `kalisParameters` object.
 #'
 #' @references
 #'   Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
 #'   population structure using dense haplotype data. *PLoS genetics*, **8**(1).
 #'
 #' @examples
-#' \dontrun{
-#' # Load the mini example recombination map from package:
-#' small.map <- read.table(system.file("small_example/small.map", package = "kalis"), header = TRUE)
-#' # Or, from the package built-in dataset
-#' data(SmallMap)
+#' # Load the mini example data and recombination map from the package built-in #' # dataset
+#' data("SmallHaps")
+#' data("SmallMap")
 #'
-#' # Compute the recombination probabilities
+#' # Load haplotypes into cache
+#' CacheHaplotypes(SmallHaps)
+#'
+#' # Compute the recombination probabilities, leaving s and gamma as default
 #' rho <- CalcRho(diff(SmallMap))
-#' }
+#' rho
 #'
 #' @export
 CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
@@ -93,94 +85,60 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
 
 #' Define a set of Li and Stephens parameters
 #'
-#' Specify a parameter set to be used for a particular Li and Stephens hidden
-#' Markov model run.
+#' Specify a parameter set to be used for a particular Li and Stephens hidden Markov model run.
 #'
-#' There are 3 parameters which must be specified before the forward or backward
-#' equations in the Li and Stephens hidden Markov model can be run.  These are
-#' the vector of recombination probabilities, the mutation probabilities, and the
-#' prior copying probabilities.
+#' There are 3 parameters which must be specified before the forward or backward equations in the Li and Stephens hidden Markov model can be run.
+#' These are the vector of recombination probabilities, the mutation probabilities, and the prior copying probabilities.
 #'
-#' **Recombination probabilities, \code{rho}**
+#' **NOTE:** the corresponding haplotype data *must* have already been inserted into the kalis cache by a call to [CacheHaplotypes()], since this function performs checks to confirm the dimensionality matches.
 #'
-#' This is a vector parameter which must have length \code{L-1}, where \code{L}
-#' is the number of variants that have been
-#' loaded into the kalis memory cache (using \code{\link{CacheHaplotypes}}).
-#' Note that element i of this vector should be the recombination probability
-#' between variants \code{i} and \code{i+1}.
+#' **Recombination probabilities, `rho`**
 #'
-#' There is a utility function, \code{\link{CalcRho}}, to assist with creating
-#' these recombination probabilities from a recombination map.
+#' This is a vector parameter which must have length \eqn{L-1}, where \eqn{L} is the number of variants that have been loaded into the kalis memory cache (using [CacheHaplotypes()]).
+#' Note that element `i` of this vector should be the recombination probability between variants `i` and `i+1`.
+#'
+#' There is a utility function, [CalcRho()], to assist with creating these recombination probabilities from a recombination map.
 #'
 #' By default, the recombination probabilities are set to zero everywhere.
 #'
-#' **Mutation probabilities, \code{mu}**
+#' **Mutation probabilities, `mu`**
 #'
-#' The mutation probabilities may be specified either as uniform across all
-#' variants (by providing a single scalar value), or may be varying
-#' at each variant (by providing a vector of length equal to the number of
-#' variants, \code{L}, which have been loaded into the kalis memory cache).
+#' The mutation probabilities may be specified either as uniform across all variants (by providing a single scalar value), or may be varying at each variant (by providing a vector of length equal to the number of variants, \eqn{L}, which have been loaded into the kalis memory cache).
 #'
 #' By default, mutation probabilities are set to \eqn{10^{-8}}{10^-8}.
 #'
-#' **Copying probabilities, \code{Pi}**
+#' **Copying probabilities, `Pi`**
 #'
-#' The original Li and Stephens model assumed that each haplotype has an equal
-#' prior probability of copying from any other.
-#' However, in the spirit of ChromoPainter (Lawson et al., 2012) we allow a
-#' matrix of prior copying probabilities.
+#' The original Li and Stephens model assumed that each haplotype has an equal prior probability of copying from any other.
+#' However, in the spirit of ChromoPainter (Lawson et al., 2012) we allow a matrix of prior copying probabilities.
 #'
-#' The copying probabilities may be specified as a standard R matrix of size
-#' \eqn{N \times N}{N * N}
-#' (where \eqn{N} is the number of haplotypes which have been loaded into the
-#' kalis memory cache).  The element at row j, column i corresponds to the prior
-#' (background) probability that haplotype i copies from haplotype j.
-#' Note that the diagonal must by definition be zero and columns must sum to
-#' one.
-#' Alternatively, for uniform copying probabilities, this argument need not be specified
-#' (resulting in copying probability \eqn{\frac{1}{N-1}}{1/(N-1)} everywhere).
+#' The copying probabilities may be specified as a standard R matrix of size \eqn{N \times N}{N x N} (where \eqn{N} is the number of haplotypes which have been loaded into the kalis memory cache).
+#' The element at row `j`, column `i` corresponds to the prior (background) probability that haplotype `i` copies from haplotype `j`.
+#' Note that the diagonal must by definition be zero and columns must sum to one.
+#' Alternatively, for uniform copying probabilities, this argument need not be specified (resulting in copying probability \eqn{\frac{1}{N-1}}{1/(N-1)} everywhere).
 #'
-#' Note that there is a computational cost associated with non-uniform copying
-#' probabilities, so it is recommended to leave the
-#' default of uniform probabilities when appropriate
-#' (Note: *do not* specify a uniform matrix when uniform probabilities are intended, since this
-#' would end up incurring the computational cost of non-uniform probabilities).
+#' Note that there is a computational cost associated with non-uniform copying probabilities, so it is recommended to leave the default of uniform probabilities when appropriate (**Note:** *do not* specify a uniform matrix when uniform probabilities are intended, since this would end up incurring the computational cost of non-uniform probabilities).
 #'
-#' @param rho recombination probability vector (must be L-1 long).
-#'   See \code{\link{CalcRho}} for assistance constructing this from a recombination
-#'   map.
+#' @param rho recombination probability vector (must be \eqn{L-1} long).
+#'   See [CalcRho()] for assistance constructing this from a recombination
+#'   map/distances.
 #' @param mu a scalar (for uniform) or vector (for varying) mutation probabilities.
 #' @param Pi leaving the default of uniform copying probabilities is recommended
 #'   for computational efficiency.
-#'   If desired, a full matrix of background copying probabilities can be
-#'   provided, such that the (j,i)-th element is the background probability that
-#'   i copies from j.
-#'   Hence, (a) the diagonal must be zero; and (b) the columns of Pi must sum to
-#'   1.
-#'   Note: each column corresponds to an independent Li and Stephens
-#'   hidden Markov model.
-#' @param use.speidel a logical, if TRUE, use the asymmetric mutation model used by RELATE (Speidel et al., 2019).
-#'   WARNING: this model assumes that the cached haplotypes have an ancestral/derived encoding --
-#'   zeros denote ancestral variant carriers and ones denote derived variant carriers. Defaults to FALSE.
-#' @param check.rho if \code{TRUE}, a check that rho is within machine precision
-#'   will be performed.
-#'   If you have created rho using \code{\link{CalcRho}} with \code{floor=TRUE}
-#'   then this will be satisfied automatically.
-#'   This can be important to ensure that the convex combination rho and (1-rho)
-#'   normalises to 1 within machine precision, but an advanced user may wish to
-#'   override this requirement.
+#'   If desired, a full matrix of background copying probabilities can be provided, such that the `[j,i]`-th element is the background probability that `i` copies from `j`.
+#'   Hence, (a) the diagonal must be zero; and (b) the columns of `Pi` must sum to 1.
+#'   Note: each column corresponds to an independent Li and Stephens hidden Markov model.
+#' @param use.speidel a logical, if `TRUE`, use the asymmetric mutation model used by RELATE (Speidel et al., 2019).
+#'   **WARNING:** this model assumes that the cached haplotypes have an ancestral/derived encoding -- zeros denote ancestral variant carriers and ones denote derived variant carriers. Defaults to `FALSE`.
+#' @param check.rho if `TRUE`, a check that rho is within machine precision will be performed.
+#'   If you have created rho using [CalcRho()] with `floor = TRUE` then this will be satisfied automatically.
+#'   This can be important to ensure that the convex combination `rho` and `(1-rho)` normalises to 1 within machine precision, but an advanced user may wish to override this requirement.
 #'
-#' @return A \code{kalisParameters} object, suitable for use to create the
-#'   standard forward and backward recursion tables with
-#'   \code{\link{MakeForwardTable}} and \code{\link{MakeBackwardTable}}.
-#'   Note you will also need to provide this parameters object when propagating
-#'   those tables using either \code{\link{Forward}} or \code{\link{Backward}}.
+#' @return A `kalisParameters` object, suitable for use to create the standard forward and backward recursion tables with [MakeForwardTable()] and [MakeBackwardTable()].
+#'   Note you will also need to provide this parameters object when propagating those tables using either [Forward()] or [Backward()].
 #'
-#' @seealso \code{\link{MakeForwardTable}} and \code{\link{MakeForwardTable}}
-#'   which construct table objects which internally reference a parameters
-#'   environment.
-#'   \code{\link{Forward}} and \code{\link{Backward}} which propagate those
-#'   tables according to the Li and Stephens model.
+#' @seealso [MakeForwardTable()] and [MakeBackwardTable()] which construct table objects which internally reference a parameters environment;
+#'   [Forward()] and [Backward()] which propagate those tables according to the Li and Stephens model.
 #'
 #' @references
 #'   Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
@@ -190,20 +148,28 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
 #'   genome-wide genealogy estimation for thousands of samples. *Nature Genetics*, **51**(1321–1329).
 #'
 #' @examples
-#' \dontrun{
+#' # Load the mini example data and recombination map from the package built-in #' # dataset
+#' data("SmallHaps")
+#' data("SmallMap")
+#'
+#' # Load haplotypes into cache
+#' CacheHaplotypes(SmallHaps)
+#'
 #' # To use all the defaults
 #' pars <- Parameters()
+#' pars
 #'
-#' # To use indirect genetics parameters which you have already specified in
-#' # morgan.dist, Ne and gamma variables to specify rho, leaving mu and Pi as
-#' # defaults
-#' pars <- Parameters(CalcRho(morgan.dist, Ne, gamma))
+#' # Or perhaps use SmallMap to compute the recombination probabilities, leaving
+#' # s and gamma as default
+#' rho <- CalcRho(diff(SmallMap))
+#' pars <- Parameters(rho)
+#' pars
 #'
-#' # Then use to create a table (eg for forward) ...
+#' # Then use these parameters to create a table (eg for forward) ...
 #' fwd <- MakeForwardTable(pars)
 #' # ... and to propagate it
-#' Forward(fwd, pars, 10, nthreads = 8)
-#' }
+#' Forward(fwd, pars, 10)
+#' fwd
 #'
 #' @export
 Parameters <- function(rho = rep(0, get("L", envir = pkgVars)-1),

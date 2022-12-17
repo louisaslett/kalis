@@ -8,51 +8,44 @@ CalcRho(cM = 0, s = 1, gamma = 1, floor = TRUE)
 }
 \arguments{
 \item{cM}{a vector specifying the recombination distance between variants in centimorgans.
-Note element i of this vector should be the distance between variants i and i+1
-(not i and i-1), and thus length one less than the number of variants.
-This can be easily obtained by applying \code{\link{diff}} to a
-recombination map 'CDF'.
-By default, recombination probabilities are zero, meaning that all variants
-are perfectly linked.}
+Note element i of this vector should be the distance between variants \code{i} and \code{i+1} (not \code{i} and \code{i-1}), and thus length one less than the number of variants.
+This can be easily obtained by applying \code{\link[=diff]{diff()}} to a recombination map 'CDF'.
+By default, recombination probabilities are zero, meaning that all variants are perfectly linked.}
 
 \item{s}{a scalar multiplier on the recombination map (related to effective population size).}
 
 \item{gamma}{a scalar power to which the Morgan distances are raised.}
 
-\item{floor}{if TRUE (default) any recombination probabilities below machine
-precision (1e-16) will be zeroed out.
+\item{floor}{if \code{TRUE} (default) any recombination probabilities below machine precision (\code{1e-16}) will be zeroed out.
 If \code{FALSE} raw recombination probabilities will be preserved.}
 }
 \value{
-A vector of recombination probabilities which can be used as the
-\code{rho} argument to the \code{\link{Parameters}} function when creating
-a parameter set.
+A vector of recombination probabilities which can be used as the \code{rho} argument to the \code{\link[=Parameters]{Parameters()}} function when creating a parameter set.
 }
 \description{
-Calculate the recombination probabilities, rho, from a given recombination map.
+Calculate the recombination probabilities, rho, from a given recombination map for the haplotype data currently in the kalis cache.
 }
 \details{
-This convenient function to calculate the recombination probabilities rho
-(the Li and Stephens hidden Markov model transition probabilities) from
-a recombination map.
+This is a utility function to calculate the recombination probabilities rho (the Li and Stephens hidden Markov model transition probabilities) from a recombination map/distances.
+
+\strong{NOTE:} the corresponding haplotype data \emph{must} have already been inserted into the kalis cache by a call to \code{\link[=CacheHaplotypes]{CacheHaplotypes()}}, since this function performs checks to confirm the dimensionality matches.
 
 TODO: add kalis paper cross ref.
-See page 3 in Supplemental Information for the original ChromoPainter paper
-(Lawson et al., 2012) for motivation behind our parameterization, which is as
-follows:
+See page 3 in Supplemental Information for the original ChromoPainter paper (Lawson et al., 2012) for motivation behind our parameterisation, which is as follows:
 
 \deqn{\rho = \exp(-s \times cM^\gamma) - 1}{\rho = exp(-s * cM^\gamma) - 1}
 }
 \examples{
-\dontrun{
-# Load the mini example recombination map from package:
-small.map <- read.table(system.file("small_example/small.map", package = "kalis"), header = TRUE)
-# Or, from the package built-in dataset
-data(SmallMap)
+# Load the mini example data and recombination map from the package built-in #' # dataset
+data("SmallHaps")
+data("SmallMap")
 
-# Compute the recombination probabilities
+# Load haplotypes into cache
+CacheHaplotypes(SmallHaps)
+
+# Compute the recombination probabilities, leaving s and gamma as default
 rho <- CalcRho(diff(SmallMap))
-}
+rho
 
 }
 \references{
@@ -60,6 +53,5 @@ Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
 population structure using dense haplotype data. \emph{PLoS genetics}, \strong{8}(1).
 }
 \seealso{
-\code{\link{Parameters}} to use the resulting recombination
-probabilities to construct a \code{kalisParameters} object.
+\code{\link[=Parameters]{Parameters()}} to use the resulting recombination probabilities to construct a \code{kalisParameters} object.
 }
