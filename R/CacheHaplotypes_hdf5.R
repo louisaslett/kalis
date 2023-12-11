@@ -15,10 +15,10 @@ CacheHaplotypes.hdf5 <- function(hdf5.file,
       if(pkg == "rhdf5") {
         return(CacheHaplotypes.hdf5.rhdf5(hdf5.file, loci.idx, hap.idx, transpose, haps.path))
       }
-    } else {
-      stop("Either hdf5r or rhdf5 packages must be installed to load from HDF5 files.")
     }
   }
+  # If we reach here, none of the packages were available
+  stop("Either hdf5r or rhdf5 packages must be installed to load from HDF5 files.")
 }
 
 
@@ -201,9 +201,9 @@ CacheHaplotypes.hdf5.rhdf5 <- function(hdf5.file,
       }
       upto <- min(current.step + step.size - 1, N)
       if(!transpose)
-        res <- rhdf5::h5read(hdf5.file, haps.path, index = list(loci.idx, hap.idx[current.step:upto]))
+        res <- matrix(as.integer(rhdf5::h5read(hdf5.file, haps.path, index = list(loci.idx, hap.idx[current.step:upto]))), nrow = length(loci.idx))
       else
-        res <- t(rhdf5::h5read(hdf5.file, haps.path, index = list(hap.idx[current.step:upto], loci.idx)))
+        res <- t(matrix(as.integer(rhdf5::h5read(hdf5.file, haps.path, index = list(hap.idx[current.step:upto], loci.idx))), ncol = length(loci.idx)))
       current.step <<- upto + 1
       res
     }
