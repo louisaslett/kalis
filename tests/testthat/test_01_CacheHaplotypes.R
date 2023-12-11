@@ -16,7 +16,7 @@ sample.haps <- function(sorted = FALSE) {
 test_that("caching haplotype R matrix works", {
   x <- CacheHaplotypes(SmallHaps)
   expect_identical(SmallHaps, QueryCache())
-  expect_identical(dim(SmallHaps)[2:1], x)
+  expect_identical(dim(SmallHaps), x)
   expect_output(CacheSummary(), glue::glue("Cache currently loaded with {dim(SmallHaps)[2]} haplotypes, each with {dim(SmallHaps)[1]} variants"))
 })
 
@@ -47,7 +47,7 @@ test_that("cache can be cleared", {
 test_that("caching hdf5 haplotype matrix works", {
   x <- CacheHaplotypes(system.file("small_example", "small.h5", package = "kalis"))
   expect_identical(SmallHaps, QueryCache())
-  expect_identical(dim(SmallHaps)[2:1], x)
+  expect_identical(dim(SmallHaps), x)
   expect_output(CacheSummary(), glue::glue("Cache currently loaded with {dim(SmallHaps)[2]} haplotypes, each with {dim(SmallHaps)[1]} variants"))
 })
 
@@ -62,7 +62,7 @@ test_that("caching hdf5 haplotype sub-matrix works", {
 test_that("caching .hap.hz haplotype matrix works", {
   expect_warning(x <- CacheHaplotypes(system.file("small_example", "small.hap.gz", package = "kalis")), "haplotypes already cached ... overwriting existing cache")
   expect_identical(SmallHaps, QueryCache())
-  expect_identical(dim(SmallHaps)[2:1], x)
+  expect_identical(dim(SmallHaps), x)
   expect_output(CacheSummary(), glue::glue("Cache currently loaded with {dim(SmallHaps)[2]} haplotypes, each with {dim(SmallHaps)[1]} variants"))
 })
 
