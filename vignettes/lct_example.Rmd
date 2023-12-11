@@ -1,0 +1,179 @@
+---
+title: "Reproducing kalis Paper LCT Example"
+author: "Ryan R. Christ and Louis J. M. Aslett"
+date: "11 December 2023"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reproducing kalis Paper LCT Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview \& Accompanying Data
+
+This vignette reproduces the distance matrix included in the initial paper introducing our R package kalis.
+We infer the haplotype structure at the lactase gene (LCT) in 1000 Genomes Phase 3 data.
+
+Four data files are required.
+One is the recombination map `lct.map` that accompanies this vignette, although another recombination map of the user's choosing may be used.
+Three files encoding the required 1000 Genomes haplotypes, `lct.hap.gz` , `lct.legend.gz`, and `lct.sample`.
+All four files can be found in the `example` folder at Github repository [louisaslett/kalis-bmc](https://github.com/louisaslett/kalis-bmc).
+If the user would like to reconstruct these files directly from 1000 Genomes data, we we provide instructions for doing so using `bcftools` at the end of this vignette.
+
+# Run kalis in R
+
+Start by declaring the number of cores available for kalis to use in this example (`nthreads`) and the data directory that should be used, `data_dir`.
+This data directory must contain the recombination map `lct.map`, `lct.hap.gz` , `lct.legend.gz`, and `lct.sample`.  
+```{r set_up, eval=FALSE}
+nthreads <- as.integer(4)
+data_dir <- "./"
+```
+No further changes should be needed to the following for replication.
+
+We load our required libraries for this vignette.
+```{r libraries, eval=FALSE}
+require("kalis")
+require("R.utils")
+require("data.table")
+require("fastcluster")
+require("Matrix") 
+require("viridisLite")
+require("kgp")
+```
+
+Now we're ready to run kalis. 
+```{r declare_run_parameters, eval=FALSE}
+# Declare LS Model Parameters
+#########################################
+neg_log10_Ne <- 10
+neg_log10_mu <- 4
+
+# Declare Target Locus
+#########################################
+gene <- "lct"
+gene_target_pos <- 136608646 # rs4988235 in hg19 coordinates
+pos <- fread(paste0(data_dir, gene, ".legend.gz"))$position
+target_idx <- match(TRUE, pos >= gene_target_pos)
+
+# run kalis
+#########################################
+
+CacheHaplotypes(haps = paste0(data_dir, gene, ".hap.gz"))
+
+diff_map <- diff(fread(paste0(data_dir, gene, ".map"))[[3]])
+pars <- Parameters(rho = CalcRho(diff_map, s = 10^-neg_log10_Ne), mu = 10^-neg_log10_mu)
+fwd <- MakeForwardTable(pars)
+bck <- MakeBackwardTable(pars)
+
+Forward(fwd, pars, target_idx, nthreads = nthreads)
+Backward(bck, pars, target_idx, nthreads = nthreads)
+
+M <- DistMat(fwd, bck, type = "raw", nthreads = nthreads)
+```
+Note `M` may be plotted directly by calling `plot(M)`.
+
+# Post-processing remake paper figure
+
+Here we provide post-processing code to reproduce the heatmap in our paper from the distance matrix `M`. We start with a few helper functions.
+```{r helper_functions, eval=FALSE}
+plot_mat <- function(x, file, raster = TRUE, rel_scale = TRUE) {
+
+  temp_col_scale <- rev(viridisLite::viridis(100))
+
+  if(!rel_scale){
+    mx <- ceiling(max(x, na.rm = TRUE))
+    if(mx > 100) { stop("the max entry of x cannot exceed 100 for this plot's color scale") }
+    temp_col_scale <- temp_col_scale[1:mx]
+  }
+
+  cairo_pdf(file)
+  print(lattice::levelplot(x[, ncol(x):1],
+                           useRaster = raster,
+                           col.regions = grDevices::colorRampPalette(temp_col_scale)(100),
+                           yaxt = "n", xaxt = "n", xlab = "", ylab = "", xaxt = "n"))
+  dev.off()
+}
+
+interp_hapmap <- function(path,bp){
+  d <- data.table::fread(path)
+  approx(d$`Position(bp)`, d$`Map(cM)`, xout = bp, method = "linear", rule = 2)$y
+}
+
+dip2hapidx <- function(x){
+  x <- 2*x
+  c(rbind(x-1, x))
+}
+```
+
+Now we can cluster `M` separately for African and non-African haplotypes.
+```{r make_plot,eval=FALSE}
+# Load sample population information
+#########################################
+cluster_by <- "isAFR"
+id <- fread(paste0(data_dir, gene, ".sample"))$sample
+init_order_samples <- order(id)
+samples <- merge(data.table("id" = id), kgp3, by = "id")
+if(nrow(samples) != length(id)) { stop("some samples have been removed by merging with kgp3") }
+if(!all.equal(init_order_samples, order(samples$id))) { stop("some samples have been moved out of the order in lct.sample") }
+samples[,isAFR := ifelse(reg == "AFR", "AFR", "not_AFR")]
+
+# Symmeterize & Scale Distance Matrix at LCT
+###############################################
+M <- (0.5/(neg_log10_mu*log(10))) * (M + t(M))
+
+# Permute & Cluster Distance Matrix
+###################################################################
+diploid_perm <- order(samples$reg, samples$pop, samples$id)
+psamples <- samples[diploid_perm,]
+
+haploid_perm <- dip2hapidx(diploid_perm)
+
+pM <- M[, haploid_perm][haploid_perm,]
+
+hap_groups <- table(psamples[[cluster_by]])
+hap_groups <- hap_groups[unique(psamples[[cluster_by]])]
+
+baseline_idx <- c(0, cumsum(2*hap_groups)[-length(hap_groups)])
+names(baseline_idx) <- names(hap_groups)
+
+order_M <- as.list(hap_groups)
+names(order_M) <- names(hap_groups)
+
+for(i in 1:length(hap_groups)){
+  current_pop_samples <- which(psamples[[cluster_by]] == names(hap_groups)[i])
+  current_pop_haplotypes <- dip2hapidx(current_pop_samples)
+  sM <- pM[current_pop_haplotypes, current_pop_haplotypes]
+  order_M[[names(hap_groups)[i]]] <- baseline_idx[names(hap_groups)[i]] + fastcluster::hclust(as.dist(sM), method="average")$order
+}
+
+order_M <- unlist(order_M)
+cM <- pM[, order_M][order_M,]
+
+
+# Plot clustered Distance Matrix 
+#########################################
+plot_mat(cM, paste0(data_dir, gene, "_dist_mat.pdf"))
+```
+
+# Reconstructing LCT files directly from 1000 Genomes data with bcftools
+
+Download a phased VCF of Chromosome 2 from the 1000 Genomes website, `https://www.internationalgenome.org/`.
+Below, we assume that VCF has name `chr2.vcf.gz`.
+The 1000 Genomes Project periodically makes updates to the VCFs available.
+We used `ALLchr2phase3_shapeit2_mvncall_integrated_v5a20130502genotypes.vcf.gz` in our analysis.
+That data was in hg19 coordinates, so throughout this vignette, we work entirely in hg19 coordinates.
+
+Please be mindful that some modification of the recombination map and target locus index will be necessary if working with data based on a different build.
+
+If `bcftools` is not already installed, first install `bcftools` from `https://samtools.github.io/bcftools/`.
+Then from a bash terminal, run
+
+```{bash bcftools, eval = FALSE}
+bcftools view --regions 2:136608646-136608646 --types snps --min-ac 2:minor -Ou --threads 1 chr2.vcf.gz | bcftools convert -h lct --threads 1
+```
+Note, both of the above commands take a `--threads` argument.
+Here, we've set it to `1` but this can increased to the number of available cores to increase the execution speed. See the `bcftools` documentation for more details. 
