@@ -6,3 +6,10 @@ template:
     base_font: {google: "PT Serif"}
     heading_font: {google: "Roboto Slab"}
     code_font: {google: "JetBrains Mono"}
+navbar:
+  structure:
+    left: [reference,articles,paper]
+  components:
+    paper:
+      text: Paper
+      href: https://arxiv.org/abs/2212.11403

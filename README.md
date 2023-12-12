@@ -11,7 +11,7 @@ Extensive use is made of low level threading and CPU vector instructions.
 kalis will appear on CRAN in due course.
 For now, the current development version can be installed using the [remotes](https://github.com/r-lib/remotes) package as follows:
 
-```{r}
+```
 install.packages("remotes")
 remotes::install_github("louisaslett/kalis", build_vignettes = TRUE)
 ```
@@ -19,7 +19,7 @@ remotes::install_github("louisaslett/kalis", build_vignettes = TRUE)
 Note that kalis uses various low-level optimisations meaning that you should ensure the compiler is targeting your local CPU architecture.
 The simplest way to do this is to pass configure variables setting the correct `CFLAGS` at install time:
 
-```{r}
+```
 remotes::install_github("louisaslett/kalis", build_vignettes = TRUE,
   configure.vars = c(kalis = "PKG_CFLAGS='-march=native -mtune=native -O3'"))
 ```
