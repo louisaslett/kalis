@@ -13,14 +13,14 @@ For now, the current development version can be installed using the [remotes](ht
 
 ```
 install.packages("remotes")
-remotes::install_github("louisaslett/kalis", build_vignettes = TRUE)
+remotes::install_github("louisaslett/kalis")
 ```
 
 Note that kalis uses various low-level optimisations meaning that you should ensure the compiler is targeting your local CPU architecture.
 The simplest way to do this is to pass configure variables setting the correct `CFLAGS` at install time:
 
 ```
-remotes::install_github("louisaslett/kalis", build_vignettes = TRUE,
+remotes::install_github("louisaslett/kalis",
   configure.vars = c(kalis = "PKG_CFLAGS='-march=native -mtune=native -O3'"))
 ```
 
