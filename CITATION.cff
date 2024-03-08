@@ -1,0 +1,28 @@
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: Aslett
+  given-names: L. J. M.
+  orcid: "https://orcid.org/0000-0003-2211-233X"
+- family-names: Christ
+  given-names: R. R.
+  orcid: "https://orcid.org/0000-0002-2049-3389"
+title: "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R"
+version: 1.0.0
+url: "https://github.com/louisaslett/kalis"
+preferred-citation:
+  type: article
+  title: "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R"
+  authors:
+  - family-names: "Aslett"
+    given-names: "L. J. M."
+    orcid: "https://orcid.org/0000-0003-2211-233X"
+  - family-names: "Christ"
+    given-names: "R. R."
+    orcid: "https://orcid.org/0000-0002-2049-3389"
+  journal: "BMC Bioinformatics"
+  year: 2024
+  volume: 25
+  issue: 1
+  doi: "10.1186/s12859-024-05688-8"
+  start: 1
+  end: 18

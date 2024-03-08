@@ -1,7 +1,7 @@
 Package: kalis
 Type: Package
 Title: High Performance Li & Stephens Local Ancestry Inference
-Version: 0.92.0
+Version: 1.0.0
 Authors@R: c(person("Louis", "Aslett", role = c("aut", "cre"),
                     email = "louis.aslett@durham.ac.uk"),
              person("Ryan", "Christ", role = "aut",
@@ -37,7 +37,7 @@ Imports:
     RColorBrewer,
     lobstr,
     prettyunits
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
 Suggests: 
     rhdf5,
