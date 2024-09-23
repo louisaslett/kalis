@@ -1,0 +1,49 @@
+---
+title: "Iterating Over Loci"
+author: "Louis Aslett & Ryan Christ"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Iterating Over Loci}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE
+  )
+```
+
+Here show how to use \pkg{kalis} to efficiently iterate over loci sequentially.
+
+
+```{r, results='hide'}
+require(kalis)
+# 
+# total.nthreads <- 4
+# n.checkpoints <- 7
+# 
+# nthreads <- as.integer(0:(total.nthreads-1))
+# CacheHaplotypes(SmallHaps)
+# 
+# m <- rbeta(L()-1,1,10)*1e-6
+# pars <- Parameters(CalcRho(cM = m, s = 1, gamma = 1), mu = 1e-8, use.speidel = TRUE)
+# 
+# fwd <- MakeForwardTable(pars)
+# bck <- MakeBackwardTable(pars)
+# M <- matrix(0,N(),N())
+# 
+# Iter <- ForwardIterator(pars,n.checkpoints)
+# 
+# start.time <- proc.time()
+# 
+# for(t in L():1){
+#   Iter(fwd,pars,t,nthreads = nthreads)
+#   Backward(bck,pars,t, nthreads = nthreads)
+#   # Optional: DistMat(fwd,bck,M,type="minus.min", nthreads = total.nthreads)
+#   print(paste("At locus",t))
+# }
+# 
+# print(proc.time() - start.time)
+```
