@@ -274,6 +274,7 @@ targets <- function(x) { # put this declaration above and below because it seems
   UseMethod("targets")
 }
 
+#' @export
 targets.kalisIterator <- function(iter){
   if(!"kalisIterator"%in%class(iter)){stop("argument must be a kalisIterator")}
   rev(get("targets", envir = environment(iter)))
@@ -283,6 +284,7 @@ targets <- function(x) {
   UseMethod("targets")
 }
 
+#' @export
 print.kalisIterator <- function(iter){
   if(!"kalisIterator"%in%class(iter)){stop("argument must be a kalisIterator")}
 
@@ -297,6 +299,7 @@ print.kalisIterator <- function(iter){
   }
 }
 
+#' @export
 plot.kalisIterator <- function(iter){
   if(!"kalisIterator"%in%class(iter)){stop("argument must be a kalisIterator")}
   sch <- get("sch",envir = environment(iter))
