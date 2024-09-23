@@ -9,7 +9,7 @@
 #' TODO: add kalis paper cross ref.
 #' See page 3 in Supplemental Information for the original ChromoPainter paper (Lawson et al., 2012) for motivation behind our parameterisation, which is as follows:
 #'
-#' \deqn{\rho = \exp(-s \times cM^\gamma) - 1}{\rho = exp(-s * cM^\gamma) - 1}
+#' \deqn{\rho = 1 - \exp(-s \times cM^\gamma)}{\rho = 1 - exp(-s * cM^\gamma)}
 #'
 #'
 #' @param cM a vector specifying the recombination distance between variants in centimorgans.

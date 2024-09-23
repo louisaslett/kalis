@@ -33,7 +33,7 @@ This is a utility function to calculate the recombination probabilities rho (the
 TODO: add kalis paper cross ref.
 See page 3 in Supplemental Information for the original ChromoPainter paper (Lawson et al., 2012) for motivation behind our parameterisation, which is as follows:
 
-\deqn{\rho = \exp(-s \times cM^\gamma) - 1}{\rho = exp(-s * cM^\gamma) - 1}
+\deqn{\rho = 1 - \exp(-s \times cM^\gamma)}{\rho = 1 - exp(-s * cM^\gamma)}
 }
 \examples{
 # Load the mini example data and recombination map from the package built-in #' # dataset
