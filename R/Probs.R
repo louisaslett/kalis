@@ -221,7 +221,7 @@ DistMat <- function(fwd, bck, type = "raw", M = NULL, beta.theta.opts = NULL,
                     nthreads = min(parallel::detectCores(logical = FALSE), fwd$to_recipient-fwd$from_recipient+1)){
 
   if(identical(nthreads, "R")) {
-    if(!is.null(M)){stop("M cannot be NULL when requesting the gold master R version with R nthreads")}
+    if(!is.null(M)){stop("M must be NULL when requesting the gold master R version with R nthreads")}
     warning("Warning: using gold master R implementation.")
     return(invisible(DistMat.GM(fwd, bck, type, beta.theta.opts)))
   }
@@ -256,7 +256,7 @@ DistMat <- function(fwd, bck, type = "raw", M = NULL, beta.theta.opts = NULL,
 
 
 
-input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
+input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts = NULL){
 
   # RUN GENERAL CHECKS
   if(fwd$l == 2147483647L){stop("forward table has not been initialized but not propagated to a variant in {1,...,L}.")}
@@ -295,7 +295,7 @@ input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
 
       if(!inherits(beta.theta.opts$pars,"kalisParameters")){stop("beta.theta.opts$pars must be kalisParameters object.")}
 
-      if(!is.numeric(beta.theta.opts$bias) || beta.theta.opts$bias<=0 || beta.theta.opts$bias>=1 ){stop("bias must be numeric and within (0,1). To obtain a distance matrix AT a particular variant, advance bck to that variant in beta space.")}
+      if(!is.numeric(beta.theta.opts$bias) || beta.theta.opts$bias<0 || beta.theta.opts$bias>1 ){stop("bias must be numeric and within [0,1]. To obtain a distance matrix AT a particular variant, advance bck to that variant in beta space.")}
 
       total.rho <- sum(beta.theta.opts$pars$pars$rho[fwd$l:(bck$l - 1)])
 
@@ -304,12 +304,12 @@ input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
 
     }
 
-    return(list("rho.fwd" = rho.fwd, "rho.bck" = rho.bck))
+    return(invisible(list("rho.fwd" = rho.fwd, "rho.bck" = rho.bck)))
 
   }else{
 
     if(bck$l != fwd$l){stop("variant position of the forward table and backward table do not match.")}
-    return(NULL)
+    return(invisible(NULL))
   }
 }
 
