@@ -238,6 +238,7 @@ Parameters <- function(rho = rep(0, get("L", envir = pkgVars)-1),
   res
 }
 
+#' @importFrom utils tail
 #' @export
 print.kalisParameters <- function(x, ...) {
   if(is.matrix(x$pars$Pi)) {

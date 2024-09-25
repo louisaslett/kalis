@@ -299,6 +299,7 @@ print.kalisIterator <- function(x, ...){
   }
 }
 
+#' @importFrom graphics axis
 #' @export
 plot.kalisIterator <- function(x, ...){
   if(!"kalisIterator"%in%class(x)){stop("argument must be a kalisIterator")}
@@ -559,6 +560,8 @@ obj_func_for_SolveSchedule <- function(i,ins,d,indicies,num.available.ckpts){
 }
 
 
+#' @importFrom stats optimize
+#' @importFrom utils tail
 MakeSolveSchedule <- function(exact = TRUE){
 
   sch.k <- 0L

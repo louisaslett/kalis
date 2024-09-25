@@ -108,7 +108,7 @@ Sprigs <- function(x, old.sprigs = FALSE){
 }
 
 
-
+#' @importFrom utils getFromNamespace
 UpdateMatrixInPlace <- function(M,row.idx,col.idx,x){
   invisible(.Call(getFromNamespace("CCall_UpdateRealInPlace","kalis"),M,
                   as.integer(row.idx + (col.idx-1L)*nrow(M)),x))
