@@ -7,7 +7,7 @@
 Sprigs_old(x, use.forking = FALSE, nthreads = 1L, add.self = TRUE)
 }
 \arguments{
-\item{x}{a \code{kalisNeighbors} object returned by \code{\link{kalisNeighbors}}, a \code{kalisClades} object returned by \code{\link{kalisClades}} with \code{neighbors = TRUE}, or a list}
+\item{x}{a \code{kalisNeighbors} object returned by \code{\link[=Neighbors]{Neighbors()}}, a \code{kalisClades} object returned by \code{\link[=Clades]{Clades()}} with \code{neighbors = TRUE}, or a list}
 
 \item{use.forking}{a logical, should forked processes be used?}
 

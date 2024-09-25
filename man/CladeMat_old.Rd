@@ -16,13 +16,13 @@ CladeMat_old(
 )
 }
 \arguments{
-\item{x}{a \code{kalisClades} object returned by \code{\link{kalisClades}}}
+\item{x}{a \code{kalisClades} object returned by \code{\link[=Clades]{Clades()}}}
 
 \item{ploidy}{an integer, the ploidy of the organism}
 
-\item{sprigs.to.prune}{a \code{kalisSprigs} object returned by \code{\link{kalisSprigs}} encoding sprigs that should be excluded from the matrix returned}
+\item{sprigs.to.prune}{a \code{kalisSprigs} object returned by \code{\link[=Sprigs]{Sprigs()}} encoding sprigs that should be excluded from the matrix returned}
 
-\item{assemble}{a logical, if FALSE return the clade matrix as a list of columns rather than as a symmetrized matrix}
+\item{assemble}{a logical, if \code{FALSE} return the clade matrix as a list of columns rather than as a symmetrized matrix}
 
 \item{use.forking}{a logical, should forked processes be used?}
 

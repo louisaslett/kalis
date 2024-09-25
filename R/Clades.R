@@ -199,17 +199,16 @@ PruneCladeMat <- function(M, neigh, sprigs, prune = "singleton.info", from.recip
 #' Probabilistic Clades
 #'
 #' Utility for calling probabilistic clades at, in between, or excluding variants.
-#' @param fwd a forward table as returned by \code{\link{MakeForwardTable}}
-#' @param bck a backward table as returned by \code{\link{MakeBackwardTable}}
-#' @param pars a \code{kalisParameters} object, as returned by
-#'   \code{\link{Parameters}}.
-#' @param beta.theta.opts a list; see Details for \code{\link{DistMat}}.
-#' @param safety.checks a logical, should safety checks be applied to the distances?  See \code{\link{DistMat}}.
-#' @param neighbors a logical, should nearest neighbors be pre-calculated?  See \code{\link{Neighbors}}.
+#' @param fwd a forward table as returned by [MakeForwardTable()]
+#' @param bck a backward table as returned by [MakeBackwardTable()]
+#' @param pars a `kalisParameters` object, as returned by [Parameters()].
+#' @param beta.theta.opts a list; see Details for [DistMat()].
+#' @param safety.checks a logical, should safety checks be applied to the distances?  See [DistMat()].
+#' @param neighbors a logical, should nearest neighbors be pre-calculated?  See [Neighbors()].
 #' @param use.forking a logical, should forked processes be used?
 #' @param nthreads the number of CPU cores to use. Currently, no parallelism is used.
 #' @return
-#'   a \code{kalisClades} object encoding probabilistic clade calls
+#'   a `kalisClades` object encoding probabilistic clade calls
 #'
 #' @importFrom data.table frank
 #' @export Clades
@@ -295,11 +294,11 @@ Clades <- function(fwd, bck, pars, beta.theta.opts = NULL,
 #' Neighbors
 #'
 #' Utility for calling tied nearest neighbors for each recipient haplotype
-#' @param x a \code{kalisClades} object returned by \code{\link{kalisClades}}
+#' @param x a `kalisClades` object returned by [Clades()]
 #' @param use.forking a logical, should forked processes be used?
 #' @param nthreads the number of CPU cores to use. Currently, no parallelism is used.
 #' @return
-#'   a \code{kalisNeighbors} encoding the nearest neighbors for each recipient haplotype
+#'   a `kalisNeighbors` encoding the nearest neighbors for each recipient haplotype
 #'
 #' @export Neighbors
 Neighbors <- function(x,
@@ -346,11 +345,11 @@ Neighbors <- function(x,
 #' Sprigs
 #'
 #' Utility for calling sprigs from probabilistic clades
-#' @param x a \code{kalisNeighbors} object returned by \code{\link{kalisNeighbors}}, a \code{kalisClades} object returned by \code{\link{kalisClades}} with \code{neighbors = TRUE}, or a list
+#' @param x a `kalisNeighbors` object returned by [Neighbors()], a `kalisClades` object returned by [Clades()] with `neighbors = TRUE`, or a list
 #' @param use.forking a logical, should forked processes be used?
 #' @param nthreads the number of CPU cores to use. Currently, no parallelism is used.
 #' @return
-#'   a \code{kalisSprigs} object assigning each haplotype to a sprig
+#'   a `kalisSprigs` object assigning each haplotype to a sprig
 #'
 #' @export Sprigs_old
 Sprigs_old <- function(x, use.forking = FALSE, nthreads = 1L, add.self = TRUE){
@@ -446,10 +445,10 @@ Sprigs_old <- function(x, use.forking = FALSE, nthreads = 1L, add.self = TRUE){
 #' CladeMat OLD
 #'
 #' Utility for contructing a probabilistic clade matrix
-#' @param x a \code{kalisClades} object returned by \code{\link{kalisClades}}
+#' @param x a `kalisClades` object returned by [Clades()]
 #' @param ploidy an integer, the ploidy of the organism
-#' @param sprigs.to.prune a \code{kalisSprigs} object returned by \code{\link{kalisSprigs}} encoding sprigs that should be excluded from the matrix returned
-#' @param assemble a logical, if FALSE return the clade matrix as a list of columns rather than as a symmetrized matrix
+#' @param sprigs.to.prune a `kalisSprigs` object returned by [Sprigs()] encoding sprigs that should be excluded from the matrix returned
+#' @param assemble a logical, if `FALSE` return the clade matrix as a list of columns rather than as a symmetrized matrix
 #' @param use.forking a logical, should forked processes be used?
 #' @param nthreads the number of CPU cores to use. Currently, no parallelism is used.
 #' @return

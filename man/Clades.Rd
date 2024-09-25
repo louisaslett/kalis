@@ -18,18 +18,17 @@ Clades(
 )
 }
 \arguments{
-\item{fwd}{a forward table as returned by \code{\link{MakeForwardTable}}}
+\item{fwd}{a forward table as returned by \code{\link[=MakeForwardTable]{MakeForwardTable()}}}
 
-\item{bck}{a backward table as returned by \code{\link{MakeBackwardTable}}}
+\item{bck}{a backward table as returned by \code{\link[=MakeBackwardTable]{MakeBackwardTable()}}}
 
-\item{pars}{a \code{kalisParameters} object, as returned by
-\code{\link{Parameters}}.}
+\item{pars}{a \code{kalisParameters} object, as returned by \code{\link[=Parameters]{Parameters()}}.}
 
-\item{beta.theta.opts}{a list; see Details for \code{\link{DistMat}}.}
+\item{beta.theta.opts}{a list; see Details for \code{\link[=DistMat]{DistMat()}}.}
 
-\item{safety.checks}{a logical, should safety checks be applied to the distances?  See \code{\link{DistMat}}.}
+\item{safety.checks}{a logical, should safety checks be applied to the distances?  See \code{\link[=DistMat]{DistMat()}}.}
 
-\item{neighbors}{a logical, should nearest neighbors be pre-calculated?  See \code{\link{Neighbors}}.}
+\item{neighbors}{a logical, should nearest neighbors be pre-calculated?  See \code{\link[=Neighbors]{Neighbors()}}.}
 
 \item{use.forking}{a logical, should forked processes be used?}
 

@@ -7,7 +7,7 @@
 Neighbors(x, use.forking = FALSE, nthreads = 1L)
 }
 \arguments{
-\item{x}{a \code{kalisClades} object returned by \code{\link{kalisClades}}}
+\item{x}{a \code{kalisClades} object returned by \code{\link[=Clades]{Clades()}}}
 
 \item{use.forking}{a logical, should forked processes be used?}
 
