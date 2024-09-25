@@ -275,9 +275,9 @@ targets <- function(x) { # put this declaration above and below because it seems
 }
 
 #' @export
-targets.kalisIterator <- function(iter){
-  if(!"kalisIterator"%in%class(iter)){stop("argument must be a kalisIterator")}
-  rev(get("targets", envir = environment(iter)))
+targets.kalisIterator <- function(x){
+  if(!"kalisIterator"%in%class(x)){stop("argument must be a kalisIterator")}
+  rev(get("targets", envir = environment(x)))
 }
 
 targets <- function(x) {
@@ -285,26 +285,26 @@ targets <- function(x) {
 }
 
 #' @export
-print.kalisIterator <- function(iter){
-  if(!"kalisIterator"%in%class(iter)){stop("argument must be a kalisIterator")}
+print.kalisIterator <- function(x, ...){
+  if(!"kalisIterator"%in%class(x)){stop("argument must be a kalisIterator")}
 
-  if(get("current.target.index", envir=environment(iter)) == 0){
+  if(get("current.target.index", envir=environment(x)) == 0){
     "This is an exhausted kalisIterator."
   }else{
-    target.range <- range(get("targets", envir = environment(iter)))
-    message(paste("A kalisIterator for",length(get("targets", envir = environment(iter))),"targets ranging from",target.range[1],"to",target.range[2]),appendLF = TRUE)
-    message(paste("Contains",get("max.tables", envir = environment(iter)),"checkpoints using ~",utils::object.size(get("cache", envir = environment(iter)))/1e9,"Gb of RAM"),appendLF = TRUE)
-    message(paste("Next target locus:",get("targets", envir = environment(iter))[get("current.target.index", envir = environment(iter))]),appendLF = TRUE)
+    target.range <- range(get("targets", envir = environment(x)))
+    message(paste("A kalisIterator for",length(get("targets", envir = environment(x))),"targets ranging from",target.range[1],"to",target.range[2]),appendLF = TRUE)
+    message(paste("Contains",get("max.tables", envir = environment(x)),"checkpoints using ~",utils::object.size(get("cache", envir = environment(x)))/1e9,"Gb of RAM"),appendLF = TRUE)
+    message(paste("Next target locus:",get("targets", envir = environment(x))[get("current.target.index", envir = environment(x))]),appendLF = TRUE)
     message("",appendLF = TRUE)
   }
 }
 
 #' @export
-plot.kalisIterator <- function(iter){
-  if(!"kalisIterator"%in%class(iter)){stop("argument must be a kalisIterator")}
-  sch <- get("sch",envir = environment(iter))
-  loci <- get("targets",envir = environment(iter))
-  plot(sch$i[-c(1,nrow(sch))],sch$k[-c(1,nrow(sch))],type="h",lwd=1,bty="n",ylab="K",xlab="locus",las=1,ylim=c(0,max(sch$k)),xlim=range(loci),xaxt="n",yaxt="n")
+plot.kalisIterator <- function(x, ...){
+  if(!"kalisIterator"%in%class(x)){stop("argument must be a kalisIterator")}
+  sch <- get("sch",envir = environment(x))
+  loci <- get("targets",envir = environment(x))
+  plot(sch$i[-c(1,nrow(sch))],sch$k[-c(1,nrow(sch))],type="h",lwd=1,bty="n",ylab="K",xlab="locus",las=1,ylim=c(0,max(sch$k)),xlim=range(loci),xaxt="n",yaxt="n", ...)
   p.loci <- pretty(loci)
   axis(1,at = p.loci ,pos=0)
   axis(2,at = pretty(0:max(sch$k)),pos=p.loci[1],las=2)
