@@ -7,9 +7,9 @@ vignette: >
   %\VignetteIndexEntry{Reading Haplotype Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  ---
-  
-  ```{r setup, include = FALSE}
+---
+
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
 collapse = TRUE,
 comment = "#>"
@@ -45,8 +45,3 @@ For increased reading efficiency `CacheHaplotypes` look will look for the `my.le
 `kalis`  <http://hgdownload.cse.ucsc.edu/gbdb/hg19/1000Genomes/phase3/>
 
 ALL.chr21.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.hap.gz
-
-
-
-
-
