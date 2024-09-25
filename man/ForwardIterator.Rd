@@ -7,7 +7,7 @@
 ForwardIterator(
   pars,
   ram.ckpts = 1L,
-  targets = 1:kalis:::pkgVars$L,
+  targets = 1:L(),
   base.fwd.table = NULL,
   disk.ckpts = 0,
   disk.dir = NULL,

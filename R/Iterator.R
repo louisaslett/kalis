@@ -32,7 +32,7 @@
 #' @export
 ForwardIterator <- function(pars,
                             ram.ckpts = 1L,
-                            targets = 1:kalis:::pkgVars$L,
+                            targets = 1:L(),
                             base.fwd.table = NULL,
                             disk.ckpts = 0,
                             disk.dir = NULL,
@@ -57,7 +57,7 @@ ForwardIterator <- function(pars,
   if(!is.null(cache)){
     for(i in 1:length(cache)){
       if(cache[[i]]$from_recipient!=from_recipient){stop("The provided cache must have the same from_recipient as currently requested.")}
-      if(cache[[i]]$to_recipient!=min(to_recipient,kalis:::pkgVars$N)){stop("The provided cache must have the same to_recipient as currently requested.")}
+      if(cache[[i]]$to_recipient!=min(to_recipient,N())){stop("The provided cache must have the same to_recipient as currently requested.")}
     }
   }
 
@@ -202,7 +202,7 @@ ForwardIterator <- function(pars,
           warning("The provided cache was initialized with parameters that are different from those currently in pars.  Overwritting the pars in the provided cache...")
           cache[[i]]$pars.sha256 <- pars$sha256
         }
-        kalis:::ResetTable(cache[[i]])
+        ResetTable(cache[[i]])
       }
     }
 
@@ -243,7 +243,7 @@ ForwardIterator <- function(pars,
       CopyTable(to = fwd, from = cache[[current.sch$k]])
     }else{
       if(use.pi){
-        kalis:::ResetTable(fwd)
+        ResetTable(fwd)
       }else{
         CopyTable(to = fwd, from = base.fwd.table)
       }
@@ -428,7 +428,7 @@ MakeUpdateCache <- function(sch, use.pi, cost.list = NULL, targets.idx = NULL){
         }else{
           if(track.cost){ cost <<- cost + transfer.cost(kk,0) }
           if(use.pi){
-            kalis:::ResetTable(cache[[kk]]) # Pi could also be the baseline table here for the entire interval
+            ResetTable(cache[[kk]]) # Pi could also be the baseline table here for the entire interval
           }else{
             CopyTable(to = cache[[kk]],base.fwd.table)
           }

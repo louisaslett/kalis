@@ -211,6 +211,7 @@ PruneCladeMat <- function(M, neigh, sprigs, prune = "singleton.info", from.recip
 #' @return
 #'   a \code{kalisClades} object encoding probabilistic clade calls
 #'
+#' @importFrom data.table frank
 #' @export Clades
 Clades <- function(fwd, bck, pars, beta.theta.opts = NULL,
                    safety.checks = FALSE, neighbors = FALSE,

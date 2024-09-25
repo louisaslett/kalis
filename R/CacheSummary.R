@@ -24,6 +24,7 @@
 #' N()
 #' L()
 #'
+#' @importFrom prettyunits pretty_bytes
 #' @export
 CacheSummary <- function() {
   N <- get("N", envir = pkgVars)

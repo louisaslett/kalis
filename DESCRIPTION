@@ -25,7 +25,6 @@ LazyData: TRUE
 Depends: R (>= 3.5.0)
 Imports:
     utils,
-    methods,
     stats,
     parallel,
     dplyr,
@@ -36,7 +35,8 @@ Imports:
     grDevices,
     RColorBrewer,
     lobstr,
-    prettyunits
+    prettyunits,
+    data.table
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Suggests: 
