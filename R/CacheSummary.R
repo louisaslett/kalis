@@ -1,12 +1,12 @@
 #' Retrieve information about the haplotype cache
 #'
 #' @return
-#'   \code{CacheSummary()} prints information about the current state of the kalis cache.
-#'     Also invisibly returns a vector giving the dimensions of the cached haplotype data (num variants, num haplotypes), or \code{NULL} if the cache is empty.
+#'   `CacheSummary()` prints information about the current state of the kalis cache.
+#'     Also invisibly returns a vector giving the dimensions of the cached haplotype data (num variants, num haplotypes), or `NULL` if the cache is empty.
 #'
-#'   \code{N()} returns the number of haplotypes currently in the kalis cache, or \code{NULL} if the cache is empty.
+#'   `N()` returns the number of haplotypes currently in the kalis cache, or `NULL` if the cache is empty.
 #'
-#'   \code{L()} returns the number of variants currently in the kalis cache, or \code{NULL} if the cache is empty.
+#'   `L()` returns the number of variants currently in the kalis cache, or `NULL` if the cache is empty.
 #'
 #' @examples
 #' # First fill the cache with the toy data included in the package

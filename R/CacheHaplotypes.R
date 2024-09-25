@@ -36,7 +36,7 @@ assign("L", NA, envir = pkgVars) # must be integer
 #'
 #' (num rows)x(num cols) = (num variants)x(num haplotypes).
 #'
-#' It is fine to delete this matrix from R after calling \code{CacheHaplotypes}.
+#' It is fine to delete this matrix from R after calling [CacheHaplotypes()].
 #'
 #'
 #' **HDF5 format**

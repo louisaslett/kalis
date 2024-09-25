@@ -140,7 +140,7 @@ print.kalisForwardTable <- function(x, ...) {
 #'   Haplotypes are indexed from 1.
 #'
 #' @return
-#'   A specialized list of class \code{kalisBackwardTable}.
+#'   A specialized list of class `kalisBackwardTable`.
 #'   The elements of the backward table list are:
 #'   \describe{
 #'     \item{`l`}{denotes the current variant position.

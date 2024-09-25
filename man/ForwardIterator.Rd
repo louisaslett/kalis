@@ -26,13 +26,13 @@ ForwardIterator(
 \item{targets}{a vector of loci to iterate over (starting with the most downstream target)}
 
 \item{base.fwd.table}{a \code{kalisForwardTable} either at the most upstream target, or if the targets are evenly spaced, one interval upstream of the most upstream target.
-NULL (the default) is interpretted as the prior \code{Pi}, see \code{\link{Parameters}}}
+\code{NULL} (the default) is interpretted as the prior \code{Pi}, see \code{\link[=Parameters]{Parameters()}}}
 
 \item{disk.ckpts}{an integer specifying the number of checkpoints to store on disk}
 
 \item{disk.dir}{a path to a directory where a temporary folder may be made to store checkpoints on disk}
 
-\item{force.unif}{a logical, if TRUE iterate over targets as if they were uniformly spaced. WARNING: DO NOT use this in conjunction with the targets method, still experimental. With force.unif = TRUE, the resulting iterator appear to be targeting the first length(targets) variants with all methods, but in fact will be silently iterating over the original targets.}
+\item{force.unif}{a logical, if \code{TRUE} iterate over targets as if they were uniformly spaced. WARNING: DO NOT use this in conjunction with the targets method, still experimental. With \code{force.unif = TRUE}, the resulting iterator appear to be targeting the first length(targets) variants with all methods, but in fact will be silently iterating over the original targets.}
 }
 \description{
 Create a \code{kalisForwardIterator} for propagating a forward table iteratively over target loci using a table cache and optimal checkpointing.
@@ -57,5 +57,5 @@ for(t in targets(Iter)){
 
 }
 \seealso{
-\code{\link{MakeForwardTable}} to create a \code{kalisForwardTable}.
+\code{\link[=MakeForwardTable]{MakeForwardTable()}} to create a \code{kalisForwardTable}.
 }

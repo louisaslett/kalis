@@ -86,7 +86,7 @@ That is, the dimensions should be:
 
 (num rows)x(num cols) = (num variants)x(num haplotypes).
 
-It is fine to delete this matrix from R after calling \code{CacheHaplotypes}.
+It is fine to delete this matrix from R after calling \code{\link[=CacheHaplotypes]{CacheHaplotypes()}}.
 
 \strong{HDF5 format}
 

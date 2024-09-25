@@ -1,18 +1,18 @@
 #' Build an efficient iterator over loci
 #'
-#' Create a \code{kalisForwardIterator} for propagating a forward table iteratively over target loci using a table cache and optimal checkpointing.
+#' Create a `kalisForwardIterator` for propagating a forward table iteratively over target loci using a table cache and optimal checkpointing.
 #'
 #' See example.
 #'
 #'
 #' @param ram.ckpts an integer specifying the number of checkpoints to store in RAM
 #' @param targets a vector of loci to iterate over (starting with the most downstream target)
-#' @param base.fwd.table a \code{kalisForwardTable} either at the most upstream target, or if the targets are evenly spaced, one interval upstream of the most upstream target.
-#' NULL (the default) is interpretted as the prior \code{Pi}, see \code{\link{Parameters}}
+#' @param base.fwd.table a `kalisForwardTable` either at the most upstream target, or if the targets are evenly spaced, one interval upstream of the most upstream target.
+#' `NULL` (the default) is interpretted as the prior `Pi`, see [Parameters()]
 #' @param disk.ckpts an integer specifying the number of checkpoints to store on disk
 #' @param disk.dir a path to a directory where a temporary folder may be made to store checkpoints on disk
-#' @param force.unif a logical, if TRUE iterate over targets as if they were uniformly spaced. WARNING: DO NOT use this in conjunction with the targets method, still experimental. With force.unif = TRUE, the resulting iterator appear to be targeting the first length(targets) variants with all methods, but in fact will be silently iterating over the original targets.
-#' @seealso \code{\link{MakeForwardTable}} to create a \code{kalisForwardTable}.
+#' @param force.unif a logical, if `TRUE` iterate over targets as if they were uniformly spaced. WARNING: DO NOT use this in conjunction with the targets method, still experimental. With `force.unif = TRUE`, the resulting iterator appear to be targeting the first length(targets) variants with all methods, but in fact will be silently iterating over the original targets.
+#' @seealso [MakeForwardTable()] to create a `kalisForwardTable`.
 #'
 #' @examples
 #' \dontrun{

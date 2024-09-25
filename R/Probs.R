@@ -41,7 +41,7 @@
 #'
 #' When provided, `M` must have dimensions matching that of `fwd$alpha`.
 #' Typically, that is simply \eqn{N \times N}{N x N} for \eqn{N} haplotypes.
-#' However, if kalis is being run in a distributed manner, \code{M} will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
+#' However, if kalis is being run in a distributed manner, `M` will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
 #'
 #' @param fwd a forward table as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].
 #'   Must be at the same variant as `bck` (unless `bck` is in "beta-theta space" in which case if must be downstream ... see [Backward()] for details).
@@ -162,7 +162,7 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #'
 #' When provided, `M` must have dimensions matching that of `fwd$alpha`.
 #' Typically, that is simply \eqn{N \times N}{N x N} for \eqn{N} haplotypes.
-#' However, if kalis is being run in a distributed manner, \code{M} will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
+#' However, if kalis is being run in a distributed manner, `M` will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
 #'
 #' @param fwd a forward table as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].
 #'   Must be at the same variant as `bck` (unless `bck` is in "beta-theta space" in which case if must be downstream ... see [Backward()] for details).

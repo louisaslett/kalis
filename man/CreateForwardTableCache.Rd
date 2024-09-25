@@ -13,8 +13,7 @@ CreateForwardTableCache(
 )
 }
 \arguments{
-\item{pars}{a \code{kalisParameters} object, as returned by
-\code{Parameters}.}
+\item{pars}{a \code{kalisParameters} object, as returned by \code{\link[=Parameters]{Parameters()}}.}
 
 \item{size}{the maximum amount of RAM (in GB) to devote to this cache.}
 
@@ -42,9 +41,9 @@ time and the forward propagation can move backwards by moving forward from a
 recently cached local table.
 
 Memory for a cache can be allocated using this function and should then be
-filled with \code{\link{FillTableCache}}.
-To use the cache, then instead of using the \code{\link{Forward}} function,
-use \code{\link{ForwardUsingTableCache}}.
+filled with \code{\link[=FillTableCache]{FillTableCache()}}.
+To use the cache, then instead of using the \code{\link[=Forward]{Forward()}} function,
+use \code{\link[=ForwardUsingTableCache]{ForwardUsingTableCache()}}.
 }
 \examples{
 \dontrun{
@@ -74,8 +73,8 @@ for(l in L:1) {
 
 }
 \seealso{
-\code{\link{MakeForwardTable}} to make a forward table;
-\code{\link{FillTableCache}} to fill a cache;
-\code{\link{ForwardUsingTableCache}} to use a cache;
-\code{\link{Forward}} for forward function without using a cache.
+\code{\link[=MakeForwardTable]{MakeForwardTable()}} to make a forward table;
+\code{\link[=FillTableCache]{FillTableCache()}} to fill a cache;
+\code{\link[=ForwardUsingTableCache]{ForwardUsingTableCache()}} to use a cache;
+\code{\link[=Forward]{Forward()}} for forward function without using a cache.
 }
