@@ -181,6 +181,9 @@ sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/
 if [ -f a.out ] ; then
     rm a.out
 fi
+if [ -e a.out.dSYM ] ; then
+    rm -rf a.out.dSYM
+fi
 
 # Success
 exit 0
