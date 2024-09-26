@@ -371,7 +371,7 @@ void blobby_B1(double* alpha1, double* beta1, size_t recipient, size_t n, double
   double maxd = 744.4400719213812180897;
   blob blobs[(int) (maxd/thres+2)];
   blob** x_in_blob[n];
-  double* n_clade;
+  double* n_clade = NULL;
   blobby_BB(alpha1, beta1, recipient, n, blobs, x_in_blob, n_clade, thres, maxd, unitdist, max1var);
 }
 
@@ -509,8 +509,8 @@ SEXP blobbyB2(SEXP ALPHA, SEXP BETA, SEXP FROMRECIPIENT, SEXP THRES, SEXP UNITDI
   blob* blobs1 = malloc(sizeof(blob)*((int) (maxd/thres+2)));
   blob* blobs2 = malloc(sizeof(blob)*((int) (maxd/thres+2)));
 
-  double* n_clade1;
-  double* n_clade2;
+  double* n_clade1 = NULL;
+  double* n_clade2 = NULL;
 
   blobby_B2(alpha, beta, alpha+n, beta+n, from_recipient, n, thres, unitdist, max1var, dedip,
             &neigh1, &neigh2, &n_neigh[0], &n_neigh[1], n_clade1, n_clade2,
