@@ -24,7 +24,7 @@ void printblob(blob* bobtheblob) {
   Rprintf("Blob %p (%p): # = %d, range = (%lf, %lf), prv = %p, nxt = %p, lp = %p, mp = %p \n",
           bobtheblob,
           (bobtheblob==bobtheblob->blob?NULL:bobtheblob->blob),
-          bobtheblob->num_in_blob,
+          (int) bobtheblob->num_in_blob,
           bobtheblob->lower,
           bobtheblob->upper,
           bobtheblob->prev,
@@ -675,7 +675,7 @@ void blobby_A(const double* const restrict alpha,
       pthread_create(&threads[i], &attr, blobby_B, (void*) &args[i]);
       //blobby_B((void*) &args[i]);
     }
-    Rprintf("%d threads created (rag end left over = %d)\n", nthreads, rag_end);
+    Rprintf("%d threads created (rag end left over = %d)\n", (int) nthreads, (int) rag_end);
 
     // Tidy ragged end
     if(rag_end != 0) {
