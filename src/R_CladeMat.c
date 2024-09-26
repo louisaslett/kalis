@@ -331,10 +331,10 @@ blob* blobby_BB(const double* alpha, const double* beta, const size_t recipient,
   double j = n, diff = 0.0, temp_n_mut = 0.0;
   cur = tail;
   cur->c3 = 0.0;
-  int num_surv_blob = 0;
+  // int num_surv_blob = 0; // This does not seem to be used, except on line 337, which has no side effects
   *n_clade = 0.0;
   while(cur->prev != NULL) {
-    num_surv_blob++;
+    // num_surv_blob++;
     j -= cur->num_in_blob;
     diff = cur->lower - cur->prev->upper + 2*thres;
     temp_n_mut = diff/unitdist;
