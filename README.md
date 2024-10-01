@@ -13,7 +13,7 @@ For now, the current development version can be installed using the [remotes](ht
 
 ```
 install.packages("remotes")
-remotes::install_github("louisaslett/kalis")
+remotes::install_github("louisaslett/kalis", build_vignettes = TRUE)
 ```
 
 Note that kalis uses various low-level optimisations meaning that you should ensure the compiler is targeting your local CPU architecture.
@@ -21,7 +21,8 @@ The simplest way to do this is to pass configure variables setting the correct `
 
 ```
 remotes::install_github("louisaslett/kalis",
-  configure.vars = c(kalis = "PKG_CFLAGS='-march=native -mtune=native -O3'"))
+  configure.vars = c(kalis = "PKG_CFLAGS='-march=native -mtune=native -O3'"),
+  build_vignettes = TRUE)
 ```
 
 If you do not have the correct flags set, kalis will fall back to an implementation which does not use the special vector instruction set architecture of your CPU and will provide a warning when you load the package in your R session.
