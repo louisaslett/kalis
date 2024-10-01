@@ -338,46 +338,9 @@ calc_tables <- function(propagation.cost,max.num.checkpoints, use.R = FALSE){
 }
 
 
-MakeUpdateCache <- function(sch, use.pi, cost.list = NULL, targets.idx = NULL){
+MakeUpdateCache <- function(sch, use.pi, targets.idx = NULL){
 
   force(targets.idx)
-
-  track.cost <- FALSE
-
-  if(!is.null(cost.list)){
-
-    mem.copy.cost = cost.list$mem.copy.cost
-    disk.read.cost = cost.list$disk.read.cost
-    disk.write.cost = cost.list$disk.write.cost
-    num.ram.ckpts = cost.list$num.ram.ckpts
-    num.disk.ckpts = cost.list$num.disk.ckpts
-    K <- num.ram.ckpts + num.disk.ckpts
-    track.cost <- TRUE
-    cost <- 0
-
-    transfer.cost <- function(to_k,from_k){
-      from_ram <- from_k <= num.ram.ckpts
-      to_ram <- to_k <= num.ram.ckpts
-
-      if(from_ram & to_ram){
-        return(mem.copy.cost)
-      }
-
-      if(!from_ram & to_ram){
-        return(disk.read.cost)
-      }
-    }
-
-    write.cost <- function(k){
-      if(k <= num.ram.ckpts ){
-        return(0)
-      }else{
-        return(disk.write.cost)
-      }
-    }
-
-  }
-
 
   exhausted <- FALSE
   current.ins <- leading.ins <- 1
@@ -415,10 +378,8 @@ MakeUpdateCache <- function(sch, use.pi, cost.list = NULL, targets.idx = NULL){
         akk <- sch$k[ancestor]
 
         if(akk != 0){
-          if(track.cost){ cost <<- cost + transfer.cost(kk,akk) }
           CopyTable(cache[[ kk ]],cache[[ akk ]])
         }else{
-          if(track.cost){ cost <<- cost + transfer.cost(kk,0) }
           if(use.pi){
             ResetTable(cache[[kk]]) # Pi could also be the baseline table here for the entire interval
           }else{
@@ -427,7 +388,6 @@ MakeUpdateCache <- function(sch, use.pi, cost.list = NULL, targets.idx = NULL){
         }
 
         # advance cache table from ancestor to current checkpoint destination
-        if(track.cost){ cost <<- cost + sum( d[ (sch$i[ancestor] + 1) : sch$i[current.ins] ])}
         if(!is.null(targets.idx)){
           Forward(cache[[kk]],pars,targets.idx[sch$i[current.ins]],nthreads)
         } else {
