@@ -744,8 +744,9 @@ SEXP CladeMat(SEXP Rfwd,
   int** neigh;
   neigh = malloc(sizeof(int*)*p);
   if(neigh == NULL) {
-    printf("Failed allocating neigh!\n");
-    exit(1);
+    REprintf("Error: failed allocating neigh!\n");
+    UNPROTECT(4);
+    KALIS_RETURN
   }
   SEXP RES_NNEIGH = PROTECT(Rf_allocVector(INTSXP, p+1));
   int* n_neigh = INTEGER(RES_NNEIGH);
