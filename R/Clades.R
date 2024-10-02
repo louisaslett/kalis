@@ -199,14 +199,38 @@ PruneCladeMat <- function(M, neigh, sprigs, prune = "singleton.info", from.recip
 #' Probabilistic Clades
 #'
 #' Utility for calling probabilistic clades at, in between, or excluding variants.
-#' @param fwd a forward table as returned by [MakeForwardTable()]
-#' @param bck a backward table as returned by [MakeBackwardTable()]
-#' @param pars a `kalisParameters` object, as returned by [Parameters()].
-#' @param beta.theta.opts a list; see Details for [DistMat()].
-#' @param safety.checks a logical, should safety checks be applied to the distances?  See [DistMat()].
-#' @param neighbors a logical, should nearest neighbors be pre-calculated?  See [Neighbors()].
-#' @param use.forking a logical, should forked processes be used?
-#' @param nthreads the number of CPU cores to use. Currently, no parallelism is used.
+#'
+#' TODO longer description
+#'
+#' @references
+#' Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+#'
+#' @param fwd
+#'        a `kalisForwardTable` object, as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].
+#'        This table must be at the same variant location as argument `bck`.
+#' @param bck
+#'        a `kalisBackwardTable` object, as returned by [MakeBackwardTable()] and propagated to a target variant by [Backward()].
+#'        This table must be at the same variant location as argument `fwd`.
+#' @param pars
+#'        a `kalisParameters` object, as returned by [Parameters()].
+#' @param beta.theta.opts
+#'        a list; see Details in [DistMat()] documentation page.
+#' @param safety.checks
+#'        a logical, should safety checks be applied to the distances?
+#'        See [DistMat()].
+#' @param neighbors
+#'        a logical, should nearest neighbors be pre-calculated?
+#'        See [Neighbors()].
+#' @param use.forking
+#'        a logical, should forked processes be used?
+#' @param forking.chunk.size
+#'        TODO
+#' @param mc.preschedule
+#'        TODO
+#' @param nthreads
+#'        the number of CPU cores to use.
+#'        By default no parallelism is used.
+#'
 #' @return
 #'   a `kalisClades` object encoding probabilistic clade calls
 #'

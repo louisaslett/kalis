@@ -15,17 +15,21 @@ CreateForwardTableCache(
 \arguments{
 \item{pars}{a \code{kalisParameters} object, as returned by \code{\link[=Parameters]{Parameters()}}.}
 
-\item{size}{the maximum amount of RAM (in GB) to devote to this cache.}
+\item{size}{the maximum amount of RAM (in GB) to devote to this cache.
+By default, 1GB.}
 
-\item{from_recipient}{first recipient haplotype if creating a partial forward
-table cache.  By default includes from the first recipient haplotype.}
+\item{from_recipient}{first recipient haplotype if creating a partial forward table cache.
+By default includes from the first recipient haplotype.}
 
-\item{to_recipient}{last recipient haplotype if creating a partial forward
-table cache.  By default includes to the last recipient haplotype.}
+\item{to_recipient}{last recipient haplotype if creating a partial forward table cache.
+By default includes to the last recipient haplotype.}
+
+\item{max.tables}{positive integer indicating the maximum number of tables to use in the cache.
+Both this and \code{size} will be honoured, so the number of tables may be smaller than this.
+By default, equals \eqn{\lfloor\log_2(L)\rfloor}.}
 }
 \value{
-A list of forward tables representing a cache and ready to be filled is
-returned.
+A list of forward tables representing a cache and ready to be filled is returned.
 }
 \description{
 Create an in-memory cache for forward tables to improve efficiency when
@@ -71,6 +75,9 @@ for(l in L:1) {
 }
 }
 
+}
+\references{
+Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 }
 \seealso{
 \code{\link[=MakeForwardTable]{MakeForwardTable()}} to make a forward table;

@@ -2,7 +2,7 @@
 % Please edit documentation in R/CladeMat.R
 \name{CladeMat}
 \alias{CladeMat}
-\title{Fast Clade Matrix Construction}
+\title{Fast clade matrix construction}
 \usage{
 CladeMat(
   fwd,
@@ -15,6 +15,40 @@ CladeMat(
     fwd$from_recipient + 1)
 )
 }
+\arguments{
+\item{fwd}{a \code{kalisForwardTable} object, as returned by \code{\link[=MakeForwardTable]{MakeForwardTable()}} and propagated to a target variant by \code{\link[=Forward]{Forward()}}.
+This table must be at the same variant location as argument \code{bck}.}
+
+\item{bck}{a \code{kalisBackwardTable} object, as returned by \code{\link[=MakeBackwardTable]{MakeBackwardTable()}} and propagated to a target variant by \code{\link[=Backward]{Backward()}}.
+This table must be at the same variant location as argument \code{fwd}.}
+
+\item{M}{a matrix with half the number of rows and columns as the corresponding forward/backward tables.
+This matrix is overwritten in place with the clade matrix result for performance reasons.}
+
+\item{unit.dist}{TODO}
+
+\item{thresh}{TODO}
+
+\item{max1var}{TODO}
+
+\item{nthreads}{the number of CPU cores to use.
+By default uses the \code{parallel} package to detect the number of physical cores.}
+}
+\value{
+TODO: this returns from C the list containing neighbourhood, similarity and total clades info, but need full details and list structure.
+}
 \description{
-Fast Clade Matrix Construction
+Constructs a clade matrix using forward and backward tables.
+The clade matrix captures genetic relatedness information in the distances from the Li & Stephens model that are not captured in the called clades.
+}
+\details{
+\code{CladeMat()} uses the forward and backward tables to construct the corresponding clade matrix which can then be tested, for example using a standard quadratic form score statistic.
+}
+\examples{
+# TODO
+
+
+}
+\references{
+Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 }
