@@ -282,7 +282,7 @@ SEXP CacheHaplotypes_hapgz_2(SEXP Rfile, SEXP Rloci_idx, SEXP Rhap_idx, SEXP RL,
   for(size_t l=0; l<hap_size_file; l++) {
     line = gzgets(fd, buf, bufsize);
     if(line == NULL) {
-      REprintf("Error: only reached line %d ... there are not %d loci in the file!\n", l+1, hap_size_file);
+      REprintf("Error: only reached line %d ... there are not %d loci in the file!\n", (int) l+1, (int) hap_size_file);
       ClearHaplotypeCache2();
       gzclose(fd);
       KALIS_RETURN;
@@ -300,13 +300,13 @@ SEXP CacheHaplotypes_hapgz_2(SEXP Rfile, SEXP Rloci_idx, SEXP Rhap_idx, SEXP RL,
       if(i != next_i) {
         // Check that there is at least valid data at this position ...
         if(*line != '0' && *line != '1') {
-          REprintf("Error: line %d contains an invalid character!\n", l);
+          REprintf("Error: line %d contains an invalid character!\n", (int) l);
           ClearHaplotypeCache2();
           gzclose(fd);
           KALIS_RETURN;
         }
         if((i < num_inds_file-1 && *(line+1) != ' ') || (i == num_inds_file-1 && *(line+1) != '\n')) {
-          REprintf("Error: line %d does not contain a space (or EOL) after haplotype << %d!\n", l, i+1);
+          REprintf("Error: line %d does not contain a space (or EOL) after haplotype << %d!\n", (int) l, (int) i+1);
           ClearHaplotypeCache2();
           gzclose(fd);
           KALIS_RETURN;
@@ -319,7 +319,7 @@ SEXP CacheHaplotypes_hapgz_2(SEXP Rfile, SEXP Rloci_idx, SEXP Rhap_idx, SEXP RL,
       // Process line
       x = *(line++); // should be a 0/1
       if(x == '\0') {
-        REprintf("Error: line %d is of the incorrect length!\n", l);
+        REprintf("Error: line %d is of the incorrect length!\n", (int) l);
         ClearHaplotypeCache2();
         gzclose(fd);
         KALIS_RETURN;
@@ -329,7 +329,7 @@ SEXP CacheHaplotypes_hapgz_2(SEXP Rfile, SEXP Rloci_idx, SEXP Rhap_idx, SEXP RL,
       } else if(x == '0') {
         hap_locus[next_ll][next_ii/32] ^= (-0 ^ hap_locus[next_ll][next_ii/32]) & (1 << next_ii%32);
       } else {
-        REprintf("Error: line %d contains an invalid character!\n", l);
+        REprintf("Error: line %d contains an invalid character!\n", (int) l);
         ClearHaplotypeCache2();
         gzclose(fd);
         KALIS_RETURN;
@@ -337,13 +337,13 @@ SEXP CacheHaplotypes_hapgz_2(SEXP Rfile, SEXP Rloci_idx, SEXP Rhap_idx, SEXP RL,
 
       x = *(line++); // should be a space following the 0/1 unless last hap on the line
       if(i < num_inds_file-1 && x != ' ') {
-        REprintf("Error: line %d does not contain a space after haplotype << %d!\n", l, i+1);
+        REprintf("Error: line %d does not contain a space after haplotype << %d!\n", (int) l, (int) i+1);
         ClearHaplotypeCache2();
         gzclose(fd);
         KALIS_RETURN;
       }
       if(i == num_inds_file-1 && x != '\n') {
-        REprintf("Error: line %d does not end at the right place!\n", l);
+        REprintf("Error: line %d does not end at the right place!\n", (int) l);
         ClearHaplotypeCache2();
         gzclose(fd);
         KALIS_RETURN;

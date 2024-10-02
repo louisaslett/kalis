@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Anticonf (tm, Jeroen Ooms) style alternative to autoconf written by Louis
 # Aslett based on work by Jeroen Ooms (cf github: jeroen/curl & jeroen/openssl)
 
@@ -57,21 +57,21 @@ fi
 # Check combinations of intrinsics flags
 counter=0
 intrinsics=""
-[[ ! -z ${NOASM+isset} ]] && ((counter+=1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_NOASM" && intrinsics="No special assembly"
-[[ ! -z ${AVX512+isset} ]] && ((counter+=1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_AVX512" && intrinsics="AVX-512 family of"
-[[ ! -z ${AVX2+isset} ]] && ((counter+=1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_AVX2" && intrinsics="AVX2 family of"
-[[ ! -z ${NEON+isset} ]] && ((counter+=1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_NEON" && intrinsics="NEON family of"
+[ -n "${NOASM+isset}" ] && counter=$((counter + 1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_NOASM" && intrinsics="No special assembly"
+[ -n "${AVX512+isset}" ] && counter=$((counter + 1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_AVX512" && intrinsics="AVX-512 family of"
+[ -n "${AVX2+isset}" ] && counter=$((counter + 1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_AVX2" && intrinsics="AVX2 family of"
+[ -n "${NEON+isset}" ] && counter=$((counter + 1)) && PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_NEON" && intrinsics="NEON family of"
 # Were zero/one options chosen?
-if ((counter > 1)); then
+if [ "$counter" -gt 1 ]; then
   echo "ERROR: At most one set of instructions can be specified (NOASM, AVX512, AVX2 or NEON)"
   exit 1
 fi
 # Was an option forced?
-if ((counter == 1)); then
+if [ "$counter" -eq 1 ]; then
   echo "$intrinsics instruction set extentions will by used (forced by user)."
 fi
 # If no option force by user, then attempt to auto-detect
-if ((counter == 0)); then
+if [ "$counter" -eq 0 ]; then
 
   intrindetected=0
 
@@ -87,7 +87,7 @@ if ((counter == 0)); then
   intrin=$((intrin+$?))
   echo "#include <immintrin.h>" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -E -xc - >/dev/null 2>&1
   intrin=$((intrin+$?))
-  if ((intrindetected == 0 && intrin == 0)); then
+  if [ "$intrindetected" -eq 0 ] && [ "$intrin" -eq 0 ]; then
     PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_AVX512"
     intrinsics="AVX-512 family of"
     intrindetected=1
@@ -109,7 +109,7 @@ if ((counter == 0)); then
   intrin=$((intrin+$?))
   echo "#include <immintrin.h>" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -E -xc - >/dev/null 2>&1
   intrin=$((intrin+$?))
-  if ((intrindetected == 0 && intrin == 0)); then
+  if [ "$intrindetected" -eq 0 ] && [ "$intrin" -eq 0 ]; then
     PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_AVX2"
     intrinsics="AVX2 family of"
     intrindetected=1
@@ -123,13 +123,13 @@ if ((counter == 0)); then
   intrin=$((intrin+$?))
   echo "#include <arm_neon.h>" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -E -xc - >/dev/null 2>&1
   intrin=$((intrin+$?))
-  if ((intrindetected == 0 && intrin == 0)); then
+  if [ "$intrindetected" -eq 0 ] && [ "$intrin" -eq 0 ]; then
     PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_NEON"
     intrinsics="NEON family of"
     intrindetected=1
   fi
 
-  if ((intrindetected == 0)); then
+  if [ "$intrindetected" -eq 0 ]; then
     PKG_CFLAGS="$PKG_CFLAGS -DKALIS_ISA_NOASM"
     intrinsics="No special assembly"
   fi
@@ -138,15 +138,33 @@ if ((counter == 0)); then
 fi
 
 # Check if we have access to pthreads (checking functions and headers, so no -E on compiler)
-echo -e "#define _GNU_SOURCE\n#include <pthread.h>\nmain() { pthread_t threads[2]; pthread_attr_t attr; pthread_attr_init(&attr); pthread_create(&threads[0], &attr, NULL, NULL); }" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -pthread -xc - >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+echo "#define _GNU_SOURCE
+#include <pthread.h>
+int main() {
+  pthread_t threads[2];
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_create(&threads[0], &attr, NULL, NULL);
+  return 0;
+}" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -pthread -xc - >/dev/null 2>&1
+if [ "$?" -eq 0 ]; then
   PKG_CFLAGS="$PKG_CFLAGS -pthread"
   PKG_LIBS="$PKG_LIBS -lpthread -pthread"
+  echo "Threading support detected."
 fi
 # NB: MacOS has pthreads but not pthread_setaffinity_np
-echo -e "#define _GNU_SOURCE\n#include <pthread.h>\nmain() { cpu_set_t cpus; CPU_ZERO(&cpus); CPU_SET(1, &cpus); pthread_setaffinity_np(0,0,0); }" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -pthread -xc - >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+echo "#define _GNU_SOURCE
+#include <pthread.h>
+int main() {
+  cpu_set_t cpus;
+  CPU_ZERO(&cpus);
+  CPU_SET(1, &cpus);
+  pthread_setaffinity_np(0,0,0);
+  return 0;
+}" | ${CC} ${PKG_CFLAGS} ${CFLAGS} -Wno-error -pthread -xc - >/dev/null 2>&1
+if [ "$?" -eq 0 ]; then
   PKG_CFLAGS="$PKG_CFLAGS -DKALIS_AFFINITY"
+  echo "Thread affinity support detected."
 fi
 
 # To customise unroll depth
@@ -162,6 +180,9 @@ sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/
 
 if [ -f a.out ] ; then
     rm a.out
+fi
+if [ -e a.out.dSYM ] ; then
+    rm -rf a.out.dSYM
 fi
 
 # Success

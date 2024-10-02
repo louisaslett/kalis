@@ -38,7 +38,8 @@
 #' haps <- matrix(sample(0:1, n.haps*n.vars, replace = TRUE),
 #'                nrow = n.vars, ncol = n.haps)
 #'
-#' # ... write them to a file, giving alphabetic letters "A" through "T" as the #' # haplotype names ...
+#' # ... write them to a file, giving alphabetic letters "A" through "T" as the
+#' # haplotype names ...
 #' WriteHaplotypes("~/myhaps.h5", haps, hap.ids = LETTERS[1:20])
 #'
 #' # ... and confirm we can read a chosen portion back.  Try to read back
@@ -99,6 +100,7 @@ WriteHaplotypes <- function(hdf5.file, haps,
     write.loci.ids <- TRUE
   }
 
+  # NOTE: this previously had to be removed to allow running on WashU cluster -- if error triggers here again LA and RC to discuss
   if(length(find.package("rhdf5", quiet = TRUE)) == 0) {
     stop("The WriteHaplotypes function requires the optional rhdf5 package to be installed (see Bioconductor https://bioconductor.org/packages/rhdf5)")
   }
@@ -248,12 +250,12 @@ WriteHaplotypes <- function(hdf5.file, haps,
   # Write
   message(glue("Writing {N} haplotype(s) of size {L} ...\n"))
 
-  rhdf5::h5write(as.array(haps), h5, haps.name, index = list(NULL, (N.old+1):(N.old+N)))
+  rhdf5::h5writeDataset(as.array(haps), h5, haps.name, index = list(NULL, (N.old+1):(N.old+N)))
   if(write.hap.ids) {
-    rhdf5::h5write(as.array(as.character(hap.ids)), h5, hap.ids.name, index = list((N.old+1):(N.old+N)))
+    rhdf5::h5writeDataset(as.array(as.character(hap.ids)), h5, hap.ids.name, index = list((N.old+1):(N.old+N)))
   }
   if(write.loci.ids) {
-    rhdf5::h5write(as.array(as.character(loci.ids)), h5, loci.ids.name, index = list(1:L))
+    rhdf5::h5writeDataset(as.array(as.character(loci.ids)), h5, loci.ids.name, index = list(1:L))
   }
 
   rhdf5::h5closeAll()
@@ -351,6 +353,7 @@ ReadHaplotypes <- function(hdf5.file,
   if(!identical(loci.ids, NA) && !identical(loci.idx, NA)) {
     stop("Can only specify one of loci.ids or loci.idx argument.")
   }
+  # NOTE: this previously had to be removed to allow running on WashU cluster -- if error triggers here again LA and RC to discuss
   if(length(find.package("rhdf5", quiet = TRUE)) == 0) {
     stop("The ReadHaplotypes function requires the optional rhdf5 package to be installed (see Bioconductor https://bioconductor.org/packages/rhdf5)")
   }

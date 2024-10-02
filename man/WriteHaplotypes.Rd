@@ -78,7 +78,8 @@ n.vars <- 200
 haps <- matrix(sample(0:1, n.haps*n.vars, replace = TRUE),
                nrow = n.vars, ncol = n.haps)
 
-# ... write them to a file, giving alphabetic letters "A" through "T" as the #' # haplotype names ...
+# ... write them to a file, giving alphabetic letters "A" through "T" as the
+# haplotype names ...
 WriteHaplotypes("~/myhaps.h5", haps, hap.ids = LETTERS[1:20])
 
 # ... and confirm we can read a chosen portion back.  Try to read back

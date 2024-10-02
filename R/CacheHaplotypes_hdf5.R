@@ -112,6 +112,7 @@ CacheHaplotypes.hdf5.hdf5r <- function(hdf5.file,
       else
         res <- t(h5.haps[hap.idx[current.step:upto],loci.idx])
       current.step <<- upto + 1
+      storage.mode(res) <- "integer"
       res
     }
   }
@@ -201,10 +202,11 @@ CacheHaplotypes.hdf5.rhdf5 <- function(hdf5.file,
       }
       upto <- min(current.step + step.size - 1, N)
       if(!transpose)
-        res <- matrix(as.integer(rhdf5::h5read(hdf5.file, haps.path, index = list(loci.idx, hap.idx[current.step:upto]))), nrow = length(loci.idx))
+        res <- rhdf5::h5read(hdf5.file, haps.path, index = list(loci.idx, hap.idx[current.step:upto]))
       else
-        res <- t(matrix(as.integer(rhdf5::h5read(hdf5.file, haps.path, index = list(hap.idx[current.step:upto], loci.idx))), ncol = length(loci.idx)))
+        res <- t(rhdf5::h5read(hdf5.file, haps.path, index = list(hap.idx[current.step:upto], loci.idx)))
       current.step <<- upto + 1
+      storage.mode(res) <- "integer"
       res
     }
   }

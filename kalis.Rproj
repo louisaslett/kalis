@@ -17,4 +17,5 @@ StripTrailingWhitespace: Yes
 BuildType: Package
 PackageUseDevtools: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source --configure-vars="PKG_CFLAGS='-march=native -mtune=native -O3'"
+PackageCheckArgs: --no-tests
 PackageRoxygenize: rd,collate,namespace,vignette

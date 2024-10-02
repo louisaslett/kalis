@@ -308,10 +308,6 @@ void MatAndMul_A(double* restrict res,
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
     double *res_perth = (double*) R_alloc(r*(nthreads+1), sizeof(double));
-    if (res_perth == NULL) {
-      printf("Failed allocating res_perth!\n");
-      exit(1);
-    }
 
     size_t num_perth = c/nthreads;
     size_t rag_end   = c%nthreads;
