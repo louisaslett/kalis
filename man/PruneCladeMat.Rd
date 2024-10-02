@@ -2,10 +2,31 @@
 % Please edit documentation in R/Clades.R
 \name{PruneCladeMat}
 \alias{PruneCladeMat}
-\title{PruneCladeMat}
+\title{Title TODO}
 \usage{
 PruneCladeMat(M, neigh, sprigs, prune = "singleton.info", from.recipient = 1L)
 }
+\arguments{
+\item{M}{TODO}
+
+\item{neigh}{TODO}
+
+\item{sprigs}{TODO}
+
+\item{prune}{TODO}
+
+\item{from.recipient}{TODO}
+}
+\value{
+TODO
+}
 \description{
-PruneCladeMat
+Short Description TODO
+}
+\details{
+Long Description TODO
+}
+\examples{
+# TODO
+
 }

@@ -2,16 +2,25 @@
 % Please edit documentation in R/Probs.R
 \name{plot.kalisDistanceMatrix}
 \alias{plot.kalisDistanceMatrix}
-\title{Plotting function for a kalisDistanceMatrix object}
+\title{Plotting function for a distance matrix}
 \usage{
 \method{plot}{kalisDistanceMatrix}(x, cluster.method = "average", ...)
 }
 \arguments{
-\item{d}{a kalisDistanceMatrix}
+\item{x}{a distance matrix, such as returned by \code{\link[=DistMat]{DistMat()}}.}
+
+\item{cluster.method}{the agglomeration method to be used, which is passed to the \code{\link[fastcluster:hclust]{fastcluster::hclust()}} function.
+This must be (an unambiguous abbreviation of) one of "single", "complete", "average", "mcquitty", "ward.D", "ward.D2", "centroid" or "median".}
+
+\item{...}{further arguments to be passed on to the underlying \code{\link[lattice:levelplot]{lattice::levelplot()}} plotting function.}
 }
 \value{
-There is nothing returned.
+No return value, called for side effects.
 }
 \description{
 Clusters the given distance matrix and generates a heatmap to display it.
+}
+\examples{
+# TODO
+
 }

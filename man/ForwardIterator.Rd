@@ -21,21 +21,45 @@ ForwardIterator(
 )
 }
 \arguments{
-\item{ram.ckpts}{an integer specifying the number of checkpoints to store in RAM}
+\item{pars}{a \code{kalisParameters} object, as returned by \code{\link[=Parameters]{Parameters()}}.}
 
-\item{targets}{a vector of loci to iterate over (starting with the most downstream target)}
+\item{ram.ckpts}{an integer specifying the number of checkpoints to store in RAM.}
+
+\item{targets}{a vector of variants to iterate over (starting with the most downstream target).}
 
 \item{base.fwd.table}{a \code{kalisForwardTable} either at the most upstream target, or if the targets are evenly spaced, one interval upstream of the most upstream target.
-\code{NULL} (the default) is interpretted as the prior \code{Pi}, see \code{\link[=Parameters]{Parameters()}}}
+If \code{NULL} (the default), this is interpreted as the prior \code{Pi}, see \code{\link[=Parameters]{Parameters()}}.}
 
-\item{disk.ckpts}{an integer specifying the number of checkpoints to store on disk}
+\item{disk.ckpts}{an integer specifying the number of checkpoints to store on disk.}
 
-\item{disk.dir}{a path to a directory where a temporary folder may be made to store checkpoints on disk}
+\item{disk.dir}{a path to a directory where a temporary folder may be made to store checkpoints on disk.}
 
-\item{force.unif}{a logical, if \code{TRUE} iterate over targets as if they were uniformly spaced. WARNING: DO NOT use this in conjunction with the targets method, still experimental. With \code{force.unif = TRUE}, the resulting iterator appear to be targeting the first length(targets) variants with all methods, but in fact will be silently iterating over the original targets.}
+\item{from_recipient}{first recipient haplotype included in the tables of the cache, if creating a partial forward table.
+By default all are included from the first recipient haplotype.
+Haplotypes are indexed from 1.}
+
+\item{to_recipient}{last recipient haplotype included in the tables of the cache, if creating a partial forward table.
+By default all are included upto the last recipient haplotype.
+Haplotypes are indexed from 1.}
+
+\item{lookup.tables}{TODO}
+
+\item{cache}{a \code{kalisCheckpointTable} object, as returned by \code{\link[=CreateForwardTableCache]{CreateForwardTableCache()}} or this function.
+By default \code{NULL}, which causes this function to create a new cache.}
+
+\item{save.cache}{TODO}
+
+\item{exact}{TODO}
+
+\item{force.unif}{a logical, if \code{TRUE} iterate over targets as if they were uniformly spaced.
+WARNING: DO NOT use this in conjunction with the targets method, still experimental.
+With \code{force.unif = TRUE}, the resulting iterator will appear to be targeting the first \code{length(targets)} variants with all methods, but in fact will be silently iterating over the original targets.}
+}
+\value{
+TODO
 }
 \description{
-Create a \code{kalisForwardIterator} for propagating a forward table iteratively over target loci using a table cache and optimal checkpointing.
+Create a \code{kalisForwardIterator} for propagating a forward table iteratively over target variants using a table cache and optimal checkpointing.
 }
 \details{
 See example.
@@ -56,6 +80,10 @@ for(t in targets(Iter)){
 }
 
 }
+\references{
+Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+}
 \seealso{
-\code{\link[=MakeForwardTable]{MakeForwardTable()}} to create a \code{kalisForwardTable}.
+\code{\link[=MakeForwardTable]{MakeForwardTable()}} to create a \code{kalisForwardTable};
+\code{\link[=CreateForwardTableCache]{CreateForwardTableCache()}} to create a cache which can be used with this function.
 }

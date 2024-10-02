@@ -1,18 +1,53 @@
 #' Build an efficient iterator over loci
 #'
-#' Create a `kalisForwardIterator` for propagating a forward table iteratively over target loci using a table cache and optimal checkpointing.
+#' Create a `kalisForwardIterator` for propagating a forward table iteratively over target variants using a table cache and optimal checkpointing.
 #'
 #' See example.
 #'
+#' @references
+#' Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 #'
-#' @param ram.ckpts an integer specifying the number of checkpoints to store in RAM
-#' @param targets a vector of loci to iterate over (starting with the most downstream target)
-#' @param base.fwd.table a `kalisForwardTable` either at the most upstream target, or if the targets are evenly spaced, one interval upstream of the most upstream target.
-#' `NULL` (the default) is interpretted as the prior `Pi`, see [Parameters()]
-#' @param disk.ckpts an integer specifying the number of checkpoints to store on disk
-#' @param disk.dir a path to a directory where a temporary folder may be made to store checkpoints on disk
-#' @param force.unif a logical, if `TRUE` iterate over targets as if they were uniformly spaced. WARNING: DO NOT use this in conjunction with the targets method, still experimental. With `force.unif = TRUE`, the resulting iterator appear to be targeting the first length(targets) variants with all methods, but in fact will be silently iterating over the original targets.
-#' @seealso [MakeForwardTable()] to create a `kalisForwardTable`.
+#' @param pars
+#'        a `kalisParameters` object, as returned by [Parameters()].
+#' @param ram.ckpts
+#'        an integer specifying the number of checkpoints to store in RAM.
+#' @param targets
+#'        a vector of variants to iterate over (starting with the most downstream target).
+#' @param base.fwd.table
+#'        a `kalisForwardTable` either at the most upstream target, or if the targets are evenly spaced, one interval upstream of the most upstream target.
+#'        If `NULL` (the default), this is interpreted as the prior `Pi`, see [Parameters()].
+#' @param disk.ckpts
+#'        an integer specifying the number of checkpoints to store on disk.
+#' @param disk.dir
+#'        a path to a directory where a temporary folder may be made to store checkpoints on disk.
+#' @param from_recipient
+#'        first recipient haplotype included in the tables of the cache, if creating a partial forward table.
+#'        By default all are included from the first recipient haplotype.
+#'        Haplotypes are indexed from 1.
+#' @param to_recipient
+#'        last recipient haplotype included in the tables of the cache, if creating a partial forward table.
+#'        By default all are included upto the last recipient haplotype.
+#'        Haplotypes are indexed from 1.
+#' @param lookup.tables
+#'        TODO
+#' @param cache
+#'        a `kalisCheckpointTable` object, as returned by [CreateForwardTableCache()] or this function.
+#'        By default `NULL`, which causes this function to create a new cache.
+#' @param save.cache
+#'        TODO
+#' @param exact
+#'        TODO
+#' @param force.unif
+#'        a logical, if `TRUE` iterate over targets as if they were uniformly spaced.
+#'        WARNING: DO NOT use this in conjunction with the targets method, still experimental.
+#'        With `force.unif = TRUE`, the resulting iterator will appear to be targeting the first `length(targets)` variants with all methods, but in fact will be silently iterating over the original targets.
+#'
+#' @return
+#' TODO
+#'
+#' @seealso
+#' [MakeForwardTable()] to create a `kalisForwardTable`;
+#' [CreateForwardTableCache()] to create a cache which can be used with this function.
 #'
 #' @examples
 #' \dontrun{

@@ -2,10 +2,25 @@
 % Please edit documentation in R/Clades.R
 \name{Sprigs}
 \alias{Sprigs}
-\title{Sprigs}
+\title{Title TODO}
 \usage{
 Sprigs(x, old.sprigs = FALSE)
 }
+\arguments{
+\item{x}{TODO}
+
+\item{old.sprigs}{TODO}
+}
+\value{
+TODO
+}
 \description{
-Sprigs
+Short Description TODO
+}
+\details{
+Long Description TODO
+}
+\examples{
+# TODO
+
 }

@@ -315,13 +315,23 @@ input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts = NULL)
 
 
 
-#' Plotting function for a kalisDistanceMatrix object
+#' Plotting function for a distance matrix
 #'
 #' Clusters the given distance matrix and generates a heatmap to display it.
 #'
-#' @param d a kalisDistanceMatrix
+#' @param x
+#'        a distance matrix, such as returned by [DistMat()].
+#' @param cluster.method
+#'        the agglomeration method to be used, which is passed to the [fastcluster::hclust()] function.
+#'        This must be (an unambiguous abbreviation of) one of "single", "complete", "average", "mcquitty", "ward.D", "ward.D2", "centroid" or "median".
+#' @param ...
+#'        further arguments to be passed on to the underlying [lattice::levelplot()] plotting function.
 #'
-#' @return There is nothing returned.
+#' @return
+#' No return value, called for side effects.
+#'
+#' @examples
+#' # TODO
 #'
 #' @export
 plot.kalisDistanceMatrix <- function(x, cluster.method = "average", ...) {

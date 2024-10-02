@@ -17,7 +17,23 @@ get_neigh_seq <- function(x, i, return.lengths = FALSE){
   }
 }
 
-#' Sprigs
+#' Title TODO
+#'
+#' Short Description TODO
+#'
+#' Long Description TODO
+#'
+#' @param x
+#'        TODO
+#' @param old.sprigs
+#'        TODO
+#'
+#' @return
+#' TODO
+#'
+#' @examples
+#' # TODO
+#'
 #' @export Sprigs
 Sprigs <- function(x, old.sprigs = FALSE){
 
@@ -117,7 +133,29 @@ UpdateMatrixInPlace <- function(M,row.idx,col.idx,x){
 # test <- matrix(as.double(1:144),12,12)
 # UpdateMatrixInPlace(test,c(5,12,12),c(1,3,5),as.double(c(100,200,300)))
 
-#' PruneCladeMat
+#' Title TODO
+#'
+#' Short Description TODO
+#'
+#' Long Description TODO
+#'
+#' @param M
+#'        TODO
+#' @param neigh
+#'        TODO
+#' @param sprigs
+#'        TODO
+#' @param prune
+#'        TODO
+#' @param from.recipient
+#'        TODO
+#'
+#' @return
+#' TODO
+#'
+#' @examples
+#' # TODO
+#'
 #' @export PruneCladeMat
 PruneCladeMat <- function(M, neigh, sprigs, prune = "singleton.info", from.recipient = 1L){
 
