@@ -1,25 +1,25 @@
-#' Title TODO
+#' Fast Calculation of Matrix Trace and Hilbert Schmidt Norm
 #'
-#' Short Description TODO
+#' Provides multithreaded calculation of trace and Hilbert Schmidt Norm of a matrix PMP (where P is a projection matrix) without explicitly forming PMP.
 #'
-#' Long Description TODO
+#' P here is assumed to have the form I-QQ' for some matrix Q of orthogonal columns
 #'
 #' @param M
-#'        TODO
+#'        a real symmetric R matrix
 #' @param tX
-#'        TODO
+#'        `t((Q %*% (J%*%Q)) - (M %*% Q))`
 #' @param tQ
-#'        TODO
+#'        `t(Q)`
 #' @param J
-#'        TODO
+#'        `crossprod(Q, M)`
 #' @param from_recipient
-#'        TODO
+#'        haplotype index at which to start trace calculation -- useful for distributed computation (experimental feature, more documentation to come TODO)
 #' @param nthreads
 #'        the number of CPU cores to use.
 #'        By default uses the `parallel` package to detect the number of physical cores.
 #'
 #' @return
-#' TODO
+#' a list containing three elements, the first is the trace `tr(PMP)`, the second is the *squared* Hilbert Schmidt Norm of PMP `tr((PMP)'PMP)`, the third is the diag of `PMP`.
 #'
 #' @examples
 #' # TODO

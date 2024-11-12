@@ -2,7 +2,7 @@
 % Please edit documentation in R/CalcTraces.R
 \name{CalcTraces}
 \alias{CalcTraces}
-\title{Title TODO}
+\title{Fast Calculation of Matrix Trace and Hilbert Schmidt Norm}
 \usage{
 CalcTraces(
   M,
@@ -14,27 +14,27 @@ CalcTraces(
 )
 }
 \arguments{
-\item{M}{TODO}
+\item{M}{a real symmetric R matrix}
 
-\item{tX}{TODO}
+\item{tX}{\code{t((Q \%*\% (J\%*\%Q)) - (M \%*\% Q))}}
 
-\item{tQ}{TODO}
+\item{tQ}{\code{t(Q)}}
 
-\item{J}{TODO}
+\item{J}{\code{crossprod(Q, M)}}
 
-\item{from_recipient}{TODO}
+\item{from_recipient}{haplotype index at which to start trace calculation -- useful for distributed computation (experimental feature, more documentation to come TODO)}
 
 \item{nthreads}{the number of CPU cores to use.
 By default uses the \code{parallel} package to detect the number of physical cores.}
 }
 \value{
-TODO
+a list containing three elements, the first is the trace \code{tr(PMP)}, the second is the \emph{squared} Hilbert Schmidt Norm of PMP \verb{tr((PMP)'PMP)}, the third is the diag of \code{PMP}.
 }
 \description{
-Short Description TODO
+Provides multithreaded calculation of trace and Hilbert Schmidt Norm of a matrix PMP (where P is a projection matrix) without explicitly forming PMP.
 }
 \details{
-Long Description TODO
+P here is assumed to have the form I-QQ' for some matrix Q of orthogonal columns
 }
 \examples{
 # TODO

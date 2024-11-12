@@ -45,7 +45,7 @@ The table is updated in-place.
 variant.
 Naturally, this can only propagate a table to variants upstream of its current position.
 
-For mathematical details please see Section 2 of the kalis paper (TODO: ref).
+For mathematical details please see Section 2 of the kalis paper (https://doi.org/10.1186/s12859-024-05688-8).
 Note that the precise formulation of the backward equation is determined by whether the flag \code{use.spiedel} is set in the parameters provided in \code{pars}.
 
 \strong{Beta-theta space}
