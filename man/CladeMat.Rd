@@ -25,17 +25,20 @@ This table must be at the same variant location as argument \code{fwd}.}
 \item{M}{a matrix with half the number of rows and columns as the corresponding forward/backward tables.
 This matrix is overwritten in place with the clade matrix result for performance reasons.}
 
-\item{unit.dist}{the change in distance that is expected to correspond to a single mutation (typically \eqn{-log(\mu)}) for the LS model)}
+\item{unit.dist}{the change in distance that is expected to correspond to a single mutation (typically \eqn{-\log(\mu)}) for the LS model)}
 
-\item{thresh}{a regularization parameter: differences distances must exceed this threshold (in \code{unit.dist} units) in order to used in forming the local relatedness matrix. Defaults to \code{0.2}.}
+\item{thresh}{a regularization parameter: \if{html}{\out{<!-- TODO: can't parse this sentence -->}} differences distances must exceed this threshold (in \code{unit.dist} units) in order to used in forming the local relatedness matrix.
+Defaults to \code{0.2}.}
 
-\item{max1var}{a logical regularization parameter. When TRUE, differences in distances exceeding 1 \code{unit.dist} are set to 1 (so that any edge in the latent ancestral tree with multiple mutations on them are treated as if only one mutation was on it).}
+\item{max1var}{a logical regularization parameter.
+When \code{TRUE}, differences in distances exceeding 1 \code{unit.dist} are set to 1 (so that any edge in the latent ancestral tree with multiple mutations on them are treated as if only one mutation was on it).}
 
 \item{nthreads}{the number of CPU cores to use.
 By default uses the \code{parallel} package to detect the number of physical cores.}
 }
 \value{
-A list, the first element contains a list of tied nearest neighbors (one for each haplotype). Other elements return other information to allow for efficient removal of singletons and sprigs by \code{\link[=PruneCladeMat]{PruneCladeMat()}}.
+A list, the first element contains a list of tied nearest neighbours (one for each haplotype).
+Other elements of the returned list are for internal use by \code{\link[=PruneCladeMat]{PruneCladeMat()}} to allow for efficient removal of singletons and sprigs.
 }
 \description{
 Constructs a clade matrix using forward and backward tables.

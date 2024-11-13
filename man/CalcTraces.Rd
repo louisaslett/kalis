@@ -22,19 +22,25 @@ CalcTraces(
 
 \item{J}{\code{crossprod(Q, M)}}
 
-\item{from_recipient}{haplotype index at which to start trace calculation -- useful for distributed computation (experimental feature, more documentation to come TODO)}
+\item{from_recipient}{haplotype index at which to start trace calculation --- useful for distributed computation (experimental feature, more documentation to come\if{html}{\out{<!-- TODO -->}})}
 
 \item{nthreads}{the number of CPU cores to use.
 By default uses the \code{parallel} package to detect the number of physical cores.}
 }
 \value{
-a list containing three elements, the first is the trace \code{tr(PMP)}, the second is the \emph{squared} Hilbert Schmidt Norm of PMP \verb{tr((PMP)'PMP)}, the third is the diag of \code{PMP}.
+A list containing three elements:
+
+\describe{
+\item{\code{trace}}{the trace, \eqn{\mathrm{tr}(PMP)};}
+\item{\code{hsnorm2}}{the \emph{squared} Hilbert Schmidt Norm of \eqn{PMP}, \eqn{\mathrm{tr}((PMP)'PMP)};}
+\item{\code{diag}}{the diagonal of \eqn{PMP}.}
+}
 }
 \description{
-Provides multithreaded calculation of trace and Hilbert Schmidt Norm of a matrix PMP (where P is a projection matrix) without explicitly forming PMP.
+Provides multithreaded calculation of trace and Hilbert Schmidt Norm of a matrix \eqn{PMP} (where \eqn{P} is a projection matrix and \eqn{M} is real symmetric) without explicitly forming \eqn{PMP}.
 }
 \details{
-P here is assumed to have the form I-QQ' for some matrix Q of orthogonal columns
+\eqn{P} here is assumed to have the form \eqn{I-QQ'} for some matrix \eqn{Q} of orthogonal columns.
 }
 \examples{
 # TODO

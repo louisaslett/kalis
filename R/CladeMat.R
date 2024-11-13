@@ -18,17 +18,20 @@
 #'        a matrix with half the number of rows and columns as the corresponding forward/backward tables.
 #'        This matrix is overwritten in place with the clade matrix result for performance reasons.
 #' @param unit.dist
-#'        the change in distance that is expected to correspond to a single mutation (typically \eqn{-log(\mu)}) for the LS model)
+#'        the change in distance that is expected to correspond to a single mutation (typically \eqn{-\log(\mu)}) for the LS model)
 #' @param thresh
-#'        a regularization parameter: differences distances must exceed this threshold (in `unit.dist` units) in order to used in forming the local relatedness matrix. Defaults to `0.2`.
+#'        a regularization parameter: <!-- TODO: can't parse this sentence --> differences distances must exceed this threshold (in `unit.dist` units) in order to used in forming the local relatedness matrix.
+#'        Defaults to `0.2`.
 #' @param max1var
-#'        a logical regularization parameter. When TRUE, differences in distances exceeding 1 `unit.dist` are set to 1 (so that any edge in the latent ancestral tree with multiple mutations on them are treated as if only one mutation was on it).
+#'        a logical regularization parameter.
+#'        When `TRUE`, differences in distances exceeding 1 `unit.dist` are set to 1 (so that any edge in the latent ancestral tree with multiple mutations on them are treated as if only one mutation was on it).
 #' @param nthreads
 #'        the number of CPU cores to use.
 #'        By default uses the `parallel` package to detect the number of physical cores.
 #'
 #' @return
-#' A list, the first element contains a list of tied nearest neighbors (one for each haplotype). Other elements return other information to allow for efficient removal of singletons and sprigs by [PruneCladeMat()].
+#' A list, the first element contains a list of tied nearest neighbours (one for each haplotype).
+#' Other elements of the returned list are for internal use by [PruneCladeMat()] to allow for efficient removal of singletons and sprigs.
 #'
 #' @examples
 #' # TODO

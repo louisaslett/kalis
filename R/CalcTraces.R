@@ -1,8 +1,8 @@
 #' Fast Calculation of Matrix Trace and Hilbert Schmidt Norm
 #'
-#' Provides multithreaded calculation of trace and Hilbert Schmidt Norm of a matrix PMP (where P is a projection matrix) without explicitly forming PMP.
+#' Provides multithreaded calculation of trace and Hilbert Schmidt Norm of a matrix \eqn{PMP} (where \eqn{P} is a projection matrix and \eqn{M} is real symmetric) without explicitly forming \eqn{PMP}.
 #'
-#' P here is assumed to have the form I-QQ' for some matrix Q of orthogonal columns
+#' \eqn{P} here is assumed to have the form \eqn{I-QQ'} for some matrix \eqn{Q} of orthogonal columns.
 #'
 #' @param M
 #'        a real symmetric R matrix
@@ -13,13 +13,19 @@
 #' @param J
 #'        `crossprod(Q, M)`
 #' @param from_recipient
-#'        haplotype index at which to start trace calculation -- useful for distributed computation (experimental feature, more documentation to come TODO)
+#'        haplotype index at which to start trace calculation --- useful for distributed computation (experimental feature, more documentation to come<!-- TODO -->)
 #' @param nthreads
 #'        the number of CPU cores to use.
 #'        By default uses the `parallel` package to detect the number of physical cores.
 #'
 #' @return
-#' a list containing three elements, the first is the trace `tr(PMP)`, the second is the *squared* Hilbert Schmidt Norm of PMP `tr((PMP)'PMP)`, the third is the diag of `PMP`.
+#' A list containing three elements:
+#'
+#' \describe{
+#'   \item{`trace`}{the trace, \eqn{\mathrm{tr}(PMP)};}
+#'   \item{`hsnorm2`}{the *squared* Hilbert Schmidt Norm of \eqn{PMP}, \eqn{\mathrm{tr}((PMP)'PMP)};}
+#'   \item{`diag`}{the diagonal of \eqn{PMP}.}
+#' }
 #'
 #' @examples
 #' # TODO
