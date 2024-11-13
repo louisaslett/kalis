@@ -1,6 +1,6 @@
 #' Build an efficient iterator over loci
 #'
-#' Create a `kalisForwardIterator` for propagating a forward table iteratively over target variants using a table cache and optimal checkpointing.
+#' Function factory to create a `kalisForwardIterator` for propagating a forward table iteratively over target variants using a table cache and optimal checkpointing.
 #'
 #' See example.
 #'
@@ -29,21 +29,27 @@
 #'        By default all are included upto the last recipient haplotype.
 #'        Haplotypes are indexed from 1.
 #' @param lookup.tables
-#'        TODO
+#'        an optional list as returned by [CalcCheckpointTables()].
 #' @param cache
 #'        a `kalisCheckpointTable` object, as returned by [CreateForwardTableCache()] or this function.
 #'        By default `NULL`, which causes this function to create a new cache.
 #' @param save.cache
-#'        TODO
-#' @param exact
-#'        TODO
+#'        a logical.
+#'        When `TRUE` does not reliquish the table cache upon exhaustion of the iterator.
+#'        Defaults to `FALSE`.
 #' @param force.unif
 #'        a logical, if `TRUE` iterate over targets as if they were uniformly spaced.
 #'        WARNING: DO NOT use this in conjunction with the targets method, still experimental.
 #'        With `force.unif = TRUE`, the resulting iterator will appear to be targeting the first `length(targets)` variants with all methods, but in fact will be silently iterating over the original targets.
 #'
 #' @return
-#' TODO
+#' A function for iterating over the set of target variants.
+#' The returned function has prototype:
+#'
+#' `function(fwd, pars, t, nthreads = 1)`
+#'
+#' which matches the standard [Forward()] function, but which uses the table cache to speed up propagation to the target variant.
+#' See [Forward()] for an explanation of arguments.
 #'
 #' @seealso
 #' [MakeForwardTable()] to create a `kalisForwardTable`;
@@ -76,7 +82,6 @@ ForwardIterator <- function(pars,
                             lookup.tables = NULL,
                             cache = NULL,
                             save.cache = FALSE,
-                            exact = TRUE,
                             force.unif = FALSE){
 
   force(force.unif)
@@ -169,7 +174,7 @@ ForwardIterator <- function(pars,
 
     if(is.null(lookup.tables)){
       message("Calculating Optimal Checkpoint Schedule")
-      lookup.tables <- calc_tables(propagation.cost,num.available.ckpts)
+      lookup.tables <- CalcCheckpointTables(propagation.cost,num.available.ckpts)
     }
 
     cost.table <- lookup.tables$cost
@@ -338,8 +343,29 @@ plot.kalisIterator <- function(x, ...){
 }
 
 
+#' Calculate Checkpoint Tables
+#'
+#' Calculate look up tables for solving optimal checkpointing problems with dynamic programming.
+#'
+#' @references
+#' Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+#'
+#' @param propagation.cost
+#'        a non-negative vector such that `propagation.cost[i]` gives the relative amount of time or cost required to propagate `i` steps
+#' @param max.num.checkpoints
+#'        the maximum number of checkpoints that should be considered when building the checkpoint table.
+#' @param use.R
+#'        a logical, when TRUE use base R rather than C implementation of table building. Defaults to FALSE.
+#'
+#' @return
+#' a list containing:
+#' \describe{
+#'   \item{`cost`}{the matrix \eqn{F} in Christ et al. (2024)}
+#'   \item{`index`}{the matrix \eqn{H} in Christ et al. (2024)}
+#' }
+#'
 #' @export
-calc_tables <- function(propagation.cost,max.num.checkpoints, use.R = FALSE){
+CalcCheckpointTables <- function(propagation.cost,max.num.checkpoints, use.R = FALSE){
   start <- proc.time()
 
   propagation.cost <- as.numeric(propagation.cost)

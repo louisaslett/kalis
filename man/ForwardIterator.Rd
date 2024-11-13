@@ -16,7 +16,6 @@ ForwardIterator(
   lookup.tables = NULL,
   cache = NULL,
   save.cache = FALSE,
-  exact = TRUE,
   force.unif = FALSE
 )
 }
@@ -42,24 +41,30 @@ Haplotypes are indexed from 1.}
 By default all are included upto the last recipient haplotype.
 Haplotypes are indexed from 1.}
 
-\item{lookup.tables}{TODO}
+\item{lookup.tables}{an optional list as returned by \code{\link[=CalcCheckpointTables]{CalcCheckpointTables()}}.}
 
 \item{cache}{a \code{kalisCheckpointTable} object, as returned by \code{\link[=CreateForwardTableCache]{CreateForwardTableCache()}} or this function.
 By default \code{NULL}, which causes this function to create a new cache.}
 
-\item{save.cache}{TODO}
-
-\item{exact}{TODO}
+\item{save.cache}{a logical.
+When \code{TRUE} does not reliquish the table cache upon exhaustion of the iterator.
+Defaults to \code{FALSE}.}
 
 \item{force.unif}{a logical, if \code{TRUE} iterate over targets as if they were uniformly spaced.
 WARNING: DO NOT use this in conjunction with the targets method, still experimental.
 With \code{force.unif = TRUE}, the resulting iterator will appear to be targeting the first \code{length(targets)} variants with all methods, but in fact will be silently iterating over the original targets.}
 }
 \value{
-TODO
+A function for iterating over the set of target variants.
+The returned function has prototype:
+
+\verb{function(fwd, pars, t, nthreads = 1)}
+
+which matches the standard \code{\link[=Forward]{Forward()}} function, but which uses the table cache to speed up propagation to the target variant.
+See \code{\link[=Forward]{Forward()}} for an explanation of arguments.
 }
 \description{
-Create a \code{kalisForwardIterator} for propagating a forward table iteratively over target variants using a table cache and optimal checkpointing.
+Function factory to create a \code{kalisForwardIterator} for propagating a forward table iteratively over target variants using a table cache and optimal checkpointing.
 }
 \details{
 See example.

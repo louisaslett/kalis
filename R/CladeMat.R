@@ -20,7 +20,7 @@
 #' @param unit.dist
 #'        the change in distance that is expected to correspond to a single mutation (typically \eqn{-\log(\mu)}) for the LS model)
 #' @param thresh
-#'        a regularization parameter: <!-- TODO: can't parse this sentence --> differences distances must exceed this threshold (in `unit.dist` units) in order to used in forming the local relatedness matrix.
+#'        a regularization parameter: differences of distances must exceed this threshold (in `unit.dist` units) in order to cause the introduction of a probabilistic clade.
 #'        Defaults to `0.2`.
 #' @param max1var
 #'        a logical regularization parameter.

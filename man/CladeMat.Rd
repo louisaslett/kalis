@@ -27,7 +27,7 @@ This matrix is overwritten in place with the clade matrix result for performance
 
 \item{unit.dist}{the change in distance that is expected to correspond to a single mutation (typically \eqn{-\log(\mu)}) for the LS model)}
 
-\item{thresh}{a regularization parameter: \if{html}{\out{<!-- TODO: can't parse this sentence -->}} differences distances must exceed this threshold (in \code{unit.dist} units) in order to used in forming the local relatedness matrix.
+\item{thresh}{a regularization parameter: differences of distances must exceed this threshold (in \code{unit.dist} units) in order to cause the introduction of a probabilistic clade.
 Defaults to \code{0.2}.}
 
 \item{max1var}{a logical regularization parameter.

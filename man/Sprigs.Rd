@@ -2,23 +2,28 @@
 % Please edit documentation in R/Clades.R
 \name{Sprigs}
 \alias{Sprigs}
-\title{Title TODO}
+\title{Greedy sprig calling based on nearest neighbourhoods}
 \usage{
 Sprigs(x, old.sprigs = FALSE)
 }
 \arguments{
-\item{x}{TODO}
+\item{x}{list of where each entry is a nearest neighborhood of integers as returned by \code{\link[=CladeMat]{CladeMat()}}}
 
-\item{old.sprigs}{TODO}
+\item{old.sprigs}{If TRUE, use an earlier (undocumented) version of maximal clique calling, defaults to FALSE.}
 }
 \value{
-TODO
+a list containing:
+\describe{
+\item{\code{assignments}}{a vector of integers such that \code{assignments[i]} gives the sprig to which haplotype \code{i} belongs. \code{NA} if a haplotype was not assigned to a sprig.}
+\item{\code{to.prune}}{a vector of logicals, \code{to.prune[i]==TRUE} when haplotype i has been assigned to a sprig}
+\item{\code{num.sprigs}}{total number of sprigs calls, equal to \code{max(assignements,rm.na=TRUE)}}
+}
 }
 \description{
-Short Description TODO
+Infer sprigs (very small clades) within a local phylogeny based on one-directional nearest neighbourhoods assigned to each haplotype
 }
 \details{
-Long Description TODO
+Call maximal cliques within a directed graph where edges correspond to nearest neighbour relationships
 }
 \examples{
 # TODO

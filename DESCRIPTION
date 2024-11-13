@@ -39,8 +39,7 @@ Imports:
     grDevices,
     RColorBrewer,
     lobstr,
-    prettyunits,
-    data.table
+    prettyunits
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Suggests: 
@@ -51,7 +50,8 @@ Suggests:
     rmarkdown,
     fastcluster,
     lattice,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    data.table
 VignetteBuilder: knitr
 Encoding: UTF-8
 Config/testthat/edition: 3

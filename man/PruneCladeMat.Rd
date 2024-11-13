@@ -2,29 +2,28 @@
 % Please edit documentation in R/Clades.R
 \name{PruneCladeMat}
 \alias{PruneCladeMat}
-\title{Title TODO}
+\title{Prune called sprigs or singletons from inferred clade matrix}
 \usage{
-PruneCladeMat(M, neigh, sprigs, prune = "singleton.info", from.recipient = 1L)
+PruneCladeMat(M, neigh, sprigs, prune = "singleton.info", from_recipient = 1L)
 }
 \arguments{
-\item{M}{TODO}
+\item{M}{clade matrix such as that updated by \code{\link[=CladeMat]{CladeMat()}}}
 
-\item{neigh}{TODO}
+\item{neigh}{a list of nearest neighborhoods as retuned by \code{\link[=CladeMat]{CladeMat()}}}
 
-\item{sprigs}{TODO}
+\item{sprigs}{a sprigs object as returned by \code{\link[=Sprigs]{Sprigs()}}}
 
-\item{prune}{TODO}
+\item{prune}{a character indicating the type of information to be removed from the \code{\link[=CladeMat]{CladeMat()}}. See Details.}
 
-\item{from.recipient}{TODO}
+\item{from_recipient}{haplotype index at which to start trace calculation --- useful for distributed computation (experimental feature, more documentation to come\if{html}{\out{<!-- TODO -->}})}
 }
 \value{
-TODO
+There is nothing returned.
+
+\strong{NOTE:} for performance reasons, \code{M} is updated in-place.
 }
 \description{
-Short Description TODO
-}
-\details{
-Long Description TODO
+Use haplotype nearest neighborhoods and other information returned by \code{\link[=CladeMat]{CladeMat()}} to efficiently remove structure corresponding to singletons or called sprigs from clade matrix 'M'
 }
 \examples{
 # TODO

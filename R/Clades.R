@@ -17,19 +17,24 @@ get_neigh_seq <- function(x, i, return.lengths = FALSE){
   }
 }
 
-#' Title TODO
+#' Greedy sprig calling based on nearest neighbourhoods
 #'
-#' Short Description TODO
+#' Infer sprigs (very small clades) within a local phylogeny based on one-directional nearest neighbourhoods assigned to each haplotype
 #'
-#' Long Description TODO
+#' Call maximal cliques within a directed graph where edges correspond to nearest neighbour relationships
 #'
 #' @param x
-#'        TODO
+#'        list of where each entry is a nearest neighborhood of integers as returned by [CladeMat()]
 #' @param old.sprigs
-#'        TODO
+#'        If TRUE, use an earlier (undocumented) version of maximal clique calling, defaults to FALSE.
 #'
 #' @return
-#' TODO
+#' a list containing:
+#' \describe{
+#'   \item{`assignments`}{a vector of integers such that `assignments[i]` gives the sprig to which haplotype `i` belongs. `NA` if a haplotype was not assigned to a sprig.}
+#'   \item{`to.prune`}{a vector of logicals, `to.prune[i]==TRUE` when haplotype i has been assigned to a sprig}
+#'   \item{`num.sprigs`}{total number of sprigs calls, equal to `max(assignements,rm.na=TRUE)`}
+#' }
 #'
 #' @examples
 #' # TODO
@@ -133,33 +138,33 @@ UpdateMatrixInPlace <- function(M,row.idx,col.idx,x){
 # test <- matrix(as.double(1:144),12,12)
 # UpdateMatrixInPlace(test,c(5,12,12),c(1,3,5),as.double(c(100,200,300)))
 
-#' Title TODO
+#' Prune called sprigs or singletons from inferred clade matrix
 #'
-#' Short Description TODO
-#'
-#' Long Description TODO
+#' Use haplotype nearest neighborhoods and other information returned by [CladeMat()] to efficiently remove structure corresponding to singletons or called sprigs from clade matrix 'M'
 #'
 #' @param M
-#'        TODO
+#'        clade matrix such as that updated by [CladeMat()]
 #' @param neigh
-#'        TODO
+#'        a list of nearest neighborhoods as retuned by [CladeMat()]
 #' @param sprigs
-#'        TODO
+#'        a sprigs object as returned by [Sprigs()]
 #' @param prune
-#'        TODO
-#' @param from.recipient
-#'        TODO
+#'        a character indicating the type of information to be removed from the [CladeMat()]. See Details.
+#' @param from_recipient
+#'        haplotype index at which to start trace calculation --- useful for distributed computation (experimental feature, more documentation to come<!-- TODO -->)
 #'
 #' @return
-#' TODO
+#' There is nothing returned.
+#'
+#' **NOTE:** for performance reasons, `M` is updated in-place.
 #'
 #' @examples
 #' # TODO
 #'
 #' @export PruneCladeMat
-PruneCladeMat <- function(M, neigh, sprigs, prune = "singleton.info", from.recipient = 1L){
+PruneCladeMat <- function(M, neigh, sprigs, prune = "singleton.info", from_recipient = 1L){
 
-  if(!from.recipient%%2){stop("from.recipient must be odd and encode the index of the first recipient haplotype")}
+  if(!from_recipient%%2){stop("from_recipient must be odd and encode the index of the first recipient haplotype")}
 
   N.recipients <- 2 * ncol(M)
 
@@ -168,7 +173,7 @@ PruneCladeMat <- function(M, neigh, sprigs, prune = "singleton.info", from.recip
     v <- neigh[[2]][[2]] - neigh[[2]][[1]]
     v <- v[seq.int(1,N.recipients,2)] + v[seq.int(2,N.recipients,2)]
     UpdateMatrixInPlace(M,
-                        seq.int(from = (from.recipient+1L)/2L,length.out = ncol(M)),
+                        seq.int(from = (from_recipient+1L)/2L,length.out = ncol(M)),
                         seq.int(from = 1, to = ncol(M)),
                         v)
 
@@ -233,187 +238,179 @@ PruneCladeMat <- function(M, neigh, sprigs, prune = "singleton.info", from.recip
 
 
 
+# Predecessor to CladeMat with some extra functionality, kept for future reference.
+# #' Probabilistic Clades
+# #'
+# #' Utility for calling probabilistic clades at, in between, or excluding variants.
+# #'
+# #' ...? longer description
+# #'
+# #' @references
+# #' Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+# #'
+# #' @param fwd
+# #'        a `kalisForwardTable` object, as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].
+# #'        This table must be at the same variant location as argument `bck`.
+# #' @param bck
+# #'        a `kalisBackwardTable` object, as returned by [MakeBackwardTable()] and propagated to a target variant by [Backward()].
+# #'        This table must be at the same variant location as argument `fwd`.
+# #' @param pars
+# #'        a `kalisParameters` object, as returned by [Parameters()].
+# #' @param beta.theta.opts
+# #'        a list; see Details in [DistMat()] documentation page.
+# #' @param safety.checks
+# #'        a logical, should safety checks be applied to the distances?
+# #'        See [DistMat()].
+# #' @param neighbors
+# #'        a logical, should nearest neighbors be pre-calculated?
+# #'        See [Neighbors()].
+# #' @param use.forking
+# #'        a logical, should forked processes be used?
+# #' @param forking.chunk.size
+# #'        ...?
+# #' @param mc.preschedule
+# #'        ...?
+# #' @param nthreads
+# #'        the number of CPU cores to use.
+# #'        By default no parallelism is used.
+# #'
+# #' @return
+# #'   a `kalisClades` object encoding probabilistic clade calls
+# #'
+# #' @importFrom data.table frank
+# #' @export Clades
+# Clades <- function(fwd, bck, pars, beta.theta.opts = NULL,
+#                    safety.checks = FALSE, neighbors = FALSE,
+#                    #use.bettermc = FALSE,
+#                    use.forking = FALSE,
+#                    forking.chunk.size = 100L,
+#                    mc.preschedule = FALSE, # FALSE is more conservative of memory but means many new forked processes need to be launched so it's slower than TRUE
+#                    nthreads = 1L){
+#   # currently only outputs a list but should eventually also output a matrix of integers and an attribute list of clades
+#
+#   unit.mut.dist <- -log(pars$pars$mu)
+#
+#   M <- DistMat(fwd, bck, beta.theta.opts = beta.theta.opts, nthreads = nthreads)
+#
+#   if(safety.checks){
+#     M[!is.finite(M)] <- 0
+#     diag(M) <- NA_real_
+#   }
+#
+#   rank_donors_func <- function(x, type="linear_20", neighbors = FALSE, mac.range = c(NA,NA)){
+#     rank_donors_func_res <- as.list(1:length(x))
+#     for(j in 1:length(x)){
+#       d.ranks <- data.table::frank(M[,x[j]], na.last = FALSE, ties.method = "first")
+#       phi <- c(diff(M[order(d.ranks),x[j]]),0)
+#       phi[1] <- 0
+#       phi <- phi / unit.mut.dist # an N-long vector
+#       if(type == "linear_20"){
+#         phi[phi > 1] <- 1
+#         phi[phi < 0.2] <- 0
+#       } else if(type == "step_80"){
+#         phi[phi < 0.8] <- 0
+#         phi[phi > 0] <- 1
+#       }
+#
+#       if(!is.na(mac.range[1])){phi[1:mac.range[1]] <- 0}
+#       if(!is.na(mac.range[2])){phi[mac.range[2]:nrow(fwd$alpha)] <- 0}
+#
+#       i <- which(phi!=0)
+#
+#       # compress phi
+#       clades <- cbind(i,phi[i]) # if i = integer(0) (no clades called), clades will be a 0 x 2 matrix.
+#       attr(d.ranks,"clades") <- clades
+#
+#       if(neighbors){
+#         attr(d.ranks,"neighbors") <- if(nrow(clades)){
+#           match(2:clades[1,1],d.ranks)
+#         } else {
+#           NA_integer_
+#         }
+#       }
+#
+#       rank_donors_func_res[[j]] <- d.ranks
+#     }
+#     rank_donors_func_res
+#   }
+#
+#
+#   chunks <- chunk_int(ncol(M), chunk.size = forking.chunk.size)
+#
+#   if(use.forking){
+#     # if(use.bettermc){
+#     #   rank.list <- bettermc::mclapply(chunks, rank_donors_func, neighbors = neighbors, mc.preschedule = mc.preschedule, mc.cores=nthreads, mc.share.copy = FALSE)
+#     # } else {
+#       rank.list <- parallel::mclapply(chunks, rank_donors_func, neighbors = neighbors, mc.preschedule = mc.preschedule, mc.cores=nthreads)
+#     #}
+#   } else {
+#     rank.list <- lapply(chunks, rank_donors_func, neighbors = neighbors) # this matrix is ranked in each column, not scaled by Ne or Mu
+#   }
+#
+#   rank.list <- unlist(rank.list,recursive = FALSE)
+#
+#   attr(rank.list,"from_recipient") <- fwd$from_recipient
+#   attr(rank.list,"to_recipient")   <- fwd$to_recipient
+#
+#   class(rank.list) <- c("kalisClades","list") # rank.list is a list where each element is a vector of ranks with attributes clades
+#
+#   rank.list
+# }
+#
+#
+# #' Neighbors
+# #'
+# #' Utility for calling tied nearest neighbors for each recipient haplotype
+# #' @param x a `kalisClades` object returned by [Clades()]
+# #' @param use.forking a logical, should forked processes be used?
+# #' @param nthreads the number of CPU cores to use. Currently, no parallelism is used.
+# #' @return
+# #'   a `kalisNeighbors` encoding the nearest neighbors for each recipient haplotype
+# #'
+# #' @export Neighbors
+# Neighbors <- function(x,
+#                       #use.bettermc = FALSE,
+#                       use.forking = FALSE, nthreads = 1L){
+#   # currently only supports list x but should support matrix x as well
+#
+#   if(!is.null(attr(x[[1]],"neighbors"))){
+#
+#     neighbors <- lapply(x,function(z){attr(z,"neighbors")})
+#
+#   } else {
+#
+#
+#     call_neighbors <- function(z){
+#       # x should be a vector of ranks with attribute "clades"
+#       clades <- attr(z,"clades")
+#       if(nrow(clades)){
+#         match(2:clades[1,1],z)
+#       } else {
+#         NA_integer_
+#       }
+#     }
+#
+#     if(use.forking){
+#       # if(use.bettermc){
+#       #   neighbors <- bettermc::mclapply(x, call_neighbors, mc.cores = nthreads, mc.share.copy = FALSE)
+#       # } else {
+#         neighbors <- parallel::mclapply(x, call_neighbors, mc.cores = nthreads)
+#       #}
+#     } else {
+#       neighbors <- lapply(x,call_neighbors)
+#     }
+#   }
+#
+#   attr(neighbors,"from_recipient") <- attr(x,"from_recipient")
+#   attr(neighbors,"to_recipient")   <- attr(x,"to_recipient")
+#   class(neighbors) <- c("kalisNeighbors","list")
+#
+#   neighbors
+# }
 
-#' Probabilistic Clades
-#'
-#' Utility for calling probabilistic clades at, in between, or excluding variants.
-#'
-#' TODO longer description
-#'
-#' @references
-#' Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
-#'
-#' @param fwd
-#'        a `kalisForwardTable` object, as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].
-#'        This table must be at the same variant location as argument `bck`.
-#' @param bck
-#'        a `kalisBackwardTable` object, as returned by [MakeBackwardTable()] and propagated to a target variant by [Backward()].
-#'        This table must be at the same variant location as argument `fwd`.
-#' @param pars
-#'        a `kalisParameters` object, as returned by [Parameters()].
-#' @param beta.theta.opts
-#'        a list; see Details in [DistMat()] documentation page.
-#' @param safety.checks
-#'        a logical, should safety checks be applied to the distances?
-#'        See [DistMat()].
-#' @param neighbors
-#'        a logical, should nearest neighbors be pre-calculated?
-#'        See [Neighbors()].
-#' @param use.forking
-#'        a logical, should forked processes be used?
-#' @param forking.chunk.size
-#'        TODO
-#' @param mc.preschedule
-#'        TODO
-#' @param nthreads
-#'        the number of CPU cores to use.
-#'        By default no parallelism is used.
-#'
-#' @return
-#'   a `kalisClades` object encoding probabilistic clade calls
-#'
-#' @importFrom data.table frank
-#' @export Clades
-Clades <- function(fwd, bck, pars, beta.theta.opts = NULL,
-                   safety.checks = FALSE, neighbors = FALSE,
-                   #use.bettermc = FALSE,
-                   use.forking = FALSE,
-                   forking.chunk.size = 100L,
-                   mc.preschedule = FALSE, # FALSE is more conservative of memory but means many new forked processes need to be launched so it's slower than TRUE
-                   nthreads = 1L){
-  # currently only outputs a list but should eventually also output a matrix of integers and an attribute list of clades
 
-  unit.mut.dist <- -log(pars$pars$mu)
-
-  M <- DistMat(fwd, bck, beta.theta.opts = beta.theta.opts, nthreads = nthreads)
-
-  if(safety.checks){
-    M[!is.finite(M)] <- 0
-    diag(M) <- NA_real_
-  }
-
-  rank_donors_func <- function(x, type="linear_20", neighbors = FALSE, mac.range = c(NA,NA)){
-    rank_donors_func_res <- as.list(1:length(x))
-    for(j in 1:length(x)){
-      d.ranks <- data.table::frank(M[,x[j]], na.last = FALSE, ties.method = "first")
-      phi <- c(diff(M[order(d.ranks),x[j]]),0)
-      phi[1] <- 0
-      phi <- phi / unit.mut.dist # an N-long vector
-      if(type == "linear_20"){
-        phi[phi > 1] <- 1
-        phi[phi < 0.2] <- 0
-      } else if(type == "step_80"){
-        phi[phi < 0.8] <- 0
-        phi[phi > 0] <- 1
-      }
-
-      if(!is.na(mac.range[1])){phi[1:mac.range[1]] <- 0}
-      if(!is.na(mac.range[2])){phi[mac.range[2]:nrow(fwd$alpha)] <- 0}
-
-      i <- which(phi!=0)
-
-      # compress phi
-      clades <- cbind(i,phi[i]) # if i = integer(0) (no clades called), clades will be a 0 x 2 matrix.
-      attr(d.ranks,"clades") <- clades
-
-      if(neighbors){
-        attr(d.ranks,"neighbors") <- if(nrow(clades)){
-          match(2:clades[1,1],d.ranks)
-        } else {
-          NA_integer_
-        }
-      }
-
-      rank_donors_func_res[[j]] <- d.ranks
-    }
-    rank_donors_func_res
-  }
-
-
-  chunks <- chunk_int(ncol(M), chunk.size = forking.chunk.size)
-
-  if(use.forking){
-    # if(use.bettermc){
-    #   rank.list <- bettermc::mclapply(chunks, rank_donors_func, neighbors = neighbors, mc.preschedule = mc.preschedule, mc.cores=nthreads, mc.share.copy = FALSE)
-    # } else {
-      rank.list <- parallel::mclapply(chunks, rank_donors_func, neighbors = neighbors, mc.preschedule = mc.preschedule, mc.cores=nthreads)
-    #}
-  } else {
-    rank.list <- lapply(chunks, rank_donors_func, neighbors = neighbors) # this matrix is ranked in each column, not scaled by Ne or Mu
-  }
-
-  rank.list <- unlist(rank.list,recursive = FALSE)
-
-  attr(rank.list,"from_recipient") <- fwd$from_recipient
-  attr(rank.list,"to_recipient")   <- fwd$to_recipient
-
-  class(rank.list) <- c("kalisClades","list") # rank.list is a list where each element is a vector of ranks with attributes clades
-
-  rank.list
-}
-
-
-#' Neighbors
-#'
-#' Utility for calling tied nearest neighbors for each recipient haplotype
-#' @param x a `kalisClades` object returned by [Clades()]
-#' @param use.forking a logical, should forked processes be used?
-#' @param nthreads the number of CPU cores to use. Currently, no parallelism is used.
-#' @return
-#'   a `kalisNeighbors` encoding the nearest neighbors for each recipient haplotype
-#'
-#' @export Neighbors
-Neighbors <- function(x,
-                      #use.bettermc = FALSE,
-                      use.forking = FALSE, nthreads = 1L){
-  # currently only supports list x but should support matrix x as well
-
-  if(!is.null(attr(x[[1]],"neighbors"))){
-
-    neighbors <- lapply(x,function(z){attr(z,"neighbors")})
-
-  } else {
-
-
-    call_neighbors <- function(z){
-      # x should be a vector of ranks with attribute "clades"
-      clades <- attr(z,"clades")
-      if(nrow(clades)){
-        match(2:clades[1,1],z)
-      } else {
-        NA_integer_
-      }
-    }
-
-    if(use.forking){
-      # if(use.bettermc){
-      #   neighbors <- bettermc::mclapply(x, call_neighbors, mc.cores = nthreads, mc.share.copy = FALSE)
-      # } else {
-        neighbors <- parallel::mclapply(x, call_neighbors, mc.cores = nthreads)
-      #}
-    } else {
-      neighbors <- lapply(x,call_neighbors)
-    }
-  }
-
-  attr(neighbors,"from_recipient") <- attr(x,"from_recipient")
-  attr(neighbors,"to_recipient")   <- attr(x,"to_recipient")
-  class(neighbors) <- c("kalisNeighbors","list")
-
-  neighbors
-}
-
-
-#' Sprigs
-#'
-#' Utility for calling sprigs from probabilistic clades
-#' @param x a `kalisNeighbors` object returned by [Neighbors()], a `kalisClades` object returned by [Clades()] with `neighbors = TRUE`, or a list
-#' @param use.forking a logical, should forked processes be used?
-#' @param nthreads the number of CPU cores to use. Currently, no parallelism is used.
-#' @return
-#'   a `kalisSprigs` object assigning each haplotype to a sprig
-#'
-#' @export Sprigs_old
+# Old sprigs and clademat have many ideas (including adjustments for pop structure)
+# that are not incorporated into new functions -- ideas to come back to
 Sprigs_old <- function(x, use.forking = FALSE, nthreads = 1L, add.self = TRUE){
 
   # this version of Sprigs still has a bit of randomness in it's sprig building between runs on the same input
@@ -493,126 +490,126 @@ Sprigs_old <- function(x, use.forking = FALSE, nthreads = 1L, add.self = TRUE){
   roster
 }
 
-#Testing Sprigs
-# kalis::Sprigs(list(
-#   1:2,
-#   1:2,
-#   3:7,
-#   1:10,
-#   1:10,
-#   1:10,
-#   5:11
-# ))
-
-#' CladeMat OLD
-#'
-#' Utility for contructing a probabilistic clade matrix
-#' @param x a `kalisClades` object returned by [Clades()]
-#' @param ploidy an integer, the ploidy of the organism
-#' @param sprigs.to.prune a `kalisSprigs` object returned by [Sprigs()] encoding sprigs that should be excluded from the matrix returned
-#' @param assemble a logical, if `FALSE` return the clade matrix as a list of columns rather than as a symmetrized matrix
-#' @param use.forking a logical, should forked processes be used?
-#' @param nthreads the number of CPU cores to use. Currently, no parallelism is used.
-#' @return
-#'   a matrix representation of the probabilistic clades provided
-#'
-#' @export CladeMat_old
-CladeMat_old <- function(x, ploidy = 2L, sprigs.to.prune = NULL, assemble = TRUE,
-                         #use.bettermc = FALSE,
-                         use.forking = FALSE, forking.chunk.size = 100L, mc.preschedule = FALSE, nthreads = 1L){
-
-  # prepare sprigs
-  if(is.null(sprigs.to.prune)){sprigs.to.prune <- integer()}
-  sl <- length(sprigs.to.prune)
-  if(sl){sprig.sizes <- tabulate(sprigs.to.prune)}
-
-  n.recipient.samples <- as.integer(length(x)/ploidy)
-
-  chunks <- chunk_int(n.recipient.samples, chunk.size = forking.chunk.size)
-
-  if(ploidy == 1){
-    omega_func <- function(s){
-      omega_func_res <- as.list(1:length(s))
-      for(j in 1:length(s)){
-
-        N <- length(x[[s[j]]])
-
-        idx <- attr(x[[s[j]]],"clades")[,1]
-        phi <- attr(x[[s[j]]],"clades")[,2]
-
-        # prune sprig
-        if(sl && !is.na(sprigs.to.prune[s[j]]) && length(idx) && sprig.sizes[sprigs.to.prune[s[j]]] == idx[1]){
-          idx <- idx[-1]
-          phi <- phi[-1]
-        }
-
-        # we know that phi[N] = 0, so there must always be a 0 appended
-        omega_func_res[[j]] <-  inverse.rle(list("values" =  c(rev(cumsum(rev(phi/idx))),0),
-                                                 "lengths" = diff(c(0,idx,N))))[x[[s[j]]]]
-
-      }
-      omega_func_res
-    }
-
-  } else if(ploidy == 2){
-
-    omega_func <- function(s){
-      omega_func_res <- as.list(1:length(s))
-      for(j in 1:length(s)){
-        N <- length(x[[s[j]]])
-
-        idx <- attr(x[[s[j]*2-1]],"clades")[,1]
-        phi <- attr(x[[s[j]*2-1]],"clades")[,2]
-
-        idx2 <- attr(x[[s[j]*2]],"clades")[,1]
-        phi2 <- attr(x[[s[j]*2]],"clades")[,2]
-
-
-        if(sl && !is.na(sprigs.to.prune[s[j]*2-1]) && length(idx) && sprig.sizes[sprigs.to.prune[s[j]*2-1]] == idx[1]){
-          idx <- idx[-1]
-          phi <- phi[-1]
-        }
-
-        if(sl && !is.na(sprigs.to.prune[s[j]*2]) && length(idx2) && sprig.sizes[sprigs.to.prune[s[j]*2]] == idx2[1]){
-          idx2 <- idx2[-1]
-          phi2 <- phi2[-1]
-        }
-
-        # we know that phi[N] = 0, so there must always be a 0 appended
-        w <- inverse.rle(list("values" =  c(rev(cumsum(rev(phi/idx))),0),
-                              "lengths" = diff(c(0,idx,N))))[x[[s[j]*2-1]]] +
-          inverse.rle(list("values" =  c(rev(cumsum(rev(phi2/idx2))),0),
-                           "lengths" = diff(c(0,idx2,N))))[x[[s[j]*2]]]
-
-        omega_func_res[[j]] <- w[seq(1,N,by=2)] + w[seq(2,N,by=2)]
-      }
-      omega_func_res
-    }
-
-  } else {
-    stop("Relatedness currently only supports ploidy  = 1 or 2")
-  }
-
-  # we don't simplify this list to a matrix at this stage to help preserve memory.
-  if(use.forking){
-    # if(use.bettermc){
-    #   res <- bettermc::mclapply(chunks, omega_func, mc.preschedule = mc.preschedule, mc.cores=nthreads, mc.share.copy = FALSE)
-    # } else {
-      res <- parallel::mclapply(chunks, omega_func, mc.preschedule = mc.preschedule, mc.cores=nthreads)
-    #}
-  } else {
-    res <- lapply(chunks, omega_func)
-  }
-
-  res <- unlist(res, recursive = FALSE)
-
-  if(assemble){
-    res <- do.call(cbind,res)
-    res <- 0.5 * (res + t(res))
-  }
-
-  res
-}
+##Testing Sprigs
+## kalis::Sprigs(list(
+##   1:2,
+##   1:2,
+##   3:7,
+##   1:10,
+##   1:10,
+##   1:10,
+##   5:11
+## ))
+#
+# #' CladeMat OLD
+# #'
+# #' Utility for contructing a probabilistic clade matrix
+# #' @param x a `kalisClades` object returned by [Clades()]
+# #' @param ploidy an integer, the ploidy of the organism
+# #' @param sprigs.to.prune a `kalisSprigs` object returned by [Sprigs()] encoding sprigs that should be excluded from the matrix returned
+# #' @param assemble a logical, if `FALSE` return the clade matrix as a list of columns rather than as a symmetrized matrix
+# #' @param use.forking a logical, should forked processes be used?
+# #' @param nthreads the number of CPU cores to use. Currently, no parallelism is used.
+# #' @return
+# #'   a matrix representation of the probabilistic clades provided
+# #'
+# #' @export CladeMat_old
+#CladeMat_old <- function(x, ploidy = 2L, sprigs.to.prune = NULL, assemble = TRUE,
+#                         #use.bettermc = FALSE,
+#                         use.forking = FALSE, forking.chunk.size = 100L, mc.preschedule = FALSE, nthreads = 1L){
+#
+#  # prepare sprigs
+#  if(is.null(sprigs.to.prune)){sprigs.to.prune <- integer()}
+#  sl <- length(sprigs.to.prune)
+#  if(sl){sprig.sizes <- tabulate(sprigs.to.prune)}
+#
+#  n.recipient.samples <- as.integer(length(x)/ploidy)
+#
+#  chunks <- chunk_int(n.recipient.samples, chunk.size = forking.chunk.size)
+#
+#  if(ploidy == 1){
+#    omega_func <- function(s){
+#      omega_func_res <- as.list(1:length(s))
+#      for(j in 1:length(s)){
+#
+#        N <- length(x[[s[j]]])
+#
+#        idx <- attr(x[[s[j]]],"clades")[,1]
+#        phi <- attr(x[[s[j]]],"clades")[,2]
+#
+#        # prune sprig
+#        if(sl && !is.na(sprigs.to.prune[s[j]]) && length(idx) && sprig.sizes[sprigs.to.prune[s[j]]] == idx[1]){
+#          idx <- idx[-1]
+#          phi <- phi[-1]
+#        }
+#
+#        # we know that phi[N] = 0, so there must always be a 0 appended
+#        omega_func_res[[j]] <-  inverse.rle(list("values" =  c(rev(cumsum(rev(phi/idx))),0),
+#                                                 "lengths" = diff(c(0,idx,N))))[x[[s[j]]]]
+#
+#      }
+#      omega_func_res
+#    }
+#
+#  } else if(ploidy == 2){
+#
+#    omega_func <- function(s){
+#      omega_func_res <- as.list(1:length(s))
+#      for(j in 1:length(s)){
+#        N <- length(x[[s[j]]])
+#
+#        idx <- attr(x[[s[j]*2-1]],"clades")[,1]
+#        phi <- attr(x[[s[j]*2-1]],"clades")[,2]
+#
+#        idx2 <- attr(x[[s[j]*2]],"clades")[,1]
+#        phi2 <- attr(x[[s[j]*2]],"clades")[,2]
+#
+#
+#        if(sl && !is.na(sprigs.to.prune[s[j]*2-1]) && length(idx) && sprig.sizes[sprigs.to.prune[s[j]*2-1]] == idx[1]){
+#          idx <- idx[-1]
+#          phi <- phi[-1]
+#        }
+#
+#        if(sl && !is.na(sprigs.to.prune[s[j]*2]) && length(idx2) && sprig.sizes[sprigs.to.prune[s[j]*2]] == idx2[1]){
+#          idx2 <- idx2[-1]
+#          phi2 <- phi2[-1]
+#        }
+#
+#        # we know that phi[N] = 0, so there must always be a 0 appended
+#        w <- inverse.rle(list("values" =  c(rev(cumsum(rev(phi/idx))),0),
+#                              "lengths" = diff(c(0,idx,N))))[x[[s[j]*2-1]]] +
+#          inverse.rle(list("values" =  c(rev(cumsum(rev(phi2/idx2))),0),
+#                           "lengths" = diff(c(0,idx2,N))))[x[[s[j]*2]]]
+#
+#        omega_func_res[[j]] <- w[seq(1,N,by=2)] + w[seq(2,N,by=2)]
+#      }
+#      omega_func_res
+#    }
+#
+#  } else {
+#    stop("Relatedness currently only supports ploidy  = 1 or 2")
+#  }
+#
+#  # we don't simplify this list to a matrix at this stage to help preserve memory.
+#  if(use.forking){
+#    # if(use.bettermc){
+#    #   res <- bettermc::mclapply(chunks, omega_func, mc.preschedule = mc.preschedule, mc.cores=nthreads, mc.share.copy = FALSE)
+#    # } else {
+#      res <- parallel::mclapply(chunks, omega_func, mc.preschedule = mc.preschedule, mc.cores=nthreads)
+#    #}
+#  } else {
+#    res <- lapply(chunks, omega_func)
+#  }
+#
+#  res <- unlist(res, recursive = FALSE)
+#
+#  if(assemble){
+#    res <- do.call(cbind,res)
+#    res <- 0.5 * (res + t(res))
+#  }
+#
+#  res
+#}
 
 chunk_int <- function(n, chunk.size = 100){
   # subdivide 1:n into chunks of size at most chunk.size
