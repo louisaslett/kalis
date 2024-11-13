@@ -78,7 +78,8 @@ n.vars <- 200
 haps <- matrix(sample(0:1, n.haps*n.vars, replace = TRUE),
                nrow = n.vars, ncol = n.haps)
 
-# ... write them to a file, giving alphabetic letters "A" through "T" as the #' # haplotype names ...
+# ... write them to a file, giving alphabetic letters "A" through "T" as the
+# haplotype names ...
 WriteHaplotypes("~/myhaps.h5", haps, hap.ids = LETTERS[1:20])
 
 # ... and confirm we can read a chosen portion back.  Try to read back
@@ -93,6 +94,9 @@ CacheHaplotypes("~/myhaps.h5")
 all(haps == QueryCache())
 }
 
+}
+\references{
+Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", \emph{BMC Bioinformatics}, \strong{25}(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 }
 \seealso{
 \code{\link[=CacheHaplotypes]{CacheHaplotypes()}} to fill the kalis cache with haplotypes.

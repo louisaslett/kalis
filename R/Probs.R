@@ -41,7 +41,10 @@
 #'
 #' When provided, `M` must have dimensions matching that of `fwd$alpha`.
 #' Typically, that is simply \eqn{N \times N}{N x N} for \eqn{N} haplotypes.
-#' However, if kalis is being run in a distributed manner, \code{M} will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
+#' However, if kalis is being run in a distributed manner, `M` will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
+#'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 #'
 #' @param fwd a forward table as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].
 #'   Must be at the same variant as `bck` (unless `bck` is in "beta-theta space" in which case if must be downstream ... see [Backward()] for details).
@@ -162,7 +165,12 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #'
 #' When provided, `M` must have dimensions matching that of `fwd$alpha`.
 #' Typically, that is simply \eqn{N \times N}{N x N} for \eqn{N} haplotypes.
-#' However, if kalis is being run in a distributed manner, \code{M} will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
+#' However, if kalis is being run in a distributed manner, `M` will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
+#'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
+#' Speidel, L., Forest, M., Shi, S. and Myers, S.R. (2019) "A method for genome-wide genealogy estimation for thousands of samples", *Nature Genetics*, **51**, p. 1321-1329. Available at: \doi{10.1038/s41588-019-0484-x}.
 #'
 #' @param fwd a forward table as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].
 #'   Must be at the same variant as `bck` (unless `bck` is in "beta-theta space" in which case if must be downstream ... see [Backward()] for details).
@@ -183,9 +191,6 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #'   Hence, the distances are asymmetric.
 #'
 #'   If you wish to plot this matrix or perform clustering, you may want to symmetrize the matrix first.
-#'
-#' @references
-#'   Speidel, L., Forest, M., Shi, S., & Myers, S. (2019). A method for genome-wide genealogy estimation for thousands of samples. *Nature Genetics*, **51**(1321–1329).
 #'
 #' @seealso
 #'   [PostProbs()] to calculate the posterior marginal probabilities \eqn{p_{ji}}{p_(j,i)};
@@ -221,7 +226,7 @@ DistMat <- function(fwd, bck, type = "raw", M = NULL, beta.theta.opts = NULL,
                     nthreads = min(parallel::detectCores(logical = FALSE), fwd$to_recipient-fwd$from_recipient+1)){
 
   if(identical(nthreads, "R")) {
-    if(!is.null(M)){stop("M cannot be NULL when requesting the gold master R version with R nthreads")}
+    if(!is.null(M)){stop("M must be NULL when requesting the gold master R version with R nthreads")}
     warning("Warning: using gold master R implementation.")
     return(invisible(DistMat.GM(fwd, bck, type, beta.theta.opts)))
   }
@@ -256,7 +261,7 @@ DistMat <- function(fwd, bck, type = "raw", M = NULL, beta.theta.opts = NULL,
 
 
 
-input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
+input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts = NULL){
 
   # RUN GENERAL CHECKS
   if(fwd$l == 2147483647L){stop("forward table has not been initialized but not propagated to a variant in {1,...,L}.")}
@@ -295,7 +300,7 @@ input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
 
       if(!inherits(beta.theta.opts$pars,"kalisParameters")){stop("beta.theta.opts$pars must be kalisParameters object.")}
 
-      if(!is.numeric(beta.theta.opts$bias) || beta.theta.opts$bias<=0 || beta.theta.opts$bias>=1 ){stop("bias must be numeric and within (0,1). To obtain a distance matrix AT a particular variant, advance bck to that variant in beta space.")}
+      if(!is.numeric(beta.theta.opts$bias) || beta.theta.opts$bias<0 || beta.theta.opts$bias>1 ){stop("bias must be numeric and within [0,1]. To obtain a distance matrix AT a particular variant, advance bck to that variant in beta space.")}
 
       total.rho <- sum(beta.theta.opts$pars$pars$rho[fwd$l:(bck$l - 1)])
 
@@ -304,24 +309,37 @@ input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts){
 
     }
 
-    return(list("rho.fwd" = rho.fwd, "rho.bck" = rho.bck))
+    return(invisible(list("rho.fwd" = rho.fwd, "rho.bck" = rho.bck)))
 
   }else{
 
     if(bck$l != fwd$l){stop("variant position of the forward table and backward table do not match.")}
-    return(NULL)
+    return(invisible(NULL))
   }
 }
 
 
 
-#' Plotting function for a kalisDistanceMatrix object
+#' Plotting function for a distance matrix
 #'
 #' Clusters the given distance matrix and generates a heatmap to display it.
 #'
-#' @param d a kalisDistanceMatrix
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 #'
-#' @return There is nothing returned.
+#' @param x
+#'        a distance matrix, such as returned by [DistMat()].
+#' @param cluster.method
+#'        the agglomeration method to be used, which is passed to the [fastcluster::hclust()] function.
+#'        This must be (an unambiguous abbreviation of) one of "single", "complete", "average", "mcquitty", "ward.D", "ward.D2", "centroid" or "median".
+#' @param ...
+#'        further arguments to be passed on to the underlying [lattice::levelplot()] plotting function.
+#'
+#' @return
+#' No return value, called for side effects.
+#'
+#' @examples
+#' # TODO
 #'
 #' @export
 plot.kalisDistanceMatrix <- function(x, cluster.method = "average", ...) {

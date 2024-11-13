@@ -6,11 +6,16 @@
 #'
 #' **NOTE:** the corresponding haplotype data *must* have already been inserted into the kalis cache by a call to [CacheHaplotypes()], since this function performs checks to confirm the dimensionality matches.
 #'
-#' TODO: add kalis paper cross ref.
 #' See page 3 in Supplemental Information for the original ChromoPainter paper (Lawson et al., 2012) for motivation behind our parameterisation, which is as follows:
 #'
 #' \deqn{\rho = 1 - \exp(-s \times cM^\gamma)}{\rho = 1 - exp(-s * cM^\gamma)}
 #'
+#' For a complete description, see the main kalis paper, Aslett and Christ (2024).
+#'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
+#' Lawson, D.J., Hellenthal, G., Myers, S. and Falush, D. (2012) "Inference of population structure using dense haplotype data", *PLoS genetics*, **8**(1). Available at: \doi{10.1371/journal.pgen.1002453}.
 #'
 #' @param cM a vector specifying the recombination distance between variants in centimorgans.
 #'   Note element i of this vector should be the distance between variants `i` and `i+1` (not `i` and `i-1`), and thus length one less than the number of variants.
@@ -24,10 +29,6 @@
 #' @return A vector of recombination probabilities which can be used as the `rho` argument to the [Parameters()] function when creating a parameter set.
 #'
 #' @seealso [Parameters()] to use the resulting recombination probabilities to construct a `kalisParameters` object.
-#'
-#' @references
-#'   Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
-#'   population structure using dense haplotype data. *PLoS genetics*, **8**(1).
 #'
 #' @examples
 #' # Load the mini example data and recombination map from the package built-in #' # dataset
@@ -119,6 +120,13 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
 #'
 #' Note that there is a computational cost associated with non-uniform copying probabilities, so it is recommended to leave the default of uniform probabilities when appropriate (**Note:** *do not* specify a uniform matrix when uniform probabilities are intended, since this would end up incurring the computational cost of non-uniform probabilities).
 #'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
+#' Lawson, D.J., Hellenthal, G., Myers, S.R. and Falush, D. (2012) "Inference of population structure using dense haplotype data", *PLoS Genetics*, **8**(1). Available at: \doi{10.1371/journal.pgen.1002453}.
+#'
+#' Speidel, L., Forest, M., Shi, S. and Myers, S.R. (2019) "A method for genome-wide genealogy estimation for thousands of samples", *Nature Genetics*, **51**, p. 1321-1329. Available at: \doi{10.1038/s41588-019-0484-x}.
+#'
 #' @param rho recombination probability vector (must be \eqn{L-1} long).
 #'   See [CalcRho()] for assistance constructing this from a recombination
 #'   map/distances.
@@ -139,13 +147,6 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
 #'
 #' @seealso [MakeForwardTable()] and [MakeBackwardTable()] which construct table objects which internally reference a parameters environment;
 #'   [Forward()] and [Backward()] which propagate those tables according to the Li and Stephens model.
-#'
-#' @references
-#'   Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
-#'   population structure using dense haplotype data. *PLoS genetics*, **8**(1).
-#'
-#'   Speidel, L., Forest, M., Shi, S., & Myers, S. (2019). A method for
-#'   genome-wide genealogy estimation for thousands of samples. *Nature Genetics*, **51**(1321–1329).
 #'
 #' @examples
 #' # Load the mini example data and recombination map from the package built-in #' # dataset
@@ -238,6 +239,7 @@ Parameters <- function(rho = rep(0, get("L", envir = pkgVars)-1),
   res
 }
 
+#' @importFrom utils tail
 #' @export
 print.kalisParameters <- function(x, ...) {
   if(is.matrix(x$pars$Pi)) {

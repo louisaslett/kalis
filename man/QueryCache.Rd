@@ -37,6 +37,9 @@ res <- QueryCache(50:150, 10:11)
 all(res == haps[50:150, 10:11])
 
 }
+\references{
+Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", \emph{BMC Bioinformatics}, \strong{25}(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+}
 \seealso{
 \code{\link[=CacheHaplotypes]{CacheHaplotypes()}} to fill the memory cache with haplotype data.
 }

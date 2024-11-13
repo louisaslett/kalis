@@ -6,8 +6,11 @@
 #' `Forward` implements the forward algorithm to advance the Li and Stephens rescaled hidden Markov model forward probabilities to a new target variant.
 #' Naturally, this can only propagate a table to variants downstream of its current position.
 #'
-#' For mathematical details please see Section 2 of the kalis paper (TODO: ref).
+#' For mathematical details please see Section 2 of the kalis paper (Aslett and Christ, 2024).
 #' Note that the precise formulation of the forward equation is determined by whether the flag `use.spiedel` is set in the parameters provided in `pars`.
+#'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 #'
 #' @param fwd a `kalisForwardTable` object, as returned by
 #'   [MakeForwardTable()].
@@ -111,7 +114,7 @@ Forward <- function(fwd,
 #' variant.
 #' Naturally, this can only propagate a table to variants upstream of its current position.
 #'
-#' For mathematical details please see Section 2 of the kalis paper (TODO: ref).
+#' For mathematical details please see Section 2 of the kalis paper (Aslett and Christ, 2024).
 #' Note that the precise formulation of the backward equation is determined by whether the flag `use.spiedel` is set in the parameters provided in `pars`.
 #'
 #' **Beta-theta space**
@@ -123,6 +126,8 @@ Forward <- function(fwd,
 #' A backward table in beta-theta space (with `beta.theta = TRUE`) can be propagated to an upstream variant without incorporating that variant, thereby moving to beta space (`beta.theta = FALSE`), and vice versa.
 #' However, while a backward table in beta space (`beta.theta = FALSE`) can be updated to incorporate the current variant, a backward table that is already in beta-theta space can not move to beta space without changing variants -- that would involve "forgetting" the current variant (see Examples).
 #'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 #'
 #' @param bck a `kalisBackwardTable` object, as returned by
 #'   [MakeBackwardTable()].

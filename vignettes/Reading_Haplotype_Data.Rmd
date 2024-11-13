@@ -1,0 +1,47 @@
+---
+title: "Reading Haplotype Data"
+author: "Louis Aslett & Ryan Christ"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reading Haplotype Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+collapse = TRUE,
+comment = "#>"
+)
+```
+
+`kalis` calculates pairwise genetic distances at loci of interest for a set of phased haplotypes stored in a `L x N` matrix `H` where `H[l,i] = 1` if haplotype `i` carries the alternative allele at locus `l` and `H[l,i] = 0` if it carries the reference allele.  For efficiency `kalis` internally must load and store `H` as a matrix of bits.
+
+*For all of the data input types below, it assumed that the haplotypes have already been phased, as required to run `kalis`.*
+
+# Reading from BCF/VCF
+
+To read phased haplotypes stored in a compressed or uncompressed BCF or VCF, the file must first be converted to HAP/SAMPLE/LEGEND format.  For example, for a given compressed VCF, we simply call `bcftools` as follows.
+
+```{r, engine = 'bash', eval = FALSE}
+bcftools convert -h my.vcf.gz
+```
+
+Then, from `R`, we read in the haplotypes by calling
+
+```{r load.data, results = "hide", message=FALSE, eval=FALSE}
+require(kalis)
+CacheHaplotypes("my.hap.gz")
+```
+
+See <http://samtools.github.io/bcftools/bcftools.html#convert> for more details.
+
+For increased reading efficiency `CacheHaplotypes` look will look for the `my.legend` file that was produced by `bcftools` in the same directory as `my.hap.gz` so its worthwhile keeping the `.legend` files. 
+
+`bcftools` can read from many different formats into BCF/VCF, making it an easy tool for conversion into HAP/SAMPLE/LEGEND format.  
+
+
+`kalis`  <http://hgdownload.cse.ucsc.edu/gbdb/hg19/1000Genomes/phase3/>
+
+ALL.chr21.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.hap.gz

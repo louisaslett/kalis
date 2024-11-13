@@ -45,7 +45,7 @@ The table is updated in-place.
 variant.
 Naturally, this can only propagate a table to variants upstream of its current position.
 
-For mathematical details please see Section 2 of the kalis paper (TODO: ref).
+For mathematical details please see Section 2 of the kalis paper (Aslett and Christ, 2024).
 Note that the precise formulation of the backward equation is determined by whether the flag \code{use.spiedel} is set in the parameters provided in \code{pars}.
 
 \strong{Beta-theta space}
@@ -99,6 +99,9 @@ bck
 try(Backward(bck, pars, 125, beta.theta = FALSE))
 bck
 
+}
+\references{
+Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", \emph{BMC Bioinformatics}, \strong{25}(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 }
 \seealso{
 \code{\link[=MakeBackwardTable]{MakeBackwardTable()}} to generate a backward table;

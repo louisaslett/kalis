@@ -10,6 +10,9 @@
 #'
 #' Since each column corresponds to an independent Li and Stephens hidden Markov model (ie for each recipient), it is possible to create a partial forward table object which corresponds to a subset of recipients using the `from_recipient` and `to_recipient` arguments.
 #'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
 #' @param pars a `kalisParameters` object specifying the genetics parameters to be associated with this forward table.
 #'   These parameters can be set up by using the [Parameters()] function.
 #' @param from_recipient first recipient haplotype included if creating a partial forward table.
@@ -130,6 +133,9 @@ print.kalisForwardTable <- function(x, ...) {
 #'
 #' Since each column corresponds to an independent Li and Stephens hidden Markov model (ie for each recipient), it is possible to create a partial backward table object which corresponds to a subset of recipients using the `from_recipient` and `to_recipient` arguments.
 #'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
 #' @param pars a `kalisParameters` object specifying the genetics parameters to be associated with this backward table.
 #'   These parameters can be set up by using the [Parameters()] function.
 #' @param from_recipient first recipient haplotype included if creating a partial backward table.
@@ -140,7 +146,7 @@ print.kalisForwardTable <- function(x, ...) {
 #'   Haplotypes are indexed from 1.
 #'
 #' @return
-#'   A specialized list of class \code{kalisBackwardTable}.
+#'   A specialized list of class `kalisBackwardTable`.
 #'   The elements of the backward table list are:
 #'   \describe{
 #'     \item{`l`}{denotes the current variant position.
@@ -249,6 +255,9 @@ print.kalisBackwardTable <- function(x, ...) {
 #'
 #' This function is therefore designed to enable explicit copying of tables.
 #'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
 #' @param to a `kalisForwardTable` or `kalisBackwardTable` object which is to be copied into.
 #' @param from a `kalisForwardTable` or `kalisBackwardTable` object which is to be copied from.
 #'
@@ -339,6 +348,9 @@ CopyTable <- function(to, from) {
 #'
 #' It is *much* faster to reset a forward/backward table rather than remove and make a new one.
 #' This function marks a table as reset so that it will be propagated as if freshly allocated.
+#'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 #'
 #' @param tbl a `kalisForwardTable` or `kalisBackwardTable` object
 #'   which is to be reset.

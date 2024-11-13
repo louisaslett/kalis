@@ -40,7 +40,7 @@ The table is updated in-place.
 \code{Forward} implements the forward algorithm to advance the Li and Stephens rescaled hidden Markov model forward probabilities to a new target variant.
 Naturally, this can only propagate a table to variants downstream of its current position.
 
-For mathematical details please see Section 2 of the kalis paper (TODO: ref).
+For mathematical details please see Section 2 of the kalis paper (Aslett and Christ, 2024).
 Note that the precise formulation of the forward equation is determined by whether the flag \code{use.spiedel} is set in the parameters provided in \code{pars}.
 }
 \examples{
@@ -68,6 +68,9 @@ fwd
 Forward(fwd, pars, 50)
 fwd
 
+}
+\references{
+Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", \emph{BMC Bioinformatics}, \strong{25}(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 }
 \seealso{
 \code{\link[=MakeForwardTable]{MakeForwardTable()}} to generate a forward table;

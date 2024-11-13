@@ -30,10 +30,11 @@ This is a utility function to calculate the recombination probabilities rho (the
 
 \strong{NOTE:} the corresponding haplotype data \emph{must} have already been inserted into the kalis cache by a call to \code{\link[=CacheHaplotypes]{CacheHaplotypes()}}, since this function performs checks to confirm the dimensionality matches.
 
-TODO: add kalis paper cross ref.
 See page 3 in Supplemental Information for the original ChromoPainter paper (Lawson et al., 2012) for motivation behind our parameterisation, which is as follows:
 
 \deqn{\rho = 1 - \exp(-s \times cM^\gamma)}{\rho = 1 - exp(-s * cM^\gamma)}
+
+For a complete description, see the main kalis paper, Aslett and Christ (2024).
 }
 \examples{
 # Load the mini example data and recombination map from the package built-in #' # dataset
@@ -49,8 +50,9 @@ rho
 
 }
 \references{
-Lawson, D. J., Hellenthal, G., Myers, S., & Falush, D. (2012). Inference of
-population structure using dense haplotype data. \emph{PLoS genetics}, \strong{8}(1).
+Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", \emph{BMC Bioinformatics}, \strong{25}(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+
+Lawson, D.J., Hellenthal, G., Myers, S. and Falush, D. (2012) "Inference of population structure using dense haplotype data", \emph{PLoS genetics}, \strong{8}(1). Available at: \doi{10.1371/journal.pgen.1002453}.
 }
 \seealso{
 \code{\link[=Parameters]{Parameters()}} to use the resulting recombination probabilities to construct a \code{kalisParameters} object.

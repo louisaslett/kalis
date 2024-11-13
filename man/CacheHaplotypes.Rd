@@ -86,7 +86,7 @@ That is, the dimensions should be:
 
 (num rows)x(num cols) = (num variants)x(num haplotypes).
 
-It is fine to delete this matrix from R after calling \code{CacheHaplotypes}.
+It is fine to delete this matrix from R after calling \code{\link[=CacheHaplotypes]{CacheHaplotypes()}}.
 
 \strong{HDF5 format}
 
@@ -143,6 +143,9 @@ CacheHaplotypes(haps)
 data("SmallHaps")
 CacheHaplotypes(SmallHaps)
 
+}
+\references{
+Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", \emph{BMC Bioinformatics}, \strong{25}(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 }
 \seealso{
 \code{\link[=CacheSummary]{CacheSummary()}} for a list detailing the current cache status;
