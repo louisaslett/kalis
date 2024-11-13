@@ -14,8 +14,10 @@
 <link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="High Performance Li &amp; Stephens Local Ancestry Inference">
-<meta name="description" content="kalis provides a high performance implementation of the Li &amp; Stephens model &lt;https://www.ncbi.nlm.nih.gov/pubmed/14704198&gt; for local ancestry inference (local referring to a region of the genome). For a set of N phased haplotypes, kalis computes the posterior marginal probability of each haplotype copying every other haplotype by running N hidden Markov models in parallel. This yields an N x N distance matrix that summarizes the recent local ancestry at each variant of interest. The package provides functionality for specifying a recombination map, site-specific mutation rates, and differing prior copying probabilities for each recipient haplotype. Extensive use is made of low level threading and CPU vector instructions.">
-<meta property="og:description" content="kalis provides a high performance implementation of the Li &amp; Stephens model &lt;https://www.ncbi.nlm.nih.gov/pubmed/14704198&gt; for local ancestry inference (local referring to a region of the genome). For a set of N phased haplotypes, kalis computes the posterior marginal probability of each haplotype copying every other haplotype by running N hidden Markov models in parallel. This yields an N x N distance matrix that summarizes the recent local ancestry at each variant of interest. The package provides functionality for specifying a recombination map, site-specific mutation rates, and differing prior copying probabilities for each recipient haplotype. Extensive use is made of low level threading and CPU vector instructions.">
+<meta name="description" content="kalis &lt;doi:10.1186/s12859-024-05688-8&gt; provides a high performance implementation of the Li &amp; Stephens model &lt;doi:10.1093/genetics/165.4.2213&gt; for local ancestry inference (local referring to a region of the genome). For a set of N phased haplotypes, kalis computes the posterior marginal probability of each haplotype copying every other haplotype by running N hidden Markov models in parallel. This yields an N x N distance matrix that summarizes the recent local ancestry at each variant of interest. The package provides functionality for specifying a recombination map, site-specific mutation rates, and differing prior copying probabilities for each recipient haplotype. Extensive use is made of low level threading and CPU vector instructions.">
+<meta property="og:description" content="kalis &lt;doi:10.1186/s12859-024-05688-8&gt; provides a high performance implementation of the Li &amp; Stephens model &lt;doi:10.1093/genetics/165.4.2213&gt; for local ancestry inference (local referring to a region of the genome). For a set of N phased haplotypes, kalis computes the posterior marginal probability of each haplotype copying every other haplotype by running N hidden Markov models in parallel. This yields an N x N distance matrix that summarizes the recent local ancestry at each variant of interest. The package provides functionality for specifying a recombination map, site-specific mutation rates, and differing prior copying probabilities for each recipient haplotype. Extensive use is made of low level threading and CPU vector instructions.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -25,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="index.html">kalis</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +41,9 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/Decoding_a_Single_Variant.html">Decoding a Single Variant</a></li>
+    <li><a class="dropdown-item" href="articles/Iterating_Over_Loci.html">Iterating Over Loci</a></li>
     <li><a class="dropdown-item" href="articles/lct_example.html">Reproducing kalis Paper LCT Example</a></li>
+    <li><a class="dropdown-item" href="articles/Reading_Haplotype_Data.html">Reading Haplotype Data</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="external-link nav-link" href="https://doi.org/10.1186/s12859-024-05688-8">BMC Bioinformatics Paper</a></li>
@@ -65,16 +69,17 @@
 </h2>
 <p>kalis will appear on CRAN in due course. For now, the current development version can be installed using the <a href="https://github.com/r-lib/remotes" class="external-link">remotes</a> package as follows:</p>
 <pre><code><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"louisaslett/kalis"</span><span class="op">)</span></span></code></pre>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"louisaslett/kalis"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre>
 <p>Note that kalis uses various low-level optimisations meaning that you should ensure the compiler is targeting your local CPU architecture. The simplest way to do this is to pass configure variables setting the correct <code>CFLAGS</code> at install time:</p>
 <pre><code><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"louisaslett/kalis"</span>,</span>
-<span>  configure.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>kalis <span class="op">=</span> <span class="st">"PKG_CFLAGS='-march=native -mtune=native -O3'"</span><span class="op">)</span><span class="op">)</span></span></code></pre>
+<span>  configure.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>kalis <span class="op">=</span> <span class="st">"PKG_CFLAGS='-march=native -mtune=native -O3'"</span><span class="op">)</span>,</span>
+<span>  build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre>
 <p>If you do not have the correct flags set, kalis will fall back to an implementation which does not use the special vector instruction set architecture of your CPU and will provide a warning when you load the package in your R session.</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>If you make use of this software, please cite:</p>
+<p>If you make use of this software, please cite the primary reference:</p>
 <blockquote>
 <p>Aslett L. J. M., Christ R. R. (2024). “kalis: a modern implementation of the Li &amp; Stephens model for local ancestry inference in R.” <em>BMC Bioinformatics</em>, <em>25</em>(1), 1-18. <a href="https://doi.org/10.1186/s12859-024-05688-8%3E" class="external-link">doi:10.1186/s12859-024-05688-8</a>.</p>
 </blockquote>
@@ -89,12 +94,26 @@
   pages = {1--18},
   doi = {10.1186/s12859-024-05688-8}
 }</code></pre>
+<p>Some additional functions were added after the above publication to enable checkpointing and clade matrix construction, which are described in:</p>
+<blockquote>
+<p>Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) “Clade Distillation for Genome-wide Association Studies”, <em>bioRxiv 2024.09.30.615852</em>. <a href="https://doi.org/10.1101/2024.09.30.615852" class="external-link">doi:10.1101/2024.09.30.615852</a>.</p>
+</blockquote>
+<p>bibTeX:</p>
+<pre><code>@Article{,
+  title = {Clade Distillation for Genome-wide Association Studies},
+  author = {Christ, R. R. and Wang, X. and Aslett, L. J. M. and Steinsaltz, D. and Hall, I.},
+  journal = {bioRxiv},
+  year = {2024},
+  number = {2024.09.30.615852},
+  doi = {10.1101/2024.09.30.615852}
+}</code></pre>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/louisaslett/kalis/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/louisaslett/kalis/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -116,8 +135,8 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Louis Aslett <br><small class="roles"> Author, maintainer </small>  </li>
-<li>Ryan Christ <br><small class="roles"> Author </small>  </li>
+<li>Louis Aslett <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-2211-233X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Ryan Christ <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-2049-3389" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 

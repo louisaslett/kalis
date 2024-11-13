@@ -1,6 +1,8 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://kalis.louisaslett.com/404.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/articles/Decoding_a_Single_Variant.html</loc></url>
+<url><loc>https://kalis.louisaslett.com/articles/Iterating_Over_Loci.html</loc></url>
+<url><loc>https://kalis.louisaslett.com/articles/Reading_Haplotype_Data.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/articles/index.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/articles/lct_example.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/authors.html</loc></url>
@@ -8,18 +10,27 @@
 <url><loc>https://kalis.louisaslett.com/reference/Backward.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/CacheHaplotypes.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/CacheSummary.html</loc></url>
+<url><loc>https://kalis.louisaslett.com/reference/CalcCheckpointTables.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/CalcRho.html</loc></url>
+<url><loc>https://kalis.louisaslett.com/reference/CalcTraces.html</loc></url>
+<url><loc>https://kalis.louisaslett.com/reference/CladeMat.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/ClearHaplotypeCache.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/CopyTable.html</loc></url>
+<url><loc>https://kalis.louisaslett.com/reference/CreateForwardTableCache.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/DistMat.html</loc></url>
+<url><loc>https://kalis.louisaslett.com/reference/FillTableCache.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/Forward.html</loc></url>
+<url><loc>https://kalis.louisaslett.com/reference/ForwardIterator.html</loc></url>
+<url><loc>https://kalis.louisaslett.com/reference/ForwardUsingTableCache.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/MakeBackwardTable.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/MakeForwardTable.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/Parameters.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/PostProbs.html</loc></url>
+<url><loc>https://kalis.louisaslett.com/reference/PruneCladeMat.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/QueryCache.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/ResetTable.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/SmallHaps.html</loc></url>
+<url><loc>https://kalis.louisaslett.com/reference/Sprigs.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/WriteHaplotypes.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/index.html</loc></url>
 <url><loc>https://kalis.louisaslett.com/reference/plot.kalisDistanceMatrix.html</loc></url>

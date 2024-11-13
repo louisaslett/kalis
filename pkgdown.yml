@@ -3,8 +3,10 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   Decoding_a_Single_Variant: Decoding_a_Single_Variant.html
+  Iterating_Over_Loci: Iterating_Over_Loci.html
   lct_example: lct_example.html
-last_built: 2024-09-23T15:53Z
+  Reading_Haplotype_Data: Reading_Haplotype_Data.html
+last_built: 2024-11-13T18:25Z
 urls:
   reference: https://kalis.louisaslett.com/reference
   article: https://kalis.louisaslett.com/articles
