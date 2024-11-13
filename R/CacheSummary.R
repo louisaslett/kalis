@@ -1,5 +1,8 @@
 #' Retrieve information about the haplotype cache
 #'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
 #' @return
 #'   `CacheSummary()` prints information about the current state of the kalis cache.
 #'     Also invisibly returns a vector giving the dimensions of the cached haplotype data (num variants, num haplotypes), or `NULL` if the cache is empty.

@@ -11,6 +11,9 @@
 #'
 #' Note that if `hdf5.file` exists but does not contain a dataset named `haps`, then `WriteHaplotypes` will simply create a `haps` dataset within the existing file.
 #'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
 #' @param hdf5.file the name of the file which the haplotypes are to be written to.
 #' @param haps a vector or a matrix where each column is a haplotype to be stored in the file `hdf5.file`.
 #' @param hap.ids a character vector naming haplotypes when writing, or which haplotypes are to be read.

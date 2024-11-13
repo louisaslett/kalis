@@ -48,6 +48,9 @@ assign("L", NA, envir = pkgVars) # must be integer
 #'
 #'
 #'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
 #' @param haps can be the name of a file from which the haplotypes are to be read, or can be an R matrix containing only 0/1s.
 #'   See Details section for supported file types.
 #' @param loci.idx an optional vector of indices specifying the variants to load into the cache, indexed from 1.
@@ -219,6 +222,9 @@ CacheHaplotypes.err <- function(err) {
 #' To achieve higher performance, kalis internally represents haplotypes in an efficient raw binary format in memory which cannot be directly viewed or manipulated in R.
 #' This function enables you to copy whole or partial views of haplotypes/variants out of this low-level format and into a standard R matrix of 0's and 1's.
 #'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
 #' @param loci.idx which variants to retrieve from the cache, specified as a (vector) index.
 #'   This enables specifying variants by offset in the order they were loaded into the cache (from 1 to the number of variants).
 #' @param hap.idx which haplotypes to retrieve from the cache, specified as a (vector) index.
@@ -294,6 +300,9 @@ QueryCache <- function(loci.idx = NULL, hap.idx = NULL) {
 #' To achieve higher performance, kalis internally represents haplotypes in an efficient raw binary format in memory which cannot be directly viewed or manipulated in R, though you can extract a view from it using [QueryCache()].
 #' In particular, this cache sits outside R's memory management and will never be garbage collected (unless R is quit or the package is unloaded).
 #' Therefore, this function is provided to enable freeing the memory used by this cache.
+#'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 #'
 #' @return Nothing is returned.
 #'

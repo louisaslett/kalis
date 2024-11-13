@@ -24,3 +24,6 @@ Clusters the given distance matrix and generates a heatmap to display it.
 # TODO
 
 }
+\references{
+Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", \emph{BMC Bioinformatics}, \strong{25}(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+}

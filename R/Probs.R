@@ -43,6 +43,9 @@
 #' Typically, that is simply \eqn{N \times N}{N x N} for \eqn{N} haplotypes.
 #' However, if kalis is being run in a distributed manner, `M` will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
 #'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
 #' @param fwd a forward table as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].
 #'   Must be at the same variant as `bck` (unless `bck` is in "beta-theta space" in which case if must be downstream ... see [Backward()] for details).
 #' @param bck a backward table as returned by [MakeBackwardTable()] and propagated to a target variant by [Backward()].
@@ -164,6 +167,11 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #' Typically, that is simply \eqn{N \times N}{N x N} for \eqn{N} haplotypes.
 #' However, if kalis is being run in a distributed manner, `M` will be a \eqn{N \times R}{N x R} matrix where \eqn{R} is the number of recipient haplotypes on the current machine.
 #'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
+#'
+#' Speidel, L., Forest, M., Shi, S. and Myers, S.R. (2019). "A method for genome-wide genealogy estimation for thousands of samples", *Nature Genetics*, **51**, p. 1321-1329. Available at: \doi{10.1038/s41588-019-0484-x}.
+#'
 #' @param fwd a forward table as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].
 #'   Must be at the same variant as `bck` (unless `bck` is in "beta-theta space" in which case if must be downstream ... see [Backward()] for details).
 #' @param bck a backward table as returned by [MakeBackwardTable()] and propagated to a target variant by [Backward()].
@@ -183,9 +191,6 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #'   Hence, the distances are asymmetric.
 #'
 #'   If you wish to plot this matrix or perform clustering, you may want to symmetrize the matrix first.
-#'
-#' @references
-#'   Speidel, L., Forest, M., Shi, S., & Myers, S. (2019). A method for genome-wide genealogy estimation for thousands of samples. *Nature Genetics*, **51**(1321–1329).
 #'
 #' @seealso
 #'   [PostProbs()] to calculate the posterior marginal probabilities \eqn{p_{ji}}{p_(j,i)};
@@ -318,6 +323,9 @@ input_checks_for_probs_and_dist_mat <-  function(fwd,bck,beta.theta.opts = NULL)
 #' Plotting function for a distance matrix
 #'
 #' Clusters the given distance matrix and generates a heatmap to display it.
+#'
+#' @references
+#' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 #'
 #' @param x
 #'        a distance matrix, such as returned by [DistMat()].
