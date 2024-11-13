@@ -1,23 +1,15 @@
 #' Create cache for forward tables
 #'
-#' Create an in-memory cache for forward tables to improve efficiency when
-#' iterating in reverse along the haplotype sequences.
+#' Create an in-memory cache for forward tables to improve efficiency when iterating in reverse along the haplotype sequences.
 #'
-#' If the objective is to run the Li and Stephens hidden Markov model both
-#' forwards and backwards to the same locus (and to do so for every possible
-#' locus), then considerable efficiency can be achieved by first performing a
-#' full scan forwards, filling a geometrically spaced cache whilst doing so.
-#' Then, by working backwards, the backward propagation moves one locus at a
-#' time and the forward propagation can move backwards by moving forward from a
-#' recently cached local table.
+#' If the objective is to run the Li and Stephens hidden Markov model both forwards and backwards to the same locus (and to do so for every possible locus), then considerable efficiency can be achieved by first performing a full scan forwards, filling a geometrically spaced cache whilst doing so.
+#' Then, by working backwards, the backward propagation moves one locus at a time and the forward propagation can move backwards by moving forward from a recently cached local table.
 #'
-#' Memory for a cache can be allocated using this function and should then be
-#' filled with [FillTableCache()].
-#' To use the cache, then instead of using the [Forward()] function,
-#' use [ForwardUsingTableCache()].
+#' Memory for a cache can be allocated using this function and should then be filled with [FillTableCache()].
+#' To use the cache, then instead of using the [Forward()] function, use [ForwardUsingTableCache()].
 #'
 #' @references
-#' Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+#' Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 #'
 #' @param pars
 #'        a `kalisParameters` object, as returned by [Parameters()].
@@ -36,13 +28,15 @@
 #'        By default, equals \eqn{\lfloor\log_2(L)\rfloor}.
 #'
 #' @return
-#'   A list of forward tables representing a cache and ready to be filled is returned.
+#' A list of forward tables representing a cache and ready to be filled is returned.
 #'
 #' @seealso
-#'   [MakeForwardTable()] to make a forward table;
-#'   [FillTableCache()] to fill a cache;
-#'   [ForwardUsingTableCache()] to use a cache;
-#'   [Forward()] for forward function without using a cache.
+#' [MakeForwardTable()] to make a forward table;
+#' [FillTableCache()] to fill a cache;
+#' [ForwardUsingTableCache()] to use a cache;
+#' [Forward()] for forward function without using a cache.
+#'
+#' Alternatively, see [ForwardIterator()] to create an iterator which internally creates or uses a table cache.
 #'
 #' @examples
 #' \dontrun{
@@ -122,22 +116,16 @@ CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recip
 
 #' Fill a forward table cache
 #'
-#' An in-memory cache for forward tables can be filled using this function, for
-#' either the whole sequence length or some sub-sequence.
+#' An in-memory cache for forward tables can be filled using this function, for either the whole sequence length or some sub-sequence.
 #'
-#' If the objective is to run the Li and Stephens hidden Markov model both
-#' forwards and backwards to the same locus (and to do so for every possible
-#' locus), then considerable efficiency can be achieved by first performing a
-#' full scan forwards, filling a geometrically spaced cache whilst doing so.
-#' Then, by working backwards, the backward propagation moves one locus at a
-#' time and the forward propagation can move backwards by moving forward from a
-#' recently cached local table.
+#' If the objective is to run the Li and Stephens hidden Markov model both forwards and backwards to the same locus (and to do so for every possible locus), then considerable efficiency can be achieved by first performing a full scan forwards, filling a geometrically spaced cache whilst doing so.
+#' Then, by working backwards, the backward propagation moves one locus at a time and the forward propagation can move backwards by moving forward from a recently cached local table.
 #'
-#' Memory for a cache can be allocated using
-#' [CreateForwardTableCache()] and should then be filled with this
-#' function.
-#' To use the cache, then instead of using the [Forward()] function,
-#' use [ForwardUsingTableCache()].
+#' Memory for a cache can be allocated using [CreateForwardTableCache()] and should then be filled with this function.
+#' To use the cache, then instead of using the [Forward()] function, use [ForwardUsingTableCache()].
+#'
+#' @references
+#' Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 #'
 #' @param cache
 #'        a cache of forward tables as generated by [CreateForwardTableCache()].
@@ -149,13 +137,16 @@ CreateForwardTableCache <- function(pars, size = 1, from_recipient = 1, to_recip
 #'
 #' @return
 #' There is nothing returned.
-#' For performance reasons, `cache` is updated in-place.
+#'
+#' **NOTE:** for performance reasons, `cache` is updated in-place.
 #'
 #' @seealso
-#'   [MakeForwardTable()] to make a forward table;
-#'   [CreateForwardTableCache()] to generate a cache;
-#'   [ForwardUsingTableCache()] to use a cache;
-#'   [Forward()] for forward function without using a cache.
+#' [MakeForwardTable()] to make a forward table;
+#' [CreateForwardTableCache()] to generate a cache;
+#' [ForwardUsingTableCache()] to use a cache;
+#' [Forward()] for forward function without using a cache.
+#'
+#' Alternatively, see [ForwardIterator()] to create an iterator which internally creates or uses a table cache.
 #'
 #' @examples
 #' \dontrun{
@@ -244,52 +235,44 @@ FillTableCache <- function(cache,
 
 #' Use a forward table cache to propagate
 #'
-#' An in-memory cache for forward tables, which has already been filled, can be
-#' used to move more quickly to a specified locus.
+#' An in-memory cache for forward tables, which has already been filled, can be used to move more quickly to a specified locus.
 #'
-#' If the objective is to run the Li and Stephens hidden Markov model both
-#' forwards and backwards to the same locus (and to do so for every possible
-#' locus), then considerable efficiency can be achieved by first performing a
-#' full scan forwards, filling a geometrically spaced cache whilst doing so.
-#' Then, by working backwards, the backward propagation moves one locus at a
-#' time and the forward propagation can move backwards by moving forward from a
-#' recently cached local table.
+#' If the objective is to run the Li and Stephens hidden Markov model both forwards and backwards to the same locus (and to do so for every possible locus), then considerable efficiency can be achieved by first performing a full scan forwards, filling a geometrically spaced cache whilst doing so.
+#' Then, by working backwards, the backward propagation moves one locus at a time and the forward propagation can move backwards by moving forward from a recently cached local table.
 #'
-#' Memory for a cache can be allocated using
-#' [CreateForwardTableCache()] and should then be filled with
-#' [FillTableCache()].
-#' To use the cache, then instead of using the [Forward()] function,
-#' use this function.
+#' Memory for a cache can be allocated using [CreateForwardTableCache()] and should then be filled with [FillTableCache()].
+#' To use the cache, then instead of using the [Forward()] function, use this function.
 #'
-#' Note that the `cache` which is passed to this function will be
-#' dynamically updated based on the locus requested: the assumption is that
-#' the cache is used to propagate in reverse so any cache entries for a locus
-#' position past `t` are taken to be no longer needed and that space will
-#' redeployed to more densely fill the cache with earlier locus positions.
+#' Note that the `cache` which is passed to this function will be dynamically updated based on the locus requested: the assumption is that the cache is used to propagate in reverse so any cache entries for a locus position past `t` are taken to be no longer needed and that space will redeployed to more densely fill the cache with earlier locus positions.
 #'
-#' @param fwd a `kalisForwardTable` object, as returned by
-#'   [MakeForwardTable()].
-#' @param pars a `kalisParameters` object, as returned by [Parameters()].
-#' @param cache a cache of forward tables as generated by
-#'   [CreateForwardTableCache()] and filled using
-#'   [FillTableCache()].
-#' @param t a locus position to move the forward table to, starting the forward
-#'   propagation from whatever table in the `cache` variable is immediately
-#'   before locus `t`.
-#'   By default, it simply advances to the previous locus (which is the natural
-#'   direction to move when using the cache).
-#' @param nthreads the number of CPU cores to use.
-#'   By default no parallelism is used.
+#' @references
+#' Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+#'
+#' @param fwd
+#'        a `kalisForwardTable` object, as returned by [MakeForwardTable()].
+#' @param pars
+#'        a `kalisParameters` object, as returned by [Parameters()].
+#' @param cache
+#'        a cache of forward tables as generated by [CreateForwardTableCache()] and filled using [FillTableCache()].
+#' @param t
+#'        a locus position to move the forward table to, starting the forward propagation from whatever table in the `cache` variable is immediately before locus `t`.
+#'        By default, it simply advances to the previous locus (which is the natural direction to move when using the cache).
+#' @param nthreads
+#'        the number of CPU cores to use.
+#'        By default no parallelism is used.
 #'
 #' @return
-#'   There is nothing returned.
-#'   For performance reasons, `fwd` is updated in-place.
+#' There is nothing returned.
+#'
+#' **NOTE:** for performance reasons, `fwd` is updated in-place.
 #'
 #' @seealso
-#'   [MakeForwardTable()] to make a forward table;
-#'   [CreateForwardTableCache()] to generate a cache;
-#'   [FillTableCache()] to fill a cache;
-#'   [Forward()] for forward function without using a cache.
+#' [MakeForwardTable()] to make a forward table;
+#' [CreateForwardTableCache()] to generate a cache;
+#' [FillTableCache()] to fill a cache;
+#' [Forward()] for forward function without using a cache.
+#'
+#' Alternatively, see [ForwardIterator()] to create an iterator which internally creates or uses a table cache.
 #'
 #' @examples
 #' \dontrun{

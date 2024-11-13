@@ -32,22 +32,14 @@ By default, equals \eqn{\lfloor\log_2(L)\rfloor}.}
 A list of forward tables representing a cache and ready to be filled is returned.
 }
 \description{
-Create an in-memory cache for forward tables to improve efficiency when
-iterating in reverse along the haplotype sequences.
+Create an in-memory cache for forward tables to improve efficiency when iterating in reverse along the haplotype sequences.
 }
 \details{
-If the objective is to run the Li and Stephens hidden Markov model both
-forwards and backwards to the same locus (and to do so for every possible
-locus), then considerable efficiency can be achieved by first performing a
-full scan forwards, filling a geometrically spaced cache whilst doing so.
-Then, by working backwards, the backward propagation moves one locus at a
-time and the forward propagation can move backwards by moving forward from a
-recently cached local table.
+If the objective is to run the Li and Stephens hidden Markov model both forwards and backwards to the same locus (and to do so for every possible locus), then considerable efficiency can be achieved by first performing a full scan forwards, filling a geometrically spaced cache whilst doing so.
+Then, by working backwards, the backward propagation moves one locus at a time and the forward propagation can move backwards by moving forward from a recently cached local table.
 
-Memory for a cache can be allocated using this function and should then be
-filled with \code{\link[=FillTableCache]{FillTableCache()}}.
-To use the cache, then instead of using the \code{\link[=Forward]{Forward()}} function,
-use \code{\link[=ForwardUsingTableCache]{ForwardUsingTableCache()}}.
+Memory for a cache can be allocated using this function and should then be filled with \code{\link[=FillTableCache]{FillTableCache()}}.
+To use the cache, then instead of using the \code{\link[=Forward]{Forward()}} function, use \code{\link[=ForwardUsingTableCache]{ForwardUsingTableCache()}}.
 }
 \examples{
 \dontrun{
@@ -77,11 +69,13 @@ for(l in L:1) {
 
 }
 \references{
-Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 }
 \seealso{
 \code{\link[=MakeForwardTable]{MakeForwardTable()}} to make a forward table;
 \code{\link[=FillTableCache]{FillTableCache()}} to fill a cache;
 \code{\link[=ForwardUsingTableCache]{ForwardUsingTableCache()}} to use a cache;
 \code{\link[=Forward]{Forward()}} for forward function without using a cache.
+
+Alternatively, see \code{\link[=ForwardIterator]{ForwardIterator()}} to create an iterator which internally creates or uses a table cache.
 }

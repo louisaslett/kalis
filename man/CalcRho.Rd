@@ -52,7 +52,7 @@ rho
 \references{
 Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", \emph{BMC Bioinformatics}, \strong{25}(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 
-Lawson, D.J., Hellenthal, G., Myers, S. and Falush, D. (2012). "Inference of population structure using dense haplotype data", \emph{PLoS genetics}, \strong{8}(1). Available at: \doi{10.1371/journal.pgen.1002453}.
+Lawson, D.J., Hellenthal, G., Myers, S. and Falush, D. (2012) "Inference of population structure using dense haplotype data", \emph{PLoS genetics}, \strong{8}(1). Available at: \doi{10.1371/journal.pgen.1002453}.
 }
 \seealso{
 \code{\link[=Parameters]{Parameters()}} to use the resulting recombination probabilities to construct a \code{kalisParameters} object.

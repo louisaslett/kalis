@@ -6,7 +6,7 @@
 #' `CladeMat()` uses the forward and backward tables to construct the corresponding clade matrix which can then be tested, for example using a standard quadratic form score statistic.
 #'
 #' @references
-#' Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+#' Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 #'
 #' @param fwd
 #'        a `kalisForwardTable` object, as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].

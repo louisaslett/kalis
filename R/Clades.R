@@ -19,21 +19,24 @@ get_neigh_seq <- function(x, i, return.lengths = FALSE){
 
 #' Greedy sprig calling based on nearest neighbourhoods
 #'
-#' Infer sprigs (very small clades) within a local phylogeny based on one-directional nearest neighbourhoods assigned to each haplotype
+#' Infer sprigs (very small clades) within a local phylogeny based on one-directional nearest neighbourhoods assigned to each haplotype.
 #'
-#' Call maximal cliques within a directed graph where edges correspond to nearest neighbour relationships
+#' Call maximal cliques within a directed graph where edges correspond to nearest neighbour relationships.
+#'
+#' @references
+#' Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 #'
 #' @param x
-#'        list of where each entry is a nearest neighborhood of integers as returned by [CladeMat()]
+#'        list of integers where each entry is a nearest neighbourhood as returned by [CladeMat()]
 #' @param old.sprigs
-#'        If TRUE, use an earlier (undocumented) version of maximal clique calling, defaults to FALSE.
+#'        If `TRUE`, use an earlier (undocumented) version of maximal clique calling, defaults to `FALSE`.
 #'
 #' @return
 #' a list containing:
 #' \describe{
-#'   \item{`assignments`}{a vector of integers such that `assignments[i]` gives the sprig to which haplotype `i` belongs. `NA` if a haplotype was not assigned to a sprig.}
-#'   \item{`to.prune`}{a vector of logicals, `to.prune[i]==TRUE` when haplotype i has been assigned to a sprig}
-#'   \item{`num.sprigs`}{total number of sprigs calls, equal to `max(assignements,rm.na=TRUE)`}
+#'   \item{`assignments`}{a vector of integers such that `$assignments[i]` gives the sprig to which haplotype `i` belongs. `NA` if a haplotype was not assigned to a sprig.}
+#'   \item{`to.prune`}{a vector of logicals, `$to.prune[i]==TRUE` when haplotype i has been assigned to a sprig}
+#'   \item{`num.sprigs`}{total number of sprigs calls, equal to `max($assignements, rm.na = TRUE)`}
 #' }
 #'
 #' @examples
@@ -140,7 +143,10 @@ UpdateMatrixInPlace <- function(M,row.idx,col.idx,x){
 
 #' Prune called sprigs or singletons from inferred clade matrix
 #'
-#' Use haplotype nearest neighborhoods and other information returned by [CladeMat()] to efficiently remove structure corresponding to singletons or called sprigs from clade matrix 'M'
+#' Use haplotype nearest neighbourhoods and other information returned by [CladeMat()] to efficiently remove structure corresponding to singletons or called sprigs from clade matrix 'M'
+#'
+#' @references
+#' Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 #'
 #' @param M
 #'        clade matrix such as that updated by [CladeMat()]
@@ -149,7 +155,8 @@ UpdateMatrixInPlace <- function(M,row.idx,col.idx,x){
 #' @param sprigs
 #'        a sprigs object as returned by [Sprigs()]
 #' @param prune
-#'        a character indicating the type of information to be removed from the [CladeMat()]. See Details.
+#'        a character indicating the type of information to be removed from the [CladeMat()].
+#'        See Details.
 #' @param from_recipient
 #'        haplotype index at which to start trace calculation --- useful for distributed computation (experimental feature, more documentation to come<!-- TODO -->)
 #'
@@ -246,7 +253,7 @@ PruneCladeMat <- function(M, neigh, sprigs, prune = "singleton.info", from_recip
 # #' ...? longer description
 # #'
 # #' @references
-# #' Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+# #' Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 # #'
 # #' @param fwd
 # #'        a `kalisForwardTable` object, as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].

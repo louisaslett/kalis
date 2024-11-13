@@ -5,7 +5,7 @@
 #' See example.
 #'
 #' @references
-#' Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+#' Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 #'
 #' @param pars
 #'        a `kalisParameters` object, as returned by [Parameters()].
@@ -348,17 +348,19 @@ plot.kalisIterator <- function(x, ...){
 #' Calculate look up tables for solving optimal checkpointing problems with dynamic programming.
 #'
 #' @references
-#' Christ, R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies." bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+#' Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 #'
 #' @param propagation.cost
-#'        a non-negative vector such that `propagation.cost[i]` gives the relative amount of time or cost required to propagate `i` steps
+#'        a non-negative vector such that `propagation.cost[i]` gives the relative amount of time or cost required to propagate `i` steps.
 #' @param max.num.checkpoints
 #'        the maximum number of checkpoints that should be considered when building the checkpoint table.
 #' @param use.R
-#'        a logical, when TRUE use base R rather than C implementation of table building. Defaults to FALSE.
+#'        a logical, when `TRUE` use base R rather than C implementation of table building.
+#'        Defaults to `FALSE`.
 #'
 #' @return
-#' a list containing:
+#' A list containing:
+#'
 #' \describe{
 #'   \item{`cost`}{the matrix \eqn{F} in Christ et al. (2024)}
 #'   \item{`index`}{the matrix \eqn{H} in Christ et al. (2024)}

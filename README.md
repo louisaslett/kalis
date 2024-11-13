@@ -29,7 +29,7 @@ If you do not have the correct flags set, kalis will fall back to an implementat
 
 ## Citation
 
-If you make use of this software, please cite:
+If you make use of this software, please cite the primary reference:
 
 > Aslett L. J. M., Christ R. R. (2024). "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R." _BMC Bioinformatics_, *25*(1), 1-18. [doi:10.1186/s12859-024-05688-8](https://doi.org/10.1186/s12859-024-05688-8>).
 
@@ -45,5 +45,22 @@ bibTeX:
   number = {1},
   pages = {1--18},
   doi = {10.1186/s12859-024-05688-8}
+}
+```
+
+Some additional functions were added after the above publication to enable checkpointing and clade matrix construction, which are described in:
+
+> Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", _bioRxiv 2024.09.30.615852_. [doi:10.1101/2024.09.30.615852](https://doi.org/10.1101/2024.09.30.615852).
+
+bibTeX:
+
+```
+@Article{,
+  title = {Clade Distillation for Genome-wide Association Studies},
+  author = {Christ, R. R. and Wang, X. and Aslett, L. J. M. and Steinsaltz, D. and Hall, I.},
+  journal = {bioRxiv},
+  year = {2024},
+  number = {2024.09.30.615852},
+  doi = {10.1101/2024.09.30.615852}
 }
 ```

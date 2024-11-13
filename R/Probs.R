@@ -170,7 +170,7 @@ PostProbs <- function(fwd, bck, unif.on.underflow = FALSE, M = NULL, beta.theta.
 #' @references
 #' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 #'
-#' Speidel, L., Forest, M., Shi, S. and Myers, S.R. (2019). "A method for genome-wide genealogy estimation for thousands of samples", *Nature Genetics*, **51**, p. 1321-1329. Available at: \doi{10.1038/s41588-019-0484-x}.
+#' Speidel, L., Forest, M., Shi, S. and Myers, S.R. (2019) "A method for genome-wide genealogy estimation for thousands of samples", *Nature Genetics*, **51**, p. 1321-1329. Available at: \doi{10.1038/s41588-019-0484-x}.
 #'
 #' @param fwd a forward table as returned by [MakeForwardTable()] and propagated to a target variant by [Forward()].
 #'   Must be at the same variant as `bck` (unless `bck` is in "beta-theta space" in which case if must be downstream ... see [Backward()] for details).

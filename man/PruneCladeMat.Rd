@@ -13,7 +13,8 @@ PruneCladeMat(M, neigh, sprigs, prune = "singleton.info", from_recipient = 1L)
 
 \item{sprigs}{a sprigs object as returned by \code{\link[=Sprigs]{Sprigs()}}}
 
-\item{prune}{a character indicating the type of information to be removed from the \code{\link[=CladeMat]{CladeMat()}}. See Details.}
+\item{prune}{a character indicating the type of information to be removed from the \code{\link[=CladeMat]{CladeMat()}}.
+See Details.}
 
 \item{from_recipient}{haplotype index at which to start trace calculation --- useful for distributed computation (experimental feature, more documentation to come\if{html}{\out{<!-- TODO -->}})}
 }
@@ -23,9 +24,12 @@ There is nothing returned.
 \strong{NOTE:} for performance reasons, \code{M} is updated in-place.
 }
 \description{
-Use haplotype nearest neighborhoods and other information returned by \code{\link[=CladeMat]{CladeMat()}} to efficiently remove structure corresponding to singletons or called sprigs from clade matrix 'M'
+Use haplotype nearest neighbourhoods and other information returned by \code{\link[=CladeMat]{CladeMat()}} to efficiently remove structure corresponding to singletons or called sprigs from clade matrix 'M'
 }
 \examples{
 # TODO
 
+}
+\references{
+Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 }

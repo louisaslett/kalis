@@ -100,9 +100,9 @@ fwd
 \references{
 Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", \emph{BMC Bioinformatics}, \strong{25}(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 
-Lawson, D.J., Hellenthal, G., Myers, S.R. and Falush, D. (2012). "Inference of population structure using dense haplotype data", \emph{PLoS Genetics}, \strong{8}(1). Available at: \doi{10.1371/journal.pgen.1002453}.
+Lawson, D.J., Hellenthal, G., Myers, S.R. and Falush, D. (2012) "Inference of population structure using dense haplotype data", \emph{PLoS Genetics}, \strong{8}(1). Available at: \doi{10.1371/journal.pgen.1002453}.
 
-Speidel, L., Forest, M., Shi, S. and Myers, S.R. (2019). "A method for genome-wide genealogy estimation for thousands of samples", \emph{Nature Genetics}, \strong{51}, p. 1321-1329. Available at: \doi{10.1038/s41588-019-0484-x}.
+Speidel, L., Forest, M., Shi, S. and Myers, S.R. (2019) "A method for genome-wide genealogy estimation for thousands of samples", \emph{Nature Genetics}, \strong{51}, p. 1321-1329. Available at: \doi{10.1038/s41588-019-0484-x}.
 }
 \seealso{
 \code{\link[=MakeForwardTable]{MakeForwardTable()}} and \code{\link[=MakeBackwardTable]{MakeBackwardTable()}} which construct table objects which internally reference a parameters environment;

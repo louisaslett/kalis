@@ -7,25 +7,28 @@
 Sprigs(x, old.sprigs = FALSE)
 }
 \arguments{
-\item{x}{list of where each entry is a nearest neighborhood of integers as returned by \code{\link[=CladeMat]{CladeMat()}}}
+\item{x}{list of integers where each entry is a nearest neighbourhood as returned by \code{\link[=CladeMat]{CladeMat()}}}
 
-\item{old.sprigs}{If TRUE, use an earlier (undocumented) version of maximal clique calling, defaults to FALSE.}
+\item{old.sprigs}{If \code{TRUE}, use an earlier (undocumented) version of maximal clique calling, defaults to \code{FALSE}.}
 }
 \value{
 a list containing:
 \describe{
-\item{\code{assignments}}{a vector of integers such that \code{assignments[i]} gives the sprig to which haplotype \code{i} belongs. \code{NA} if a haplotype was not assigned to a sprig.}
-\item{\code{to.prune}}{a vector of logicals, \code{to.prune[i]==TRUE} when haplotype i has been assigned to a sprig}
-\item{\code{num.sprigs}}{total number of sprigs calls, equal to \code{max(assignements,rm.na=TRUE)}}
+\item{\code{assignments}}{a vector of integers such that \verb{$assignments[i]} gives the sprig to which haplotype \code{i} belongs. \code{NA} if a haplotype was not assigned to a sprig.}
+\item{\code{to.prune}}{a vector of logicals, \verb{$to.prune[i]==TRUE} when haplotype i has been assigned to a sprig}
+\item{\code{num.sprigs}}{total number of sprigs calls, equal to \verb{max($assignements, rm.na = TRUE)}}
 }
 }
 \description{
-Infer sprigs (very small clades) within a local phylogeny based on one-directional nearest neighbourhoods assigned to each haplotype
+Infer sprigs (very small clades) within a local phylogeny based on one-directional nearest neighbourhoods assigned to each haplotype.
 }
 \details{
-Call maximal cliques within a directed graph where edges correspond to nearest neighbour relationships
+Call maximal cliques within a directed graph where edges correspond to nearest neighbour relationships.
 }
 \examples{
 # TODO
 
+}
+\references{
+Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
 }

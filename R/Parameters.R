@@ -15,7 +15,7 @@
 #' @references
 #' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 #'
-#' Lawson, D.J., Hellenthal, G., Myers, S. and Falush, D. (2012). "Inference of population structure using dense haplotype data", *PLoS genetics*, **8**(1). Available at: \doi{10.1371/journal.pgen.1002453}.
+#' Lawson, D.J., Hellenthal, G., Myers, S. and Falush, D. (2012) "Inference of population structure using dense haplotype data", *PLoS genetics*, **8**(1). Available at: \doi{10.1371/journal.pgen.1002453}.
 #'
 #' @param cM a vector specifying the recombination distance between variants in centimorgans.
 #'   Note element i of this vector should be the distance between variants `i` and `i+1` (not `i` and `i-1`), and thus length one less than the number of variants.
@@ -123,9 +123,9 @@ CalcRho <- function(cM = 0, s = 1, gamma = 1, floor = TRUE) {
 #' @references
 #' Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation of the Li & Stephens model for local ancestry inference in R", *BMC Bioinformatics*, **25**(1). Available at: \doi{10.1186/s12859-024-05688-8}.
 #'
-#' Lawson, D.J., Hellenthal, G., Myers, S.R. and Falush, D. (2012). "Inference of population structure using dense haplotype data", *PLoS Genetics*, **8**(1). Available at: \doi{10.1371/journal.pgen.1002453}.
+#' Lawson, D.J., Hellenthal, G., Myers, S.R. and Falush, D. (2012) "Inference of population structure using dense haplotype data", *PLoS Genetics*, **8**(1). Available at: \doi{10.1371/journal.pgen.1002453}.
 #'
-#' Speidel, L., Forest, M., Shi, S. and Myers, S.R. (2019). "A method for genome-wide genealogy estimation for thousands of samples", *Nature Genetics*, **51**, p. 1321-1329. Available at: \doi{10.1038/s41588-019-0484-x}.
+#' Speidel, L., Forest, M., Shi, S. and Myers, S.R. (2019) "A method for genome-wide genealogy estimation for thousands of samples", *Nature Genetics*, **51**, p. 1321-1329. Available at: \doi{10.1038/s41588-019-0484-x}.
 #'
 #' @param rho recombination probability vector (must be \eqn{L-1} long).
 #'   See [CalcRho()] for assistance constructing this from a recombination

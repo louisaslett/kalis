@@ -4,6 +4,9 @@
 #'
 #' \eqn{P} here is assumed to have the form \eqn{I-QQ'} for some matrix \eqn{Q} of orthogonal columns.
 #'
+#' @references
+#' Christ, R.R., Wang, X., Aslett, L.J.M., Steinsaltz, D. and Hall, I. (2024) "Clade Distillation for Genome-wide Association Studies", bioRxiv 2024.09.30.615852. Available at: \doi{10.1101/2024.09.30.615852}.
+#'
 #' @param M
 #'        a real symmetric R matrix
 #' @param tX
