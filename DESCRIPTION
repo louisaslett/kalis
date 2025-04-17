@@ -1,7 +1,7 @@
 Package: kalis
 Type: Package
 Title: High Performance Li & Stephens Local Ancestry Inference
-Version: 2.0.0
+Version: 2.0.1
 Authors@R: c(person("Louis", "Aslett", role = c("aut", "cre"),
                     email = "louis.aslett@durham.ac.uk",
                     comment = c(ORCID = "0000-0003-2211-233X")),

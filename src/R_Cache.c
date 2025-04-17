@@ -19,7 +19,7 @@ SEXP ClearHaplotypeCache2() {
     hap_data = NULL;
   }
   if(hap_locus != NULL) {
-    Free(hap_locus);
+    free(hap_locus);
     hap_locus = NULL;
   }
   num_inds = 0;
