@@ -1,0 +1,198 @@
+# Define a set of Li and Stephens parameters
+
+Specify a parameter set to be used for a particular Li and Stephens
+hidden Markov model run.
+
+## Usage
+
+``` r
+Parameters(
+  rho = rep(0, get("L", envir = pkgVars) - 1),
+  mu = 1e-08,
+  Pi = NULL,
+  use.speidel = FALSE,
+  check.rho = TRUE
+)
+```
+
+## Arguments
+
+- rho:
+
+  recombination probability vector (must be \\L-1\\ long). See
+  [`CalcRho()`](https://kalis.louisaslett.com/reference/CalcRho.md) for
+  assistance constructing this from a recombination map/distances.
+
+- mu:
+
+  a scalar (for uniform) or vector (for varying) mutation probabilities.
+
+- Pi:
+
+  leaving the default of uniform copying probabilities is recommended
+  for computational efficiency. If desired, a full matrix of background
+  copying probabilities can be provided, such that the `[j,i]`-th
+  element is the background probability that `i` copies from `j`.
+  Hence, (a) the diagonal must be zero; and (b) the columns of `Pi` must
+  sum to 1. Note: each column corresponds to an independent Li and
+  Stephens hidden Markov model.
+
+- use.speidel:
+
+  a logical, if `TRUE`, use the asymmetric mutation model used by RELATE
+  (Speidel et al., 2019). **WARNING:** this model assumes that the
+  cached haplotypes have an ancestral/derived encoding – zeros denote
+  ancestral variant carriers and ones denote derived variant carriers.
+  Defaults to `FALSE`.
+
+- check.rho:
+
+  if `TRUE`, a check that rho is within machine precision will be
+  performed. If you have created rho using
+  [`CalcRho()`](https://kalis.louisaslett.com/reference/CalcRho.md) with
+  `floor = TRUE` then this will be satisfied automatically. This can be
+  important to ensure that the convex combination `rho` and `(1-rho)`
+  normalises to 1 within machine precision, but an advanced user may
+  wish to override this requirement.
+
+## Value
+
+A `kalisParameters` object, suitable for use to create the standard
+forward and backward recursion tables with
+[`MakeForwardTable()`](https://kalis.louisaslett.com/reference/MakeForwardTable.md)
+and
+[`MakeBackwardTable()`](https://kalis.louisaslett.com/reference/MakeBackwardTable.md).
+Note you will also need to provide this parameters object when
+propagating those tables using either
+[`Forward()`](https://kalis.louisaslett.com/reference/Forward.md) or
+[`Backward()`](https://kalis.louisaslett.com/reference/Backward.md).
+
+## Details
+
+There are 3 parameters which must be specified before the forward or
+backward equations in the Li and Stephens hidden Markov model can be
+run. These are the vector of recombination probabilities, the mutation
+probabilities, and the prior copying probabilities.
+
+**NOTE:** the corresponding haplotype data *must* have already been
+inserted into the kalis cache by a call to
+[`CacheHaplotypes()`](https://kalis.louisaslett.com/reference/CacheHaplotypes.md),
+since this function performs checks to confirm the dimensionality
+matches.
+
+**Recombination probabilities, `rho`**
+
+This is a vector parameter which must have length \\L-1\\, where \\L\\
+is the number of variants that have been loaded into the kalis memory
+cache (using
+[`CacheHaplotypes()`](https://kalis.louisaslett.com/reference/CacheHaplotypes.md)).
+Note that element `i` of this vector should be the recombination
+probability between variants `i` and `i+1`.
+
+There is a utility function,
+[`CalcRho()`](https://kalis.louisaslett.com/reference/CalcRho.md), to
+assist with creating these recombination probabilities from a
+recombination map.
+
+By default, the recombination probabilities are set to zero everywhere.
+
+**Mutation probabilities, `mu`**
+
+The mutation probabilities may be specified either as uniform across all
+variants (by providing a single scalar value), or may be varying at each
+variant (by providing a vector of length equal to the number of
+variants, \\L\\, which have been loaded into the kalis memory cache).
+
+By default, mutation probabilities are set to \\10^{-8}\\.
+
+**Copying probabilities, `Pi`**
+
+The original Li and Stephens model assumed that each haplotype has an
+equal prior probability of copying from any other. However, in the
+spirit of ChromoPainter (Lawson et al., 2012) we allow a matrix of prior
+copying probabilities.
+
+The copying probabilities may be specified as a standard R matrix of
+size \\N \times N\\ (where \\N\\ is the number of haplotypes which have
+been loaded into the kalis memory cache). The element at row `j`, column
+`i` corresponds to the prior (background) probability that haplotype `i`
+copies from haplotype `j`. Note that the diagonal must by definition be
+zero and columns must sum to one. Alternatively, for uniform copying
+probabilities, this argument need not be specified (resulting in copying
+probability \\\frac{1}{N-1}\\ everywhere).
+
+Note that there is a computational cost associated with non-uniform
+copying probabilities, so it is recommended to leave the default of
+uniform probabilities when appropriate (**Note:** *do not* specify a
+uniform matrix when uniform probabilities are intended, since this would
+end up incurring the computational cost of non-uniform probabilities).
+
+## References
+
+Aslett, L.J.M. and Christ, R.R. (2024) "kalis: a modern implementation
+of the Li & Stephens model for local ancestry inference in R", *BMC
+Bioinformatics*, **25**(1). Available at:
+[doi:10.1186/s12859-024-05688-8](https://doi.org/10.1186/s12859-024-05688-8)
+.
+
+Lawson, D.J., Hellenthal, G., Myers, S.R. and Falush, D. (2012)
+"Inference of population structure using dense haplotype data", *PLoS
+Genetics*, **8**(1). Available at:
+[doi:10.1371/journal.pgen.1002453](https://doi.org/10.1371/journal.pgen.1002453)
+.
+
+Speidel, L., Forest, M., Shi, S. and Myers, S.R. (2019) "A method for
+genome-wide genealogy estimation for thousands of samples", *Nature
+Genetics*, **51**, p. 1321-1329. Available at:
+[doi:10.1038/s41588-019-0484-x](https://doi.org/10.1038/s41588-019-0484-x)
+.
+
+## See also
+
+[`MakeForwardTable()`](https://kalis.louisaslett.com/reference/MakeForwardTable.md)
+and
+[`MakeBackwardTable()`](https://kalis.louisaslett.com/reference/MakeBackwardTable.md)
+which construct table objects which internally reference a parameters
+environment;
+[`Forward()`](https://kalis.louisaslett.com/reference/Forward.md) and
+[`Backward()`](https://kalis.louisaslett.com/reference/Backward.md)
+which propagate those tables according to the Li and Stephens model.
+
+## Examples
+
+``` r
+# Load the mini example data and recombination map from the package built-in #' # dataset
+data("SmallHaps")
+data("SmallMap")
+
+# Load haplotypes into cache
+CacheHaplotypes(SmallHaps)
+#> Warning: haplotypes already cached ... overwriting existing cache.
+
+# To use all the defaults
+pars <- Parameters()
+pars
+#> Parameters object with:
+#>   rho   = (0, 0, 0, ..., 0, 0, 1)
+#>   mu    = 1e-08
+#>   Pi    = 0.00334448160535117 
+
+# Or perhaps use SmallMap to compute the recombination probabilities, leaving
+# s and gamma as default
+rho <- CalcRho(diff(SmallMap))
+pars <- Parameters(rho)
+pars
+#> Parameters object with:
+#>   rho   = (0.030722976221863, 0.00188322071638501, 6.79809190046651e-06, ..., 1.56898508137998e-05, 1.7924679243824e-05, 1)
+#>   mu    = 1e-08
+#>   Pi    = 0.00334448160535117 
+
+# Then use these parameters to create a table (eg for forward) ...
+fwd <- MakeForwardTable(pars)
+# ... and to propagate it
+Forward(fwd, pars, 10)
+fwd
+#> Full Forward Table object for 300 haplotypes. 
+#>   Current variant = 10 
+#>   Memory consumed: 723.98 kB 
+```

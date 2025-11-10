@@ -1,12 +1,12 @@
 pandoc: 3.1.11
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   Decoding_a_Single_Variant: Decoding_a_Single_Variant.html
   Iterating_Over_Loci: Iterating_Over_Loci.html
   lct_example: lct_example.html
   Reading_Haplotype_Data: Reading_Haplotype_Data.html
-last_built: 2025-07-28T16:28Z
+last_built: 2025-11-10T18:44Z
 urls:
   reference: https://kalis.louisaslett.com/reference
   article: https://kalis.louisaslett.com/articles
